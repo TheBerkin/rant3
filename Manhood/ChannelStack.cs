@@ -87,7 +87,7 @@ namespace Manhood
 
             for (int i = count - 1; i >= 0; i--)
             {
-                if (_activeSet[i] == _main) return;
+                if (_activeSet[i] == _main) break;
 
                 switch (_activeSet[i].Visiblity)
                 {
