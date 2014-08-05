@@ -92,11 +92,11 @@ namespace Manhood
                 switch (_activeSet[i].Visiblity)
                 {
                     case ChannelVisibility.Public:
-                        if (lastVisibility == ChannelVisibility.Internal) return;
+                        if (lastVisibility == ChannelVisibility.Internal) goto checkLimit;
                         break;
                     case ChannelVisibility.Private:
                         _activeSet[i].Buffer.Append(input);
-                        return;
+                        goto checkLimit;
                     case ChannelVisibility.Internal:
                         break;
                 }
@@ -105,6 +105,8 @@ namespace Manhood
 
                 lastVisibility = _activeSet[i].Visiblity;
             }
+
+            checkLimit:
 
             CheckSizeLimit();
         }
