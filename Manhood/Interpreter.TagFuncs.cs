@@ -57,6 +57,51 @@ namespace Manhood
             TagFuncs["match"] = Match;
             TagFuncs["cut"] = Cut;
             TagFuncs["string"] = RequestString;
+            TagFuncs["pick"] = Pick;
+            TagFuncs["to"] = To;
+            TagFuncs["past"] = Past;
+        }
+
+        private static bool Past(Interpreter interpreter, string[] args)
+        {
+            if (!interpreter.State.PickerActive || args.Length != 2) return false;
+
+            int number;
+            if (!Int32.TryParse(interpreter.Evaluate(args[0]), out number)) return false;
+
+            if (!interpreter.State.TestPickerThreshold(number)) return true;
+            interpreter.Do(args[1]);
+            return false; // Stop interpreting the parent expression if the condition is satisfied
+        }
+
+        private static bool To(Interpreter interpreter, string[] args)
+        {
+            if (!interpreter.State.PickerActive || args.Length != 2) return false;
+
+            int number;
+            if (!Int32.TryParse(interpreter.Evaluate(args[0]), out number)) return false;
+
+            if (interpreter.State.TestPickerThreshold(number)) return true;
+            interpreter.Do(args[1]);
+            return false; // Stop interpreting the parent expression if the condition is satisfied
+        }
+
+        private static bool Pick(Interpreter interpreter, string[] args)
+        {
+            if (args.Length != 2) return false;
+            
+            int number;
+            if (!Int32.TryParse(interpreter.Evaluate(args[0]), out number)) return false;
+
+            if (number < 0) return false;
+
+            interpreter.State.PushPicker(number);
+
+            interpreter.Do(args[1]);
+
+            interpreter.State.PopPicker();
+
+            return true;
         }
 
         private static bool RepNotMiddle(Interpreter interpreter, string[] args)

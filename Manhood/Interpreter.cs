@@ -192,9 +192,7 @@ namespace Manhood
             }
 
             Func<Interpreter, string[], bool> func;
-            if (!TagFuncs.TryGetValue(tag.Name.ToLower(), out func)) return false;
-            func(this, tag.Arguments);
-            return true;
+            return TagFuncs.TryGetValue(tag.Name.ToLower(), out func) && func(this, tag.Arguments);
         }
 
         internal class BlockAttribs

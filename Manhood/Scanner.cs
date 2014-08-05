@@ -87,6 +87,13 @@ namespace Manhood
             return _escapeChars.TryGetValue(c, out escaped) ? escaped : c;
         }
 
+        public bool Eat(string next)
+        {
+            if (_string.IndexOf(next, _position, StringComparison.Ordinal) != _position) return false;
+            _position += next.Length;
+            return true;
+        }
+
         public string ReadString(int length)
         {
             if (_position + length > _string.Length)

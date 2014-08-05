@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Manhood
@@ -14,7 +15,8 @@ namespace Manhood
         private readonly RNG _rng;
         private readonly Stack<SubArgs> _argStack;
         private readonly Stack<Match> _matchStack;
-        private readonly Stack<Repeater> _repeaters; 
+        private readonly Stack<Repeater> _repeaters;
+        private readonly Stack<int> _pickers; 
 
         private Synchronizer _activeSelector;
 
@@ -25,7 +27,29 @@ namespace Manhood
             _argStack = new Stack<SubArgs>();
             _matchStack = new Stack<Match>();
             _repeaters = new Stack<Repeater>();
+            _pickers = new Stack<int>();
             _subStore = subStore;
+        }
+
+        public void PushPicker(int max)
+        {
+            _pickers.Push(_rng.Next(max) + 1);
+        }
+
+        public bool PickerActive
+        {
+            get { return _pickers.Any(); }
+        }
+
+        public bool TestPickerThreshold(int number)
+        {
+            if (!_pickers.Any()) return false;
+            return _pickers.Peek() > number;
+        }
+
+        public void PopPicker()
+        {
+            _pickers.Pop();
         }
 
         public void PushRepeater(Repeater repStats)
