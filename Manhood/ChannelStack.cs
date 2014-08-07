@@ -11,6 +11,8 @@ namespace Manhood
         private readonly Channel _main;
         private readonly int _sizeLimit;
 
+        private int _lastWriteSize, _size;
+
         public ChannelStack(int sizeLimit)
         {
             _sizeLimit = sizeLimit;
@@ -30,6 +32,11 @@ namespace Manhood
         public int SizeLimit
         {
             get { return _sizeLimit; }
+        }
+
+        public int LastWriteSize
+        {
+            get { return _lastWriteSize; }
         }
 
         public string GetOutput(string channelName)
@@ -113,16 +120,14 @@ namespace Manhood
 
         private void CheckSizeLimit()
         {
+            int _lastSize = _size;
+            _size = _channels.Sum(pair => pair.Value.Buffer.Length);
+            _lastWriteSize = _size - _lastSize;
             if (_sizeLimit <= 0) return;
-            if (_channels.Sum(pair => pair.Value.Buffer.Length) > _sizeLimit)
+            if (_size > _sizeLimit)
             {
                 throw new ManhoodException("Exceeded character limit (" + _sizeLimit + " chars)");
             }
-        }
-
-        public int GetAggregateOutputSize()
-        {
-            return _channels.Sum(pair => pair.Value.Buffer.Length);
         }
 
         public ChannelSet GetChannels()

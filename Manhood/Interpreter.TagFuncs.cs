@@ -61,17 +61,22 @@ namespace Manhood
             TagFuncs["to"] = To;
             TagFuncs["past"] = Past;
             TagFuncs["alt"] = Alt;
+            TagFuncs["any"] = Any;
+        }
+
+        private static bool Any(Interpreter interpreter, string[] args)
+        {
+            if (args.Length != 2) return false;
+            interpreter.Do(args[0]);
+            if (interpreter._channels.LastWriteSize > 0) interpreter.Do(args[1]);
+            return true;
         }
 
         private static bool Alt(Interpreter interpreter, string[] args)
         {
             if (args.Length != 2) return false;
-            int prevSize = interpreter._channels.GetAggregateOutputSize();
             interpreter.Do(args[0]);
-            if (interpreter._channels.GetAggregateOutputSize() == prevSize)
-            {
-                interpreter.Do(args[1]);
-            }
+            if (interpreter._channels.LastWriteSize == 0) interpreter.Do(args[1]);
             return true;
         }
 
