@@ -76,6 +76,8 @@ namespace Manhood
                 BlockInfo block;
                 if (scanner.ReadBlock(out block))
                 {
+                    if (block.IsEmpty) continue;
+
                     var attribs = _currentAttribs;
                     _currentAttribs = new BlockAttribs(); // Switch out interpreter attrib set with fresh instance in case of tags inside block
                     if (attribs.Chance < 100)
@@ -85,7 +87,6 @@ namespace Manhood
                             continue;
                         }
                     }
-
 
                     var sync = _state.PopSynchronizer();
                     int reps = attribs.Repetitions < 0 ? block.ElementRanges.Length : attribs.Repetitions;

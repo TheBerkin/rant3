@@ -120,6 +120,11 @@ namespace Manhood
             }
         }
 
+        public int GetAggregateOutputSize()
+        {
+            return _channels.Sum(pair => pair.Value.Buffer.Length);
+        }
+
         public ChannelSet GetChannels()
         {
             return new ChannelSet(_channels);

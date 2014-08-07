@@ -13,6 +13,18 @@
             _ranges = elementRanges;
         }
 
+        public bool IsEmpty
+        {
+            get
+            {
+                if (_ranges.Length == 1)
+                {
+                    return _ranges[0].Length == 0;
+                }
+                return false;
+            }
+        }
+
         public int Start
         {
             get { return _start; }
