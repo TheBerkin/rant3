@@ -67,16 +67,18 @@ namespace Manhood
         private static bool Any(Interpreter interpreter, string[] args)
         {
             if (args.Length != 2) return false;
+            int prevSize = interpreter._channels.Size;
             interpreter.Do(args[0]);
-            if (interpreter._channels.LastWriteSize > 0) interpreter.Do(args[1]);
+            if (interpreter._channels.Size > prevSize) interpreter.Do(args[1]);
             return true;
         }
 
         private static bool Alt(Interpreter interpreter, string[] args)
         {
             if (args.Length != 2) return false;
+            int prevSize = interpreter._channels.Size;
             interpreter.Do(args[0]);
-            if (interpreter._channels.LastWriteSize == 0) interpreter.Do(args[1]);
+            if (interpreter._channels.Size == prevSize) interpreter.Do(args[1]);
             return true;
         }
 

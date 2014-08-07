@@ -39,6 +39,11 @@ namespace Manhood
             get { return _lastWriteSize; }
         }
 
+        public int Size
+        {
+            get { return _size; }
+        }
+
         public string GetOutput(string channelName)
         {
             Channel channel;

@@ -56,7 +56,7 @@ namespace Manhood
                         default:
                             if (c == '/' && balanceSquare == 0 && balanceTri == 0)
                             {
-                                yield return sb.ToString();
+                                yield return sb.ToString().Trim();
                                 sb.Clear();
                                 continue;
                             }
@@ -67,7 +67,7 @@ namespace Manhood
                 sb.Append(c);
             }
 
-            yield return sb.ToString();
+            yield return sb.ToString().Trim();
 
             if (balanceSquare < 0)
             {
