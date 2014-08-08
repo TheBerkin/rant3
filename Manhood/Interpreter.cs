@@ -16,21 +16,21 @@ namespace Manhood
         
         private const string IgnoreChars = "\r\n\t";
 
-        public Interpreter(WordBank wordBank, SubStore subStore, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
+        public Interpreter(ManhoodContext manhood, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
         {
             InitTagFuncs();
-            _wordBank = wordBank;
+            _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
-            _state = new State(subStore, DateTime.UtcNow.Ticks);
+            _state = new State(manhood.Subroutines, manhood.Flags, DateTime.UtcNow.Ticks);
             _stringRequested = _stringRequestCallback;
         }
 
-        public Interpreter(WordBank wordBank, SubStore subStore, long seed, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
+        public Interpreter(ManhoodContext manhood, long seed, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
         {
             InitTagFuncs();
-            _wordBank = wordBank;
+            _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
-            _state = new State(subStore, seed);
+            _state = new State(manhood.Subroutines, manhood.Flags, seed);
             _stringRequested = _stringRequestCallback;
         }
 

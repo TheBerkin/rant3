@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Manhood
@@ -10,6 +11,22 @@ namespace Manhood
     {
         private readonly WordBank _wordBank;
         private readonly SubStore _subStore;
+        private readonly HashSet<string> _flagStore;
+
+        internal HashSet<string> Flags
+        {
+            get { return _flagStore; }
+        }
+
+        internal SubStore Subroutines
+        {
+            get { return _subStore; }
+        }
+
+        internal WordBank WordBank
+        {
+            get { return _wordBank; }
+        }
 
         /// <summary>
         /// Invoked when the interpreter requests a string via the [string] tag.
@@ -22,6 +39,7 @@ namespace Manhood
         public ManhoodContext()
         {
             _subStore = new SubStore();
+            _flagStore = new HashSet<string>();
             _wordBank = new WordBank(Enumerable.Empty<ManhoodDictionary>());
         }
 
@@ -32,6 +50,7 @@ namespace Manhood
         public ManhoodContext(string resourcePath)
         {
             _subStore = new SubStore();
+            _flagStore = new HashSet<string>();
             _wordBank = WordBank.FromDirectory(resourcePath);
         }
 
@@ -44,7 +63,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input, long seed, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, seed, sizeLimit, StringRequested).InterpretToChannels(new Pattern(input));
+            return new Interpreter(this, seed, sizeLimit, StringRequested).InterpretToChannels(new Pattern(input));
         }
 
         /// <summary>
@@ -56,7 +75,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(Pattern input, long seed, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, seed, sizeLimit, StringRequested).InterpretToChannels(input);
+            return new Interpreter(this, seed, sizeLimit, StringRequested).InterpretToChannels(input);
         }
 
         /// <summary>
@@ -67,7 +86,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, sizeLimit, StringRequested).InterpretToChannels(new Pattern(input));
+            return new Interpreter(this, sizeLimit, StringRequested).InterpretToChannels(new Pattern(input));
         }
 
         /// <summary>
@@ -78,7 +97,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(Pattern input, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, sizeLimit, StringRequested).InterpretToChannels(input);
+            return new Interpreter(this, sizeLimit, StringRequested).InterpretToChannels(input);
         }
 
         /// <summary>
@@ -89,7 +108,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet DoFile(string path, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, sizeLimit, StringRequested).InterpretToChannels(new Pattern(File.ReadAllText(path)));
+            return new Interpreter(this, sizeLimit, StringRequested).InterpretToChannels(new Pattern(File.ReadAllText(path)));
         }
 
         /// <summary>
@@ -101,7 +120,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet DoFile(string path, long seed, int sizeLimit = 0)
         {
-            return new Interpreter(_wordBank, _subStore, seed, sizeLimit, StringRequested).InterpretToChannels(new Pattern(File.ReadAllText(path)));
+            return new Interpreter(this, seed, sizeLimit, StringRequested).InterpretToChannels(new Pattern(File.ReadAllText(path)));
         }
     }
 }

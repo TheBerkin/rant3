@@ -27,34 +27,9 @@ namespace Manhood
             throw new ManhoodException(message);
         }
 
-        internal static ManhoodException MissingToken(string token, int index = 0)
+        internal static void CheckArgs(string tagname, string[] args, int expected)
         {
-            return new ManhoodException(String.Concat("Missing '", token, "'"), index);
-        }
-
-        internal static ManhoodException MissingTerminator(string subject, int index = 0)
-        {
-            return new ManhoodException(String.Concat("Missing ", subject, " terminator"), index);
-        }
-
-        internal static ManhoodException UnexpectedToken(string token, int index = 0)
-        {
-            return new ManhoodException(String.Concat("Unexpected token '", token, "'"), index);
-        }
-
-        internal static ManhoodException InvalidExpression(string expression, string expectedFormat, int index = 0)
-        {
-            return new ManhoodException(String.Concat("Invalid expression '", expression, "': Expected ", expectedFormat), index);
-        }
-
-        internal static ManhoodException InvalidDirective(string directive, int index = 0)
-        {
-            return new ManhoodException(String.Concat("Invalid preprocessor directive '", directive, "'"), index);
-        }
-
-        internal static ManhoodException MissingSubtype(string listName, string subtype, int index = 0)
-        {
-            return new ManhoodException(String.Concat("Missing subtype '", subtype, "' in dictionary '", listName, "'"), index);
+            if (args.Length != expected) throw new ManhoodException(String.Concat(tagname.ToUpper(), " takes ", expected == 0 ? "no" : expected.ToString(), expected == 1 ? " argument" : " arguments", ", but was supplied ", args.Length, "."));
         }
     }
 }

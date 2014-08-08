@@ -188,7 +188,7 @@ namespace Manhood
 
             int subtypeIndex = GetSubtypeIndex(query.Subtype);
 
-            if (subtypeIndex == -1) throw ManhoodException.MissingSubtype(Name, query.Subtype);
+            if (subtypeIndex == -1) throw new ManhoodException(String.Concat("Subtype '", query.Subtype, "' doesn't exist in dictionary '", Name, "'"));
             
             IEnumerable<DictionaryEntry> wordPool = _words;
 

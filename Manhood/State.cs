@@ -9,9 +9,10 @@ namespace Manhood
     {
         public Capitalization CurrentFormat = Capitalization.None;
 
-        private readonly Dictionary<string, Synchronizer> _selectors = new Dictionary<string, Synchronizer>();
+        private readonly Dictionary<string, Synchronizer> _selectors;
         private readonly SubStore _subStore;
-        private readonly HashSet<string> _pinQueue = new HashSet<string>(); 
+        private readonly HashSet<string> _flagStore; 
+        private readonly HashSet<string> _pinQueue; 
         private readonly RNG _rng;
         private readonly Stack<SubArgs> _argStack;
         private readonly Stack<Match> _matchStack;
@@ -20,11 +21,14 @@ namespace Manhood
 
         private Synchronizer _activeSelector;
         private int _context;
-        private bool _contextLock;
+        private bool _contextLock, _elseClause;
 
-        public State(SubStore subStore, long seed)
+        public State(SubStore subStore, HashSet<string> flags, long seed)
         {
             _rng = new RNG(seed);
+            _selectors = new Dictionary<string, Synchronizer>();
+            _flagStore = flags;
+            _pinQueue = new HashSet<string>();
             _activeSelector = null;
             _argStack = new Stack<SubArgs>();
             _matchStack = new Stack<Match>();
@@ -33,6 +37,18 @@ namespace Manhood
             _subStore = subStore;
             _context = 0;
             _contextLock = false;
+            _elseClause = false;
+        }
+
+        public bool ElseClause
+        {
+            get { return _elseClause; }
+            set { _elseClause = value; }
+        }
+
+        public HashSet<string> Flags
+        {
+            get { return _flagStore; }
         }
 
         public int Context
