@@ -34,6 +34,7 @@ namespace Manhood
         public void Reset()
         {
             _rng.Reset();
+            if (_state == null) return;
             FillSlots();
         }
 
@@ -75,6 +76,15 @@ namespace Manhood
         public void ScrambleSlots()
         {
             int t, s;
+
+            if (_state.Length == 2) // Handle 2-item scenario
+            {
+                if (_rng.Next(0, 2) != 0) return;
+                t = _state[0];
+                _state[0] = _state[1];
+                _state[1] = t;
+                return;
+            }
 
             for (int i = 0; i < _state.Length; i++)
             {

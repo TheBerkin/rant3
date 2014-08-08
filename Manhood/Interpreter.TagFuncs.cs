@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using E = Manhood.ManhoodException;
+
 namespace Manhood
 {
     internal partial class Interpreter
@@ -21,6 +23,7 @@ namespace Manhood
             TagFuncs["repindex"] = RepIndex;
             TagFuncs["repnum"] = RepNumber;
             TagFuncs["reprem"] = RepRemaining;
+            TagFuncs["repdepth"] = RepDepth;
             TagFuncs["repcount"] = RepCount;
             TagFuncs["first"] = RepFirst;
             TagFuncs["notfirst"] = RepNotFirst;
@@ -62,6 +65,24 @@ namespace Manhood
             TagFuncs["past"] = Past;
             TagFuncs["alt"] = Alt;
             TagFuncs["any"] = Any;
+            TagFuncs["up"] = Up;
+        }
+
+        private static bool RepDepth(Interpreter interpreter, string[] args)
+        {
+            if (args.Length != 0) return false;
+            interpreter.Write(interpreter.State.RepeaterDepth);
+            return true;
+        }
+
+        private static bool Up(Interpreter interpreter, string[] args)
+        {
+            if (args.Length != 1) return false;
+            int level;
+            if (!Int32.TryParse(args[0], out level)) E.Throw(interpreter, "Invalid value passed to UP tag. Must be a non-negative number.");
+            if (level < 0) E.Throw(interpreter, "UP values cannot be negative.");
+            interpreter.State.SetContext(level);
+            return true;
         }
 
         private static bool Any(Interpreter interpreter, string[] args)
@@ -124,10 +145,20 @@ namespace Manhood
             return true;
         }
 
+        private static Repeater GetRepeater(Interpreter i, string type)
+        {
+            int level = i._state.Context;
+            if (level == 0) return i.State.CurrentRepeater;
+            var rep = i.State.GetRepeaterLevel(level);
+            if (rep == null) E.Throw(i, type + " tag context could not locate a repeater with the specified index (" + level + ")");
+            return rep;
+        }
+
         private static bool RepNotMiddle(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (interpreter.State.CurrentRepeater.IsLast || interpreter.State.CurrentRepeater.IsFirst)
+            var rep = GetRepeater(interpreter, "NOTMIDDLE");
+            if (rep.IsLast || rep.IsFirst)
             {
                 interpreter.Do(args[0]);
             }
@@ -137,7 +168,8 @@ namespace Manhood
         private static bool RepMiddle(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (!(interpreter.State.CurrentRepeater.IsLast || interpreter.State.CurrentRepeater.IsFirst))
+            var rep = GetRepeater(interpreter, "MIDDLE");
+            if (!(rep.IsLast || rep.IsFirst))
             {
                 interpreter.Do(args[0]);
             }
@@ -147,7 +179,7 @@ namespace Manhood
         private static bool RepNotLast(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (!interpreter.State.CurrentRepeater.IsLast)
+            if (!GetRepeater(interpreter, "NOTLAST").IsLast)
             {
                 interpreter.Do(args[0]);
             }
@@ -157,7 +189,7 @@ namespace Manhood
         private static bool RepNotFirst(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (!interpreter.State.CurrentRepeater.IsFirst)
+            if (!GetRepeater(interpreter, "NOTFIRST").IsFirst)
             {
                 interpreter.Do(args[0]);
             }
@@ -181,7 +213,8 @@ namespace Manhood
         private static bool RepFirst(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (interpreter.State.CurrentRepeater.IsFirst)
+
+            if (GetRepeater(interpreter, "FIRST").IsFirst)
             {
                 interpreter.Do(args[0]);
             }
@@ -191,7 +224,8 @@ namespace Manhood
         private static bool RepLast(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (interpreter.State.CurrentRepeater.IsLast)
+
+            if (GetRepeater(interpreter, "LAST").IsLast)
             {
                 interpreter.Do(args[0]);
             }
@@ -201,7 +235,8 @@ namespace Manhood
         private static bool RepEven(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (interpreter.State.CurrentRepeater.IsEven)
+
+            if (GetRepeater(interpreter, "EVEN").IsEven)
             {
                 interpreter.Do(args[0]);
             }
@@ -211,7 +246,8 @@ namespace Manhood
         private static bool RepOdd(Interpreter interpreter, string[] args)
         {
             if (args.Length != 1 || interpreter.State.CurrentRepeater == null) return false;
-            if (interpreter.State.CurrentRepeater.IsOdd)
+
+            if (GetRepeater(interpreter, "ODD").IsOdd)
             {
                 interpreter.Do(args[0]);
             }
@@ -221,28 +257,28 @@ namespace Manhood
         private static bool RepRemaining(Interpreter interpreter, string[] args)
         {
             if (args.Length != 0 || interpreter.State.CurrentRepeater == null) return false;
-            interpreter.Write(interpreter.State.CurrentRepeater.Remaining);
+            interpreter.Write(GetRepeater(interpreter, "REPREM").Remaining);
             return true;
         }
 
         private static bool RepCount(Interpreter interpreter, string[] args)
         {
             if (args.Length != 0 || interpreter.State.CurrentRepeater == null) return false;
-            interpreter.Write(interpreter.State.CurrentRepeater.TotalReps);
+            interpreter.Write(GetRepeater(interpreter, "REPCOUNT").TotalReps);
             return true;
         }
 
         private static bool RepNumber(Interpreter interpreter, string[] args)
         {
             if (args.Length != 0 || interpreter.State.CurrentRepeater == null) return false;
-            interpreter.Write(interpreter.State.CurrentRepeater.CurrentRepNumber);
+            interpreter.Write(GetRepeater(interpreter, "REPNUM").CurrentRepNumber);
             return true;
         }
 
         private static bool RepIndex(Interpreter interpreter, string[] args)
         {
             if (args.Length != 0 || interpreter.State.CurrentRepeater == null) return false;
-            interpreter.Write(interpreter.State.CurrentRepeater.CurrentRepIndex);
+            interpreter.Write(GetRepeater(interpreter, "REPINDEX").CurrentRepIndex);
             return true;
         }
 

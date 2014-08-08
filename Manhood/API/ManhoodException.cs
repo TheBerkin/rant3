@@ -22,6 +22,11 @@ namespace Manhood
             get { return _index; }
         }
 
+        internal static void Throw(Interpreter i, string message)
+        {
+            throw new ManhoodException(message);
+        }
+
         internal static ManhoodException MissingToken(string token, int index = 0)
         {
             return new ManhoodException(String.Concat("Missing '", token, "'"), index);

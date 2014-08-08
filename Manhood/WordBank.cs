@@ -18,6 +18,11 @@ namespace Manhood
             }
         }
 
+        public void AddDictionary(ManhoodDictionary dictionary)
+        {
+            _wordLists[dictionary.Name] = dictionary;
+        }
+
         public static WordBank FromDirectory(string directory)
         {
             return new WordBank(Directory.GetFiles(directory, "*.dic").Select(ManhoodDictionary.FromFile).ToList());

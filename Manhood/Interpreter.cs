@@ -76,10 +76,13 @@ namespace Manhood
                 BlockInfo block;
                 if (scanner.ReadBlock(out block))
                 {
-                    if (block.IsEmpty) continue;
+                    var sync = _state.PopSynchronizer();
 
                     var attribs = _currentAttribs;
                     _currentAttribs = new BlockAttribs(); // Switch out interpreter attrib set with fresh instance in case of tags inside block
+                    
+                    if (block.IsEmpty) continue;
+                    
                     if (attribs.Chance < 100)
                     {
                         if (_state.RNG.Next(1, 101) > attribs.Chance)
@@ -88,7 +91,6 @@ namespace Manhood
                         }
                     }
 
-                    var sync = _state.PopSynchronizer();
                     int reps = attribs.Repetitions < 0 ? block.ElementRanges.Length : attribs.Repetitions;
 
                     // Apply repeater
@@ -122,7 +124,12 @@ namespace Manhood
                 TagInfo tag;
                 if (scanner.ReadTag(out tag))
                 {
-                    if (!DoTag(tag)) return;
+                    if (!DoTag(tag))
+                    {
+                        _state.ReleaseContext();
+                        return;
+                    }
+                    _state.ReleaseContext();
                     continue;
                 }
 

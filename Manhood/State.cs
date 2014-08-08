@@ -19,6 +19,8 @@ namespace Manhood
         private readonly Stack<int> _pickers; 
 
         private Synchronizer _activeSelector;
+        private int _context;
+        private bool _contextLock;
 
         public State(SubStore subStore, long seed)
         {
@@ -29,6 +31,30 @@ namespace Manhood
             _repeaters = new Stack<Repeater>();
             _pickers = new Stack<int>();
             _subStore = subStore;
+            _context = 0;
+            _contextLock = false;
+        }
+
+        public int Context
+        {
+            get { return _context; }
+        }
+
+        public void SetContext(int contextLevel)
+        {
+            if (contextLevel < 0) return;
+            _context = contextLevel;
+            _contextLock = true;
+        }
+
+        public void ReleaseContext()
+        {
+            if (_contextLock)
+            {
+                _contextLock = false;
+                return;
+            }
+            _context = 0;
         }
 
         public void PushPicker(int max)
@@ -62,9 +88,19 @@ namespace Manhood
             return _repeaters.Pop();
         }
 
+        public Repeater GetRepeaterLevel(int level)
+        {
+            return _repeaters.ElementAtOrDefault(level);
+        }
+
         public Repeater CurrentRepeater
         {
             get { return _repeaters.Count == 0 ? null : _repeaters.Peek(); }
+        }
+
+        public int RepeaterDepth
+        {
+            get { return _repeaters.Count; }
         }
 
         public void PushArgs(SubArgs args)
@@ -75,6 +111,11 @@ namespace Manhood
         public void PopArgs()
         {
             _argStack.Pop();
+        }
+
+        public SubArgs GetArgsLevel(int level)
+        {
+            return _argStack.ElementAtOrDefault(level);
         }
 
         public SubArgs CurrentArgs
