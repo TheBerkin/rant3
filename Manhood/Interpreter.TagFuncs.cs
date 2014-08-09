@@ -21,7 +21,7 @@ namespace Manhood
             TagFuncs["chance"] = TagFuncs["c"] = Chance;
             TagFuncs["rep"] = TagFuncs["r"] = Rep;
             TagFuncs["repindex"] = TagFuncs["ri"] = RepIndex;
-            TagFuncs["repnum"] = TagFuncs["rn"] = RepNumber;
+            TagFuncs["repnum"] = TagFuncs["rn"] = TagFuncs["#"] = RepNumber;
             TagFuncs["reprem"] = TagFuncs["rr"] = RepRemaining;
             TagFuncs["repdepth"] = TagFuncs["rd"] = RepDepth;
             TagFuncs["repcount"] = TagFuncs["rc"] = RepCount;
@@ -39,6 +39,7 @@ namespace Manhood
             TagFuncs["ub"] = Unbranch;
             TagFuncs["num"] = TagFuncs["n"] = Number;
             TagFuncs["sep"] = TagFuncs["s"] = Separate;
+            TagFuncs["rs"] = RepSep;
             TagFuncs["out"] = OutChannel;
             TagFuncs["return"] = Return;
             TagFuncs["sync"] = Sync;
@@ -684,6 +685,33 @@ namespace Manhood
                     Int32.Parse(match.Groups["min"].Value),
                     Int32.Parse(match.Groups["max"].Value) + 1);
             }
+            return true;
+        }
+
+        private static bool RepSep(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("rs", args, 2);
+            var match = Regex.Match(ii.Evaluate(args[0]), @"((?<min>\d+)\-(?<max>\d+)|(?<const>(\d+|each)))", RegexOptions.ExplicitCapture);
+            if (!match.Success) return false;
+            string num;
+            if ((num = match.Groups["const"].Value).Length > 0)
+            {
+                if (String.Equals(num, "each", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ii._currentAttribs.Repetitions = -1;
+                }
+                else
+                {
+                    ii._currentAttribs.Repetitions = Int32.Parse(num);
+                }
+            }
+            else
+            {
+                ii._currentAttribs.Repetitions = ii.State.RNG.Next(
+                    Int32.Parse(match.Groups["min"].Value),
+                    Int32.Parse(match.Groups["max"].Value) + 1);
+            }
+            ii._currentAttribs.Separator = args[1];
             return true;
         }
 
