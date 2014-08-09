@@ -20,11 +20,11 @@ namespace Manhood
             TagFuncs["caps"] = Caps;
             TagFuncs["chance"] = TagFuncs["c"] = Chance;
             TagFuncs["rep"] = TagFuncs["r"] = Rep;
-            TagFuncs["repindex"] = RepIndex;
-            TagFuncs["repnum"] = RepNumber;
-            TagFuncs["reprem"] = RepRemaining;
-            TagFuncs["repdepth"] = RepDepth;
-            TagFuncs["repcount"] = RepCount;
+            TagFuncs["repindex"] = TagFuncs["ri"] = RepIndex;
+            TagFuncs["repnum"] = TagFuncs["rn"] = RepNumber;
+            TagFuncs["reprem"] = TagFuncs["rr"] = RepRemaining;
+            TagFuncs["repdepth"] = TagFuncs["rd"] = RepDepth;
+            TagFuncs["repcount"] = TagFuncs["rc"] = RepCount;
             TagFuncs["first"] = RepFirst;
             TagFuncs["notfirst"] = RepNotFirst;
             TagFuncs["notlast"] = RepNotLast;
