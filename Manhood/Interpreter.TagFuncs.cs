@@ -18,8 +18,8 @@ namespace Manhood
             _funcsLoaded = true;
 
             TagFuncs["caps"] = Caps;
-            TagFuncs["chance"] = Chance;
-            TagFuncs["rep"] = Rep;
+            TagFuncs["chance"] = TagFuncs["c"] = Chance;
+            TagFuncs["rep"] = TagFuncs["r"] = Rep;
             TagFuncs["repindex"] = RepIndex;
             TagFuncs["repnum"] = RepNumber;
             TagFuncs["reprem"] = RepRemaining;
@@ -37,9 +37,9 @@ namespace Manhood
             TagFuncs["after"] = After;
             TagFuncs["br"] = Branch;
             TagFuncs["ub"] = Unbranch;
-            TagFuncs["num"] = Number;
-            TagFuncs["sep"] = Separate;
-            TagFuncs["ch"] = Chan;
+            TagFuncs["num"] = TagFuncs["n"] = Number;
+            TagFuncs["sep"] = TagFuncs["s"] = Separate;
+            TagFuncs["out"] = OutChannel;
             TagFuncs["return"] = Return;
             TagFuncs["sync"] = Sync;
             TagFuncs["reseed"] = Reseed;
@@ -605,9 +605,9 @@ namespace Manhood
             return false;
         }
 
-        private static bool Chan(Interpreter ii, string[] args)
+        private static bool OutChannel(Interpreter ii, string[] args)
         {
-            E.CheckArgs("ch", args, 2);
+            E.CheckArgs("out", args, 2);
 
             var name = ii.Evaluate(args[0]);
             var vis = ii.Evaluate(args[1]);
