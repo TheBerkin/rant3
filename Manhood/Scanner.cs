@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Manhood
 {
@@ -92,6 +93,29 @@ namespace Manhood
             if (_string.IndexOf(next, _position, StringComparison.Ordinal) != _position) return false;
             _position += next.Length;
             return true;
+        }
+
+        public bool Eat(Regex regex)
+        {
+            var m = regex.Match(_string, _position);
+            if (!m.Success) return false;
+            _position += m.Length;
+            return true;
+        }
+
+        public bool Eat(Regex regex, out string value)
+        {
+            value = "";
+            var m = regex.Match(_string, _position);
+            if (!m.Success) return false;
+            _position += m.Length;
+            value = m.Value;
+            return true;
+        }
+
+        public void EatWhitespace()
+        {
+            while (!EndOfString && "\r\n\t ".Contains((char)Next)) _position++;
         }
 
         public string ReadString(int length)

@@ -12,7 +12,7 @@ namespace Manhood
         public Subroutine(string name, string body, params string[] parameters)
         {
             Name = name;
-            Body = body;
+            Body = new Pattern(body).Code;
             Parameters = parameters.Select(pname => new Parameter(pname)).ToArray();
         }
 
