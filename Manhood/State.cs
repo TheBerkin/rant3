@@ -7,7 +7,7 @@ namespace Manhood
 {
     internal class State
     {
-        public Capitalization CurrentFormat = Capitalization.None;
+        public Capitalization CurrentCapsFormat = Capitalization.None;
 
         private readonly SubStore _subStore;
         private readonly ListStore _listStore;

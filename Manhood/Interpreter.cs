@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Manhood
 {
@@ -12,10 +12,13 @@ namespace Manhood
         private readonly ChannelStack _channels;
         private readonly StringRequestCallback _stringRequested;
 
+        // The current block attributes that will be consumed by the next block.
         private BlockAttribs _currentAttribs = new BlockAttribs();
 
+        // The last string written to the output. This will be a single character if the last input was text.
         private string _lastText = "";
         
+        // These are to be ignored in plaintext found in patterns
         private const string IgnoreChars = "\r\n\t";
 
         public Interpreter(ManhoodContext manhood, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
@@ -72,6 +75,11 @@ namespace Manhood
             return _channels.GetChannels();
         }
 
+        /// <summary>
+        /// Process a pattern into the current output for this instance.
+        /// </summary>
+        /// <param name="input">The input pattern.</param>
+        /// <param name="stripIllegalChars">If true, ignore blacklisted characters in input.</param>
         internal void Do(string input, bool stripIllegalChars = true)
         {
             if (String.IsNullOrEmpty(input)) return;
@@ -81,21 +89,19 @@ namespace Manhood
                 BlockInfo block;
                 if (scanner.ReadBlock(out block))
                 {
+                    // Consume synchronizer. Will be null if none is set. This isn't a problem, as State.SelectBlockItem handles the null case.
                     var sync = _state.PopSynchronizer();
 
+                    // Grab the current block attributes and replace them with defaults.
                     var attribs = _currentAttribs;
-                    _currentAttribs = new BlockAttribs(); // Switch out interpreter attrib set with fresh instance in case of tags inside block
+                    _currentAttribs = new BlockAttribs();
                     
-                    if (block.IsEmpty) continue;
-                    
-                    if (attribs.Chance < 100)
-                    {
-                        if (_state.RNG.Next(1, 101) > attribs.Chance)
-                        {
-                            continue;
-                        }
-                    }
+                    if (block.IsEmpty) continue; // Skip empty blocks
 
+                    // Skip according to [chance] probability
+                    if (attribs.Chance < 100 && _state.RNG.Next(1, 101) > attribs.Chance) continue;
+
+                    // Determine the number of repetitions
                     int reps = attribs.Repetitions < 0 ? block.ElementRanges.Length : attribs.Repetitions;
 
                     // Apply repeater
@@ -108,6 +114,7 @@ namespace Manhood
                             input.Substring(
                                 block.ElementRanges[_state.SelectBlockItem(block.ElementRanges.Length, sync)]);
 
+                        // Interpret the block item and any before/after patterns
                         Do(attribs.BeforeString, stripIllegalChars);
                         Do(element, stripIllegalChars);
                         Do(attribs.AfterString, stripIllegalChars);
@@ -117,11 +124,11 @@ namespace Manhood
 
                         _state.PopRepeater(); // Pop repeater to prevent conflicting usage of [first], [last], etc.
                         Do(attribs.Separator, stripIllegalChars);
-                        _state.PushRepeater(rep);
+                        _state.PushRepeater(rep); // Put the repeater back after separator is handled
 
                     } while (rep.Step());
 
-                    _state.PopRepeater();
+                    _state.PopRepeater(); // Remove repeater from stack
 
                     continue;
                 }
@@ -156,6 +163,10 @@ namespace Manhood
             }
         }
 
+        /// <summary>
+        /// This is used exclusively by list objects for the [lstblock]/[lsb] tag.
+        /// </summary>
+        /// <param name="block">The block items to use.</param>
         public void DoEnumerableAsBlock(IEnumerable<string> block)
         {
             var sync = _state.PopSynchronizer();
@@ -167,13 +178,7 @@ namespace Manhood
 
             if (!blockArray.Any()) return;
 
-            if (attribs.Chance < 100)
-            {
-                if (_state.RNG.Next(1, 101) > attribs.Chance)
-                {
-                    return;
-                }
-            }
+            if (attribs.Chance < 100 && _state.RNG.Next(1, 101) > attribs.Chance) return;
 
             int reps = attribs.Repetitions < 0 ? blockArray.Length : attribs.Repetitions;
 
@@ -204,6 +209,12 @@ namespace Manhood
             get { return _state; }
         }
 
+        /// <summary>
+        /// Creates a new interpreter that shares this instance's state object, evaluates the given pattern, and returns the main output
+        /// </summary>
+        /// <param name="input">The input pattern.</param>
+        /// <param name="stripIllegalChars">If true, ignore blacklisted characters in input.</param>
+        /// <returns></returns>
         public string Evaluate(string input, bool stripIllegalChars = true)
         {
             return new Interpreter(_state, _wordBank, _channels.SizeLimit, _stringRequested).InterpretToString(input, stripIllegalChars);
@@ -213,14 +224,14 @@ namespace Manhood
         {
             var inputString = input.ToString();
 
-            // Caps modifier
-            switch (_state.CurrentFormat)
+            // Handle capitalization via the [caps] tag
+            switch (_state.CurrentCapsFormat)
             {
                 case Capitalization.First:
                     if (inputString.Any(Char.IsLetterOrDigit))
                     {
                         inputString = inputString.Substring(0, 1).ToUpper() + inputString.Substring(1);
-                        _state.CurrentFormat = Capitalization.None;
+                        _state.CurrentCapsFormat = Capitalization.None;
                     }
                     break;
                 case Capitalization.Lower:
@@ -230,9 +241,9 @@ namespace Manhood
                     inputString = inputString.ToUpper();
                     break;
                 case Capitalization.Proper:
-                    if (_lastText.EndsWith(" ") || _lastText.EndsWith("\n") || String.IsNullOrEmpty(_lastText))
+                    if (String.IsNullOrEmpty(_lastText) || " \t\n".Contains(_lastText.Last()))
                     {
-                        inputString = inputString.Substring(0, 1).ToUpper() + inputString.Substring(1);
+                        inputString = Regex.Replace(inputString, @"\b\w", m => m.Value.ToUpper());
                     }
                     break;
             }
@@ -242,7 +253,7 @@ namespace Manhood
 
         public bool DoTag(TagInfo tag)
         {
-            if (tag.Name.StartsWith("$"))
+            if (tag.Name.StartsWith("$")) // Syntactic sugar for the [call] tag.
             {
                 return CallImpl(tag);
             }

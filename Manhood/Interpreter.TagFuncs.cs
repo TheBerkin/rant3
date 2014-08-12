@@ -801,7 +801,7 @@ namespace Manhood
         private static bool Caps(Interpreter ii, string[] args)
         {
             E.CheckArgs("caps", args, 1);
-            return Enum.TryParse(ii.Evaluate(args[0]), true, out ii._state.CurrentFormat);
+            return Enum.TryParse(ii.Evaluate(args[0]), true, out ii._state.CurrentCapsFormat);
         }
 
         private static bool Rep(Interpreter ii, string[] args)

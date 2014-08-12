@@ -12,7 +12,7 @@ namespace Manhood
         public Subroutine(string name, string body, params string[] parameters)
         {
             Name = name;
-            Body = new Pattern(body).Code;
+            Body = new Pattern(body).Code; // This prevents comments/indents from being accidentally parsed as input.
             Parameters = parameters.Select(pname => new Parameter(pname)).ToArray();
         }
 
