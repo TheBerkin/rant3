@@ -9,21 +9,25 @@ namespace Manhood
     {
         public Capitalization CurrentFormat = Capitalization.None;
 
-        private readonly Dictionary<string, Synchronizer> _selectors;
         private readonly SubStore _subStore;
+        private readonly ListStore _listStore;
+        private readonly RNG _rng;
+
+        private readonly Dictionary<string, Synchronizer> _selectors;
+        private Synchronizer _activeSelector;
+
         private readonly HashSet<string> _flagStore; 
         private readonly HashSet<string> _pinQueue; 
-        private readonly RNG _rng;
+        
         private readonly Stack<SubArgs> _argStack;
         private readonly Stack<Match> _matchStack;
         private readonly Stack<Repeater> _repeaters;
         private readonly Stack<int> _pickers; 
-
-        private Synchronizer _activeSelector;
+        
         private int _context;
         private bool _contextLock, _elseClause;
 
-        public State(SubStore subStore, HashSet<string> flags, long seed)
+        public State(SubStore subStore, ListStore listStore, HashSet<string> flags, long seed)
         {
             _rng = new RNG(seed);
             _selectors = new Dictionary<string, Synchronizer>();
@@ -35,6 +39,7 @@ namespace Manhood
             _repeaters = new Stack<Repeater>();
             _pickers = new Stack<int>();
             _subStore = subStore;
+            _listStore = listStore;
             _context = 0;
             _contextLock = false;
             _elseClause = false;
@@ -165,6 +170,11 @@ namespace Manhood
         public SubStore Subroutines
         {
             get { return _subStore; }
+        }
+
+        public ListStore Lists
+        {
+            get { return _listStore; }
         }
 
         public bool SetPinState(string id, bool pinned)

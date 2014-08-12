@@ -11,6 +11,7 @@ namespace Manhood
     {
         private readonly WordBank _wordBank;
         private readonly SubStore _subStore;
+        private readonly ListStore _listStore;
         private readonly HashSet<string> _flagStore;
 
         internal HashSet<string> Flags
@@ -28,6 +29,11 @@ namespace Manhood
             get { return _wordBank; }
         }
 
+        internal ListStore ListStore
+        {
+            get { return _listStore; }
+        }
+
         /// <summary>
         /// Invoked when the interpreter requests a string via the [string] tag.
         /// </summary>
@@ -40,6 +46,7 @@ namespace Manhood
         {
             _subStore = new SubStore();
             _flagStore = new HashSet<string>();
+            _listStore = new ListStore();
             _wordBank = new WordBank(Enumerable.Empty<ManhoodDictionary>());
         }
 
@@ -51,6 +58,7 @@ namespace Manhood
         {
             _subStore = new SubStore();
             _flagStore = new HashSet<string>();
+            _listStore = new ListStore();
             _wordBank = WordBank.FromDirectory(resourcePath);
         }
 

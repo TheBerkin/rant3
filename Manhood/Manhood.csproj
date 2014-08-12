@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\StringRequestCallback.cs" />
+    <Compile Include="Expression.cs" />
+    <Compile Include="ListStore.cs" />
     <Compile Include="QueryFilter.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="API\Channel.cs" />

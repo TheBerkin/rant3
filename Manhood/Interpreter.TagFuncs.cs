@@ -58,6 +58,7 @@ namespace Manhood
             TagFuncs["arg"] = Arg;
             TagFuncs["evalarg"] = EvalArg;
             TagFuncs["replace"] = Replace;
+            TagFuncs["replacei"] = ReplaceCaseInvariant;
             TagFuncs["match"] = Match;
             TagFuncs["cut"] = Cut;
             TagFuncs["string"] = RequestString;
@@ -73,6 +74,131 @@ namespace Manhood
             TagFuncs["ifdef"] = IfFlagDefined;
             TagFuncs["ifndef"] = IfFlagUndefined;
             TagFuncs["else"] = Else;
+
+            TagFuncs["lst"] = CreateList;
+            TagFuncs["lstadd"] = TagFuncs["la"] = ListAdd;
+            TagFuncs["lstaddi"] = TagFuncs["lai"] = ListAddI;
+            TagFuncs["lstclear"] = TagFuncs["lclr"] = ListClear;
+            TagFuncs["lstpop"] = TagFuncs["lp"] = ListPop;
+            TagFuncs["lstpopi"] = TagFuncs["lpi"] = ListPopI;
+            TagFuncs["lstpeek"] = TagFuncs["lpk"] = ListPeek;
+            TagFuncs["lstpeeki"] = TagFuncs["lpki"] = ListPeekI;
+            TagFuncs["lstget"] = TagFuncs["lg"] = ListGet;
+            TagFuncs["lstgeti"] = TagFuncs["lgi"] = ListGetI;
+            TagFuncs["lstremove"] = TagFuncs["lr"] = ListRemove;
+            TagFuncs["lstblock"] = TagFuncs["lb"] = ListBlock;
+            TagFuncs["lstcopy"] = TagFuncs["lcpy"] = ListCopy;
+            TagFuncs["lstcount"] = TagFuncs["lcnt"] = ListCount;
+        }
+
+        private static bool CreateList(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lst", args, 2);
+            ListType type;
+            var ltStr = ii.Evaluate(args[1]);
+            if (!Enum.TryParse(ltStr, true, out type)) E.Throw(ii, "Invalid list type '"+ltStr+"'.");
+            ii.State.Lists.CreateList(ii.Evaluate(args[0]), type);
+            return true;
+        }
+
+        private static bool ListAdd(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstadd", args, 2);
+            ii.State.Lists.AddToList(ii, ii.Evaluate(args[0]), args[1]);
+            return true;
+        }
+
+        private static bool ListAddI(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstadd", args, 2);
+            ii.State.Lists.AddToList(ii, ii.Evaluate(args[0]), ii.Evaluate(args[1]));
+            return true;
+        }
+
+        private static bool ListClear(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstclear", args, 1);
+            ii.State.Lists.ClearList(ii.Evaluate(args[0]));
+            return true;
+        }
+
+        private static bool ListPop(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstpop", args, 1);
+            ii.State.Lists.ReadLastItemFromList(ii, ii.Evaluate(args[0]), false, true);
+            return true;
+        }
+
+        private static bool ListPopI(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstpopi", args, 1);
+            ii.State.Lists.ReadLastItemFromList(ii, ii.Evaluate(args[0]), true, true);
+            return true;
+        }
+
+        private static bool ListPeek(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstpeek", args, 1);
+            ii.State.Lists.ReadLastItemFromList(ii, ii.Evaluate(args[0]), false, false);
+            return true;
+        }
+
+        private static bool ListPeekI(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstpeeki", args, 1);
+            ii.State.Lists.ReadLastItemFromList(ii, ii.Evaluate(args[0]), true, false);
+            return true;
+        }
+
+        private static bool ListGet(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstget", args, 2);
+            int index;
+            if (!Int32.TryParse(ii.Evaluate(args[1]), out index)) E.Throw(ii, "Invalid LSTGET index '"+args[1]+"'. Must be a number.");
+            ii.State.Lists.GetFromList(ii, ii.Evaluate(args[0]), index, false);
+            return true;
+        }
+
+        private static bool ListGetI(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstgeti", args, 2);
+            int index;
+            if (!Int32.TryParse(ii.Evaluate(args[1]), out index)) E.Throw(ii, "Invalid LSTGETI index '" + args[1] + "'. Must be a number.");
+            ii.State.Lists.GetFromList(ii, ii.Evaluate(args[0]), index, true);
+            return true;
+        }
+
+        private static bool ListRemove(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstremove", args, 2);
+            int index;
+            if (!Int32.TryParse(ii.Evaluate(args[1]), out index)) E.Throw(ii, "Invalid LSTREMOVE index '" + args[1] + "'. Must be a number.");
+            ii.State.Lists.RemoveFromList(ii.Evaluate(args[0]), index);
+            return true;
+        }
+
+        private static bool ListBlock(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstblock", args, 1);
+            ii.State.Lists.DoListAsBlock(ii, ii.Evaluate(args[0]));
+            return true;
+        }
+
+        private static bool ListCopy(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstcopy", args, 3);
+            ListCopyType copyType;
+            var lctStr = ii.Evaluate(args[2]);
+            if (!Enum.TryParse(lctStr, true, out copyType)) E.Throw(ii, "Invalid list copy type '"+lctStr+"'.");
+            ii.State.Lists.CopyList(ii.Evaluate(args[0]), ii.Evaluate(args[1]), copyType);
+            return true;
+        }
+
+        private static bool ListCount(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("lstcount", args, 1);
+            ii.State.Lists.GetListItemCount(ii, ii.Evaluate(args[0]));
+            return true;
         }
 
         private static bool Else(Interpreter ii, string[] args)
@@ -423,6 +549,22 @@ namespace Manhood
                 ii.State.PopMatch();
                 return result;
             }, RegexOptions.ExplicitCapture));
+            return true;
+        }
+
+        private static bool ReplaceCaseInvariant(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("replacei", args, 3);
+            var input = ii.Evaluate(args[0]);
+            var regex = args[1].Trim();
+            var replacePat = args[2];
+            ii.Write(Regex.Replace(input, regex, match =>
+            {
+                ii.State.PushMatch(match);
+                var result = ii.Evaluate(replacePat);
+                ii.State.PopMatch();
+                return result;
+            }, RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase));
             return true;
         }
 

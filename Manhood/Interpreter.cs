@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Manhood
@@ -21,7 +23,7 @@ namespace Manhood
             InitTagFuncs();
             _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
-            _state = new State(manhood.Subroutines, manhood.Flags, DateTime.UtcNow.Ticks);
+            _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, DateTime.UtcNow.Ticks);
             _stringRequested = _stringRequestCallback;
         }
 
@@ -30,7 +32,7 @@ namespace Manhood
             InitTagFuncs();
             _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
-            _state = new State(manhood.Subroutines, manhood.Flags, seed);
+            _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, seed);
             _stringRequested = _stringRequestCallback;
         }
 
@@ -52,18 +54,21 @@ namespace Manhood
         public string InterpretToString(Pattern input, bool stripIllegalChars = true)
         {
             Do(input.Code, stripIllegalChars);
+            _state.Lists.DestroyLocals();
             return _channels.GetChannels()["main"].Output;
         }
 
         private string InterpretToString(string input, bool stripIllegalChars = true)
         {
             Do(input, stripIllegalChars);
+            // Do not destroy local lists here -- this overload is never called by the external API.
             return _channels.GetChannels()["main"].Output;
         }
 
         public ChannelSet InterpretToChannels(Pattern input, bool stripIllegalChars = true)
         {
             Do(input.Code, stripIllegalChars);
+            _state.Lists.DestroyLocals();
             return _channels.GetChannels();
         }
 
@@ -151,6 +156,49 @@ namespace Manhood
             }
         }
 
+        public void DoEnumerableAsBlock(IEnumerable<string> block)
+        {
+            var sync = _state.PopSynchronizer();
+
+            var attribs = _currentAttribs;
+            _currentAttribs = new BlockAttribs();
+
+            var blockArray = block as string[] ?? block.ToArray();
+
+            if (!blockArray.Any()) return;
+
+            if (attribs.Chance < 100)
+            {
+                if (_state.RNG.Next(1, 101) > attribs.Chance)
+                {
+                    return;
+                }
+            }
+
+            int reps = attribs.Repetitions < 0 ? blockArray.Length : attribs.Repetitions;
+
+            var rep = new Repeater(reps);
+            _state.PushRepeater(rep);
+
+            do
+            {
+                var element = blockArray[_state.SelectBlockItem(blockArray.Length, sync)];
+
+                Do(attribs.BeforeString);
+                Do(element);
+                Do(attribs.AfterString);
+
+                if (!attribs.Separator.Any() || rep.CurrentRepIndex >= reps - 1) continue;
+
+                _state.PopRepeater();
+                Do(attribs.Separator);
+                _state.PushRepeater(rep);
+
+            } while (rep.Step());
+
+            _state.PopRepeater();
+        }
+
         public State State
         {
             get { return _state; }
@@ -200,7 +248,12 @@ namespace Manhood
             }
 
             Func<Interpreter, string[], bool> func;
-            return TagFuncs.TryGetValue(tag.Name.ToLower(), out func) && func(this, tag.Arguments);
+            if (!TagFuncs.TryGetValue(tag.Name.ToLower(), out func))
+            {
+                throw new ManhoodException("Invalid tag type '"+tag.Name+"'.");
+            }
+                
+            return func(this, tag.Arguments);
         }
 
         internal class BlockAttribs

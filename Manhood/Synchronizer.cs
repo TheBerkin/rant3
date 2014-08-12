@@ -34,6 +34,7 @@ namespace Manhood
         public void Reset()
         {
             _rng.Reset();
+            _index = 0;
             if (_state == null) return;
             FillSlots();
         }
