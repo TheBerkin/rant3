@@ -4,13 +4,13 @@ namespace Manhood
 {
     internal class Synchronizer
     {
-        private SelectorType _type;
+        private SyncType _type;
         private int _index;
         private int[] _state;
         private bool _pinned;
         private readonly RNG _rng;
 
-        public Synchronizer(SelectorType type, long seed)
+        public Synchronizer(SyncType type, long seed)
         {
             _type = type;
             _rng = new RNG(seed);
@@ -25,7 +25,7 @@ namespace Manhood
             set { _pinned = value; }
         }
 
-        public SelectorType Type
+        public SyncType Type
         {
             get { return _type; }
             set { _type = value; }
@@ -57,11 +57,11 @@ namespace Manhood
 
         public int Step(bool force)
         {
-            if (_type == SelectorType.Uniform) return _state[0];
+            if (_type == SyncType.Uniform) return _state[0];
             if (_index >= _state.Length)
             {
                 _index = 0;
-                if (_type == SelectorType.Deck) ScrambleSlots();
+                if (_type == SyncType.Deck) ScrambleSlots();
             }
             if (_pinned && !force) return _state[_index];
             
@@ -71,7 +71,7 @@ namespace Manhood
         public void FillSlots()
         {
             for (int i = 0; i < _state.Length; _state[i] = i++) { }
-            if (Type != SelectorType.Ordered) ScrambleSlots();
+            if (Type != SyncType.Ordered) ScrambleSlots();
         }
 
         public void ScrambleSlots()

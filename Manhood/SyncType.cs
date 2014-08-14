@@ -1,6 +1,6 @@
 ﻿namespace Manhood
 {
-    internal enum SelectorType
+    internal enum SyncType
     {
         Uniform,
         Deck,

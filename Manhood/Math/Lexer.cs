@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Manhood
 {
@@ -84,7 +85,7 @@ namespace Manhood
 
         public static bool IsValueChar(char c)
         {
-            return Char.IsLetterOrDigit(c) || c == '_';
+            return Char.IsLetterOrDigit(c) || "_.".Contains(c);
         }
     }
 }

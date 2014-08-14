@@ -21,8 +21,8 @@ namespace Manhood
             {'d', (rng) => rng == null ? '0' : Convert.ToChar(rng.Next(48, 58))},
             {'c', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(97, 123))},
             {'C', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(65, 91))},
-            {'x', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(97, 103))},
-            {'X', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(65, 71))}
+            {'x', (rng) => rng == null ? '?' : "0123456789abcdef"[rng.Next(16)]},
+            {'X', (rng) => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
         };
 
         private int _position;

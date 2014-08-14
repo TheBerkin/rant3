@@ -11,6 +11,7 @@ namespace Manhood
 
         private readonly SubStore _subStore;
         private readonly ListStore _listStore;
+        private readonly VarStore _varStore;
         private readonly RNG _rng;
 
         private readonly Dictionary<string, Synchronizer> _selectors;
@@ -32,6 +33,7 @@ namespace Manhood
             _rng = new RNG(seed);
             _selectors = new Dictionary<string, Synchronizer>();
             _flagStore = flags;
+            _varStore = new VarStore();
             _pinQueue = new HashSet<string>();
             _activeSelector = null;
             _argStack = new Stack<SubArgs>();
@@ -177,6 +179,11 @@ namespace Manhood
             get { return _listStore; }
         }
 
+        public VarStore Variables
+        {
+            get { return _varStore; }
+        }
+
         public bool SetPinState(string id, bool pinned)
         {
             if (!Util.ValidateName(id)) throw new FormatException("Invalid selector ID '" + id + "'.");
@@ -199,7 +206,7 @@ namespace Manhood
             return true;
         }
 
-        public void Sync(string id, SelectorType type)
+        public void Sync(string id, SyncType type)
         {
             if (!Util.ValidateName(id)) throw new FormatException("Invalid selector ID '" + id + "'.");
             Synchronizer info;

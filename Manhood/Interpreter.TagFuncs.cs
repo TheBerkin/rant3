@@ -773,7 +773,7 @@ namespace Manhood
         private static bool Sync(Interpreter ii, string[] args)
         {
             E.CheckArgs("sync", args, 2);
-            SelectorType type;
+            SyncType type;
             if (!Enum.TryParse(ii.Evaluate(args[1]), true, out type)) return false;
             ii.State.Sync(ii.Evaluate(args[0]), type);
             return true;
