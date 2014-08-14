@@ -189,6 +189,15 @@ namespace Manhood
         }
 
         /// <summary>
+        /// Returns a double-precision floating point number between 0 and 1, and advances the generation by 1.
+        /// </summary>
+        /// <returns></returns>
+        public double NextDouble()
+        {
+            return Math.Abs(BitConverter.Int64BitsToDouble(NextRaw()) / Double.MaxValue);
+        }
+
+        /// <summary>
         /// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>

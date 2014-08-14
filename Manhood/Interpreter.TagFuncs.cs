@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -38,6 +39,7 @@ namespace Manhood
             TagFuncs["br"] = Branch;
             TagFuncs["ub"] = Unbranch;
             TagFuncs["num"] = TagFuncs["n"] = Number;
+            TagFuncs["dnum"] = TagFuncs["d"] = DecimalNum;
             TagFuncs["sep"] = TagFuncs["s"] = Separate;
             TagFuncs["rs"] = RepSep;
             TagFuncs["out"] = OutChannel;
@@ -89,6 +91,41 @@ namespace Manhood
             TagFuncs["lstblock"] = TagFuncs["lb"] = ListBlock;
             TagFuncs["lstcopy"] = TagFuncs["lcpy"] = ListCopy;
             TagFuncs["lstcount"] = TagFuncs["lcnt"] = ListCount;
+
+            TagFuncs["charblock"] = TagFuncs["cb"] = CharBlock;
+        }
+
+        private static bool CharBlock(Interpreter ii, string[] args)
+        {
+            E.CheckArgs("charblock", args, 1);
+            ii.DoEnumerableAsBlock(ii.Evaluate(args[0]).Select(c => c.ToString(CultureInfo.InvariantCulture)));
+            return true;
+        }
+
+        // FIXME: This gives a lot of weird out-of-range values.
+        private static bool DecimalNum(Interpreter ii, string[] args)
+        {
+            switch (args.Length)
+            {
+                case 1:
+                    {
+                        double num;
+                        if (!Double.TryParse(ii.Evaluate(args[0]), out num)) return false;
+                        Console.WriteLine(ii.State.RNG.NextDouble());
+                        ii.Write(ii.State.RNG.NextDouble() * num);
+                        break;
+                    }
+                case 2:
+                    {
+                        double a, b;
+                        if (!Double.TryParse(ii.Evaluate(args[0]), out a) || !Double.TryParse(ii.Evaluate(args[1]), out b)) return false;
+                        ii.Write(ii.State.RNG.NextDouble() * (b - a) + a);
+                        break;
+                    }
+                default:
+                    return false;
+            }
+            return true;
         }
 
         private static bool CreateList(Interpreter ii, string[] args)

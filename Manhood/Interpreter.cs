@@ -83,7 +83,7 @@ namespace Manhood
         internal void Do(string input, bool stripIllegalChars = true)
         {
             if (String.IsNullOrEmpty(input)) return;
-            var scanner = new Scanner(input);
+            var scanner = new Scanner(input, _state.RNG);
             while (!scanner.EndOfString)
             {
                 BlockInfo block;
@@ -164,7 +164,7 @@ namespace Manhood
         }
 
         /// <summary>
-        /// This is used exclusively by list objects for the [lstblock]/[lsb] tag.
+        /// This is used by tags that emulate block behavior, such as [lstblock]
         /// </summary>
         /// <param name="block">The block items to use.</param>
         public void DoEnumerableAsBlock(IEnumerable<string> block)

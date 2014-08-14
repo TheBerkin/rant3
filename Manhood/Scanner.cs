@@ -8,22 +8,28 @@ namespace Manhood
 {
     internal class Scanner
     {
-        private static readonly Dictionary<char, char> _escapeChars = new Dictionary<char, char>
+        private static readonly Dictionary<char, Func<RNG, char>> _escapeChars = new Dictionary<char, Func<RNG, char>>
         {
-            {'n', '\n'},
-            {'r', '\r'},
-            {'t', '\t'},
-            {'b', '\b'},
-            {'f', '\f'},
-            {'v', '\v'},
-            {'0', '\0'},
-            {'s', ' '}
+            {'n', (rng) => '\n'},
+            {'r', (rng) => '\r'},
+            {'t', (rng) => '\t'},
+            {'b', (rng) => '\b'},
+            {'f', (rng) => '\f'},
+            {'v', (rng) => '\v'},
+            {'0', (rng) => '\0'},
+            {'s', (rng) => ' '},
+            {'d', (rng) => rng == null ? '0' : Convert.ToChar(rng.Next(48, 58))},
+            {'c', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(97, 123))},
+            {'C', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(65, 91))},
+            {'x', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(97, 103))},
+            {'X', (rng) => rng == null ? '?' : Convert.ToChar(rng.Next(65, 71))}
         };
 
         private int _position;
         private readonly string _string;
+        private readonly RNG _rng;
 
-        public Scanner(string input)
+        public Scanner(string input, RNG rng = null)
         {
             if (input == null)
             {
@@ -31,6 +37,7 @@ namespace Manhood
             }
             _string = input;
             _position = 0;
+            _rng = rng;
         }
 
         public int Next
@@ -84,8 +91,8 @@ namespace Manhood
                 return (char)Convert.ToInt16(code, 16);
             }
 
-            char escaped;
-            return _escapeChars.TryGetValue(c, out escaped) ? escaped : c;
+            Func<RNG, char> escapeFunc;
+            return _escapeChars.TryGetValue(c, out escapeFunc) ? escapeFunc(_rng) : c;
         }
 
         public bool Eat(string next)

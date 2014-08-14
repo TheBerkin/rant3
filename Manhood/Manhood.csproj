@@ -52,6 +52,12 @@
   <ItemGroup>
     <Compile Include="API\StringRequestCallback.cs" />
     <Compile Include="ListStore.cs" />
+    <Compile Include="Math\Expressions\Expression.cs" />
+    <Compile Include="Math\Expressions\VarExpression.cs" />
+    <Compile Include="Math\Lexer.cs" />
+    <Compile Include="Math\Precedence.cs" />
+    <Compile Include="Math\Token.cs" />
+    <Compile Include="Math\TokenType.cs" />
     <Compile Include="QueryFilter.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="API\Channel.cs" />
@@ -87,9 +93,12 @@
     <Compile Include="Interpreter.TagFuncs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="license.txt">
+    <Content Include="Manhood License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Math\Parselets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
