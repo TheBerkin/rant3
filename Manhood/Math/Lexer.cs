@@ -86,7 +86,6 @@ namespace Manhood
                     foreach (var o in Operators)
                     {
                         if (_string.IndexOf(o.Item1, start, StringComparison.Ordinal) != start) continue;
-                        Console.WriteLine(o.Item1);
                         _pos = start + o.Item1.Length;
                         yield return new Token(o.Item1, o.Item2);
                         found = true;
