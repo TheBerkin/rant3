@@ -1,38 +1,39 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Manhood
 {
-    internal sealed class Lexer
+    internal sealed partial class Lexer : IEnumerable<Token>
     {
+        private static readonly Regex NumberRegex = new Regex(@"-?(\d+(\.\d+)?|\.\d+)");
+        private readonly Interpreter _interpreter;
         private readonly string _string;
         private int _pos;
-
-        private static readonly Dictionary<char, TokenType> puncs = new Dictionary<char, TokenType>();
-
-        static Lexer()
-        {
-            foreach (var value in (TokenType[])Enum.GetValues(typeof(TokenType)))
-            {
-                char c = value.Puntuator();
-                if (c != '\0') puncs[c] = value;
-            }
-        }
-
-        public Lexer(string input)
+        
+        public Lexer(Interpreter ii, string input)
         {
             _pos = 0;
             _string = input;
+            _interpreter = ii;
         }
 
-        public Token Next()
+        public static bool IsValueChar(char c)
+        {
+            return Char.IsLetterOrDigit(c) || "_".Contains(c);
+        }
+
+        public IEnumerator<Token> GetEnumerator()
         {
             while (_pos < _string.Length)
             {
+                int start = _pos;
                 char c = _string[_pos++];
+                Match match = null;
 
+                /*
                 if (c == '[') // Manhood patterns
                 {
                     int start = _pos;
@@ -56,36 +57,55 @@ namespace Manhood
                                 break;
                         }
                     }
-                    return new Token(_string.Substring(start, (_pos - 1) - start), TokenType.Manhood);
-                }
-
-                if (puncs.ContainsKey(c)) // Operator
+                    yield return new Token(_interpreter.Evaluate(_string.Substring(start, (_pos - 1) - start)), TokenType.Name);
+                }*/
+                
+                if ((match = NumberRegex.Match(_string, start)).Success && match.Index == start)
                 {
-                    return new Token(c.ToString(CultureInfo.InvariantCulture), puncs[c]);
+                    yield return new Token(_string.Substring(start, match.Length), TokenType.Number);
+                    _pos = start + match.Length;
                 }
-
-                if (IsValueChar(c)) // Variable / number
+                else if (IsValueChar(c)) // Variable
                 {
-                    int start = _pos - 1;
                     while (_pos < _string.Length)
                     {
-                        if (!IsValueChar(_string[_pos++])) break;
+                        if (IsValueChar(_string[_pos]))
+                        {
+                            _pos++;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    return new Token(_string.Substring(start, _pos - start), TokenType.Value);
+                    yield return new Token(_string.Substring(start, _pos - start), TokenType.Name);
                 }
-
-                if (!Char.IsWhiteSpace(c) && !Char.IsControl(c)) // No strange symbols allowed
+                else if (Punctuation.Contains(c)) // Operator
+                {
+                    bool found = false;
+                    foreach (var o in Operators)
+                    {
+                        if (_string.IndexOf(o.Item1, start, StringComparison.Ordinal) != start) continue;
+                        Console.WriteLine(o.Item1);
+                        _pos = start + o.Item1.Length;
+                        yield return new Token(o.Item1, o.Item2);
+                        found = true;
+                        break;
+                    }
+                    if (!found) throw new ManhoodException("Invalid token '" + c + "' in expression \"" + _string + "\".");
+                }
+                else if (!Char.IsWhiteSpace(c) && !Char.IsControl(c)) // No strange symbols allowed
                 {
                     throw new ManhoodException("Invalid token '" + c + "' in expression \"" + _string + "\".");
                 }
 
             }
-            return new Token("", TokenType.End);
+            yield return new Token("", TokenType.End);
         }
 
-        public static bool IsValueChar(char c)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return Char.IsLetterOrDigit(c) || "_.".Contains(c);
+            return GetEnumerator();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Manhood
+﻿using System;
+
+namespace Manhood
 {
     internal sealed class Token
     {
@@ -9,6 +11,11 @@
         {
             Text = text;
             Type = type;
+        }
+
+        public override string ToString()
+        {
+            return String.Concat(Type, " '", Text, "'");
         }
     }
 }

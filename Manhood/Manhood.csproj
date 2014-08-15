@@ -52,10 +52,23 @@
   <ItemGroup>
     <Compile Include="API\StringRequestCallback.cs" />
     <Compile Include="ListStore.cs" />
-    <Compile Include="Math\Expressions\BinaryOperationExpression.cs" />
+    <Compile Include="Math\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Math\Expressions\Expression.cs" />
-    <Compile Include="Math\Expressions\ValueExpression.cs" />
+    <Compile Include="Math\Expressions\NameExpression.cs" />
+    <Compile Include="Math\Expressions\NumberExpression.cs" />
+    <Compile Include="Math\Expressions\PostfixOperatorExpression.cs" />
+    <Compile Include="Math\Expressions\PrefixOperatorExpression.cs" />
     <Compile Include="Math\Lexer.cs" />
+    <Compile Include="Math\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Math\Parselets\GroupParselet.cs" />
+    <Compile Include="Math\Parselets\IInfixParselet.cs" />
+    <Compile Include="Math\Parselets\IPrefixParselet.cs" />
+    <Compile Include="Math\Parselets\NameParselet.cs" />
+    <Compile Include="Math\Parselets\NumberParselet.cs" />
+    <Compile Include="Math\Parselets\PostfixOperatorParselet.cs" />
+    <Compile Include="Math\Parselets\PrefixOperatorParselet.cs" />
+    <Compile Include="Math\Parser.cs" />
+    <Compile Include="Math\Parser.Static.cs" />
     <Compile Include="Math\Precedence.cs" />
     <Compile Include="Math\Token.cs" />
     <Compile Include="Math\TokenType.cs" />
@@ -99,8 +112,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Math\Parselets\" />
+    <Compile Include="Math\Lexer.Static.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
