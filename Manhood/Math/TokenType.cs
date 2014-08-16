@@ -17,6 +17,7 @@ namespace Manhood
         Increment,
         Decrement,
         Modulo,
+        Swap,
         End
     }
 }

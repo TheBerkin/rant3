@@ -23,7 +23,8 @@ namespace Manhood
 				Tuple.Create("++", TokenType.Increment),
 				Tuple.Create("--", TokenType.Decrement),
 				Tuple.Create("%", TokenType.Modulo),
-				Tuple.Create("=", TokenType.Equals)
+				Tuple.Create("=", TokenType.Equals),
+                Tuple.Create("$=", TokenType.Swap)
 			};
 
             Operators = Operators.OrderByDescending(o => o.Item1.Length).ToList();

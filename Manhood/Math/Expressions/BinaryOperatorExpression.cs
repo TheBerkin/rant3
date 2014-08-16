@@ -18,21 +18,40 @@ namespace Manhood
 
         public override double Evaluate(Interpreter ii)
         {
-            if (_token.Type == TokenType.Equals)
+            switch (_token.Type)
             {
-                var variable = _left as NameExpression;
-                var value = _right.Evaluate(ii);
-                if (variable == null)
-                    throw new ManhoodException("Tried to assign a value to something that wasn't a variable.");
-                ii.State.Variables.SetVar(variable.Name, value);
-                return value;
+                case TokenType.Equals:
+                {
+                    var variable = _left as NameExpression;
+                    var value = _right.Evaluate(ii);
+                    if (variable == null)
+                        throw new ManhoodException("Tried to assign a value to something that wasn't a variable.");
+                    ii.State.Variables.SetVar(variable.Name, value);
+                    return value;
+                }
+                case TokenType.Swap:
+                {
+                    var left = _left as NameExpression;
+                    var right = _right as NameExpression;
+                    if (left == null) throw new ManhoodException("Left side of swap operation was not a variable.");
+                    if (right == null) throw new ManhoodException("Right side of swap operation was not a variable.");
+                    double temp = left.Evaluate(ii);
+                    double b = right.Evaluate(ii);
+                    ii.State.Variables.SetVar(left.Name, b);
+                    ii.State.Variables.SetVar(right.Name, temp);
+                    return b;
+                }
+                default:
+                {
+
+                    Func<double, double, double> func;
+                    if (!Operations.TryGetValue(_token.Type, out func))
+                    {
+                        throw new ManhoodException("Invalid binary operation " + _token);
+                    }
+                    return func(_left.Evaluate(ii), _right.Evaluate(ii));
+                }
             }
-            Func<double, double, double> func;
-            if (!Operations.TryGetValue(_token.Type, out func))
-            {
-                throw new ManhoodException("Invalid binary operation " + _token);
-            }
-            return func(_left.Evaluate(ii), _right.Evaluate(ii));
         }
 
         private static readonly Dictionary<TokenType, Func<double, double, double>> Operations;

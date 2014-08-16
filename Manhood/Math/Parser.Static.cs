@@ -20,7 +20,8 @@ namespace Manhood
                 {TokenType.Caret, new BinaryOperatorParselet((int)Precedence.Exponent, false)},
                 {TokenType.Modulo, new BinaryOperatorParselet((int)Precedence.Product, false)},
                 {TokenType.Increment, new PostfixOperatorParselet((int)Precedence.Postfix)},
-                {TokenType.Decrement, new PostfixOperatorParselet((int)Precedence.Postfix)}
+                {TokenType.Decrement, new PostfixOperatorParselet((int)Precedence.Postfix)},
+                {TokenType.Swap, new BinaryOperatorParselet((int)Precedence.Assignment, false)}
             };
 
             prefixParselets = new Dictionary<TokenType, IPrefixParselet>

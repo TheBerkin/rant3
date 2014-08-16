@@ -94,25 +94,6 @@ namespace Manhood
 
             TagFuncs["charblock"] = TagFuncs["cb"] = CharBlock;
 
-            //TagFuncs["calc"] = Calc;
-            //TagFuncs["math"] = DoMath;
-        }
-
-        private static bool DoMath(Interpreter ii, string[] args)
-        {
-            E.CheckArgs("math", args, 1);
-            foreach (var expr in ii.Evaluate(args[0]).Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries))
-            {
-                Parser.Calculate(ii, expr);
-            }
-            return true;
-        }
-
-        private static bool Calc(Interpreter ii, string[] args)
-        {
-            E.CheckArgs("calc", args, 1);
-            ii.Write(Parser.Calculate(ii, ii.Evaluate(args[0])));
-            return true;
         }
 
         private static bool CharBlock(Interpreter ii, string[] args)
