@@ -11,6 +11,13 @@ namespace Manhood
         private readonly WordBank _wordBank;
         private readonly ChannelStack _channels;
         private readonly StringRequestCallback _stringRequested;
+        private bool _parseMath = true;
+
+        public bool ParseMath
+        {
+            get { return _parseMath; }
+            set { _parseMath = value; }
+        }
 
         // The current block attributes that will be consumed by the next block.
         private BlockAttribs _currentAttribs = new BlockAttribs();
@@ -136,6 +143,16 @@ namespace Manhood
                     continue;
                 }
 
+                if (ParseMath)
+                {
+                    Arithmetic arithmetic;
+                    if (Arithmetic.TryParse(scanner, out arithmetic))
+                    {
+                        arithmetic.Evaluate(this);
+                        continue;
+                    }
+                }
+
                 TagInfo tag;
                 if (scanner.ReadTag(out tag))
                 {
@@ -224,6 +241,12 @@ namespace Manhood
         public string Evaluate(string input, bool stripIllegalChars = true)
         {
             return new Interpreter(_state, _wordBank, _channels.SizeLimit, _stringRequested).InterpretToString(input, stripIllegalChars);
+        }
+
+        internal string EvaluateMathBlock(string input)
+        {
+            var ii = new Interpreter(_state, _wordBank, _channels.SizeLimit, _stringRequested) {ParseMath = false};
+            return ii.InterpretToString(input);
         }
 
         public void Write(object input)

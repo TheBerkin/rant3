@@ -94,8 +94,8 @@ namespace Manhood
 
             TagFuncs["charblock"] = TagFuncs["cb"] = CharBlock;
 
-            TagFuncs["calc"] = Calc;
-            TagFuncs["math"] = DoMath;
+            //TagFuncs["calc"] = Calc;
+            //TagFuncs["math"] = DoMath;
         }
 
         private static bool DoMath(Interpreter ii, string[] args)

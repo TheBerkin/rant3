@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\StringRequestCallback.cs" />
+    <Compile Include="Arithmetic.cs" />
     <Compile Include="ListStore.cs" />
     <Compile Include="Math\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Math\Expressions\Expression.cs" />

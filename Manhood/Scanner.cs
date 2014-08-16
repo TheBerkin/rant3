@@ -95,6 +95,15 @@ namespace Manhood
             return _escapeChars.TryGetValue(c, out escapeFunc) ? escapeFunc(_rng) : c;
         }
 
+        public char ReadRawChar()
+        {
+            if (_position >= _string.Length)
+            {
+                throw new EndOfStreamException("Tried to read past the end of the string.");
+            }
+            return _string[_position++];
+        }
+
         public bool Eat(string next)
         {
             if (_string.IndexOf(next, _position, StringComparison.Ordinal) != _position) return false;

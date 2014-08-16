@@ -21,6 +21,7 @@ namespace Manhood
 
             int balanceSquare = 0;
             int balanceTri = 0;
+            int balanceParen = 0;
 
             var sb = new StringBuilder();
             bool escapeNext = false;
@@ -41,6 +42,12 @@ namespace Manhood
                         case '<':
                             balanceTri--;
                             break;
+                        case '(':
+                            balanceParen--;
+                            break;
+                        case ')':
+                            balanceParen++;
+                            break;
                         case ']':
                             if (++balanceSquare > 0)
                             {
@@ -54,7 +61,7 @@ namespace Manhood
                             }
                             break;
                         default:
-                            if (c == '/' && balanceSquare == 0 && balanceTri == 0)
+                            if (c == '/' && balanceSquare == 0 && balanceTri == 0 && balanceParen == 0)
                             {
                                 yield return sb.ToString().Trim();
                                 sb.Clear();
@@ -77,6 +84,11 @@ namespace Manhood
             if (balanceTri < 0)
             {
                 throw new FormatException("Too many opening triangular brackets.");
+            }
+
+            if (balanceParen < 0)
+            {
+                throw new FormatException("Too many opening parentheses.");
             }
         }
     }

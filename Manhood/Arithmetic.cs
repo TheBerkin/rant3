@@ -1,0 +1,70 @@
+﻿using System;
+using System.Text;
+
+namespace Manhood
+{
+    internal class Arithmetic
+    {
+        private readonly bool _givesOutput;
+        private readonly string _input;
+
+        public Arithmetic(string input, bool givesOutput)
+        {
+            _input = input;
+            _givesOutput = givesOutput;
+        }
+
+        public static bool TryParse(Scanner scanner, out Arithmetic output)
+        {
+            output = null;
+            if (!scanner.Eat("(")) return false;
+            bool givesOutput = !scanner.Eat("@");
+            bool escapeNext = false;
+            int balance = 1;
+            var sb = new StringBuilder();
+            while (balance > 0 && !scanner.EndOfString)
+            {
+                char c = scanner.ReadRawChar();
+                switch (c)
+                {
+                    case '\\':
+                        escapeNext = !escapeNext;
+                        break;
+                    case '(':
+                        if (!escapeNext) balance++;
+                        break;
+
+                    case ')':
+                        if (!escapeNext) balance--;
+                        if (balance == 0)
+                        {
+                            output = new Arithmetic(sb.ToString(), givesOutput);
+                            return true;
+                        }
+                        break;
+                }
+                sb.Append(c);
+            }
+            if (balance > 0)
+            {
+                throw new FormatException("Too many opening parentheses in arithmetic expression.");
+            }
+            return true;
+        }
+
+        public void Evaluate(Interpreter ii)
+        {
+            if (_givesOutput)
+            {
+                ii.Write(Parser.Calculate(ii, ii.Evaluate(_input)));
+            }
+            else
+            {
+                foreach (var expr in ii.Evaluate(_input).Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    Parser.Calculate(ii, expr);
+                }
+            }
+        }
+    }
+}
