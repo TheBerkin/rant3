@@ -9,15 +9,13 @@ namespace Manhood
     internal sealed partial class Lexer : IEnumerable<Token>
     {
         private static readonly Regex NumberRegex = new Regex(@"-?(\d+(\.\d+)?|\.\d+)");
-        private readonly Interpreter _interpreter;
         private readonly string _string;
         private int _pos;
         
-        public Lexer(Interpreter ii, string input)
+        public Lexer(string input)
         {
             _pos = 0;
             _string = input;
-            _interpreter = ii;
         }
 
         public static bool IsValueChar(char c)
@@ -32,33 +30,6 @@ namespace Manhood
                 int start = _pos;
                 char c = _string[_pos++];
                 Match match = null;
-
-                /*
-                if (c == '[') // Manhood patterns
-                {
-                    int start = _pos;
-                    bool escape = false;
-                    int balance = 1;
-                    while (balance > 0 && _pos < _string.Length)
-                    {
-                        switch (_string[_pos++])
-                        {
-                            case '\\':
-                                escape = !escape;
-                                break;
-                            case '[':
-                                if (!escape) balance++;
-                                break;
-                            case ']':
-                                if (!escape) balance--;
-                                break;
-                            default:
-                                escape = false;
-                                break;
-                        }
-                    }
-                    yield return new Token(_interpreter.Evaluate(_string.Substring(start, (_pos - 1) - start)), TokenType.Name);
-                }*/
                 
                 if ((match = NumberRegex.Match(_string, start)).Success && match.Index == start)
                 {

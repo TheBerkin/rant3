@@ -18,7 +18,7 @@ namespace Manhood
 
         public static double Calculate(Interpreter ii, string expression)
         {
-            return new Parser(new Lexer(ii, expression)).ParseExpression().Evaluate(ii);
+            return new Parser(new Lexer(expression)).ParseExpression().Evaluate(ii);
         }
 
         public Expression ParseExpression(int precedence = 0)

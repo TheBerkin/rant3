@@ -104,10 +104,12 @@ namespace Manhood
                     // Determine the number of repetitions
                     int reps = attribs.Repetitions < 0 ? block.ElementRanges.Length : attribs.Repetitions;
 
+                    if (reps == 0) continue; // Skip blocks with zero reps
+
                     // Apply repeater
                     var rep = new Repeater(reps);
-                    _state.PushRepeater(rep);
 
+                    _state.PushRepeater(rep);
                     do
                     {
                         var element =
@@ -128,7 +130,8 @@ namespace Manhood
 
                     } while (rep.Step());
 
-                    _state.PopRepeater(); // Remove repeater from stack
+                    // Remove repeater from stack
+                    _state.PopRepeater();
 
                     continue;
                 }
@@ -182,7 +185,10 @@ namespace Manhood
 
             int reps = attribs.Repetitions < 0 ? blockArray.Length : attribs.Repetitions;
 
+            if (reps == 0) return;
+
             var rep = new Repeater(reps);
+
             _state.PushRepeater(rep);
 
             do
