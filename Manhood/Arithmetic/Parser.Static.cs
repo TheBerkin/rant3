@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Manhood.Parselets;
+using Manhood.Arithmetic.Parselets;
 
-namespace Manhood
+namespace Manhood.Arithmetic
 {
     internal partial class Parser
     {

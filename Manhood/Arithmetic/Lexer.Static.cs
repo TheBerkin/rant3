@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Manhood
+namespace Manhood.Arithmetic
 {
     internal partial class Lexer
     {

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Manhood
@@ -87,16 +88,6 @@ namespace Manhood
                 }
                 return seed;
             }
-        }
-
-        public static Entry ReadEntry(this StreamReader reader)
-        {
-            var line = reader.ReadLine();
-            if (line == null) return null;
-            var match = Regex.Match(line.Trim(), @"^\s*#(?<name>[\w_\-]+)(\s+(?<value>.*)\s*)?", RegexOptions.ExplicitCapture);
-            if (!match.Success) return null;
-            var groups = match.Groups;
-            return new Entry(groups["name"].Value, groups["value"].Value);
         }
     }
 }

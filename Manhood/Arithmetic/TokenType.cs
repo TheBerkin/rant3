@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Manhood
+﻿namespace Manhood.Arithmetic
 {
     internal enum TokenType : int
     {

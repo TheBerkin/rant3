@@ -1,4 +1,4 @@
-﻿namespace Manhood
+﻿namespace Manhood.Arithmetic
 {
     internal enum Precedence : int
     {

@@ -13,13 +13,13 @@ namespace Manhood
 
         public string Subtype { get; set; }
 
-        public List<QueryFilter> Filters { get; private set; }
+        public List<Tuple<string, string>> Filters { get; private set; }
 
-        public Query(string name, string subtype, params QueryFilter[] filters)
+        public Query(string name, string subtype, params Tuple<string, string>[] filters)
         {
             Name = name;
             Subtype = subtype;
-            Filters = new List<QueryFilter>(filters);
+            Filters = new List<Tuple<string, string>>(filters);
         }
 
         public static Query Parse(string input)
@@ -38,7 +38,7 @@ namespace Manhood
             foreach (var pair in parts.Skip(1).Select(arg => arg.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries)))
             {
                 if (pair.Length != 2) return null;
-                query.Filters.Add(new QueryFilter(pair[0], pair[1]));
+                query.Filters.Add(Tuple.Create(pair[0], pair[1]));
             }
 
             return query;

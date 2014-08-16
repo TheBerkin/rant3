@@ -1,4 +1,4 @@
-﻿namespace Manhood
+﻿namespace Manhood.Arithmetic
 {
     internal abstract class Expression
     {

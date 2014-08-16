@@ -11,13 +11,9 @@ namespace Manhood
     internal partial class Interpreter
     {
         private static readonly Dictionary<string, Func<Interpreter, string[], bool>> TagFuncs = new Dictionary<string, Func<Interpreter, string[], bool>>();
-        private static bool _funcsLoaded = false;
 
-        public static void InitTagFuncs()
+        static Interpreter()
         {
-            if (_funcsLoaded) return;
-            _funcsLoaded = true;
-
             TagFuncs["caps"] = Caps;
             TagFuncs["chance"] = TagFuncs["c"] = Chance;
             TagFuncs["rep"] = TagFuncs["r"] = Rep;
@@ -253,6 +249,7 @@ namespace Manhood
             E.CheckArgs("ifndef", args, 2);
             var name = ii.Evaluate(args[0]).Trim().ToLower();
             if (!Util.ValidateName(name)) E.Throw(ii, "Invalid tag name: " + name);
+            // ReSharper disable once CSharpWarnings::CS0665
             if (ii.State.ElseClause = ii.State.Flags.Contains(name))
             {
                 return true;
@@ -266,6 +263,7 @@ namespace Manhood
             E.CheckArgs("ifdef", args, 2);
             var name = ii.Evaluate(args[0]).Trim().ToLower();
             if (!Util.ValidateName(name)) E.Throw(ii, "Invalid tag name: " + name);
+            // ReSharper disable once CSharpWarnings::CS0665
             if (ii.State.ElseClause = !ii.State.Flags.Contains(name))
             {
                 return true;

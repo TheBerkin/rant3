@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Manhood
+namespace Manhood.Arithmetic
 {
     internal sealed partial class Lexer : IEnumerable<Token>
     {

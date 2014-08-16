@@ -51,35 +51,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\StringRequestCallback.cs" />
-    <Compile Include="Arithmetic.cs" />
+    <Compile Include="ArithmeticInfo.cs" />
     <Compile Include="ListStore.cs" />
-    <Compile Include="Math\Expressions\BinaryOperatorExpression.cs" />
-    <Compile Include="Math\Expressions\Expression.cs" />
-    <Compile Include="Math\Expressions\NameExpression.cs" />
-    <Compile Include="Math\Expressions\NumberExpression.cs" />
-    <Compile Include="Math\Expressions\PostfixOperatorExpression.cs" />
-    <Compile Include="Math\Expressions\PrefixOperatorExpression.cs" />
-    <Compile Include="Math\Lexer.cs" />
-    <Compile Include="Math\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Math\Parselets\GroupParselet.cs" />
-    <Compile Include="Math\Parselets\IInfixParselet.cs" />
-    <Compile Include="Math\Parselets\IPrefixParselet.cs" />
-    <Compile Include="Math\Parselets\NameParselet.cs" />
-    <Compile Include="Math\Parselets\NumberParselet.cs" />
-    <Compile Include="Math\Parselets\PostfixOperatorParselet.cs" />
-    <Compile Include="Math\Parselets\PrefixOperatorParselet.cs" />
-    <Compile Include="Math\Parser.cs" />
-    <Compile Include="Math\Parser.Static.cs" />
-    <Compile Include="Math\Precedence.cs" />
-    <Compile Include="Math\Token.cs" />
-    <Compile Include="Math\TokenType.cs" />
-    <Compile Include="QueryFilter.cs" />
+    <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\Expression.cs" />
+    <Compile Include="Arithmetic\Expressions\NameExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\NumberExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PostfixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PrefixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Lexer.cs" />
+    <Compile Include="Arithmetic\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\GroupParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IInfixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IPrefixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NameParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NumberParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PostfixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PrefixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parser.cs" />
+    <Compile Include="Arithmetic\Parser.Static.cs" />
+    <Compile Include="Arithmetic\Precedence.cs" />
+    <Compile Include="Arithmetic\Token.cs" />
+    <Compile Include="Arithmetic\TokenType.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="API\Channel.cs" />
     <Compile Include="API\ChannelSet.cs" />
     <Compile Include="ChannelStack.cs" />
     <Compile Include="ChannelVisibility.cs" />
-    <Compile Include="Entry.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="API\ManhoodContext.cs" />
     <Compile Include="API\Pattern.cs" />
@@ -115,7 +113,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Compile Include="Math\Lexer.Static.cs" />
+    <Compile Include="Arithmetic\Lexer.Static.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

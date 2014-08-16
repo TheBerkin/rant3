@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Manhood.Parselets
+namespace Manhood.Arithmetic.Parselets
 {
     internal class NumberParselet : IPrefixParselet
     {

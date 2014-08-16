@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Manhood
+namespace Manhood.Arithmetic
 {
     internal sealed class Token
     {

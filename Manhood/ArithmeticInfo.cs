@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Text;
+using Manhood.Arithmetic;
 
 namespace Manhood
 {
-    internal class Arithmetic
+    internal class ArithmeticInfo
     {
         private readonly bool _givesOutput;
         private readonly string _input;
 
-        public Arithmetic(string input, bool givesOutput)
+        public ArithmeticInfo(string input, bool givesOutput)
         {
             _input = input;
             _givesOutput = givesOutput;
         }
 
-        public static bool TryParse(Scanner scanner, out Arithmetic output)
+        public static bool TryParse(Scanner scanner, out ArithmeticInfo output)
         {
             output = null;
             if (!scanner.Eat("(")) return false;
@@ -38,7 +39,7 @@ namespace Manhood
                         if (!escapeNext) balance--;
                         if (balance == 0)
                         {
-                            output = new Arithmetic(sb.ToString(), givesOutput);
+                            output = new ArithmeticInfo(sb.ToString(), givesOutput);
                             return true;
                         }
                         break;

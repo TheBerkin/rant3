@@ -1,4 +1,4 @@
-﻿namespace Manhood.Parselets
+﻿namespace Manhood.Arithmetic.Parselets
 {
     internal class PostfixOperatorParselet : IInfixParselet
     {

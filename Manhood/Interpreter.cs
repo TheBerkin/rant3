@@ -30,7 +30,6 @@ namespace Manhood
 
         public Interpreter(ManhoodContext manhood, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
         {
-            InitTagFuncs();
             _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
             _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, DateTime.UtcNow.Ticks);
@@ -39,7 +38,6 @@ namespace Manhood
 
         public Interpreter(ManhoodContext manhood, long seed, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
         {
-            InitTagFuncs();
             _wordBank = manhood.WordBank;
             _channels = new ChannelStack(sizeLimit);
             _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, seed);
@@ -145,8 +143,8 @@ namespace Manhood
 
                 if (ParseMath)
                 {
-                    Arithmetic arithmetic;
-                    if (Arithmetic.TryParse(scanner, out arithmetic))
+                    ArithmeticInfo arithmetic;
+                    if (ArithmeticInfo.TryParse(scanner, out arithmetic))
                     {
                         arithmetic.Evaluate(this);
                         continue;

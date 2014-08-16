@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Manhood
+namespace Manhood.Arithmetic
 {
     internal class BinaryOperatorExpression : Expression
     {
@@ -58,7 +58,7 @@ namespace Manhood
                 {TokenType.Asterisk, (a, b) => a * b},
                 {TokenType.Slash, (a, b) => a / b},
                 {TokenType.Modulo, (a, b) => a % b},
-                {TokenType.Caret, Math.Pow}
+                {TokenType.Caret, System.Math.Pow}
             };
 
             AssignOperations = new Dictionary<TokenType, Func<Interpreter, NameExpression, Expression, double>>
@@ -101,7 +101,7 @@ namespace Manhood
                 }},
                 {TokenType.PowAssign, (ii, a, b) =>
                 {
-                    double d = Math.Pow(a.Evaluate(ii), b.Evaluate(ii));
+                    double d = System.Math.Pow(a.Evaluate(ii), b.Evaluate(ii));
                     ii.State.Variables.SetVar(a.Name, d);
                     return d;
                 }},

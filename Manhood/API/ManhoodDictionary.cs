@@ -39,6 +39,16 @@ namespace Manhood
             GenerateClassIndices();
         }
 
+        private static Tuple<string, string> ReadEntry(StreamReader reader)
+        {
+            var line = reader.ReadLine();
+            if (line == null) return null;
+            var match = Regex.Match(line.Trim(), @"^\s*#(?<name>[\w_\-]+)(\s+(?<value>.*)\s*)?", RegexOptions.ExplicitCapture);
+            if (!match.Success) return null;
+            var groups = match.Groups;
+            return Tuple.Create(groups["name"].Value, groups["value"].Value);
+        }
+
         /// <summary>
         /// Loads a WordList from the file at the specified path.
         /// </summary>
@@ -60,9 +70,9 @@ namespace Manhood
 
                 while (!reader.EndOfStream)
                 {
-                    var entry = reader.ReadEntry();
+                    var entry = ReadEntry(reader);
                     if (entry == null) continue;
-                    switch (entry.Name.ToLower())
+                    switch (entry.Item1.ToLower())
                     {
                         case "name":
                             if (name != null)
@@ -70,7 +80,7 @@ namespace Manhood
                                 throw new InvalidDataException("Multiple #name declarations in dictionary file.");
                             }
 
-                            name = entry.Value;
+                            name = entry.Item2;
                             break;
                         case "subtypes":
                             if (subs != null)
@@ -78,7 +88,7 @@ namespace Manhood
                                 throw new InvalidDataException("Multiple subtype declarations in dictionary file.");
                             }
 
-                            subs = entry.Value.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+                            subs = entry.Item2.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
                             break;
                         case "one":
                             if (subs != null)
@@ -116,7 +126,7 @@ namespace Manhood
                                 throw new InvalidDataException("Entry values defined before any #entry scope.");
                             }
 
-                            currentEntries.AddRange(entry.Value.Split(',').Select(s => s.Trim()));
+                            currentEntries.AddRange(entry.Item2.Split(',').Select(s => s.Trim()));
                             break;
                         case "classes":
                             if (!entryBlock)
@@ -124,7 +134,7 @@ namespace Manhood
                                 throw new InvalidDataException("Entry classes defined before any #entry scope.");
                             }
 
-                            currentClasses.AddRange(entry.Value.Split(',').Select(s => s.Trim().ToLower()));
+                            currentClasses.AddRange(entry.Item2.Split(',').Select(s => s.Trim().ToLower()));
                             break;
                         case "weight":
                             if (!entryBlock)
@@ -132,7 +142,7 @@ namespace Manhood
                                 throw new InvalidDataException("Entry weight defined before any #entry scope.");
                             }
                             int weight;
-                            if (!Int32.TryParse(entry.Value.Trim(), out weight))
+                            if (!Int32.TryParse(entry.Item2.Trim(), out weight))
                             {
                                 weight = 1;
                             }
@@ -194,13 +204,15 @@ namespace Manhood
 
             foreach (var filter in query.Filters)
             {
-                if (String.IsNullOrEmpty(filter.Name)) continue;
+                var name = filter.Item1.ToLower().Trim();
 
-                var value = filter.Name.EndsWith("-pat")
-                    ? interpreter.Evaluate(filter.Value)
-                    : filter.Value;
+                if (String.IsNullOrEmpty(name)) continue;
 
-                switch (new String(filter.Name.TakeWhile(c => c != '-').ToArray()))
+                var value = name.EndsWith("-pat")
+                    ? interpreter.Evaluate(filter.Item2)
+                    : filter.Item2;
+
+                switch (new String(name.TakeWhile(c => c != '-').ToArray()))
                 {
                     case "in":
                     {
@@ -209,7 +221,7 @@ namespace Manhood
                     }
                     case "onlyin":
                     {
-                        wordPool = wordPool.Where(w => w.Classes.Contains(value) && w.Classes.Count == 1);
+                        wordPool = wordPool.Where(w => w.Classes.Count > 0 && !w.Classes.Except(value.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)).Any());
                         continue;
                     }
                     case "notin":
