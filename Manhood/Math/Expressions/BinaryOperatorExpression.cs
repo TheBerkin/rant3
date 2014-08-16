@@ -18,47 +18,40 @@ namespace Manhood
 
         public override double Evaluate(Interpreter ii)
         {
-            switch (_token.Type)
+            if (_token.Type == TokenType.Swap)
             {
-                case TokenType.Equals:
-                {
-                    var variable = _left as NameExpression;
-                    var value = _right.Evaluate(ii);
-                    if (variable == null)
-                        throw new ManhoodException("Tried to assign a value to something that wasn't a variable.");
-                    ii.State.Variables.SetVar(variable.Name, value);
-                    return value;
-                }
-                case TokenType.Swap:
-                {
-                    var left = _left as NameExpression;
-                    var right = _right as NameExpression;
-                    if (left == null) throw new ManhoodException("Left side of swap operation was not a variable.");
-                    if (right == null) throw new ManhoodException("Right side of swap operation was not a variable.");
-                    double temp = left.Evaluate(ii);
-                    double b = right.Evaluate(ii);
-                    ii.State.Variables.SetVar(left.Name, b);
-                    ii.State.Variables.SetVar(right.Name, temp);
-                    return b;
-                }
-                default:
-                {
-
-                    Func<double, double, double> func;
-                    if (!Operations.TryGetValue(_token.Type, out func))
-                    {
-                        throw new ManhoodException("Invalid binary operation " + _token);
-                    }
-                    return func(_left.Evaluate(ii), _right.Evaluate(ii));
-                }
+                var left = _left as NameExpression;
+                var right = _right as NameExpression;
+                if (left == null) throw new ManhoodException("Left side of swap operation was not a variable.");
+                if (right == null) throw new ManhoodException("Right side of swap operation was not a variable.");
+                double temp = left.Evaluate(ii);
+                double b = right.Evaluate(ii);
+                ii.State.Variables.SetVar(left.Name, b);
+                ii.State.Variables.SetVar(right.Name, temp);
+                return b;
             }
+            Func<Interpreter, NameExpression, Expression, double> assignFunc;
+            if (AssignOperations.TryGetValue(_token.Type, out assignFunc))
+            {
+                var left = _left as NameExpression;
+                if (left == null) throw new ManhoodException("Left side of assignment was not a variable.");
+                return assignFunc(ii, left, _right);
+            }
+
+            Func<double, double, double> func;
+            if (!Operations.TryGetValue(_token.Type, out func))
+            {
+                throw new ManhoodException("Invalid binary operation '" + _token + "'.");
+            }
+            return func(_left.Evaluate(ii), _right.Evaluate(ii));
         }
 
         private static readonly Dictionary<TokenType, Func<double, double, double>> Operations;
+        private static readonly Dictionary<TokenType, Func<Interpreter, NameExpression, Expression, double>> AssignOperations; 
 
         static BinaryOperatorExpression()
         {
-            Operations = new Dictionary<TokenType, Func<double, double, double>>()
+            Operations = new Dictionary<TokenType, Func<double, double, double>>
             {
                 {TokenType.Plus, (a, b) => a + b},
                 {TokenType.Minus, (a, b) => a - b},
@@ -66,6 +59,52 @@ namespace Manhood
                 {TokenType.Slash, (a, b) => a / b},
                 {TokenType.Modulo, (a, b) => a % b},
                 {TokenType.Caret, Math.Pow}
+            };
+
+            AssignOperations = new Dictionary<TokenType, Func<Interpreter, NameExpression, Expression, double>>
+            {
+                {TokenType.Equals, (ii, a, b) =>
+                {
+                    double d = b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.AddAssign, (ii, a, b) =>
+                {
+                    double d = a.Evaluate(ii) + b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.SubAssign, (ii, a, b) =>
+                {
+                    double d = a.Evaluate(ii) - b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.DivAssign, (ii, a, b) =>
+                {
+                    double d = a.Evaluate(ii) / b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.MulAssign, (ii, a, b) =>
+                {
+                    double d = a.Evaluate(ii) * b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.ModAssign, (ii, a, b) =>
+                {
+                    double d = a.Evaluate(ii) % b.Evaluate(ii);
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
+                {TokenType.PowAssign, (ii, a, b) =>
+                {
+                    double d = Math.Pow(a.Evaluate(ii), b.Evaluate(ii));
+                    ii.State.Variables.SetVar(a.Name, d);
+                    return d;
+                }},
             };
         }
     }

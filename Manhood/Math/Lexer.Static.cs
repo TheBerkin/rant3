@@ -24,7 +24,13 @@ namespace Manhood
 				Tuple.Create("--", TokenType.Decrement),
 				Tuple.Create("%", TokenType.Modulo),
 				Tuple.Create("=", TokenType.Equals),
-                Tuple.Create("$=", TokenType.Swap)
+                Tuple.Create("$=", TokenType.Swap),
+                Tuple.Create("+=", TokenType.AddAssign),
+                Tuple.Create("-=", TokenType.SubAssign),
+                Tuple.Create("*=", TokenType.MulAssign),
+                Tuple.Create("/=", TokenType.DivAssign),
+                Tuple.Create("%=", TokenType.ModAssign),
+                Tuple.Create("^=", TokenType.PowAssign),
 			};
 
             Operators = Operators.OrderByDescending(o => o.Item1.Length).ToList();

@@ -18,6 +18,12 @@ namespace Manhood
         Decrement,
         Modulo,
         Swap,
+        AddAssign,
+        SubAssign,
+        MulAssign,
+        DivAssign,
+        ModAssign,
+        PowAssign,
         End
     }
 }
