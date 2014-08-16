@@ -26,24 +26,28 @@ namespace Manhood
             while (balance > 0 && !scanner.EndOfString)
             {
                 char c = scanner.ReadRawChar();
-                switch (c)
+                if (!escapeNext)
                 {
-                    case '\\':
-                        escapeNext = !escapeNext;
-                        break;
-                    case '(':
-                        if (!escapeNext) balance++;
-                        break;
-
-                    case ')':
-                        if (!escapeNext) balance--;
-                        if (balance == 0)
-                        {
-                            output = new ArithmeticInfo(sb.ToString(), givesOutput);
-                            return true;
-                        }
-                        break;
+                    switch (c)
+                    {
+                        case '\\':
+                            escapeNext = true;
+                            sb.Append(c);
+                            continue;
+                        case '(':
+                            balance++;
+                            break;
+                        case ')':
+                            balance--;
+                            if (balance == 0)
+                            {
+                                output = new ArithmeticInfo(sb.ToString(), givesOutput);
+                                return true;
+                            }
+                            break;
+                    }
                 }
+                escapeNext = false;
                 sb.Append(c);
             }
             if (balance > 0)
