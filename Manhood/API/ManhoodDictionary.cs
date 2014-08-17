@@ -53,8 +53,9 @@ namespace Manhood
         /// Loads a WordList from the file at the specified path.
         /// </summary>
         /// <param name="path">The path to the file to load.</param>
+        /// <param name="nsfwFilter">Specifies whether to allow or disallow NSFW entries.</param>
         /// <returns></returns>
-        public static ManhoodDictionary FromFile(string path)
+        public static ManhoodDictionary FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             using (var reader = new StreamReader(path))
             {
@@ -67,6 +68,8 @@ namespace Manhood
                 var currentEntries = new List<string>();
                 var currentClasses = new List<string>();
                 var currentWeight = 1;
+                bool nsfw = false;
+                bool endNsfw = false;
 
                 while (!reader.EndOfStream)
                 {
@@ -74,6 +77,12 @@ namespace Manhood
                     if (entry == null) continue;
                     switch (entry.Item1.ToLower())
                     {
+                        case "nsfw":
+                            nsfw = true;
+                            break;
+                        case "endnsfw":
+                            endNsfw = true;
+                            break;
                         case "name":
                             if (name != null)
                             {
@@ -106,13 +115,23 @@ namespace Manhood
 
                             if (currentEntries.Count > 0)
                             {
-                                words.Add(new DictionaryEntry(currentEntries.ToArray(), currentClasses.ToArray(), currentWeight));
+                                if ((nsfwFilter == NsfwFilter.Disallow && !nsfw) || nsfwFilter == NsfwFilter.Allow)
+                                {
+                                    words.Add(new DictionaryEntry(currentEntries.ToArray(), currentClasses.ToArray(),
+                                        currentWeight));
 
+                                }
                                 any = true;
                             }
                             else if (any)
                             {
                                 throw new InvalidDataException("Attempted to add empty dictionary entry.");
+                            }
+
+                            if (endNsfw)
+                            {
+                                nsfw = false;
+                                endNsfw = false;
                             }
 
                             currentEntries = new List<string>();

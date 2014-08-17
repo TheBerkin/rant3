@@ -23,9 +23,9 @@ namespace Manhood
             _wordLists[dictionary.Name] = dictionary;
         }
 
-        public static WordBank FromDirectory(string directory)
+        public static WordBank FromDirectory(string directory, NsfwFilter filter)
         {
-            return new WordBank(Directory.GetFiles(directory, "*.dic").Select(ManhoodDictionary.FromFile).ToList());
+            return new WordBank(Directory.GetFiles(directory, "*.dic").Select(file => ManhoodDictionary.FromFile(file, filter)).ToList());
         }
 
         internal string GetWord(Interpreter interpreter, Query wordCall)

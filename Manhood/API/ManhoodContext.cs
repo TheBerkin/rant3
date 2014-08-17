@@ -54,12 +54,13 @@ namespace Manhood
         /// Creates a new Manhood context and loads dictionaries from the specified directory.
         /// </summary>
         /// <param name="resourcePath">The directory from which to load dictionaries.</param>
-        public ManhoodContext(string resourcePath)
+        /// <param name="nsfwFilter">Specifies whether to allow or disallow NSFW dictionary entries.</param>
+        public ManhoodContext(string resourcePath, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             _subStore = new SubStore();
             _flagStore = new HashSet<string>();
             _listStore = new ListStore();
-            _wordBank = WordBank.FromDirectory(resourcePath);
+            _wordBank = WordBank.FromDirectory(resourcePath, nsfwFilter);
         }
 
         /// <summary>

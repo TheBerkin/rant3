@@ -1,50 +1,65 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Manhood;
 
 namespace MHC
 {
     class Program
     {
+        static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
+        private static readonly HashSet<string> Flags = new HashSet<string>();
+
+        private static string GetArg(string name)
+        {
+            string arg;
+            if (!Arguments.TryGetValue(name.ToLower(), out arg))
+            {
+                arg = "";
+            }
+            return arg;
+        }
+
         static void Main(string[] args)
         {
+            foreach (var argKeyVal in args.Where(arg => arg.StartsWith("-")).Select(arg => arg.TrimStart('-').Split(new[] {'='}, 2)))
+            {
+                if (argKeyVal.Length == 2)
+                {
+                    Arguments[argKeyVal[0].ToLower().Trim()] = argKeyVal[1];
+                }
+                else
+                {
+                    Flags.Add(argKeyVal[0]);
+                }
+            }
+
             Console.Title = "Manhood";
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            if (args.Length < 1)
-            {
-                Console.WriteLine("No file specified!");
-                Console.ReadKey();
-                return;
-            }
-
-            if (!File.Exists(args[0]))
-            {
-                Console.WriteLine("File not found!");
-                Console.ReadKey();
-                return;
-            }
-
-            var mh = Directory.Exists("dictionary")
-                ? new ManhoodContext("dictionary")
-                : new ManhoodContext();
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Generating...");
-            Console.ResetColor();
+            string file = GetArg("file");
+            string dicpath = GetArg("dictionary");
+            bool nsfw = Flags.Contains("nsfw");
 
             try
             {
+                var mh = new ManhoodContext(dicpath, nsfw ? NsfwFilter.Allow : NsfwFilter.Disallow);
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Generating...\n");
+                Console.ResetColor();
+
                 var watch = new Stopwatch();
                 watch.Start();
-                var output = mh.Do(File.ReadAllText(args[0]));
+                var output = mh.DoFile(file);
                 watch.Stop();
                 foreach (var channel in output)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write(channel.Name);
-                    Console.Write(" = ");
+                    Console.Write(" : ");
                     Console.ResetColor();
                     Console.WriteLine(channel.Output);
                 }

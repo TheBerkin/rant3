@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\NsfwFilter.cs" />
     <Compile Include="API\StringRequestCallback.cs" />
     <Compile Include="ArithmeticInfo.cs" />
     <Compile Include="ListStore.cs" />
