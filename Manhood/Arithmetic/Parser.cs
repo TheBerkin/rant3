@@ -32,6 +32,8 @@ namespace Manhood.Arithmetic
             }
 
             var left = prefixParselet.Parse(this, token);
+            // Break when the next token's precedence is less than or equal to the current precedence
+            // This will assure that higher precedence operations like multiplication are parsed before lower operations.
             while (GetPrecedence() > precedence)
             {
                 token = Take();
@@ -41,12 +43,17 @@ namespace Manhood.Arithmetic
                     throw new ManhoodException("Invalid operator '" + token.Text + "'.");
                 }
 
+                // Replace the left expression with the next parsed expression.
                 left = infix.Parse(this, left, token);
             }
 
             return left;
         }
 
+        /// <summary>
+        /// Returns the precedence of the next infix operator, or 0 if there is none.
+        /// </summary>
+        /// <returns></returns>
         private int GetPrecedence()
         {
             IInfixParselet infix;

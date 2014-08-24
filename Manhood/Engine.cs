@@ -1,6 +1,6 @@
 ﻿namespace Manhood
 {
-    internal class Interpreter
+    public class Engine
     {
          
     }

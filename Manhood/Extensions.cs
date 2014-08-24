@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text.RegularExpressions;
-
-namespace Manhood
+﻿namespace Manhood
 {
     internal static class Extensions
     {
@@ -69,11 +65,6 @@ namespace Manhood
         public static ulong RotR(this ulong data, int times)
         {
             return (data >> (times % 64)) | (data << (64 - (times % 64)));
-        }
-
-        public static string Substring(this string input, Range range)
-        {
-            return input.Substring(range.Start, range.Length);
         }
 
         public static long Hash(this string input)

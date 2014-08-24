@@ -53,6 +53,7 @@
     <Compile Include="API\NsfwFilter.cs" />
     <Compile Include="API\StringRequestCallback.cs" />
     <Compile Include="ArithmeticInfo.cs" />
+    <Compile Include="Chare.cs" />
     <Compile Include="ListStore.cs" />
     <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Arithmetic\Expressions\Expression.cs" />
@@ -86,7 +87,9 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="BlockInfo.cs" />
     <Compile Include="API\ManhoodException.cs" />
+    <Compile Include="NativeTag.cs" />
     <Compile Include="Repeater.cs" />
+    <Compile Include="Stringe.cs" />
     <Compile Include="SubStore.cs" />
     <Compile Include="Synchronizer.cs" />
     <Compile Include="SyncType.cs" />
