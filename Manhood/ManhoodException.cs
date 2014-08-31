@@ -3,7 +3,6 @@
 using Manhood.Compiler;
 
 using Stringes;
-using Stringes.Tokens;
 
 namespace Manhood
 {
@@ -37,7 +36,7 @@ namespace Manhood
         /// </summary>
         public Source SourceCode { get { return _source; } }
 
-        internal ManhoodException(Source source, Stringe token, string message = "A generic syntax error was encountered.") : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") ") : "") + message)
+        internal ManhoodException(Source source, Stringe token, string message = "A generic syntax error was encountered.") : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
         {
             _source = source;
             if (token != null)

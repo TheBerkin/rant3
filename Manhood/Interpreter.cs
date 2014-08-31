@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Manhood.Compiler;
 
@@ -46,7 +47,7 @@ namespace Manhood
             _stateStack = new Stack<State>(1);
             _stateCount = 0;
             _resultStack = new Stack<ChannelSet>(1);
-            _mainState = State.CreateBase(input, this);
+            _mainState = State.Create(input, this);
             _prevState = null;
         }
 
@@ -55,6 +56,13 @@ namespace Manhood
             _stateStack.Peek().Output.Write(input.ToString());
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string PopResult()
+        {
+            return !_resultStack.Any() ? "" : _resultStack.Pop().MainOutput;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PushState(State state)
         {
             if (_stateCount >= MaxStackSize)
@@ -71,6 +79,7 @@ namespace Manhood
             get { return _prevState; }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public State PopState()
         {
             _stateCount--;
@@ -125,7 +134,7 @@ namespace Manhood
                     // Error on illegal closure
                     if (BracketPairs.All.ContainsClosing(token.Identifier))
                     {
-                        throw new ManhoodException(_mainSource, token, "Unexpected token '" + Lexer.Rules.GetSymbolForId(token.Identifier) + "'");
+                        throw new ManhoodException(reader.Source, token, "Unexpected token '" + Lexer.Rules.GetSymbolForId(token.Identifier) + "'");
                     }
 
                     // DoElement will return true if the interpreter should skip to the top of the stack

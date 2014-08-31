@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using Stringes.Tokens;
@@ -62,7 +63,7 @@ namespace Manhood.Compiler
         }
 
         /// <summary>
-        /// Creates a source from the specified string.
+        /// Compiles a Source object from the specified string.
         /// </summary>
         /// <param name="code">The code to compile.</param>
         /// <returns></returns>
@@ -72,7 +73,7 @@ namespace Manhood.Compiler
         }
 
         /// <summary>
-        /// Creates a source from a string with the specified name.
+        /// Compiles a Source object from a string with the specified name.
         /// </summary>
         /// <param name="name">The name to give the source.</param>
         /// <param name="code">The code to compile.</param>
@@ -80,6 +81,16 @@ namespace Manhood.Compiler
         public static Source FromString(string name, string code)
         {
             return new Source(name, SourceType.String, code);
+        }
+
+        /// <summary>
+        /// Loads the file located at the specified path and creates a Source object from its contents.
+        /// </summary>
+        /// <param name="path">The path to the file to load.</param>
+        /// <returns></returns>
+        public static Source FromFile(string path)
+        {
+            return new Source(Path.GetFileName(path), SourceType.File, File.ReadAllText(path));
         }
 
         /// <summary>

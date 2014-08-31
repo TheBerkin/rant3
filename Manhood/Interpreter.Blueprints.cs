@@ -14,16 +14,16 @@ namespace Manhood
 		/// Represents an outline for an action that is queued by a state object and executed immediately before parsing any tokens in the state.
 		/// </summary>
         internal abstract class Blueprint
-		{
-		    protected readonly Interpreter I;
+        {
+            protected readonly Interpreter I;
 
-		    protected Blueprint(Interpreter interpreter)
-		    {
-		        I = interpreter;
-		    }
+            protected Blueprint(Interpreter interpreter)
+            {
+	            I = interpreter;
+            }
 
-		    public abstract void Use();
-		}
+            public abstract bool Use();
+        }
 
         internal sealed class TagBlueprint : Blueprint
         {
@@ -38,7 +38,7 @@ namespace Manhood
                 ParameterCount = paramCount;
             }
 
-            public override void Use()
+            public override bool Use()
             {
                 var args = new string[ParameterCount];
                 for (int i = 0; i < ParameterCount; i++)
@@ -54,6 +54,8 @@ namespace Manhood
                 }
 
                 func.Invoke(I, Source, Name, args);
+
+                return false;
             }
         }
 
@@ -71,12 +73,13 @@ namespace Manhood
             // TODO: Add support for synchronizers
             // TODO: Consider storing repeaters in a public stack to allow access to [first], [last], etc.
             // TODO: Move item list to Repeater class along with the BlockAttribs it was created from
-            public override void Use()
+            public override bool Use()
             {
-                if (_repeater.Finished) return;
+                if (_repeater.Finished) return false;
                 _repeater.Next();
                 I.CurrentState.AddBlueprint(this);
-                I.PushState(State.CreateDistinct(I.CurrentState.Reader.Source, _items[I._rng.Next(_items.Length)], I, I.CurrentState.Output));
+                I.PushState(State.CreateDerivedDistinct(I.CurrentState.Reader.Source, _items[I._rng.Next(_items.Length)], I, I.CurrentState.Output));
+                return true;
             }
         }
 
@@ -86,9 +89,12 @@ namespace Manhood
             {
             }
 
-            public override void Use()
+            public override bool Use()
             {
-                throw new NotImplementedException();
+                var srcstr = I.PopResult();
+                var src = new Source("Meta_" + String.Format("{0:X16}", srcstr.Hash()), SourceType.Metapattern, srcstr);
+                I.PushState(State.Create(src, I));
+                return true;
             }
         }
     }

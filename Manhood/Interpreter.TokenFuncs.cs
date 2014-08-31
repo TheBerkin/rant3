@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Manhood.Compiler;
 
@@ -30,6 +31,7 @@ namespace Manhood
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool DoElement(Token<TokenType> token, SourceReader reader, State state)
         {
             Func<Interpreter, SourceReader, State, bool> func;
@@ -43,6 +45,15 @@ namespace Manhood
         {
             reader.Take(TokenType.LeftSquare);
             var name = reader.ReadToken();
+
+            // Check if metapattern
+            if (name.Identifier == TokenType.Question)
+            {
+                state.AddBlueprint(new MetapatternBlueprint(interpreter));
+                interpreter.PushState(State.CreateDerivedDistinct(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
+                return true;
+            }
+
             if (!Util.ValidateName(name.Value))
                 throw new ManhoodException(reader.Source, name, "Invalid tag name '" + name.Value + "'");
             bool none = false;
@@ -64,7 +75,7 @@ namespace Manhood
 
                 foreach (var item in items)
                 {
-                    interpreter.PushState(State.CreateDistinct(reader.Source, item, interpreter));
+                    interpreter.PushState(State.CreateDerivedDistinct(reader.Source, item, interpreter));
                 }
 
                 state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name, items.Length));

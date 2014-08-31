@@ -53,22 +53,42 @@ namespace Manhood
                 if (_blueprint == null) return false;
                 var bp = _blueprint;
                 _blueprint = null;
-                bp.Use();
-                return _blueprint != null;
+                return bp.Use() || _blueprint != null;
             }
 
-            public static State CreateBase(Source source, Interpreter interpreter)
+            /// <summary>
+            /// Creates a state object that reads tokens from the specified source.
+            /// </summary>
+            /// <param name="source">The source from which to read tokens.</param>
+            /// <param name="interpreter">The interpreter that will read the tokens.</param>
+            /// <returns></returns>
+            public static State Create(Source source, Interpreter interpreter)
             {
                 return new State(interpreter, source, interpreter._output);
             }
 
-            public static State CreateShared(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
+            /// <summary>
+            /// Creates a state object that reads tokens from a custom collection that is associated with the specified source. Associates with the main output.
+            /// </summary>
+            /// <param name="derivedSource">The source with which to associate the tokens.</param>
+            /// <param name="tokens">The tokens to read.</param>
+            /// <param name="interpreter">The interpreter that will read the tokens.</param>
+            /// <returns></returns>
+            public static State CreateDerivedShared(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter)
             {
                 return new State(interpreter, derivedSource, tokens, interpreter._output);
             }
 
-            public static State CreateDistinct(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
+            /// <summary>
+            /// Creates a state object that reads tokens from a custom collection that is associated with the specified source. Specifying an output that is distinct from the one below it in the stack will cause the output to be pushed to the result stack when finished.
+            /// </summary>
+            /// <param name="derivedSource">The source with which to associate the tokens.</param>
+            /// <param name="tokens">The tokens to read.</param>
+            /// <param name="interpreter">The interpreter that will read the tokens.</param>
+            /// <param name="output">The output of the state. Excluding this will create a new output.</param>
+            /// <returns></returns>
+            public static State CreateDerivedDistinct(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(0));
