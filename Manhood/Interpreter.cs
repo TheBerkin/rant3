@@ -33,6 +33,7 @@ namespace Manhood
         public BlockAttribs PendingBlockAttribs
         {
             get { return _blockAttribs; }
+            set { _blockAttribs = value; }
         }
 
         public Interpreter(Engine engine, Source input, RNG rng)
@@ -99,8 +100,9 @@ namespace Manhood
 
             // ReSharper disable TooWideLocalVariableScope
 
-            State state = null; // The current state object being used
-            SourceReader reader = null; // The current source reader being used
+            State state;                // The current state object being used
+            SourceReader reader;        // The current source reader being used
+            Token<TokenType> token;     // The next token in the stream
 
             // ReSharper restore TooWideLocalVariableScope
 
@@ -108,18 +110,16 @@ namespace Manhood
             while (Busy)
             {
                 // Because blueprints can sometimes queue more blueprints, loop until the topmost state does not have one.
-                while (true)
+                do
                 {
                     state = CurrentState;
-                    reader = state.Reader;
-
-                    if (!state.UseBlueprint()) break;
-                }
-
-                Token<TokenType> token;
+                } while (state.UseBlueprint());
+                
+                reader = state.Reader;
 
                 while (!reader.End)
                 {
+                    // Fetch the next token in the stream without consuming it
                     token = reader.PeekToken();
 
                     // Error on illegal closure
@@ -127,70 +127,11 @@ namespace Manhood
                     {
                         throw new ManhoodException(_mainSource, token, "Unexpected token '" + Lexer.Rules.GetSymbolForId(token.Identifier) + "'");
                     }
-                    
-                    switch (token.Identifier)
+
+                    // DoElement will return true if the interpreter should skip to the top of the stack
+                    if (DoElement(token, reader, state))
                     {
-                        case TokenType.LeftCurly:
-                        {
-                            var items = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
-                            var attribs = PendingBlockAttribs;
-                            _blockAttribs = new BlockAttribs();
-
-                            if (!items.Any()) continue;
-
-                            state.AddBlueprint(
-                                new RepeaterBlueprint(this,
-                                    new Repeater(attribs.Repetitons == Repeater.Each ? items.Length : attribs.Repetitons),
-                                    items));
-
-                            goto next;
-                        }
-                        case TokenType.LeftSquare:
-                        {
-                            reader.ReadToken();
-                            var name = reader.ReadToken();
-                            if (!Util.ValidateName(name.Value))
-                                throw new ManhoodException(reader.Source, name, "Invalid tag name '" + name.Value + "'");
-                            bool none = false;
-                            if (!reader.Take(TokenType.Colon))
-                            {
-                                if (!reader.Take(TokenType.RightSquare))
-                                    throw new ManhoodException(reader.Source, name, "Expected ':' or ']' after tag name.");
-                                none = true;
-                            }
-
-                            if (none)
-                            {
-                                state.AddBlueprint(new TagBlueprint(this, reader.Source, name, 0));
-                            }
-                            else
-                            {
-                                var items = reader.ReadItemsToScopeClose(TokenType.LeftSquare, TokenType.RightSquare,
-                                    TokenType.Semicolon, BracketPairs.All).ToArray();
-
-                                foreach(var item in items)
-                                {
-                                    PushState(State.CreateDistinct(reader.Source, item, this));
-                                }
-
-                                state.AddBlueprint(new TagBlueprint(this, reader.Source, name, items.Length));
-                            }
-
-                            goto next;
-                        }
-                        case TokenType.EscapeSequence:
-                        {
-                            state.Output.Write(Util.Unescape(reader.ReadToken().Value, _rng));
-                            break;
-                        }
-                        case TokenType.ConstantLiteral:
-                        {
-                            state.Output.Write(Util.UnescapeConstantLiteral(reader.ReadToken().Value));
-                            break;
-                        }
-                        default:
-                            state.Output.Write(reader.ReadToken().Value);
-                        break;
+                        goto next;
                     }
                 }
 

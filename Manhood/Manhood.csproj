@@ -60,6 +60,7 @@
     <Compile Include="Interpreter.BlockAttribs.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Interpreter.TagFuncs.cs" />
+    <Compile Include="Interpreter.TokenFuncs.cs" />
     <Compile Include="ManhoodException.cs" />
     <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
