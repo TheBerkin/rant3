@@ -1,8 +1,10 @@
-﻿namespace Manhood.Arithmetic.Parselets
+﻿using Stringes.Tokens;
+
+namespace Manhood.Arithmetic.Parselets
 {
     internal class NameParselet : IPrefixParselet
     {
-        public Expression Parse(Parser parser, Token token)
+        public Expression Parse(Parser parser, Token<TokenType> token)
         {
             return new NameExpression(token);
         }

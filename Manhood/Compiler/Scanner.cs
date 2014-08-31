@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace Manhood
+namespace Manhood.Compiler
 {
     internal class Scanner
     {
@@ -37,7 +37,6 @@ namespace Manhood
         public int Position
         {
             get { return _position; }
-            set { _position = value; }
         }
 
         public int Remaining
@@ -46,15 +45,6 @@ namespace Manhood
         }
 
         public char ReadChar()
-        {
-            if (_position >= _string.Length)
-            {
-                throw new EndOfStreamException("Tried to read past the end of the string.");
-            }
-            return _string[_position++];
-        }
-
-        public char ReadRawChar()
         {
             if (_position >= _string.Length)
             {

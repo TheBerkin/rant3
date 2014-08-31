@@ -1,5 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+
+using Manhood.Compiler;
+
+using Stringes.Tokens;
 
 namespace Manhood
 {
@@ -22,10 +30,51 @@ namespace Manhood
             {'X', (rng) => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
         };
 
-        public static char Escape(char code, RNG rng = null)
+        public static string UnescapeConstantLiteral(string literal)
+        {
+            if (String.IsNullOrEmpty(literal)) return literal;
+            if (literal.StartsWith("\"")) literal = literal.Substring(1);
+            if (literal.EndsWith("\"")) literal = literal.Substring(0, literal.Length - 1);
+            return Regex.Replace(literal, @"""""", @"""");
+        }
+
+        public static string Unescape(string sequence, RNG rng = null)
         {
             Func<RNG, char> func;
-            return !_escapeChars.TryGetValue(code, out func) ? code : func(rng);
+            var match = Lexer.EscapeRegex.Match(sequence);
+            var count = Int32.Parse(Alt(match.Groups["count"].Value, "1"));
+            bool unicode = match.Groups["unicode"].Success;
+            var code = Alt(match.Groups["code"].Value, match.Groups["unicode"].Value);
+            var sb = new StringBuilder();
+            if (unicode)
+            {
+                for(int i = 0; i < count; i++)
+                    sb.Append((char)Convert.ToUInt16(code, 16), count);
+            }
+            else
+            {
+                if (_escapeChars.TryGetValue(code[0], out func))
+                {
+                    for (int i = 0; i < count; i++)
+                        sb.Append(func(rng));
+                }
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                        sb.Append(code[0]);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public static bool ValidateName(string input)
+        {
+            return input.All(c => Char.IsLetterOrDigit(c) || c == '_');
+        }
+
+        public static string Alt(string input, string alternate)
+        {
+            return String.IsNullOrEmpty(input) ? alternate : input;
         }
     }
 }

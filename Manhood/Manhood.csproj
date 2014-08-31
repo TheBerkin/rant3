@@ -41,6 +41,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Stringes">
+      <HintPath>..\packages\Stringes.1.1.3\lib\Stringes.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,65 +53,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\NsfwFilter.cs" />
-    <Compile Include="API\StringRequestCallback.cs" />
-    <Compile Include="ArithmeticInfo.cs" />
-    <Compile Include="Chare.cs" />
-    <Compile Include="ListStore.cs" />
-    <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
-    <Compile Include="Arithmetic\Expressions\Expression.cs" />
-    <Compile Include="Arithmetic\Expressions\NameExpression.cs" />
-    <Compile Include="Arithmetic\Expressions\NumberExpression.cs" />
-    <Compile Include="Arithmetic\Expressions\PostfixOperatorExpression.cs" />
-    <Compile Include="Arithmetic\Expressions\PrefixOperatorExpression.cs" />
-    <Compile Include="Arithmetic\Lexer.cs" />
-    <Compile Include="Arithmetic\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\GroupParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\IInfixParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\IPrefixParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\NameParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\NumberParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\PostfixOperatorParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\PrefixOperatorParselet.cs" />
-    <Compile Include="Arithmetic\Parser.cs" />
-    <Compile Include="Arithmetic\Parser.Static.cs" />
-    <Compile Include="Arithmetic\Precedence.cs" />
-    <Compile Include="Arithmetic\Token.cs" />
-    <Compile Include="Arithmetic\TokenType.cs" />
+    <Compile Include="Compiler\BracketPairs.cs" />
+    <Compile Include="Compiler\Lexer.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="Engine.Vocab.cs" />
+    <Compile Include="Interpreter.BlockAttribs.cs" />
+    <Compile Include="Interpreter.cs" />
+    <Compile Include="Interpreter.TagFuncs.cs" />
+    <Compile Include="ManhoodException.cs" />
+    <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
-    <Compile Include="API\Channel.cs" />
-    <Compile Include="API\ChannelSet.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelSet.cs" />
     <Compile Include="ChannelStack.cs" />
     <Compile Include="ChannelVisibility.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="API\ManhoodContext.cs" />
-    <Compile Include="API\Pattern.cs" />
-    <Compile Include="API\RNG.cs" />
-    <Compile Include="Interpreter.cs" />
-    <Compile Include="BlockInfo.cs" />
-    <Compile Include="API\ManhoodException.cs" />
-    <Compile Include="NativeTag.cs" />
-    <Compile Include="Repeater.cs" />
-    <Compile Include="Stringe.cs" />
-    <Compile Include="SubStore.cs" />
-    <Compile Include="Synchronizer.cs" />
-    <Compile Include="SyncType.cs" />
-    <Compile Include="State.cs" />
-    <Compile Include="SubArgs.cs" />
-    <Compile Include="Subroutine.cs" />
-    <Compile Include="TagInfo.cs" />
-    <Compile Include="Range.cs" />
-    <Compile Include="Scanner.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="API\DictionaryEntry.cs" />
-    <Compile Include="VarStore.cs" />
-    <Compile Include="WordBank.cs" />
     <Compile Include="Query.cs" />
-    <Compile Include="API\ManhoodDictionary.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Interpreter.TagFuncs.cs" />
+    <Compile Include="Repeater.cs" />
+    <Compile Include="RNG.cs" />
+    <Compile Include="Compiler\Scanner.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DictionaryEntry.cs" />
+    <Compile Include="Compiler\TokenType.cs" />
+    <Compile Include="Compiler\Source.cs" />
+    <Compile Include="Compiler\SourceType.cs" />
+    <Compile Include="SourceReader.cs" />
+    <Compile Include="Interpreter.State.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="VarStore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vocabulary.cs" />
+    <Compile Include="Dictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Manhood License.txt">
@@ -117,7 +93,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Compile Include="Arithmetic\Lexer.Static.cs" />
+    <Compile Include="Interpreter.Blueprints.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

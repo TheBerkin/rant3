@@ -1,4 +1,6 @@
-﻿namespace Manhood.Arithmetic.Parselets
+﻿using Stringes.Tokens;
+
+namespace Manhood.Arithmetic.Parselets
 {
     internal class BinaryOperatorParselet : IInfixParselet
     {
@@ -16,7 +18,7 @@
             get { return _precedence; }
         }
 
-        public Expression Parse(Parser parser, Expression left, Token token)
+        public Expression Parse(Parser parser, Expression left, Token<TokenType> token)
         {
             var right = parser.ParseExpression(Precedence - (_right ? 1 : 0));
             return new BinaryOperatorExpression(left, right, token);

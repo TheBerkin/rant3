@@ -1,5 +1,10 @@
 ﻿using System;
 
+using Manhood.Compiler;
+
+using Stringes;
+using Stringes.Tokens;
+
 namespace Manhood
 {
     /// <summary>
@@ -32,12 +37,20 @@ namespace Manhood
         /// </summary>
         public Source SourceCode { get { return _source; } }
 
-        internal ManhoodException(Source source, Token token, string message = "A generic syntax error was encountered.") : base(message)
+        internal ManhoodException(Source source, Stringe token, string message = "A generic syntax error was encountered.") : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") ") : "") + message)
         {
             _source = source;
-            _line = token.Line;
-            _col = token.Column;
-            _index = token.Index;
+            if (token != null)
+            {
+                _line = token.Line;
+                _col = token.Column;
+                _index = token.Offset;
+            }
+            else
+            {
+                _line = _col = 1;
+                _index = 0;
+            }
         }
     }
 }

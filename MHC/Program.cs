@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Manhood;
 
@@ -39,42 +38,27 @@ namespace MHC
             Console.Title = "Manhood";
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string file = GetArg("file");
-            string dicpath = GetArg("dictionary");
-            bool nsfw = Flags.Contains("nsfw");
+            var mh = new Engine();
 
-            try
+            while (true)
             {
-                var mh = new ManhoodContext(dicpath, nsfw ? NsfwFilter.Allow : NsfwFilter.Disallow);
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Generating...\n");
-                Console.ResetColor();
-
-                var watch = new Stopwatch();
-                watch.Start();
-                var output = mh.DoFile(file);
-                watch.Stop();
-                foreach (var channel in output)
+                Console.Write("manhood> ");
+                var input = Console.ReadLine();
+#if DEBUG
+                Console.WriteLine(mh.Do(input).MainOutput);
+#else
+                try
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(channel.Name);
-                    Console.Write(" : ");
-                    Console.ResetColor();
-                    Console.WriteLine(channel.Output);
+                    Console.WriteLine(mh.Do(input).MainOutput);
                 }
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\nGenerated in {0}", watch.Elapsed);
-                Console.ResetColor();
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(e.Message);
+                    Console.ResetColor();
+                }
+#endif
             }
-            catch (Exception e)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Holy shit! An error!");
-                Console.WriteLine(e.ToString());
-            }
-            
-            Console.ReadKey();
         }
     }
 }

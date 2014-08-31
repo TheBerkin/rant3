@@ -52,11 +52,7 @@ namespace Manhood
 
         public void PushChannel(string channelName, ChannelVisibility visibility)
         {
-            if (!Util.ValidateName(channelName))
-            {
-                throw new FormatException("Invalid channel name.");
-            }
-
+            
             Channel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
@@ -78,11 +74,6 @@ namespace Manhood
         public void PopChannel(string channelName)
         {
             if (channelName == "main") return;
-
-            if (!Util.ValidateName(channelName))
-            {
-                throw new FormatException("Invalid channel name.");
-            }
 
             Channel ch;
             if (_channels.TryGetValue(channelName, out ch))
@@ -131,7 +122,7 @@ namespace Manhood
             if (_sizeLimit <= 0) return;
             if (_size > _sizeLimit)
             {
-                throw new ManhoodException("Exceeded character limit (" + _sizeLimit + " chars)");
+                throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit + " chars)");
             }
         }
 

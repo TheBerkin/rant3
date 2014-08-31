@@ -9,7 +9,7 @@ namespace Manhood
     /// <summary>
     /// Stores a Manhood dictionary.
     /// </summary>
-    public sealed class ManhoodDictionary
+    public sealed class Dictionary
     {
         private readonly string _name;
         private readonly string[] _subtypes;
@@ -22,7 +22,7 @@ namespace Manhood
         /// <param name="name">the name of the list.</param>
         /// <param name="subtypes">The subtype names.</param>
         /// <param name="words">The words to add to the list.</param>
-        public ManhoodDictionary(string name, string[] subtypes, DictionaryEntry[] words)
+        public Dictionary(string name, string[] subtypes, DictionaryEntry[] words)
         {
             if (!Util.ValidateName(name))
             {
@@ -55,7 +55,7 @@ namespace Manhood
         /// <param name="path">The path to the file to load.</param>
         /// <param name="nsfwFilter">Specifies whether to allow or disallow NSFW entries.</param>
         /// <returns></returns>
-        public static ManhoodDictionary FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
+        public static Dictionary FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             using (var reader = new StreamReader(path))
             {
@@ -189,7 +189,7 @@ namespace Manhood
                     throw new InvalidDataException("No entries in dictionary.");
                 }
 
-                return new ManhoodDictionary(name, subs, words.ToArray());
+                return new Dictionary(name, subs, words.ToArray());
             }
         }
 
@@ -213,79 +213,7 @@ namespace Manhood
 
         internal string GetWord(Interpreter interpreter, Query query)
         {
-            const string NotFound = "(NOT FOUND)";
-
-            int subtypeIndex = GetSubtypeIndex(query.Subtype);
-
-            if (subtypeIndex == -1) throw new ManhoodException(String.Concat("Subtype '", query.Subtype, "' doesn't exist in dictionary '", Name, "'"));
-            
-            IEnumerable<DictionaryEntry> wordPool = _words;
-
-            foreach (var filter in query.Filters)
-            {
-                var name = filter.Item1.ToLower().Trim();
-
-                if (String.IsNullOrEmpty(name)) continue;
-
-                var value = name.EndsWith("-pat")
-                    ? interpreter.Evaluate(filter.Item2)
-                    : filter.Item2;
-
-                switch (new String(name.TakeWhile(c => c != '-').ToArray()))
-                {
-                    case "in":
-                    {
-                        wordPool = wordPool.Where(w => w.Classes.Contains(value));
-                        continue;
-                    }
-                    case "onlyin":
-                    {
-                        wordPool = wordPool.Where(w => w.Classes.Count > 0 && !w.Classes.Except(value.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)).Any());
-                        continue;
-                    }
-                    case "notin":
-                    {
-                        wordPool = wordPool.Where(w => !w.Classes.Contains(value));
-                        continue;
-                    }
-                    case "for":
-                    {
-                        var hash = value.Hash();
-                        return wordPool.Any()
-                            ? wordPool.ElementAt(interpreter.State.RNG.PeekAt(hash, wordPool.Count()))
-                                .Values[subtypeIndex]
-                            : NotFound;
-                    }
-                    case "with":
-                    {
-                        var regex = new Regex(value, RegexOptions.IgnoreCase);
-                        wordPool = wordPool.Where(w => regex.IsMatch(w.Values[subtypeIndex]));
-                        continue;
-                    }
-                    case "without":
-                    {
-                        var regex = new Regex(value, RegexOptions.IgnoreCase);
-                        wordPool = wordPool.Where(w => !regex.IsMatch(w.Values[subtypeIndex]));
-                        continue;
-                    }
-                }
-                
-            }
-
-            if (!wordPool.Any()) return NotFound;
-
-            int selection = interpreter.State.RNG.Next(wordPool.Sum(w => w.Weight));
-
-            foreach (var word in wordPool)
-            {
-                if (selection < word.Weight)
-                {
-                    return word.Values[subtypeIndex];
-                }
-                selection -= word.Weight;
-            }
-
-            return NotFound;
+            return "NOT_IMPLEMENTED";
         }
 
         private List<DictionaryEntry> GetClassIndexList(string className)

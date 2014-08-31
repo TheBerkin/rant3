@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Manhood
 {
@@ -73,6 +74,7 @@ namespace Manhood
         /// <param name="s">The seed.</param>
         /// <param name="g">The generation.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetRaw(long s, long g)
         {
             unchecked

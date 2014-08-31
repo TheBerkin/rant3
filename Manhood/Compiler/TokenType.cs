@@ -52,14 +52,14 @@
         /// Used by: Queries (opening)
         /// </para>
         /// </summary>
-        LeftTriangle,
+        LeftAngle,
         /// <summary>
         /// &gt;
         /// <para>
         /// Used by: Queries (closure)
         /// </para>
         /// </summary>
-        RightTriangle,
+        RightAngle,
         /// <summary>
         /// (
         /// <para>
@@ -145,12 +145,12 @@
         /// </summary>
         Hyphen,
         /// <summary>
-        /// .
+        /// ,
         /// <para>
         /// Used by: Queries (subtype prefix)
         /// </para>
         /// </summary>
-        Dot,
+        Comma,
         /// <summary>
         /// ?!
         /// <para>
@@ -158,6 +158,22 @@
         /// </para>
         /// </summary>
         Without,
+        /// <summary>
+        /// Javascript-style regular expression.
+        /// <para>
+        /// Used by: Queries (blacklist/whitelist)
+        /// </para>
+        /// </summary>
+        Regex,
+        /// <summary>
+        /// ``
+        /// </summary>
+        Comment,
+        /// <summary>
+        /// " ... "
+        /// Used by: Tags
+        /// </summary>
+        ConstantLiteral,
         /// <summary>
         /// End of file.
         /// </summary>
