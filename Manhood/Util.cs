@@ -48,7 +48,6 @@ namespace Manhood
             var sb = new StringBuilder();
             if (unicode)
             {
-                for(int i = 0; i < count; i++)
                     sb.Append((char)Convert.ToUInt16(code, 16), count);
             }
             else

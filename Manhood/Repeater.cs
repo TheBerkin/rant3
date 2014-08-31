@@ -2,6 +2,8 @@
 {
     internal class Repeater
     {
+        public const int Each = -1;
+
         private int _index;
         private readonly int _count;
 

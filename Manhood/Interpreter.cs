@@ -49,9 +49,9 @@ namespace Manhood
             _prevState = null;
         }
 
-        public void Print(string input)
+        public void Print(object input)
         {
-            _stateStack.Peek().Output.Write(input);
+            _stateStack.Peek().Output.Write(input.ToString());
         }
 
         public void PushState(State state)
@@ -88,16 +88,26 @@ namespace Manhood
             get { return _stateCount > 0; }
         }
 
+        public RNG RNG
+        {
+            get { return _rng; }
+        }
+
         public ChannelSet Run()
         {
             PushState(_mainState);
 
+            // ReSharper disable TooWideLocalVariableScope
+
             State state = null; // The current state object being used
             SourceReader reader = null; // The current source reader being used
+
+            // ReSharper restore TooWideLocalVariableScope
 
             next:
             while (Busy)
             {
+                // Because blueprints can sometimes queue more blueprints, loop until the topmost state does not have one.
                 while (true)
                 {
                     state = CurrentState;
@@ -128,7 +138,10 @@ namespace Manhood
 
                             if (!items.Any()) continue;
 
-                            state.AddBlueprint(new RepeaterBlueprint(this, new Repeater(attribs.Repetitons), items));
+                            state.AddBlueprint(
+                                new RepeaterBlueprint(this,
+                                    new Repeater(attribs.Repetitons == Repeater.Each ? items.Length : attribs.Repetitons),
+                                    items));
 
                             goto next;
                         }
@@ -164,11 +177,6 @@ namespace Manhood
                             }
 
                             goto next;
-                        }
-                        case TokenType.Text:
-                        {
-                            state.Output.Write(reader.ReadToken().Value);
-                            break;
                         }
                         case TokenType.EscapeSequence:
                         {

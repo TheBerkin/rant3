@@ -13,23 +13,41 @@ namespace Manhood
 
         static Interpreter()
         {
-            TagFuncs = new Dictionary<string, TagFunc>
-            {
-                {"rep", new TagFunc(1, (interpreter, source, tagName, args) =>
-                {
-                    int num;
-                    if (!Int32.TryParse(args[0], out num))
-                    {
-                        throw new ManhoodException(source, tagName, "Invalid repetition value '" + args[0] + "' - must be a number.");
-                    }
-                    if (num < 0)
-                    {
-                        throw new ManhoodException(source, tagName, "Repetition value cannot be negative.");
-                    }
+            TagFuncs = new Dictionary<string, TagFunc>();
 
-                    interpreter.PendingBlockAttribs.Repetitons = num;
-                })}
-            };
+            TagFuncs["rep"] = TagFuncs["r"] = new TagFunc(1, Repeat);
+            TagFuncs["num"] = TagFuncs["n"] = new TagFunc(2, Number);
+        }
+
+        private static void Number(Interpreter interpreter, Source source, Stringe tagName, string[] args)
+        {
+            int a, b;
+            if (!Int32.TryParse(args[0], out a) || !Int32.TryParse(args[1], out b))
+            {
+                throw new ManhoodException(source, tagName, "Range values could not be parsed. They must be numbers.");
+            }
+            interpreter.Print(interpreter.RNG.Next(a, b + 1));
+        }
+
+        private static void Repeat(Interpreter interpreter, Source source, Stringe tagName, string[] args)
+        {
+            if (args[0].ToLower().Trim() == "each")
+            {
+                interpreter.PendingBlockAttribs.Repetitons = Repeater.Each;
+                return;
+            }
+
+            int num;
+            if (!Int32.TryParse(args[0], out num))
+            {
+                throw new ManhoodException(source, tagName, "Invalid repetition value '" + args[0] + "' - must be a number.");
+            }
+            if (num < 0)
+            {
+                throw new ManhoodException(source, tagName, "Repetition value cannot be negative.");
+            }
+
+            interpreter.PendingBlockAttribs.Repetitons = num;
         }
 
         private class TagFunc
