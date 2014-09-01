@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Text.RegularExpressions;
 
 using Stringes;
@@ -11,6 +12,7 @@ namespace Manhood.Compiler
         public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", RegexOptions.ExplicitCapture);
         public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?");
 
+        private static readonly Regex WhitespaceRegex = new Regex(@"(^[\s\t]+|[\r\n]+|[\s\t]+$)", RegexOptions.Multiline);
         private static readonly Regex CommentRegex = new Regex(@"``(([\r\n]|.)*?[^\\])?``");
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", RegexOptions.ExplicitCapture);
 
@@ -43,10 +45,12 @@ namespace Manhood.Compiler
                 {"-", TokenType.Hyphen},
                 {"!", TokenType.Exclamation},
                 {"$", TokenType.Dollar},
-                {CommentRegex, TokenType.Comment}
+                {CommentRegex, TokenType.Ignore},
+                {WhitespaceRegex, TokenType.Ignore}
             };
             Rules.AddUndefinedCaptureRule(TokenType.Text, TruncatePadding);
             Rules.AddEndToken(TokenType.EOF);
+            Rules.IgnoreRules.Add(TokenType.Ignore);
         }
 
         public static IEnumerable<Token<TokenType>> GenerateTokens(string input)

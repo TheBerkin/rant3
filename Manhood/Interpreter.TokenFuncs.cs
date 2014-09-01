@@ -31,16 +31,6 @@ namespace Manhood
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool DoElement(Token<TokenType> token, SourceReader reader, State state)
-        {
-            Func<Interpreter, SourceReader, State, bool> func;
-            if (TokenFuncs.TryGetValue(token.Identifier, out func)) return func(this, reader, state);
-            Print(token.Value);
-            reader.Position++;
-            return false;
-        }
-
         private static bool DoTag(Interpreter interpreter, SourceReader reader, State state)
         {
             reader.Take(TokenType.LeftSquare);
@@ -97,7 +87,5 @@ namespace Manhood
                     items));
             return true;
         }
-
-
     }
 }

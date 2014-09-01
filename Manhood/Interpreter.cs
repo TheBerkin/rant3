@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -93,11 +94,6 @@ namespace Manhood
             get { return _stateStack.Peek(); }
         }
 
-        public bool Busy
-        {
-            get { return _stateCount > 0; }
-        }
-
         public RNG RNG
         {
             get { return _rng; }
@@ -116,7 +112,7 @@ namespace Manhood
             // ReSharper restore TooWideLocalVariableScope
 
             next:
-            while (Busy)
+            while (_stateCount > 0)
             {
                 // Because blueprints can sometimes queue more blueprints, loop until the topmost state does not have one.
                 do
@@ -130,7 +126,7 @@ namespace Manhood
                 {
                     // Fetch the next token in the stream without consuming it
                     token = reader.PeekToken();
-
+                    
                     // Error on illegal closure
                     if (BracketPairs.All.ContainsClosing(token.Identifier))
                     {
@@ -138,21 +134,27 @@ namespace Manhood
                     }
 
                     // DoElement will return true if the interpreter should skip to the top of the stack
-                    if (DoElement(token, reader, state))
+                    if (DoElement(reader, state))
                     {
                         goto next;
                     }
                 }
 
-                // This code will execute once the reader hits the end
-
-                if (!state.SharesOutput)
-                    _resultStack.Push(state.Output.GetChannels());
+                if (!state.SharesOutput) _resultStack.Push(state.Output.GetChannels());
 
                 PopState(); // Remove state from stack
             }
 
             return _resultStack.Pop();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool DoElement(SourceReader reader, State state)
+        {
+            Func<Interpreter, SourceReader, State, bool> func;
+            if (TokenFuncs.TryGetValue(reader.PeekToken().Identifier, out func)) return func(this, reader, state);
+            Print(reader.ReadToken().Value);
+            return false;
         }
     }
 }

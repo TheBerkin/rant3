@@ -17,6 +17,7 @@ namespace Manhood
 
             TagFuncs["rep"] = TagFuncs["r"] = new TagFunc(1, Repeat);
             TagFuncs["num"] = TagFuncs["n"] = new TagFunc(2, Number);
+            TagFuncs["sep"] = TagFuncs["s"] = new TagFunc(1, Separator);
         }
 
         private static void Number(Interpreter interpreter, Source source, Stringe tagName, string[] args)
@@ -27,6 +28,11 @@ namespace Manhood
                 throw new ManhoodException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
             interpreter.Print(interpreter.RNG.Next(a, b + 1));
+        }
+
+        private static void Separator(Interpreter interpreter, Source source, Stringe tagName, string[] args)
+        {
+            // help
         }
 
         private static void Repeat(Interpreter interpreter, Source source, Stringe tagName, string[] args)

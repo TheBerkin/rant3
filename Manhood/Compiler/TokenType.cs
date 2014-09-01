@@ -166,9 +166,9 @@
         /// </summary>
         Regex,
         /// <summary>
-        /// ``
+        /// Comments, whitespace, etc.
         /// </summary>
-        Comment,
+        Ignore,
         /// <summary>
         /// " ... "
         /// Used by: Tags
