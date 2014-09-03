@@ -83,6 +83,11 @@ namespace Manhood.Compiler
             return new Source(name, SourceType.String, code);
         }
 
+        internal static Source Derived(Source source, IEnumerable<Token<TokenType>> tokens)
+        {
+            return new Source(source._name, source._type, tokens, source._code);
+        }
+
         /// <summary>
         /// Loads the file located at the specified path and creates a Source object from its contents.
         /// </summary>

@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 using Manhood.Compiler;
 
+using Stringes.Tokens;
+
 namespace Manhood
 {
     internal class Util

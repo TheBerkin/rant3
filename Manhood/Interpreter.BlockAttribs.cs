@@ -1,4 +1,8 @@
-﻿using Manhood.Compiler;
+﻿using System.Collections.Generic;
+
+using Manhood.Compiler;
+
+using Stringes.Tokens;
 
 namespace Manhood
 {
@@ -7,9 +11,9 @@ namespace Manhood
         public class BlockAttribs
         {
             public int Repetitons { get; set; }
-            public Source Separator { get; set; }
-            public Source Before { get; set; }
-            public Source After { get; set; }
+            public IEnumerable<Token<TokenType>> Separator { get; set; }
+            public IEnumerable<Token<TokenType>> Before { get; set; }
+            public IEnumerable<Token<TokenType>> After { get; set; }
 
             public BlockAttribs()
             {

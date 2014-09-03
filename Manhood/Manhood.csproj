@@ -91,6 +91,7 @@
     <Compile Include="Compiler\SourceType.cs" />
     <Compile Include="SourceReader.cs" />
     <Compile Include="Interpreter.State.cs" />
+    <Compile Include="TagArg.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VarStore.cs">
       <SubType>Code</SubType>

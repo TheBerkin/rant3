@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Manhood.Compiler;
 
@@ -29,31 +30,51 @@ namespace Manhood
         {
             public Source Source { get; private set; }
             public Stringe Name { get; private set; }
-            public int ParameterCount { get; private set; }
 
-            public TagBlueprint(Interpreter interpreter, Source source, Stringe name, int paramCount) : base(interpreter)
+            private readonly TagDef _tagDef;
+
+            private readonly TagArg[] _args; 
+
+            public TagBlueprint(Interpreter interpreter, Source source, Stringe name, IEnumerable<Token<TokenType>>[] args = null) : base(interpreter)
             {
                 Source = source;
                 Name = name;
-                ParameterCount = paramCount;
-            }
 
-            public override bool Use()
-            {
-                var args = new string[ParameterCount];
-                for (int i = 0; i < ParameterCount; i++)
-                {
-                    args[i] = I._resultStack.Pop().MainOutput;
-                }
-
-                TagFunc func;
-
-                if (!TagFuncs.TryGetValue(Name.Value.ToLower(), out func))
+                if (!TagFuncs.TryGetValue(Name.Value.ToLower(), out _tagDef))
                 {
                     throw new ManhoodException(Source, Name, "The tag '" + Name.Value + "' does not exist.");
                 }
 
-                func.Invoke(I, Source, Name, args);
+                if (args == null)
+                {
+                    _args = Enumerable.Empty<TagArg>().ToArray();
+                }
+                else
+                {
+                    // Insert token arguments into the array, set string args to null.
+                    _args = args.Select((a, i) => _tagDef.ArgTypes[i] == TagArgType.Tokens ? TagArg.FromTokens(a) : null).ToArray();
+
+                    // Queue string arguments on the stack.
+                    for (int i = 0; i < _tagDef.ArgTypes.Length; i++)
+                    {
+                        if (_tagDef.ArgTypes[i] == TagArgType.Result)
+                        {
+                            interpreter.PushState(State.CreateDerivedDistinct(source, args[i], interpreter));
+                        }
+                    }
+                }
+            }
+
+            public override bool Use()
+            {
+                // Fill in empty string arguments with state results.
+                for (int i = 0; i < _args.Length; i++)
+                {
+                    if(_args[i] == null) _args[i] = TagArg.FromString(I._resultStack.Pop().MainOutput);
+                }
+
+                // Call the tag
+                _tagDef.Invoke(I, Source, Name, _args);
 
                 return false;
             }
@@ -62,24 +83,17 @@ namespace Manhood
         internal sealed class RepeaterBlueprint : Blueprint
         {
             private readonly Repeater _repeater;
-            private readonly IEnumerable<Token<TokenType>>[] _items; 
 
-            public RepeaterBlueprint(Interpreter interpreter, Repeater repeater, IEnumerable<Token<TokenType>>[] items) : base(interpreter)
+            public RepeaterBlueprint(Interpreter interpreter, Repeater repeater) : base(interpreter)
             {
                 _repeater = repeater;
-                _items = items;
             }
 
             // TODO: Add support for synchronizers
             // TODO: Consider storing repeaters in a public stack to allow access to [first], [last], etc.
-            // TODO: Move item list to Repeater class along with the BlockAttribs it was created from
             public override bool Use()
             {
-                if (_repeater.Finished) return false;
-                _repeater.Next();
-                I.CurrentState.AddBlueprint(this);
-                I.PushState(State.CreateDerivedDistinct(I.CurrentState.Reader.Source, _items[I._rng.Next(_items.Length)], I, I.CurrentState.Output));
-                return true;
+                return _repeater.Iterate(I, this);
             }
         }
 

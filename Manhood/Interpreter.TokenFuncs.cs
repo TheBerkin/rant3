@@ -56,7 +56,7 @@ namespace Manhood
 
             if (none)
             {
-                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name, 0));
+                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name));
             }
             else
             {
@@ -68,7 +68,7 @@ namespace Manhood
                     interpreter.PushState(State.CreateDerivedDistinct(reader.Source, item, interpreter));
                 }
 
-                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name, items.Length));
+                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name, items));
             }
             return true;
         }
@@ -81,10 +81,7 @@ namespace Manhood
 
             if (!items.Any()) return false;
 
-            state.AddBlueprint(
-                new RepeaterBlueprint(interpreter,
-                    new Repeater(attribs.Repetitons == Repeater.Each ? items.Length : attribs.Repetitons),
-                    items));
+            state.AddBlueprint(new RepeaterBlueprint(interpreter, new Repeater(items, attribs)));
             return true;
         }
     }
