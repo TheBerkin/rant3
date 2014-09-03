@@ -8,9 +8,12 @@ using Stringes;
 
 namespace Manhood
 {
+    // The return value is returned by the blueprint that executes the tag. If it's true, the interpreter will skip to the top of the state stack.
+    internal delegate bool TagFunc(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args);
+
     internal partial class Interpreter
     {
-        private static readonly Dictionary<string, TagDef> TagFuncs;
+        internal static readonly Dictionary<string, TagDef> TagFuncs;
 
         static Interpreter()
         {
@@ -19,9 +22,23 @@ namespace Manhood
             TagFuncs["rep"] = TagFuncs["r"] = new TagDef(Repeat, TagArgType.Result);
             TagFuncs["num"] = TagFuncs["n"] = new TagDef(Number, TagArgType.Result, TagArgType.Result);
             TagFuncs["sep"] = TagFuncs["s"] = new TagDef(Separator, TagArgType.Tokens);
+            TagFuncs["before"] = new TagDef(Before, TagArgType.Tokens);
+            TagFuncs["after"] = new TagDef(After, TagArgType.Tokens);
         }
 
-        private static void Number(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+        private static bool After(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.PendingBlockAttribs.After = args[0].GetTokens();
+            return false;
+        }
+
+        private static bool Before(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+        {
+            interpreter.PendingBlockAttribs.Before = args[0].GetTokens();
+            return false;
+        }
+
+        private static bool Number(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
         {
             int a, b;
             if (!Int32.TryParse(args[0].GetString(), out a) || !Int32.TryParse(args[1].GetString(), out b))
@@ -29,20 +46,22 @@ namespace Manhood
                 throw new ManhoodException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
             interpreter.Print(interpreter.RNG.Next(a, b + 1));
+            return false;
         }
 
-        private static void Separator(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+        private static bool Separator(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
         {
             interpreter.PendingBlockAttribs.Separator = args[0].GetTokens();
+            return false;
         }
 
-        private static void Repeat(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+        private static bool Repeat(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
         {
             var reps = args[0].GetString().ToLower().Trim();
             if (reps == "each")
             {
                 interpreter.PendingBlockAttribs.Repetitons = Repeater.Each;
-                return;
+                return false;
             }
 
             int num;
@@ -56,27 +75,14 @@ namespace Manhood
             }
 
             interpreter.PendingBlockAttribs.Repetitons = num;
+            return false;
         }
 
-        internal delegate void TagFunc(Interpreter interpreter, Source source, Stringe name, TagArg[] args);
-
-        private class TagDef
+        internal class TagDef
         {
             private readonly int _paramCount;
             private readonly TagArgType[] _argTypes;
             private readonly TagFunc _func;
-            private readonly int _stringArgCount;
-            private readonly int _tokenArgCount;
-
-            public int StringArgCount
-            {
-                get { return _stringArgCount; }
-            }
-
-            public int TokenArgCount
-            {
-                get { return _tokenArgCount; }
-            }
 
             public TagArgType[] ArgTypes
             {
@@ -86,17 +92,15 @@ namespace Manhood
             public TagDef(TagFunc func, params TagArgType[] argTypes)
             {
                 _paramCount = argTypes.Length;
-                _stringArgCount = argTypes.Count(t => t == TagArgType.Result);
-                _tokenArgCount = argTypes.Count(t => t == TagArgType.Tokens);
                 _argTypes = argTypes;
                 _func = func;
             }
 
-            public void Invoke(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+            public bool Invoke(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
             {
                 if (args.Length != _paramCount)
                     throw new ManhoodException(source, tagName, "Tag '" + tagName.Value + "' expected " + _paramCount + " " + (_paramCount == 1 ? "argument" : "arguments") + " but got " + args.Length + ".");
-                _func(interpreter, source, tagName, args);
+                return _func(interpreter, source, tagName, args);
             }
         }
     }

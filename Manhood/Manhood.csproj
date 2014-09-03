@@ -64,11 +64,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blueprints\Blueprint.cs" />
+    <Compile Include="Blueprints\MetapatternBlueprint.cs" />
+    <Compile Include="Blueprints\RepeaterBlueprint.cs" />
+    <Compile Include="Blueprints\TagBlueprint.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Engine.Vocab.cs" />
-    <Compile Include="Interpreter.BlockAttribs.cs" />
+    <Compile Include="BlockAttribs.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Interpreter.TagFuncs.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
@@ -107,9 +111,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Interpreter.Blueprints.cs" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

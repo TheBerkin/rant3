@@ -4,6 +4,11 @@
         <name>Manhood</name>
     </assembly>
     <members>
+        <member name="T:Manhood.Blueprints.Blueprint">
+            <summary>
+            Represents an outline for an action that is queued by a state object and executed immediately before parsing any tokens in the state.
+            </summary>
+        </member>
         <member name="F:Manhood.Compiler.BracketPairs.All">
             <summary>
             Used everywhere except for reading constant literals.
@@ -80,11 +85,6 @@
             <param name="interpreter">The interpreter that will read the tokens.</param>
             <param name="output">The output of the state. Excluding this will create a new output.</param>
             <returns></returns>
-        </member>
-        <member name="T:Manhood.Interpreter.Blueprint">
-            <summary>
-            Represents an outline for an action that is queued by a state object and executed immediately before parsing any tokens in the state.
-            </summary>
         </member>
         <member name="T:Manhood.ManhoodException">
             <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using Manhood.Blueprints;
 using Manhood.Compiler;
 
 using Stringes.Tokens;
