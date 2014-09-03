@@ -31,7 +31,7 @@
     <DocumentationFile>bin\Release\Manhood.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
-    <OutputPath>..\..\Programming\Manhood\</OutputPath>
+    <OutputPath>bin\Berkin-Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\Manhood.xml</DocumentationFile>
     <Optimize>true</Optimize>
