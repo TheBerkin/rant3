@@ -11,8 +11,6 @@ namespace Manhood
 {
     internal partial class Interpreter
     {
-        public static int MaxStackSize = 64;
-
         private BlockAttribs _blockAttribs;
 
         private int _stateCount;
@@ -66,9 +64,9 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PushState(State state)
         {
-            if (_stateCount >= MaxStackSize)
+            if (_stateCount >= Engine.MaxStackSize)
             {
-                throw new ManhoodException(_mainSource, null, "Exceeded maximum stack size of " + MaxStackSize + ".");
+                throw new ManhoodException(_mainSource, null, "Exceeded maximum stack size of " + Engine.MaxStackSize + ".");
             }
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;

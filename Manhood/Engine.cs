@@ -12,6 +12,11 @@ namespace Manhood
         /// </summary>
         public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
 
+        /// <summary>
+        /// The maximum stack size allowed for a pattern.
+        /// </summary>
+        public static int MaxStackSize = 64;
+
         private static readonly RNG Seeds = new RNG();
 
         private readonly VarStore _vars;

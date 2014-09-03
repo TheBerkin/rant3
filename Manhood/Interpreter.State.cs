@@ -9,6 +9,9 @@ namespace Manhood
 {
     internal partial class Interpreter
     {
+        /// <summary>
+        /// Maintains state information for a single stream of tokens.
+        /// </summary>
         internal class State
         {
             private readonly ChannelStack _output;

@@ -9,6 +9,9 @@
 *.suo
 *.user
 *.sln.docstates
+*.vshost.exe
+*.exe.config
+*.manifest
 
 # Build results
 [Dd]ebug/
