@@ -19,22 +19,46 @@ namespace Manhood
         private State _prevState;
         private readonly State _mainState;
         private readonly Stack<State> _stateStack;
-        private readonly Stack<ChannelSet> _resultStack; 
+        private readonly Stack<ChannelSet> _resultStack;
+        private readonly Stack<Repeater> _repeaterStack; 
 
         private readonly ChannelStack _output;
         private readonly RNG _rng;
         private readonly Source _mainSource;
         private readonly Engine _engine;
+        private readonly Vocabulary _vocab;
 
         public Engine Engine
         {
             get { return _engine; }
         }
 
-        public BlockAttribs PendingBlockAttribs
+        public BlockAttribs NextAttribs
         {
             get { return _blockAttribs; }
             set { _blockAttribs = value; }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PushRepeater(Repeater repeater)
+        {
+            _repeaterStack.Push(repeater);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Repeater PopRepeater()
+        {
+            return _repeaterStack.Pop();
+        }
+
+        public Repeater CurrentRepeater
+        {
+            get { return _repeaterStack.Any() ? _repeaterStack.Peek() : null; }
+        }
+
+        public Vocabulary Vocabulary
+        {
+            get { return _vocab; }
         }
 
         public void SetChance(int chance)
@@ -42,23 +66,26 @@ namespace Manhood
             _chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
         }
 
-        public bool UseChance()
+        public bool TakeChance()
         {
+            if (_chance == 100) return true;
             bool pass = _rng.Next(100) < _chance;
             _chance = 100;
             return pass;
         }
 
-        public Interpreter(Engine engine, Source input, RNG rng)
+        public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
         {
             _mainSource = input;
             _blockAttribs = new BlockAttribs();
             _rng = rng;
+            _vocab = vocab;
             _engine = engine;
             _output = new ChannelStack(0);
             _stateStack = new Stack<State>(1);
             _stateCount = 0;
             _resultStack = new Stack<ChannelSet>(1);
+            _repeaterStack = new Stack<Repeater>(1);
             _mainState = State.Create(input, this);
             _prevState = null;
             _chance = 100;
@@ -130,7 +157,7 @@ namespace Manhood
                 do
                 {
                     state = CurrentState;
-                } while (state.UseBlueprint());
+                } while (state.UsePreBlueprint());
                 
                 reader = state.Reader;
 
@@ -150,6 +177,11 @@ namespace Manhood
                     {
                         goto next;
                     }
+                }
+
+                // Use post-blueprints
+                while (state.UsePostBlueprint())
+                {
                 }
 
                 if (!state.SharesOutput) _resultStack.Push(state.Output.GetChannels());

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Manhood.Compiler;
 
@@ -25,6 +24,159 @@ namespace Manhood
             TagFuncs["before"] = new TagDef(Before, TagArgType.Tokens);
             TagFuncs["after"] = new TagDef(After, TagArgType.Tokens);
             TagFuncs["chance"] = new TagDef(Chance, TagArgType.Result);
+            TagFuncs["sync"] = new TagDef(Sync, TagArgType.Result, TagArgType.Result);
+            TagFuncs["desync"] = new TagDef(Desync);
+            TagFuncs["pin"] = new TagDef(Pin, TagArgType.Result);
+            TagFuncs["unpin"] = new TagDef(Unpin, TagArgType.Result);
+            TagFuncs["step"] = new TagDef(Step, TagArgType.Result);
+            TagFuncs["first"] = new TagDef(First, TagArgType.Tokens);
+            TagFuncs["last"] = new TagDef(Last, TagArgType.Tokens);
+            TagFuncs["middle"] = new TagDef(Middle, TagArgType.Tokens);
+            TagFuncs["notfirst"] = new TagDef(NotFirst, TagArgType.Tokens);
+            TagFuncs["notlast"] = new TagDef(NotLast, TagArgType.Tokens);
+            TagFuncs["notmiddle"] = new TagDef(NotMiddle, TagArgType.Tokens);
+            TagFuncs["odd"] = new TagDef(Odd, TagArgType.Tokens);
+            TagFuncs["even"] = new TagDef(Even, TagArgType.Tokens);
+            TagFuncs["nth"] = new TagDef(Nth, TagArgType.Result, TagArgType.Result, TagArgType.Tokens);
+            TagFuncs["repnum"] = TagFuncs["rn"] = new TagDef(RepNum);
+            TagFuncs["repindex"] = TagFuncs["ri"] = new TagDef(RepIndex);
+            TagFuncs["repcount"] = TagFuncs["rc"] = new TagDef(RepCount);
+        }
+
+        private static bool RepCount(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeater.");
+            interpreter.Print(interpreter.CurrentRepeater.Count);
+            return false;
+        }
+
+        private static bool RepIndex(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeaters.");
+            interpreter.Print(interpreter.CurrentRepeater.Index);
+            return false;
+        }
+
+        private static bool RepNum(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeaters.");
+            interpreter.Print(interpreter.CurrentRepeater.Index + 1);
+            return false;
+        }
+
+        private static bool Nth(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            int offset, interval;
+            if (!Int32.TryParse(args[0].GetString(), out interval))
+            {
+                throw new ManhoodException(source, tagname, "Invalid interval value.");
+            }
+
+            if (interval <= 0)
+            {
+                throw new ManhoodException(source, tagname, "Interval must be greater than zero.");
+            }
+
+            if (!Int32.TryParse(args[1].GetString(), out offset))
+            {
+                throw new ManhoodException(source, tagname, "Invalid offset value.");
+            }
+
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.Nth(offset, interval)) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool Even(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsEven) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool Odd(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsOdd) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool NotMiddle(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst || interpreter.CurrentRepeater.IsLast) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool NotLast(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool NotFirst(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool Middle(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast || interpreter.CurrentRepeater.IsFirst) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool Last(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsLast) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool First(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsFirst) return false;
+            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool Step(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Step(args[0].GetString());
+            return false;
+        }
+
+        private static bool Unpin(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Unpin(args[0].GetString());
+            return false;
+        }
+
+        private static bool Pin(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Pin(args[0].GetString());
+            return false;
+        }
+
+        private static bool Desync(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Desync();
+            return false;
+        }
+
+        private static bool Sync(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            var typeStr = args[1].GetString();
+            SyncType type;
+            if (!Enum.TryParse(typeStr, true, out type))
+            {
+                throw new ManhoodException(source, tagname, "Invalid synchronizer type: '" + typeStr + "'");
+            }
+            interpreter.Sync(args[0].GetString(), type);
+            return false;
         }
 
         private static bool Chance(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
@@ -40,13 +192,13 @@ namespace Manhood
 
         private static bool After(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
         {
-            interpreter.PendingBlockAttribs.After = args[0].GetTokens();
+            interpreter.NextAttribs.After = args[0].GetTokens();
             return false;
         }
 
         private static bool Before(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
         {
-            interpreter.PendingBlockAttribs.Before = args[0].GetTokens();
+            interpreter.NextAttribs.Before = args[0].GetTokens();
             return false;
         }
 
@@ -63,7 +215,7 @@ namespace Manhood
 
         private static bool Separator(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
         {
-            interpreter.PendingBlockAttribs.Separator = args[0].GetTokens();
+            interpreter.NextAttribs.Separator = args[0].GetTokens();
             return false;
         }
 
@@ -72,7 +224,7 @@ namespace Manhood
             var reps = args[0].GetString().ToLower().Trim();
             if (reps == "each")
             {
-                interpreter.PendingBlockAttribs.Repetitons = Repeater.Each;
+                interpreter.NextAttribs.Repetitons = Repeater.Each;
                 return false;
             }
 
@@ -86,7 +238,7 @@ namespace Manhood
                 throw new ManhoodException(source, tagName, "Repetition value cannot be negative.");
             }
 
-            interpreter.PendingBlockAttribs.Repetitons = num;
+            interpreter.NextAttribs.Repetitons = num;
             return false;
         }
 

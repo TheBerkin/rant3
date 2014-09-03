@@ -63,47 +63,47 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw())).Run();
+            return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw()), _vocabulary).Run();
         }
 
         public ChannelSet DoFile(string path)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw())).Run();
+            return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw()), _vocabulary).Run();
         }
 
         public ChannelSet Do(string input, long seed)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(seed)).Run();
+            return new Interpreter(this, Source.FromString(input), new RNG(seed), _vocabulary).Run();
         }
 
         public ChannelSet DoFile(string path, long seed)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(seed)).Run();
+            return new Interpreter(this, Source.FromFile(path), new RNG(seed), _vocabulary).Run();
         }
 
         public ChannelSet Do(string input, RNG rng)
         {
-            return new Interpreter(this, Source.FromString(input), rng).Run();
+            return new Interpreter(this, Source.FromString(input), rng, _vocabulary).Run();
         }
 
         public ChannelSet DoFile(string path, RNG rng)
         {
-            return new Interpreter(this, Source.FromFile(path), rng).Run();
+            return new Interpreter(this, Source.FromFile(path), rng, _vocabulary).Run();
         }
 
         public ChannelSet Do(Source input)
         {
-            return new Interpreter(this, input, new RNG(Seeds.NextRaw())).Run();
+            return new Interpreter(this, input, new RNG(Seeds.NextRaw()), _vocabulary).Run();
         }
 
         public ChannelSet Do(Source input, long seed)
         {
-            return new Interpreter(this, input, new RNG(seed)).Run();
+            return new Interpreter(this, input, new RNG(seed), _vocabulary).Run();
         }
 
         public ChannelSet Do(Source input, RNG rng)
         {
-            return new Interpreter(this, input, rng).Run();
+            return new Interpreter(this, input, rng, _vocabulary).Run();
         }
     }
 }

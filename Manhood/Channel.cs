@@ -20,11 +20,13 @@ namespace Manhood
 
         internal StringBuilder Buffer { get; set; }
 
+        internal const int InitialBufferSize = 512;
+
         internal Channel(string name, ChannelVisibility visibility)
         {
             Name = name;
             Visiblity = visibility;
-            Buffer = new StringBuilder();
+            Buffer = new StringBuilder(InitialBufferSize);
         }
 
         /// <summary>

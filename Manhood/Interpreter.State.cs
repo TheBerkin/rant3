@@ -20,7 +20,7 @@ namespace Manhood
             private readonly Interpreter _interpreter;
             private readonly bool _sharesOutput;
 
-            private Blueprint _blueprint;
+            private Blueprint _preBlueprint, _postBlueprint;
 
             public bool SharesOutput
             {
@@ -30,6 +30,8 @@ namespace Manhood
             private State(Interpreter ii, Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 ChannelStack output)
             {
+                _preBlueprint = null;
+                _postBlueprint = null;
                 _interpreter = ii;
                 _output = output;
                 _reader =
@@ -39,25 +41,61 @@ namespace Manhood
 
             private State(Interpreter ii, Source source, ChannelStack output)
             {
+                _preBlueprint = null;
+                _postBlueprint = null;
                 _interpreter = ii;
                 _output = output;
                 _reader = new SourceReader(source);
                 _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
-            public bool AddBlueprint(Blueprint bp)
+            /// <summary>
+            /// Sets the current pre-blueprint for this state.
+            /// </summary>
+            /// <param name="bp">The blueprint to set.</param>
+            /// <returns></returns>
+            public bool AddPreBlueprint(Blueprint bp)
             {
-                if (_blueprint != null) return false;
-                _blueprint = bp;
+                if (_preBlueprint != null) return false;
+                _preBlueprint = bp;
                 return true;
             }
 
-            public bool UseBlueprint()
+            /// <summary>
+            /// Consumes the available pre-blueprint, if any. Returns 'true' if either the blueprint hints at the interpreter to skip to the top of the stack, or another blueprint was set during execution.
+            /// </summary>
+            /// <returns></returns>
+            public bool UsePreBlueprint()
             {
-                if (_blueprint == null) return false;
-                var bp = _blueprint;
-                _blueprint = null;
-                return bp.Use() || _blueprint != null;
+                if (_preBlueprint == null) return false;
+                var bp = _preBlueprint;
+                _preBlueprint = null;
+                return bp.Use() || _preBlueprint != null;
+            }
+
+            /// <summary>
+            /// Consumes the available post-blueprint, if any. Returns 'true' if another blueprint was set during execution.
+            /// </summary>
+            /// <returns></returns>
+            public bool UsePostBlueprint()
+            {
+                if (_postBlueprint == null) return false;
+                var bp = _postBlueprint;
+                _postBlueprint = null;
+                bp.Use();
+                return _postBlueprint != null;
+            }
+
+            /// <summary>
+            /// Sets the current post-blueprint for this state.
+            /// </summary>
+            /// <param name="bp">The blueprint to set.</param>
+            /// <returns></returns>
+            public bool AddPostBlueprint(Blueprint bp)
+            {
+                if (_postBlueprint != null) return false;
+                _postBlueprint = bp;
+                return true;
             }
 
             /// <summary>

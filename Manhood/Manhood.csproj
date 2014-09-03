@@ -65,8 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blueprints\Blueprint.cs" />
+    <Compile Include="Blueprints\FunctionBlueprint.cs" />
     <Compile Include="Blueprints\MetapatternBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterBlueprint.cs" />
+    <Compile Include="Blueprints\RepeaterStackBlueprint.cs" />
     <Compile Include="Blueprints\TagBlueprint.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Engine.Vocab.cs" />
     <Compile Include="BlockAttribs.cs" />
     <Compile Include="Interpreter.cs" />
+    <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.TagFuncs.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
     <Compile Include="ManhoodException.cs" />
@@ -95,6 +98,8 @@
     <Compile Include="Compiler\SourceType.cs" />
     <Compile Include="SourceReader.cs" />
     <Compile Include="Interpreter.State.cs" />
+    <Compile Include="SyncType.cs" />
+    <Compile Include="Synchronizer.cs" />
     <Compile Include="TagArg.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VarStore.cs">

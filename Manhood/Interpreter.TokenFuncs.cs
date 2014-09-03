@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Manhood.Blueprints;
 using Manhood.Compiler;
 
-using Stringes.Tokens;
-
 namespace Manhood
 {
+    // TODO: Replace the dreadful multiple PeekToken() calls with a single ReadToken() call
+
     internal delegate bool TokenFunc(Interpreter interpreter, SourceReader reader, Interpreter.State state);
 
     internal partial class Interpreter
@@ -18,10 +16,17 @@ namespace Manhood
         {
             {TokenType.LeftCurly, DoBlock},
             {TokenType.LeftSquare, DoTag},
+            {TokenType.LeftAngle, DoQuery},
             {TokenType.EscapeSequence, DoEscape},
             {TokenType.ConstantLiteral, DoConstant},
             {TokenType.Text, DoText}
         };
+
+        private static bool DoQuery(Interpreter interpreter, SourceReader reader, State state)
+        {
+
+            return false;
+        }
 
         private static bool DoText(Interpreter interpreter, SourceReader reader, State state)
         {
@@ -51,7 +56,7 @@ namespace Manhood
             // Check if metapattern
             if (name.Identifier == TokenType.Question)
             {
-                state.AddBlueprint(new MetapatternBlueprint(interpreter));
+                state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
                 interpreter.PushState(State.CreateDerivedDistinct(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
                 return true;
             }
@@ -68,7 +73,7 @@ namespace Manhood
 
             if (none)
             {
-                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name));
+                state.AddPreBlueprint(new TagBlueprint(interpreter, reader.Source, name));
             }
             else
             {
@@ -80,7 +85,7 @@ namespace Manhood
                     interpreter.PushState(State.CreateDerivedDistinct(reader.Source, item, interpreter));
                 }
 
-                state.AddBlueprint(new TagBlueprint(interpreter, reader.Source, name, items));
+                state.AddPreBlueprint(new TagBlueprint(interpreter, reader.Source, name, items));
             }
             return true;
         }
@@ -88,12 +93,14 @@ namespace Manhood
         private static bool DoBlock(Interpreter interpreter, SourceReader reader, State state)
         {
             var items = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
-            var attribs = interpreter.PendingBlockAttribs;
+            var attribs = interpreter.NextAttribs;
             interpreter._blockAttribs = new BlockAttribs();
 
-            if (!items.Any() || !interpreter.UseChance()) return false;
+            if (!items.Any() || !interpreter.TakeChance()) return false;
 
-            state.AddBlueprint(new RepeaterBlueprint(interpreter, new Repeater(items, attribs)));
+            var rep = new Repeater(items, attribs);
+            interpreter.PushRepeater(rep);
+            state.AddPreBlueprint(new RepeaterBlueprint(interpreter, rep));
             return true;
         }
     }

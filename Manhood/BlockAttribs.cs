@@ -12,6 +12,7 @@ namespace Manhood
         public IEnumerable<Token<TokenType>> Separator { get; set; }
         public IEnumerable<Token<TokenType>> Before { get; set; }
         public IEnumerable<Token<TokenType>> After { get; set; }
+        public Synchronizer Sync { get; set; }
 
         public BlockAttribs()
         {
@@ -19,6 +20,7 @@ namespace Manhood
             Separator = null;
             Before = null;
             After = null;
+            Sync = null;
         }
     }
 }
