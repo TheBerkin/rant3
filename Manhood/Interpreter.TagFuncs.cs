@@ -24,6 +24,18 @@ namespace Manhood
             TagFuncs["sep"] = TagFuncs["s"] = new TagDef(Separator, TagArgType.Tokens);
             TagFuncs["before"] = new TagDef(Before, TagArgType.Tokens);
             TagFuncs["after"] = new TagDef(After, TagArgType.Tokens);
+            TagFuncs["chance"] = new TagDef(Chance, TagArgType.Result);
+        }
+
+        private static bool Chance(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            int a;
+            if (!Int32.TryParse(args[0].GetString(), out a))
+            {
+                throw new ManhoodException(source, tagname, "Invalid chance number.");
+            }
+            interpreter.SetChance(a);
+            return false;
         }
 
         private static bool After(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

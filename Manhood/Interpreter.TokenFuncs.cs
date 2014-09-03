@@ -10,15 +10,26 @@ using Stringes.Tokens;
 
 namespace Manhood
 {
+    internal delegate bool TokenFunc(Interpreter interpreter, SourceReader reader, Interpreter.State state);
+
     internal partial class Interpreter
     {
-        private static readonly Dictionary<TokenType, Func<Interpreter, SourceReader, State, bool>> TokenFuncs = new Dictionary<TokenType, Func<Interpreter, SourceReader, State, bool>>
+        private static readonly Dictionary<TokenType, TokenFunc> TokenFuncs = new Dictionary<TokenType, TokenFunc>
         {
             {TokenType.LeftCurly, DoBlock},
             {TokenType.LeftSquare, DoTag},
             {TokenType.EscapeSequence, DoEscape},
-            {TokenType.ConstantLiteral, DoConstant}
+            {TokenType.ConstantLiteral, DoConstant},
+            {TokenType.Text, DoText}
         };
+
+        private static bool DoText(Interpreter interpreter, SourceReader reader, State state)
+        {
+            var token = reader.ReadToken();
+            if (!token.Value.Trim().Any()) return false;
+            state.Output.Write(token.Value);
+            return false;
+        }
 
         private static bool DoConstant(Interpreter interpreter, SourceReader reader, State state)
         {
@@ -80,7 +91,7 @@ namespace Manhood
             var attribs = interpreter.PendingBlockAttribs;
             interpreter._blockAttribs = new BlockAttribs();
 
-            if (!items.Any()) return false;
+            if (!items.Any() || !interpreter.UseChance()) return false;
 
             state.AddBlueprint(new RepeaterBlueprint(interpreter, new Repeater(items, attribs)));
             return true;

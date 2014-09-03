@@ -12,6 +12,7 @@ namespace Manhood
     internal partial class Interpreter
     {
         private BlockAttribs _blockAttribs;
+        private int _chance;
 
         private int _stateCount;
 
@@ -36,6 +37,18 @@ namespace Manhood
             set { _blockAttribs = value; }
         }
 
+        public void SetChance(int chance)
+        {
+            _chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
+        }
+
+        public bool UseChance()
+        {
+            bool pass = _rng.Next(100) < _chance;
+            _chance = 100;
+            return pass;
+        }
+
         public Interpreter(Engine engine, Source input, RNG rng)
         {
             _mainSource = input;
@@ -48,6 +61,7 @@ namespace Manhood
             _resultStack = new Stack<ChannelSet>(1);
             _mainState = State.Create(input, this);
             _prevState = null;
+            _chance = 100;
         }
 
         public void Print(object input)
@@ -149,7 +163,7 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool DoElement(SourceReader reader, State state)
         {
-            Func<Interpreter, SourceReader, State, bool> func;
+            TokenFunc func;
             if (TokenFuncs.TryGetValue(reader.PeekToken().Identifier, out func)) return func(this, reader, state);
             Print(reader.ReadToken().Value);
             return false;
