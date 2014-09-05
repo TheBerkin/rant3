@@ -64,11 +64,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blueprints\AltBlueprint.cs" />
     <Compile Include="Blueprints\Blueprint.cs" />
     <Compile Include="Blueprints\FunctionBlueprint.cs" />
     <Compile Include="Blueprints\MetapatternBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterStackBlueprint.cs" />
+    <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\TagBlueprint.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />

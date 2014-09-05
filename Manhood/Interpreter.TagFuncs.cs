@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Manhood.Blueprints;
 using Manhood.Compiler;
 
 using Stringes;
@@ -41,6 +42,30 @@ namespace Manhood
             TagFuncs["repnum"] = TagFuncs["rn"] = new TagDef(RepNum);
             TagFuncs["repindex"] = TagFuncs["ri"] = new TagDef(RepIndex);
             TagFuncs["repcount"] = TagFuncs["rc"] = new TagDef(RepCount);
+            TagFuncs["alt"] = new TagDef(Alt, TagArgType.Tokens, TagArgType.Tokens);
+            TagFuncs["match"] = new TagDef(ReplaceMatch);
+            TagFuncs["group"] = new TagDef(ReplaceGroup, TagArgType.Result);
+        }
+
+        private static bool ReplaceGroup(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Print(interpreter.GetMatchString(args[0].GetString()));
+            return false;
+        }
+
+        private static bool ReplaceMatch(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.Print(interpreter.GetMatchString());
+            return false;
+        }
+
+        private static bool Alt(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            var testState = State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter,
+                interpreter.CurrentState.Output);
+            testState.AddPostBlueprint(new AltBlueprint(interpreter, testState, args[1].GetTokens()));
+            interpreter.PushState(testState);
+            return true;
         }
 
         private static bool RepCount(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

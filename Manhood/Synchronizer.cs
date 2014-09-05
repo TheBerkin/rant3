@@ -84,6 +84,8 @@ namespace Manhood
 
         public void ScrambleSlots()
         {
+            if (_state.Length == 1) return;
+
             int t;
 
             if (_state.Length == 2) // Handle 2-item scenario

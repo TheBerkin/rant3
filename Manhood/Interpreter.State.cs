@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Manhood.Blueprints;
 using Manhood.Compiler;
@@ -19,19 +20,29 @@ namespace Manhood
             private readonly SourceReader _reader;
             private readonly Interpreter _interpreter;
             private readonly bool _sharesOutput;
+            private bool _finished;
 
-            private Blueprint _preBlueprint, _postBlueprint;
+            private readonly Stack<Blueprint> _preBlueprints;
+            private readonly Stack<Blueprint> _postBlueprints;
 
             public bool SharesOutput
             {
                 get { return _sharesOutput; }
             }
 
+            public bool Finish()
+            {
+                if (_finished) return false;
+                _finished = true;
+                return true;
+            }
+
             private State(Interpreter ii, Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 ChannelStack output)
             {
-                _preBlueprint = null;
-                _postBlueprint = null;
+                _finished = false;
+                _preBlueprints = new Stack<Blueprint>();
+                _postBlueprints = new Stack<Blueprint>();
                 _interpreter = ii;
                 _output = output;
                 _reader =
@@ -41,8 +52,9 @@ namespace Manhood
 
             private State(Interpreter ii, Source source, ChannelStack output)
             {
-                _preBlueprint = null;
-                _postBlueprint = null;
+                _finished = false;
+                _preBlueprints = new Stack<Blueprint>();
+                _postBlueprints = new Stack<Blueprint>();
                 _interpreter = ii;
                 _output = output;
                 _reader = new SourceReader(source);
@@ -56,8 +68,7 @@ namespace Manhood
             /// <returns></returns>
             public bool AddPreBlueprint(Blueprint bp)
             {
-                if (_preBlueprint != null) return false;
-                _preBlueprint = bp;
+                _preBlueprints.Push(bp);
                 return true;
             }
 
@@ -67,10 +78,8 @@ namespace Manhood
             /// <returns></returns>
             public bool UsePreBlueprint()
             {
-                if (_preBlueprint == null) return false;
-                var bp = _preBlueprint;
-                _preBlueprint = null;
-                return bp.Use() || _preBlueprint != null;
+                if (!_preBlueprints.Any()) return false;
+                return _preBlueprints.Pop().Use();
             }
 
             /// <summary>
@@ -79,11 +88,8 @@ namespace Manhood
             /// <returns></returns>
             public bool UsePostBlueprint()
             {
-                if (_postBlueprint == null) return false;
-                var bp = _postBlueprint;
-                _postBlueprint = null;
-                bp.Use();
-                return _postBlueprint != null;
+                if (!_postBlueprints.Any()) return false;
+                return _postBlueprints.Pop().Use();
             }
 
             /// <summary>
@@ -93,8 +99,7 @@ namespace Manhood
             /// <returns></returns>
             public bool AddPostBlueprint(Blueprint bp)
             {
-                if (_postBlueprint != null) return false;
-                _postBlueprint = bp;
+                _postBlueprints.Push(bp);
                 return true;
             }
 
@@ -104,6 +109,7 @@ namespace Manhood
             /// <param name="source">The source from which to read tokens.</param>
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static State Create(Source source, Interpreter interpreter)
             {
                 return new State(interpreter, source, interpreter._output);
@@ -116,6 +122,7 @@ namespace Manhood
             /// <param name="tokens">The tokens to read.</param>
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static State CreateDerivedShared(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter)
             {
@@ -130,11 +137,17 @@ namespace Manhood
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
             /// <returns></returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static State CreateDerivedDistinct(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(0));
                     // TODO: Share size limit between sub-output and main output
+            }
+
+            public void Print(string value)
+            {
+                _output.Write(value);
             }
 
             public SourceReader Reader

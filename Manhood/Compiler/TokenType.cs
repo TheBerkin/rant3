@@ -7,13 +7,6 @@
         /// </summary>
         Text,
         /// <summary>
-        /// An alphanumeric identifier string with no spaces, but can contain underscores.
-        /// <para>
-        /// Used by: Tags (names), Queries (list IDs, subtypes, classes)
-        /// </para>
-        /// </summary>
-        Identifier,
-        /// <summary>
         /// A format string used to output a reserved or random character.
         /// Used by: Plaintext, arguments
         /// </summary>
@@ -174,6 +167,10 @@
         /// Used by: Tags
         /// </summary>
         ConstantLiteral,
+        /// <summary>
+        /// Used by: Tags
+        /// </summary>
+        SymbolSpacing,
         /// <summary>
         /// End of file.
         /// </summary>

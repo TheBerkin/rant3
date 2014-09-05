@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 using Manhood.Compiler;
 
@@ -20,7 +21,8 @@ namespace Manhood
         private readonly State _mainState;
         private readonly Stack<State> _stateStack;
         private readonly Stack<ChannelSet> _resultStack;
-        private readonly Stack<Repeater> _repeaterStack; 
+        private readonly Stack<Repeater> _repeaterStack;
+        private readonly Stack<Match> _matchStack; 
 
         private readonly ChannelStack _output;
         private readonly RNG _rng;
@@ -74,6 +76,22 @@ namespace Manhood
             return pass;
         }
 
+        public string GetMatchString(string group = null)
+        {
+            if (!_matchStack.Any()) return "";
+            return !String.IsNullOrEmpty(@group) ? _matchStack.Peek().Groups[@group].Value : _matchStack.Peek().Value;
+        }
+
+        public void PushMatch(Match match)
+        {
+            _matchStack.Push(match);
+        }
+
+        public Match PopMatch()
+        {
+            return _matchStack.Pop();
+        }
+
         public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
         {
             _mainSource = input;
@@ -86,6 +104,7 @@ namespace Manhood
             _stateCount = 0;
             _resultStack = new Stack<ChannelSet>(1);
             _repeaterStack = new Stack<Repeater>(1);
+            _matchStack = new Stack<Match>(1);
             _mainState = State.Create(input, this);
             _prevState = null;
             _chance = 100;
@@ -184,9 +203,12 @@ namespace Manhood
                 {
                 }
 
-                if (!state.SharesOutput) _resultStack.Push(state.Output.GetChannels());
+                if (!state.SharesOutput && state.Finish())
+                {
+                    _resultStack.Push(state.Output.GetChannels());
+                }
 
-                PopState(); // Remove state from stack
+                if (state == CurrentState) PopState(); // Remove state from stack as long as nothing else was added beforehand
             }
 
             return _resultStack.Pop();

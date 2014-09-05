@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Manhood.Compiler;
 
@@ -37,21 +38,32 @@ namespace Manhood
             get { return _pos >= _tokens.Length; }
         }
 
+        public Token<TokenType> PrevToken
+        {
+            get { return _pos == 0 ? null : _tokens[_pos - 1]; }
+        }
+            
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Token<TokenType> ReadToken()
         {
-            return End ? null : _tokens[_pos++];
+            if (End) throw new ManhoodException(_source, null, "Unexpected end of file.");
+            return _tokens[_pos++];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Token<TokenType> PeekToken()
         {
-            return End ? null : _tokens[_pos];
+            if (End) throw new ManhoodException(_source, null, "Unexpected end of file.");
+            return _tokens[_pos];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsNext(TokenType type)
         {
             return !End && _tokens[_pos].Identifier == type;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Take(TokenType type)
         {
             if (End) return false;
@@ -60,6 +72,24 @@ namespace Manhood
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TakeAll(TokenType type)
+        {
+            if (End || _tokens[_pos].Identifier != type) return false;
+            do
+            {
+                _pos++;
+            } while (!End && _tokens[_pos].Identifier == type);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool SkipSpace()
+        {
+            return TakeAll(TokenType.SymbolSpacing);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
             // This exception should not happen when running patterns - only if I mess something up in the code.
@@ -120,10 +150,14 @@ namespace Manhood
             throw new ManhoodException(_source, null, "Unexpected end of file - expected '" + Lexer.Rules.GetSymbolForId(close) + "'.");
         }
 
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadItemsToScopeClose(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<IEnumerable<Token<TokenType>>> ReadItemsToClosureTrimmed(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
             var stack = new Stack<Token<TokenType>>(2);
             Token<TokenType> token = null;
+
+            TakeAll(TokenType.SymbolSpacing);
+
             int start = _pos;
             while (!End)
             {
@@ -158,7 +192,10 @@ namespace Manhood
                 else if (token.Identifier == separator && !stack.Any())
                 {
                     yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
-                    start = _pos + 1;
+                    _pos++;
+                    TakeAll(TokenType.SymbolSpacing);
+                    start = _pos;
+                    continue;
                 }
 
                 _pos++;
@@ -166,6 +203,7 @@ namespace Manhood
             throw new ManhoodException(_source, null, "Unexpected end of file - expected '" + Lexer.Rules.GetSymbolForId(close) + "'.");
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, BracketPairs bracketPairs)
         {
             var stack = new Stack<Token<TokenType>>(2);

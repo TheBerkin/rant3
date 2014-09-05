@@ -213,7 +213,35 @@ namespace Manhood
 
         internal string GetWord(Interpreter interpreter, Query query)
         {
-            return "NOT_IMPLEMENTED";
+            var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
+            if (index == -1)
+            {
+                return "BAD_SUBTYPE";
+            }
+
+            IEnumerable<DictionaryEntry> pool = _words;
+
+            pool = query.Exclusive 
+                ? pool.Where(e => e.Classes.Any() && e.Classes.All(c => query.ClassFilters.Any(t => t.Item2 == c))) 
+                : pool.Where(e => query.ClassFilters.All(t => t.Item1 == (e.Classes.Contains(t.Item2))));
+
+            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Values[index])));
+
+            if (!pool.Any())
+            {
+                return "NOT_FOUND";
+            }
+
+            int number = String.IsNullOrEmpty(query.Carrier) ? interpreter.RNG.Next(pool.Sum(e => e.Weight)) + 1
+                : interpreter.RNG.PeekAt(query.Carrier.Hash(), pool.Sum(e => e.Weight));
+
+            foreach (var e in pool)
+            {
+                if (number <= e.Weight) return e.Values[index];
+                number -= e.Weight;
+            }
+
+            return "NOT_FOUND";
         }
 
         private List<DictionaryEntry> GetClassIndexList(string className)

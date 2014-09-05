@@ -10,10 +10,11 @@ namespace Manhood.Compiler
     internal static class Lexer
     {
         public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", RegexOptions.ExplicitCapture);
-        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?");
+        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", RegexOptions.ExplicitCapture);
 
-        private static readonly Regex WhitespaceRegex = new Regex(@"(^[\s\t]+|[\r\n]+|[\s\t]+$)", RegexOptions.Multiline);
-        private static readonly Regex CommentRegex = new Regex(@"``(([\r\n]|.)*?[^\\])?``");
+        private static readonly Regex WhitespaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+        private static readonly Regex SymbolSpacingRegex = new Regex(@"((?<=[^\sa-z0-9])\s+|\s+(?=[^\sa-z0-9]))", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+        private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", RegexOptions.ExplicitCapture);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", RegexOptions.ExplicitCapture);
 
         internal static readonly LexerRules<TokenType> Rules;
@@ -45,8 +46,8 @@ namespace Manhood.Compiler
                 {"-", TokenType.Hyphen},
                 {"!", TokenType.Exclamation},
                 {"$", TokenType.Dollar},
-                {CommentRegex, TokenType.Ignore},
-                {WhitespaceRegex, TokenType.Ignore}
+                {CommentRegex, TokenType.Ignore, 3},
+                {WhitespaceRegex, TokenType.Ignore, 2}
             };
             Rules.AddUndefinedCaptureRule(TokenType.Text, TruncatePadding);
             Rules.AddEndToken(TokenType.EOF);

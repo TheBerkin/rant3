@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Manhood;
 
@@ -38,7 +39,7 @@ namespace MHC
             Console.Title = "Manhood";
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            var mh = new Engine();
+            var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, NsfwFilter.Allow);
 
             while (true)
             {

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 using Manhood.Compiler;
 
+using Stringes;
 using Stringes.Tokens;
 
 namespace Manhood
@@ -28,6 +29,15 @@ namespace Manhood
             {'x', rng => rng == null ? '?' : "0123456789abcdef"[rng.Next(16)]},
             {'X', rng => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
         };
+
+        public static Regex ParseRegex(string regexLiteral)
+        {
+            if (String.IsNullOrEmpty(regexLiteral)) throw new ArgumentException("Argument 'regexLiteral' cannot be null or empty.");
+            bool noCase = regexLiteral.EndsWith("i");
+            var literal = regexLiteral.TrimEnd('i');
+            if (!literal.StartsWith("/") || !literal.EndsWith("/")) throw new FormatException("Regex literal was not in the correct format.");
+            return new Regex(literal.Slice(1, literal.Length - 1), (noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture);
+        }
 
         public static string UnescapeConstantLiteral(string literal)
         {
