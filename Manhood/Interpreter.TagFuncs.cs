@@ -285,10 +285,14 @@ namespace Manhood
                 _func = func;
             }
 
+            public void ValidateArgCount(Source source, Stringe tagName, int count)
+            {
+                if (count != _paramCount)
+                    throw new ManhoodException(source, tagName, "Tag '" + tagName.Value + "' expected " + _paramCount + " " + (_paramCount == 1 ? "argument" : "arguments") + " but got " + count + ".");
+            }
+
             public bool Invoke(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
             {
-                if (args.Length != _paramCount)
-                    throw new ManhoodException(source, tagName, "Tag '" + tagName.Value + "' expected " + _paramCount + " " + (_paramCount == 1 ? "argument" : "arguments") + " but got " + args.Length + ".");
                 return _func(interpreter, source, tagName, args);
             }
         }

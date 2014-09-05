@@ -28,6 +28,8 @@ namespace Manhood.Blueprints
                 throw new ManhoodException(Source, Name, "The tag '" + Name.Value + "' does not exist.");
             }
 
+            _tagDef.ValidateArgCount(source, name, args != null ? args.Length : 0);
+
             if (args == null)
             {
                 _args = Enumerable.Empty<TagArg>().ToArray();
