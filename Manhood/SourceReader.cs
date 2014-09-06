@@ -64,23 +64,46 @@ namespace Manhood
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Take(TokenType type)
+        public bool Take(TokenType type, bool allowEof = true)
         {
-            if (End) return false;
+            if (End)
+            {
+                if (!allowEof)
+                    throw new ManhoodException(_source, null, "Unexpected end-of-file.");
+                return false;
+            }
             if (_tokens[_pos].Identifier != type) return false;
             _pos++;
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TakeAll(TokenType type)
+        public bool TakeAll(TokenType type, bool allowEof = true)
         {
-            if (End || _tokens[_pos].Identifier != type) return false;
+            if (End)
+            {
+                if (!allowEof)
+                    throw new ManhoodException(_source, null, "Unexpected end-of-file.");
+                return false;
+            }
+            if (_tokens[_pos].Identifier != type) return false;
             do
             {
                 _pos++;
             } while (!End && _tokens[_pos].Identifier == type);
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Token<TokenType> Read(TokenType type, string expectedTokenName = null)
+        {
+            if (End) 
+                throw new ManhoodException(_source, null, "Expected " + (expectedTokenName ?? "'" + Lexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+            if (_tokens[_pos].Identifier != type)
+            {
+                throw new ManhoodException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + Lexer.Rules.GetSymbolForId(type) + "'"));
+            }
+            return _tokens[_pos++];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

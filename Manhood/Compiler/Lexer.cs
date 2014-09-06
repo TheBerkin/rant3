@@ -13,7 +13,6 @@ namespace Manhood.Compiler
         public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", RegexOptions.ExplicitCapture);
 
         private static readonly Regex WhitespaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
-        private static readonly Regex SymbolSpacingRegex = new Regex(@"((?<=[^\sa-z0-9])\s+|\s+(?=[^\sa-z0-9]))", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
         private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", RegexOptions.ExplicitCapture);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", RegexOptions.ExplicitCapture);
 

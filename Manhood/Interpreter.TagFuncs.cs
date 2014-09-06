@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Manhood.Blueprints;
 using Manhood.Compiler;
@@ -45,6 +46,29 @@ namespace Manhood
             TagFuncs["alt"] = new TagDef(Alt, TagArgType.Tokens, TagArgType.Tokens);
             TagFuncs["match"] = new TagDef(ReplaceMatch);
             TagFuncs["group"] = new TagDef(ReplaceGroup, TagArgType.Result);
+            TagFuncs["arg"] = new TagDef(Arg, TagArgType.Result);
+        }
+
+        private static bool Arg(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            if (!interpreter.SubArgStack.Any())
+                throw new ManhoodException(source, tagname, "Tried to access arguments outside of a subroutine body.");
+
+            TagArg arg;
+            var argName = args[0].GetString().Trim();
+            if (!interpreter.SubArgStack.Peek().TryGetValue(argName, out arg))
+                throw new ManhoodException(source, tagname, "Could not find argument '" + argName + "'.");
+
+            // Argument is string
+            if (arg.Type == TagArgType.Result)
+            {
+                interpreter.Print(arg.GetString());
+                return false;
+            }
+            
+            // Argument is tokens
+            interpreter.PushState(State.CreateDerivedShared(source, arg.GetTokens(), interpreter));
+            return true;
         }
 
         private static bool ReplaceGroup(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

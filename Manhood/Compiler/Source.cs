@@ -88,6 +88,11 @@ namespace Manhood.Compiler
             return new Source(source._name, source._type, tokens, source._code);
         }
 
+        internal static Source Derived(string name, Source source, IEnumerable<Token<TokenType>> tokens)
+        {
+            return new Source(name, source._type, tokens, source._code);
+        }
+
         /// <summary>
         /// Loads the file located at the specified path and creates a Source object from its contents.
         /// </summary>
@@ -104,7 +109,7 @@ namespace Manhood.Compiler
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Concat(Type, ": \"", Name, "\" (", Encoding.UTF8.GetByteCount(_code), " B)");
+            return String.Concat("(", Type, ") ", Name);
         }
     }
 }

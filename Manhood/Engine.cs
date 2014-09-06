@@ -20,10 +20,16 @@ namespace Manhood
         private static readonly RNG Seeds = new RNG();
 
         private readonly VarStore _vars;
+        private readonly SubStore _subs;
 
         internal VarStore Variables
         {
             get { return _vars; }
+        }
+
+        internal SubStore Subroutines
+        {
+            get { return _subs; }
         }
 
         /// <summary>
@@ -33,6 +39,7 @@ namespace Manhood
         {
             InitializeVocab("", DefaultNsfwFilter);
             _vars = new VarStore();
+            _subs = new SubStore();
         }
 
         /// <summary>
@@ -43,6 +50,7 @@ namespace Manhood
         {
             InitializeVocab(vocabularyPath, DefaultNsfwFilter);
             _vars = new VarStore();
+            _subs = new SubStore();
         }
 
         /// <summary>
@@ -54,6 +62,7 @@ namespace Manhood
         {
             InitializeVocab(vocabularyPath, filter);
             _vars = new VarStore();
+            _subs = new SubStore();
         }
 
         /// <summary>

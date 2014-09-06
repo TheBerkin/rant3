@@ -2,7 +2,7 @@
 
 namespace Manhood
 {
-    internal static class Extensions
+    internal static class __
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte RotL(this sbyte data, int times)

@@ -71,6 +71,7 @@
     <Compile Include="Blueprints\RepeaterBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterStackBlueprint.cs" />
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
+    <Compile Include="Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Blueprints\TagBlueprint.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="Compiler\SourceType.cs" />
     <Compile Include="SourceReader.cs" />
     <Compile Include="Interpreter.State.cs" />
+    <Compile Include="Subroutine.cs" />
+    <Compile Include="SubStore.cs" />
     <Compile Include="SyncType.cs" />
     <Compile Include="Synchronizer.cs" />
     <Compile Include="TagArg.cs" />

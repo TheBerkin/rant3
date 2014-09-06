@@ -45,12 +45,11 @@ namespace Manhood
                 _postBlueprints = new Stack<Blueprint>();
                 _interpreter = ii;
                 _output = output;
-                _reader =
-                    new SourceReader(new Source(derivedSource.Name, derivedSource.Type, tokens, derivedSource.Code));
+                _reader = new SourceReader(new Source(derivedSource.Name, derivedSource.Type, tokens, derivedSource.Code));
                 _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
-            private State(Interpreter ii, Source source, ChannelStack output)
+            public State(Interpreter ii, Source source, ChannelStack output)
             {
                 _finished = false;
                 _preBlueprints = new Stack<Blueprint>();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Manhood;
@@ -35,6 +34,7 @@ namespace MHC
                     Flags.Add(argKeyVal[0]);
                 }
             }
+
 
             Console.Title = "Manhood";
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;

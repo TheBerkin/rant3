@@ -33,7 +33,7 @@ namespace Manhood.Blueprints
             if (!_inputCollected)
             {
                 // Get the replacer's input string
-                _input = I.PopResult();
+                _input = I.PopResultString();
                 _inputCollected = true;
 
                 // Queue this blueprint for after the matches are evaluated
@@ -76,7 +76,7 @@ namespace Manhood.Blueprints
                 foreach (Match match in _matches)
                 {
                     sb.Append(_input.Substring(start, match.Index - start));
-                    sb.Append(I.PopResult());
+                    sb.Append(I.PopResultString());
                     start = match.Index + match.Length;
                 }
 

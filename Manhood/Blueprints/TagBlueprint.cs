@@ -23,7 +23,7 @@ namespace Manhood.Blueprints
             Source = source;
             Name = name;
 
-            if (!Interpreter.TagFuncs.TryGetValue(Name.Value.ToLower(), out _tagDef))
+            if (!Interpreter.TagFuncs.TryGetValue(Name.Value.ToLower().Trim(), out _tagDef))
             {
                 throw new ManhoodException(Source, Name, "The tag '" + Name.Value + "' does not exist.");
             }
@@ -55,7 +55,7 @@ namespace Manhood.Blueprints
             // Fill in empty string arguments with state results.
             for (int i = 0; i < _args.Length; i++)
             {
-                if (_args[i] == null) _args[i] = TagArg.FromString(I.PopResult());
+                if (_args[i] == null) _args[i] = TagArg.FromString(I.PopResultString());
             }
 
             // Call the tag

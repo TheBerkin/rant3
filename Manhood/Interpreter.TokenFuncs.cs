@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Manhood.Blueprints;
 using Manhood.Compiler;
@@ -29,10 +31,8 @@ namespace Manhood
         {
             var first = reader.ReadToken();
             reader.SkipSpace();
-            if (!reader.IsNext(TokenType.Text))
-                throw new ManhoodException(reader.Source, first, "Expected dictionary identifier at beginning of query.");
 
-            var namesub = reader.ReadToken().Split(new[] { '.' }, 2).ToArray();
+            var namesub = reader.Read(TokenType.Text, "list name").Split(new[] { '.' }, 2).ToArray();
             var q = new Query(namesub[0].Value.Trim(), namesub.Length == 2 ? namesub[1].Value : "", "", reader.Take(TokenType.Dollar), null, null);
 
             Token<TokenType> token = null;
@@ -41,40 +41,26 @@ namespace Manhood
             {
                 if (reader.Take(TokenType.Hyphen))
                 {
-                    reader.SkipSpace();
                     bool notin = reader.Take(TokenType.Exclamation);
                     if (notin && q.Exclusive)
                         throw new ManhoodException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
-                    reader.SkipSpace();
-                    token = reader.ReadToken();
-                    if (token.Identifier != TokenType.Text)
-                        throw new ManhoodException(reader.Source, token, "Class identifier expected after '-' in query.");
+                    token = reader.Read(TokenType.Text, "class identifier");
                     q.ClassFilters.Add(Tuple.Create(!notin, token.Value.Trim()));
                 }
                 else if (reader.Take(TokenType.Question))
                 {
-                    reader.SkipSpace();
-                    token = reader.ReadToken();
-                    if (token.Identifier != TokenType.Regex)
-                        throw new ManhoodException(reader.Source, token, "Regular expression expected after '?' in query.");
+                    token = reader.Read(TokenType.Regex, "regex");
                     q.RegexFilters.Add(Tuple.Create(true, Util.ParseRegex(token.Value)));
                 }
                 else if (reader.Take(TokenType.Without))
                 {
-                    reader.SkipSpace();
-                    token = reader.ReadToken();
-                    if (token.Identifier != TokenType.Regex)
-                        throw new ManhoodException(reader.Source, token, "Regular expression expected after '?!' in query.");
+                    token = reader.Read(TokenType.Regex, "regex");
                     q.RegexFilters.Add(Tuple.Create(false, Util.ParseRegex(token.Value)));
                 }
                 else if (reader.Take(TokenType.DoubleColon))
                 {
-                    reader.SkipSpace();
-                    token = reader.ReadToken();
-                    if (token.Identifier != TokenType.Text)
-                        throw new ManhoodException(reader.Source, token, "Carrier string expected after '::' in query.");
+                    token = reader.Read(TokenType.Text, "carrier name");
                     q.Carrier = token.Value.Trim();
-                    reader.SkipSpace();
                     if (!reader.Take(TokenType.RightAngle))
                     {
                         throw new ManhoodException(reader.Source, token, "Expected '>' after carrier. (The carrier should be your last query argument!)");
@@ -99,9 +85,7 @@ namespace Manhood
 
         private static bool DoText(Interpreter interpreter, SourceReader reader, State state)
         {
-            var token = reader.ReadToken();
-            if (!token.Value.Trim().Any()) return false;
-            interpreter.Print(token.Value);
+            interpreter.Print(reader.ReadToken().Value);
             return false;
         }
 
@@ -119,7 +103,7 @@ namespace Manhood
 
         private static bool DoTag(Interpreter interpreter, SourceReader reader, State state)
         {
-            reader.Take(TokenType.LeftSquare);
+            reader.Read(TokenType.LeftSquare);
             var name = reader.ReadToken();
 
             // Check if metapattern
@@ -133,20 +117,24 @@ namespace Manhood
             // Check if replacer
             if (name.Identifier == TokenType.Regex)
             {
-                if (!reader.Take(TokenType.Colon))
-                    throw new ManhoodException(reader.Source, name, "Expected ':' after replacer pattern.");
-
-                var args = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
-                if (args.Length != 2) throw new ManhoodException(reader.Source, name, "Replacer expected 2 arguments, but got " + args.Length + ".");
-
-                state.AddPreBlueprint(new ReplacerBlueprint(interpreter, Util.ParseRegex(name.Value), args[1]));
-
-                interpreter.PushState(State.CreateDerivedDistinct(reader.Source, args[0], interpreter));
-                return true;
+                return DoReplacer(name, interpreter, reader, state);
             }
 
-            if (!Util.ValidateName(name.Value))
+            if (name.Identifier == TokenType.Dollar)
+            {
+                if (reader.IsNext(TokenType.Text))
+                {
+                    return DoSubCall(name, interpreter, reader, state);
+                }
+                else
+                {
+                    return DoSubDefinition(name, interpreter, reader, state);
+                }
+            }
+
+            if (!Util.ValidateName(name.Value.Trim()))
                 throw new ManhoodException(reader.Source, name, "Invalid tag name '" + name.Value + "'");
+
             bool none = false;
             if (!reader.Take(TokenType.Colon))
             {
@@ -166,6 +154,112 @@ namespace Manhood
 
                 state.AddPreBlueprint(new TagBlueprint(interpreter, reader.Source, name, items));
             }
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool DoSubCall(Token<TokenType> first, Interpreter interpreter, SourceReader reader, State state)
+        {
+            var name = reader.ReadToken();
+            if (!Util.ValidateName(name.Value))
+                throw new ManhoodException(reader.Source, name, "Invalid subroutine name '" + name.Value + "'");
+            
+            bool none = false;
+
+            if (!reader.Take(TokenType.Colon))
+            {
+                if (!reader.Take(TokenType.RightSquare))
+                    throw new ManhoodException(reader.Source, name, "Expected ':' or ']' after subroutine name.");
+                
+                none = true;
+            }
+
+            IEnumerable<Token<TokenType>>[] args = null;
+            Subroutine sub = null;
+
+            if (none)
+            {
+                if((sub = interpreter.Engine.Subroutines.Get(name.Value, 0)) == null)
+                    throw new ManhoodException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and 0 parameters.");
+            }
+            else
+            {
+                args = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon,
+                    BracketPairs.All).ToArray();
+                if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
+                    throw new ManhoodException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and " + args.Length + " parameter" + (args.Length != 1 ? "s" : "") + ".");
+            }
+
+            state.AddPreBlueprint(new SubCallBlueprint(interpreter, reader.Source, sub, args));
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool DoSubDefinition(Token<TokenType> first, Interpreter interpreter, SourceReader reader, State state)
+        {
+            bool meta = reader.Take(TokenType.Question);
+            reader.Read(TokenType.LeftSquare);
+
+            var parameters = new List<Tuple<string, TagArgType>>();
+            var tName = reader.Read(TokenType.Text, "subroutine name");
+
+            if (!Util.ValidateName(tName.Value))
+                throw new ManhoodException(reader.Source, tName, "Invalid subroutine name: '" + tName.Value + "'");
+
+            if (!reader.Take(TokenType.Colon))
+            {
+                reader.Read(TokenType.RightSquare);
+            }
+            else
+            {
+                while (true)
+                {
+                    bool isTokens = reader.Take(TokenType.At);
+                    parameters.Add(Tuple.Create(reader.Read(TokenType.Text, "parameter name").Value, isTokens ? TagArgType.Tokens : TagArgType.Result));
+                    if (reader.Take(TokenType.RightSquare, false))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        reader.Read(TokenType.Semicolon);
+                    }
+                }
+            }
+
+            reader.Read(TokenType.Colon);
+
+            var body = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All).ToArray();
+
+            if (meta)
+            {
+                interpreter.PushState(State.CreateDerivedDistinct(reader.Source, body, interpreter));
+                state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
+                {
+                    _.Engine.Subroutines.Define(tName.Value, Subroutine.FromString(tName.Value, _.PopResultString(), parameters.ToArray()));
+                    return false;
+                }));
+            }
+            else
+            {
+                interpreter.Engine.Subroutines.Define(tName.Value, Subroutine.FromTokens(tName.Value, reader.Source, body, parameters.ToArray()));
+            }
+
+            return meta;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool DoReplacer(Token<TokenType> name, Interpreter interpreter, SourceReader reader, State state)
+        {
+            reader.Read(TokenType.Colon);
+
+            var args = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
+            if (args.Length != 2) throw new ManhoodException(reader.Source, name, "Replacer expected 2 arguments, but got " + args.Length + ".");
+
+            state.AddPreBlueprint(new ReplacerBlueprint(interpreter, Util.ParseRegex(name.Value), args[1]));
+
+            interpreter.PushState(State.CreateDerivedDistinct(reader.Source, args[0], interpreter));
             return true;
         }
 

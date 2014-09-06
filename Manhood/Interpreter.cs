@@ -12,23 +12,30 @@ namespace Manhood
 {
     internal partial class Interpreter
     {
-        private BlockAttribs _blockAttribs;
-        private int _chance;
-
-        private int _stateCount;
-
-        private State _prevState;
-        private readonly State _mainState;
-        private readonly Stack<State> _stateStack;
-        private readonly Stack<ChannelSet> _resultStack;
-        private readonly Stack<Repeater> _repeaterStack;
-        private readonly Stack<Match> _matchStack; 
-
-        private readonly ChannelStack _output;
+        // Main fields
         private readonly RNG _rng;
         private readonly Source _mainSource;
         private readonly Engine _engine;
         private readonly Vocabulary _vocab;
+
+        // Next block attribs
+        private BlockAttribs _blockAttribs = new BlockAttribs();
+
+        // The chance value of the next block
+        private int _chance = 100;
+
+        // State information
+        private int _stateCount = 0;
+        private State _prevState = null;
+        private readonly State _mainState;
+
+        // Stacks
+        private readonly Stack<State> _stateStack = new Stack<State>();
+        private readonly Stack<ChannelSet> _resultStack = new Stack<ChannelSet>();
+        private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
+        private readonly Stack<Match> _matchStack = new Stack<Match>();
+        private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>(); 
+        private readonly ChannelStack _output = new ChannelStack(0);
 
         public Engine Engine
         {
@@ -40,6 +47,23 @@ namespace Manhood
             get { return _blockAttribs; }
             set { _blockAttribs = value; }
         }
+
+        public Vocabulary Vocabulary
+        {
+            get { return _vocab; }
+        }
+
+        public RNG RNG
+        {
+            get { return _rng; }
+        }
+
+        public Stack<Dictionary<string, TagArg>> SubArgStack
+        {
+            get { return _subArgStack; }
+        }
+
+        #region Repeaters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PushRepeater(Repeater repeater)
@@ -58,10 +82,9 @@ namespace Manhood
             get { return _repeaterStack.Any() ? _repeaterStack.Peek() : null; }
         }
 
-        public Vocabulary Vocabulary
-        {
-            get { return _vocab; }
-        }
+        #endregion
+
+        #region Chance
 
         public void SetChance(int chance)
         {
@@ -75,6 +98,10 @@ namespace Manhood
             _chance = 100;
             return pass;
         }
+
+        #endregion
+
+        #region Replacers
 
         public string GetMatchString(string group = null)
         {
@@ -92,34 +119,9 @@ namespace Manhood
             return _matchStack.Pop();
         }
 
-        public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
-        {
-            _mainSource = input;
-            _blockAttribs = new BlockAttribs();
-            _rng = rng;
-            _vocab = vocab;
-            _engine = engine;
-            _output = new ChannelStack(0);
-            _stateStack = new Stack<State>(1);
-            _stateCount = 0;
-            _resultStack = new Stack<ChannelSet>(1);
-            _repeaterStack = new Stack<Repeater>(1);
-            _matchStack = new Stack<Match>(1);
-            _mainState = State.Create(input, this);
-            _prevState = null;
-            _chance = 100;
-        }
+        #endregion
 
-        public void Print(object input)
-        {
-            _stateStack.Peek().Output.Write(input.ToString());
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string PopResult()
-        {
-            return !_resultStack.Any() ? "" : _resultStack.Pop().MainOutput;
-        }
+        #region States
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PushState(State state)
@@ -152,9 +154,26 @@ namespace Manhood
             get { return _stateStack.Peek(); }
         }
 
-        public RNG RNG
+        #endregion
+        
+        public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
         {
-            get { return _rng; }
+            _mainSource = input;
+            _rng = rng;
+            _vocab = vocab;
+            _engine = engine;
+            _mainState = State.Create(input, this);
+        }
+
+        public void Print(object input)
+        {
+            _stateStack.Peek().Output.Write(input.ToString());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string PopResultString()
+        {
+            return !_resultStack.Any() ? "" : _resultStack.Pop().MainOutput;
         }
 
         public ChannelSet Run()
@@ -199,16 +218,16 @@ namespace Manhood
                 }
 
                 // Use post-blueprints
-                while (state.UsePostBlueprint())
-                {
-                }
+                while (state.UsePostBlueprint()) { }
 
+                // Push a result string if the state's output differs from the one below it
                 if (!state.SharesOutput && state.Finish())
                 {
                     _resultStack.Push(state.Output.GetChannels());
                 }
 
-                if (state == CurrentState) PopState(); // Remove state from stack as long as nothing else was added beforehand
+                // Remove state from stack as long as nothing else was added beforehand
+                if (state == CurrentState) PopState();
             }
 
             return _resultStack.Pop();
