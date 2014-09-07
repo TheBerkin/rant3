@@ -15,7 +15,8 @@ namespace Manhood
         private readonly int _col;
         private readonly int _index;
         private readonly Source _source;
-        
+        private readonly int _length;
+
         /// <summary>
         /// The line on which the error occurred.
         /// </summary>
@@ -32,6 +33,11 @@ namespace Manhood
         public int Index { get { return _index; } }
 
         /// <summary>
+        /// The length of the substring in which the error occurred.
+        /// </summary>
+        public int Length { get { return _length; } }
+
+        /// <summary>
         /// The source of the error.
         /// </summary>
         public Source SourceCode { get { return _source; } }
@@ -44,11 +50,13 @@ namespace Manhood
                 _line = token.Line;
                 _col = token.Column;
                 _index = token.Offset;
+                _length = token.Length;
             }
             else
             {
                 _line = _col = 1;
                 _index = 0;
+                _length = 0;
             }
         }
     }
