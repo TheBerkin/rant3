@@ -9,12 +9,14 @@ namespace Manhood.Compiler
 {
     internal static class Lexer
     {
-        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", RegexOptions.ExplicitCapture);
-        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", RegexOptions.ExplicitCapture);
+        private const RegexOptions MhRegexOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
-        private static readonly Regex WhitespaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", RegexOptions.Multiline | RegexOptions.ExplicitCapture);
-        private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", RegexOptions.ExplicitCapture);
-        private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", RegexOptions.ExplicitCapture);
+        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", MhRegexOptions);
+        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", MhRegexOptions);
+
+        private static readonly Regex WhitespaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", MhRegexOptions | RegexOptions.Multiline);
+        private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", MhRegexOptions);
+        private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", MhRegexOptions);
 
         internal static readonly LexerRules<TokenType> Rules;
 
