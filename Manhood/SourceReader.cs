@@ -15,6 +15,8 @@ namespace Manhood
         private readonly Token<TokenType>[] _tokens;
         private int _pos;
 
+        private readonly Stack<Token<TokenType>> _stack = new Stack<Token<TokenType>>(10); 
+
         public SourceReader(Source source)
         {
             _source = source;
@@ -115,10 +117,10 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
+            _stack.Clear();
             // This exception should not happen when running patterns - only if I mess something up in the code.
             if (!IsNext(open)) throw new InvalidOperationException("The specified opening token does not occur at the reader position.");
 
-            var stack = new Stack<Token<TokenType>>(2);
             int start = _pos + 1;
             Token<TokenType> token = null;
 
@@ -130,13 +132,13 @@ namespace Manhood
                 // Opening bracket
                 if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Previous bracket allows nesting
                 {
-                    stack.Push(token);
+                    _stack.Push(token);
                 }
 
                 // Closing bracket
                 else if (bracketPairs.ContainsClosing(token.Identifier) || close == token.Identifier) // Previous bracket allows nesting
                 {
-                    var lastOpening = stack.Pop();
+                    var lastOpening = _stack.Pop();
 
                     // Handle invalid closures
                     if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier)) // Not in main pair
@@ -151,8 +153,8 @@ namespace Manhood
                             + "'");
                     }
 
-                    // If the stack is empty, this is the last item. Stop the iterator.
-                    if (!stack.Any())
+                    // If the _stack is empty, this is the last item. Stop the iterator.
+                    if (!_stack.Any())
                     {
                         yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                         _pos++;
@@ -161,7 +163,7 @@ namespace Manhood
                 }
 
                 // Separator
-                else if (token.Identifier == separator && stack.Count == 1)
+                else if (token.Identifier == separator && _stack.Count == 1)
                 {
                     yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                     start = _pos + 1;
@@ -176,7 +178,7 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IEnumerable<Token<TokenType>>> ReadItemsToClosureTrimmed(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
-            var stack = new Stack<Token<TokenType>>(2);
+            _stack.Clear();
             Token<TokenType> token = null;
 
             TakeAll(TokenType.SymbolSpacing);
@@ -187,19 +189,19 @@ namespace Manhood
                 token = PeekToken();
                 if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Allows nesting
                 {
-                    stack.Push(token);
+                    _stack.Push(token);
                 }
                 else if (bracketPairs.ContainsClosing(token.Identifier) || token.Identifier == close) // Allows nesting
                 {
-                    // Since this method assumes that the first opening bracket was already read, an empty stack indicates main scope closure.
-                    if (!stack.Any() && token.Identifier == close)
+                    // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
+                    if (!_stack.Any() && token.Identifier == close)
                     {
                         yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                         _pos++;
                         yield break;
                     }
 
-                    var lastOpening = stack.Pop();
+                    var lastOpening = _stack.Pop();
                     if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier))
                     {
                         throw new ManhoodException(_source, token,
@@ -212,7 +214,7 @@ namespace Manhood
                             + "'");
                     }
                 }
-                else if (token.Identifier == separator && !stack.Any())
+                else if (token.Identifier == separator && !_stack.Any())
                 {
                     yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                     _pos++;
@@ -229,24 +231,24 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, BracketPairs bracketPairs)
         {
-            var stack = new Stack<Token<TokenType>>(2);
+            _stack.Clear();
             Token<TokenType> token = null;
             while (!End)
             {
                 token = ReadToken();
                 if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Allows nesting
                 {
-                    stack.Push(token);
+                    _stack.Push(token);
                 }
                 else if (bracketPairs.ContainsClosing(token.Identifier) || token.Identifier == close) // Allows nesting
                 {
-                    // Since this method assumes that the first opening bracket was already read, an empty stack indicates main scope closure.
-                    if (!stack.Any() && token.Identifier == close)
+                    // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
+                    if (!_stack.Any() && token.Identifier == close)
                     {
                         yield break;
                     }
 
-                    var lastOpening = stack.Pop();
+                    var lastOpening = _stack.Pop();
                     if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier))
                     {
                         throw new ManhoodException(_source, token,

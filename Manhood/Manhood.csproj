@@ -90,6 +90,8 @@
     <Compile Include="ChannelStack.cs" />
     <Compile Include="ChannelVisibility.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="NumberFormat.cs" />
+    <Compile Include="Numerals.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Repeater.cs" />
     <Compile Include="RNG.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,6 +30,30 @@ namespace Manhood
             {'x', rng => rng == null ? '?' : "0123456789abcdef"[rng.Next(16)]},
             {'X', rng => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
         };
+
+        
+
+        public static string NameToCamel(string name)
+        {
+            if (String.IsNullOrEmpty(name)) return name;
+            var sb = new StringBuilder();
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (i == 0)
+                {
+                    sb.Append(Char.ToUpper(name[i]));
+                }
+                else if ((name[i] == '_' || name[i] == '-') && i + 1 < name.Length)
+                {
+                    sb.Append(Char.ToUpper(name[++i]));
+                }
+                else
+                {
+                    sb.Append(Char.ToLower(name[i]));
+                }
+            }
+            return sb.ToString();
+        }
 
         public static Regex ParseRegex(string regexLiteral)
         {

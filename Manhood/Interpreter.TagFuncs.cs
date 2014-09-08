@@ -47,6 +47,32 @@ namespace Manhood
             TagFuncs["match"] = new TagDef(ReplaceMatch);
             TagFuncs["group"] = new TagDef(ReplaceGroup, TagArgType.Result);
             TagFuncs["arg"] = new TagDef(Arg, TagArgType.Result);
+            TagFuncs["numfmt"] = new TagDef(NumFmt, TagArgType.Result);
+            TagFuncs["caps"] = new TagDef(Caps, TagArgType.Result);
+        }
+
+        private static bool Caps(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            Capitalization caps;
+            var caps_str = args[0].GetString();
+            if (!Enum.TryParse(Util.NameToCamel(caps_str), out caps))
+            {
+                throw new ManhoodException(source, tagname, "Invalid capitalization format '" + caps_str + "'");
+            }
+            interpreter.Capitalization = caps;
+            return false;
+        }
+
+        private static bool NumFmt(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            NumberFormat fmt;
+            var fmtstr = args[0].GetString();
+            if (!Enum.TryParse(Util.NameToCamel(fmtstr), out fmt))
+            {
+                throw new ManhoodException(source, tagname, "Invalid number format '" + fmtstr + "'");
+            }
+            interpreter.NumberFormat = fmt;
+            return false;
         }
 
         private static bool Arg(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
@@ -258,7 +284,7 @@ namespace Manhood
             {
                 throw new ManhoodException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
-            interpreter.Print(interpreter.RNG.Next(a, b + 1));
+            interpreter.Print(Numerals.FormatNumber(interpreter.RNG.Next(a, b + 1), interpreter.NumberFormat));
             return false;
         }
 

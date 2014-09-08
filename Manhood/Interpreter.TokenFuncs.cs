@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -217,14 +216,8 @@ namespace Manhood
                 {
                     bool isTokens = reader.Take(TokenType.At);
                     parameters.Add(Tuple.Create(reader.Read(TokenType.Text, "parameter name").Value, isTokens ? TagArgType.Tokens : TagArgType.Result));
-                    if (reader.Take(TokenType.RightSquare, false))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        reader.Read(TokenType.Semicolon);
-                    }
+                    if (reader.Take(TokenType.RightSquare, false)) break;
+                    reader.Read(TokenType.Semicolon);
                 }
             }
 

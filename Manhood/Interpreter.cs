@@ -24,6 +24,15 @@ namespace Manhood
         // The chance value of the next block
         private int _chance = 100;
 
+        // Number format
+        private NumberFormat _numfmt = NumberFormat.Normal;
+
+        // Capitalization
+        private Capitalization _caps = Capitalization.None;
+        private char _lastChar = ' ';
+        private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+        private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+
         // State information
         private int _stateCount = 0;
         private State _prevState = null;
@@ -61,6 +70,42 @@ namespace Manhood
         public Stack<Dictionary<string, TagArg>> SubArgStack
         {
             get { return _subArgStack; }
+        }
+
+        public NumberFormat NumberFormat
+        {
+            get { return _numfmt; }
+            set { _numfmt = value; }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string Capitalize(string input)
+        {
+            if (String.IsNullOrEmpty(input) || _caps == Capitalization.None) return input;
+            switch (_caps)
+            {
+                case Capitalization.Lower:
+                    input = input.ToLower();
+                    break;
+                case Capitalization.Upper:
+                    input = input.ToUpper();
+                    break;
+                case Capitalization.First:
+                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
+                    _caps = Capitalization.None;
+                    break;
+                case Capitalization.Proper:
+                    input = RegCapsProper.Replace(input, m => m.Value.ToUpper());
+                    break;
+            }
+            _lastChar = input[input.Length - 1];
+            return input;
+        }
+
+        public Capitalization Capitalization
+        {
+            get { return _caps; }
+            set { _caps = value; }
         }
 
         #region Repeaters
@@ -167,7 +212,7 @@ namespace Manhood
 
         public void Print(object input)
         {
-            _stateStack.Peek().Output.Write(input.ToString());
+            _stateStack.Peek().Print(input.ToString());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

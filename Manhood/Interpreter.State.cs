@@ -146,7 +146,7 @@ namespace Manhood
 
             public void Print(string value)
             {
-                _output.Write(value);
+                _output.Write(_interpreter.Capitalize(value));
             }
 
             public SourceReader Reader

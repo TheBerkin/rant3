@@ -8,7 +8,7 @@ namespace MHC
 {
     class Program
     {
-        static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
         private static readonly HashSet<string> Flags = new HashSet<string>();
 
         private static string GetArg(string name)
