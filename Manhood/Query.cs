@@ -11,17 +11,17 @@ namespace Manhood
         private string _subtype;
         private string _carrier;
         private bool _exclusive;
-        private readonly List<Tuple<bool, string>> _classFilters;
+        private readonly List<Tuple<bool, string>[]> _classFilters;
         private readonly List<Tuple<bool, Regex>> _regexFilters;
 
-        public Query(string name, string subtype, string carrier, bool exclusive, IEnumerable<Tuple<bool, string>> classFilters,
+        public Query(string name, string subtype, string carrier, bool exclusive, IEnumerable<Tuple<bool, string>[]> classFilters,
             IEnumerable<Tuple<bool, Regex>> regexFilters)
         {
             _name = name;
             _subtype = subtype;
             _exclusive = exclusive;
             _carrier = carrier;
-            _classFilters = new List<Tuple<bool, string>>(classFilters ?? Enumerable.Empty<Tuple<bool, string>>());
+            _classFilters = new List<Tuple<bool, string>[]>(classFilters ?? Enumerable.Empty<Tuple<bool, string>[]>());
             _regexFilters = new List<Tuple<bool, Regex>>(regexFilters ?? Enumerable.Empty<Tuple<bool, Regex>>());
         }
 
@@ -49,7 +49,7 @@ namespace Manhood
             set { _exclusive = value; }
         }
 
-        public List<Tuple<bool, string>> ClassFilters
+        public List<Tuple<bool, string>[]> ClassFilters
         {
             get { return _classFilters; }
         }

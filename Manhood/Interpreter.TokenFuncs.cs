@@ -36,15 +36,24 @@ namespace Manhood
 
             Token<TokenType> token = null;
 
+            // Class filter list. Not initialized unless class filters actually exist.
+            List<Tuple<bool, string>> cfList = null;
+
             while (true)
             {
                 if (reader.Take(TokenType.Hyphen))
                 {
-                    bool notin = reader.Take(TokenType.Exclamation);
-                    if (notin && q.Exclusive)
-                        throw new ManhoodException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
-                    token = reader.Read(TokenType.Text, "class identifier");
-                    q.ClassFilters.Add(Tuple.Create(!notin, token.Value.Trim()));
+                    // Initialize the filter list.
+                    (cfList ?? (cfList = new List<Tuple<bool, string>>())).Clear();
+
+                    do
+                    {
+                        bool notin = reader.Take(TokenType.Exclamation);
+                        if (notin && q.Exclusive)
+                            throw new ManhoodException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
+                        cfList.Add(Tuple.Create(!notin, reader.Read(TokenType.Text, "class identifier").Value.Trim()));
+                    } while (reader.Take(TokenType.Pipe));
+                    q.ClassFilters.Add(cfList.ToArray());
                 }
                 else if (reader.Take(TokenType.Question))
                 {

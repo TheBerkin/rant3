@@ -221,9 +221,9 @@ namespace Manhood
 
             IEnumerable<DictionaryEntry> pool = _words;
 
-            pool = query.Exclusive 
-                ? pool.Where(e => e.Classes.Any() && e.Classes.All(c => query.ClassFilters.Any(t => t.Item2 == c))) 
-                : pool.Where(e => query.ClassFilters.All(t => t.Item1 == (e.Classes.Contains(t.Item2))));
+            pool = query.Exclusive
+                ? pool.Where(e => e.Classes.Any() && e.Classes.All(c => query.ClassFilters.Any(set => set.Any(t => t.Item2 == c))))
+                : pool.Where(e => query.ClassFilters.All(set => set.Any(t => t.Item1 == (e.Classes.Contains(t.Item2)))));
 
             pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Values[index])));
 

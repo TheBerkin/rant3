@@ -163,6 +163,20 @@ namespace Manhood
             return buffer.ToString();
         }
 
+        private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo()
+        {
+            NumberGroupSizes = new []{3},
+            NumberGroupSeparator = ",",
+            NumberDecimalSeparator = "."
+        };
+
+        private static readonly NumberFormatInfo DotGroupFormat = new NumberFormatInfo()
+        {
+            NumberGroupSizes = new[] { 3 },
+            NumberGroupSeparator = ".",
+            NumberDecimalSeparator = ","
+        };
+
         public static string FormatNumber(int number, NumberFormat format)
         {
             switch (format)
@@ -170,7 +184,11 @@ namespace Manhood
                 case NumberFormat.Normal:
                     return number.ToString(CultureInfo.InvariantCulture);
                 case NumberFormat.Group:
-                    return String.Format("{0:##,###}", number);
+                    return String.Format("{0:n0}", number);
+                case NumberFormat.GroupCommas:
+                    return number.ToString("n0", CommaGroupFormat);
+                case NumberFormat.GroupDots:
+                    return number.ToString("n0", DotGroupFormat);
                 case NumberFormat.Roman:
                 case NumberFormat.RomanUpper:
                     {

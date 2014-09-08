@@ -121,21 +121,21 @@ namespace Manhood
         private static bool RepCount(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeater.");
-            interpreter.Print(interpreter.CurrentRepeater.Count);
+            interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Count));
             return false;
         }
 
         private static bool RepIndex(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeaters.");
-            interpreter.Print(interpreter.CurrentRepeater.Index);
+            interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Index));
             return false;
         }
 
         private static bool RepNum(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new ManhoodException(source, tagname, "No active repeaters.");
-            interpreter.Print(interpreter.CurrentRepeater.Index + 1);
+            interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Index + 1));
             return false;
         }
 
@@ -284,7 +284,7 @@ namespace Manhood
             {
                 throw new ManhoodException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
-            interpreter.Print(Numerals.FormatNumber(interpreter.RNG.Next(a, b + 1), interpreter.NumberFormat));
+            interpreter.Print(interpreter.FormatNumber(interpreter.RNG.Next(a, b + 1)));
             return false;
         }
 
@@ -306,7 +306,7 @@ namespace Manhood
             int num;
             if (!Int32.TryParse(reps, out num))
             {
-                throw new ManhoodException(source, tagName, "Invalid repetition value '" + args[0] + "' - must be a number.");
+                throw new ManhoodException(source, tagName, "Invalid repetition value '" + reps + "' - must be a number.");
             }
             if (num < 0)
             {

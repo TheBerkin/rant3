@@ -79,6 +79,12 @@ namespace Manhood
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string FormatNumber(int value)
+        {
+            return Numerals.FormatNumber(value, _numfmt);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string Capitalize(string input)
         {
             if (String.IsNullOrEmpty(input) || _caps == Capitalization.None) return input;
