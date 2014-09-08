@@ -6,9 +6,9 @@ namespace Manhood.Arithmetic
 {
     internal class NameExpression : Expression
     {
-        private readonly Token<TokenType> _name;
+        private readonly Token<MathTokenType> _name;
 
-        public NameExpression(Token<TokenType> token)
+        public NameExpression(Token<MathTokenType> token)
         {
             _name = token;
         }
@@ -18,10 +18,10 @@ namespace Manhood.Arithmetic
             get { return _name.Value; }
         }
 
-        public override double Evaluate(Source source, Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
             var d = ii.Engine.Variables.GetVar(_name.Value);
-            if (d == null) throw new ManhoodException(source, _name, "Tried to access undefined variable '" + _name.Value + "'.");
+            if (d == null) throw new ManhoodException(parser.Source, _name, "Tried to access undefined variable '" + _name.Value + "'.");
             return d.Value;
         }
     }

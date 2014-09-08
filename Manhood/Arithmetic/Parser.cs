@@ -12,17 +12,29 @@ namespace Manhood.Arithmetic
     internal partial class Parser
     {
         private int _pos;
-        private readonly Token<TokenType>[] _tokens;
+        private string _src;
+        private readonly Token<MathTokenType>[] _tokens;
 
-        public Parser(IEnumerable<Token<TokenType>> tokens)
+        public Parser(IEnumerable<Token<MathTokenType>> tokens)
         {
             _pos = 0;
             _tokens = tokens.ToArray();
         }
 
-        public static double Calculate(Interpreter ii, Stringe expression)
+        public string Source
         {
-            return new Parser(new Lexer(expression)).ParseExpression().Evaluate(new Source("Arithmetic" + expression.Value.Hash(), ii), );
+            get { return _src; }
+        }
+
+        public static double Calculate(Interpreter ii, string expression)
+        {
+            double result = 0;
+            foreach (var expr in expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var p = new Parser(new Lexer(expr.ToStringe()));
+                result = p.ParseExpression().Evaluate(p, ii);
+            }
+            return result;
         }
 
         public Expression ParseExpression(int precedence = 0)
@@ -32,7 +44,7 @@ namespace Manhood.Arithmetic
             IPrefixParselet prefixParselet;
             if (!prefixParselets.TryGetValue(token.Identifier, out prefixParselet))
             {
-                throw new ManhoodException("Invalid expression '" + token.Value + "'.");
+                throw new ManhoodException(_src, token, "Invalid expression '" + token.Value + "'.");
             }
 
             var left = prefixParselet.Parse(this, token);
@@ -44,7 +56,7 @@ namespace Manhood.Arithmetic
                 IInfixParselet infix;
                 if (!infixParselets.TryGetValue(token.Identifier, out infix))
                 {
-                    throw new ManhoodException("Invalid operator '" + token.Value + "'.");
+                    throw new ManhoodException(_src, token, "Invalid operator '" + token.Value + "'.");
                 }
 
                 // Replace the left expression with the next parsed expression.
@@ -60,28 +72,30 @@ namespace Manhood.Arithmetic
         /// <returns></returns>
         private int GetPrecedence()
         {
+            if (_pos == _tokens.Length) return 0;
             IInfixParselet infix;
             infixParselets.TryGetValue(Peek().Identifier, out infix);
             return infix != null ? infix.Precedence : 0;
         }
 
-        public Token<TokenType> Peek(int distance = 0)
+        public Token<MathTokenType> Peek(int distance = 0)
         {
+            if (_pos == _tokens.Length) return null;
             if (distance < 0) throw new ArgumentOutOfRangeException("distance");
             return _tokens[_pos + distance];
         }
 
-        public Token<TokenType> Take(TokenType type)
+        public Token<MathTokenType> Take(MathTokenType type)
         {
             var token = Take();
             if (token.Identifier != type)
             {
-                throw new ManhoodException(String.Concat("Expression expected ", type, ", but found ", token.Identifier, "."));
+                throw new ManhoodException(_src, token, String.Concat("Expression expected ", type, ", but found ", token.Identifier, "."));
             }
             return token;
         }
 
-        public Token<TokenType> Take()
+        public Token<MathTokenType> Take()
         {
             if (_pos < _tokens.Length) return _tokens[_pos++];
             return null;

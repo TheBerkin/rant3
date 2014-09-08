@@ -16,7 +16,7 @@ namespace Manhood.Arithmetic
             get { return _number; }
         }
 
-        public override double Evaluate(Source source, Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
             return _number;
         }

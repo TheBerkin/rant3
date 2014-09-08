@@ -177,7 +177,7 @@ namespace Manhood
             NumberDecimalSeparator = ","
         };
 
-        public static string FormatNumber(int number, NumberFormat format)
+        public static string FormatNumber(double number, NumberFormat format)
         {
             switch (format)
             {
@@ -192,7 +192,7 @@ namespace Manhood
                 case NumberFormat.Roman:
                 case NumberFormat.RomanUpper:
                     {
-                        if (number <= 0 || number > MaxRomanValue) return "?";
+                        if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
                         var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
                         var sb = new StringBuilder();
                         for (int i = intArr.Length; i-- > 0; )
@@ -203,7 +203,7 @@ namespace Manhood
                     }
                 case NumberFormat.RomanLower:
                     {
-                        if (number <= 0 || number > MaxRomanValue) return "?";
+                        if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
                         var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
                         var sb = new StringBuilder();
                         for (int i = intArr.Length; i-- > 0; )
@@ -214,7 +214,7 @@ namespace Manhood
                     }
                 case NumberFormat.VerbalEn:
                 {
-                    return ToVerbal(number);
+                    return  number % 1 > 0 ? "?" : ToVerbal((long)number);
                 }
             }
             return number.ToString(CultureInfo.InvariantCulture);

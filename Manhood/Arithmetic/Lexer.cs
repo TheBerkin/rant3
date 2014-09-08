@@ -9,7 +9,7 @@ using Stringes.Tokens;
 
 namespace Manhood.Arithmetic
 {
-    internal sealed partial class Lexer : IEnumerable<Token<TokenType>>
+    internal sealed partial class Lexer : IEnumerable<Token<MathTokenType>>
     {
         private readonly StringeReader _reader;
 
@@ -18,7 +18,7 @@ namespace Manhood.Arithmetic
             _reader = new StringeReader(input);
         }
 
-        public IEnumerator<Token<TokenType>> GetEnumerator()
+        public IEnumerator<Token<MathTokenType>> GetEnumerator()
         {
             while (!_reader.EndOfStringe)
             {

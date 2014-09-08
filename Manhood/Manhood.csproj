@@ -64,6 +64,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\Expression.cs" />
+    <Compile Include="Arithmetic\Expressions\NameExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\NumberExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PostfixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PrefixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Lexer.cs" />
+    <Compile Include="Arithmetic\Lexer.Static.cs" />
+    <Compile Include="Arithmetic\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\GroupParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IInfixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IPrefixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NameParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NumberParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PostfixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PrefixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parser.cs" />
+    <Compile Include="Arithmetic\Parser.Static.cs" />
+    <Compile Include="Arithmetic\Precedence.cs" />
+    <Compile Include="Arithmetic\MathTokenType.cs" />
     <Compile Include="Blueprints\AltBlueprint.cs" />
     <Compile Include="Blueprints\Blueprint.cs" />
     <Compile Include="Blueprints\FunctionBlueprint.cs" />

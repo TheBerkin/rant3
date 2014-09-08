@@ -6,6 +6,6 @@ namespace Manhood.Arithmetic.Parselets
     {
         int Precedence { get; }
 
-        Expression Parse(Parser parser, Expression left, Token<TokenType> token);
+        Expression Parse(Parser parser, Expression left, Token<MathTokenType> token);
     }
 }

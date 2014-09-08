@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using Manhood.Arithmetic;
 using Manhood.Blueprints;
 using Manhood.Compiler;
 
@@ -20,11 +21,30 @@ namespace Manhood
         {
             {TokenType.LeftCurly, DoBlock},
             {TokenType.LeftSquare, DoTag},
+            {TokenType.LeftParen, DoMath},
             {TokenType.LeftAngle, DoQuery},
             {TokenType.EscapeSequence, DoEscape},
             {TokenType.ConstantLiteral, DoConstant},
             {TokenType.Text, DoText}
         };
+
+        private static bool DoMath(Interpreter interpreter, SourceReader reader, State state)
+        {
+            reader.Read(TokenType.LeftParen);
+            bool isStatement = reader.Take(TokenType.At);
+            var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, BracketPairs.All);
+            interpreter.PushState(State.CreateDerivedDistinct(reader.Source, tokens, interpreter));
+            state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
+            {
+                var v = Parser.Calculate(_, _.PopResultString());
+                if (!isStatement)
+                {
+                    _.Print(_.FormatNumber(v));
+                }
+                return false;
+            }));
+            return true;
+        }
 
         private static bool DoQuery(Interpreter interpreter, SourceReader reader, State state)
         {
@@ -130,14 +150,7 @@ namespace Manhood
 
             if (name.Identifier == TokenType.Dollar)
             {
-                if (reader.IsNext(TokenType.Text))
-                {
-                    return DoSubCall(name, interpreter, reader, state);
-                }
-                else
-                {
-                    return DoSubDefinition(name, interpreter, reader, state);
-                }
+                return reader.IsNext(TokenType.Text) ? DoSubCall(name, interpreter, reader, state) : DoSubDefinition(name, interpreter, reader, state);
             }
 
             if (!Util.ValidateName(name.Value.Trim()))

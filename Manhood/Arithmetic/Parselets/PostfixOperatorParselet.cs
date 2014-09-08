@@ -16,7 +16,7 @@ namespace Manhood.Arithmetic.Parselets
             get { return _precedence; }
         }
 
-        public Expression Parse(Parser parser, Expression left, Token<TokenType> token)
+        public Expression Parse(Parser parser, Expression left, Token<MathTokenType> token)
         {
             return new PostfixOperatorExpression(token, left);
         }

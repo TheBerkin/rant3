@@ -6,44 +6,44 @@ namespace Manhood.Arithmetic
 {
     internal class PrefixOperatorExpression : Expression
     {
-        private readonly Token<TokenType> _token;
+        private readonly Token<MathTokenType> _token;
         private readonly Expression _right;
 
-        public PrefixOperatorExpression(Token<TokenType> token, Expression right)
+        public PrefixOperatorExpression(Token<MathTokenType> token, Expression right)
         {
             _token = token;
             _right = right;
         }
 
-        public override double Evaluate(Source source, Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
             var name = _right as NameExpression;
             switch (_token.Identifier)
             {
-                case TokenType.Minus:
-                    return -_right.Evaluate(source, ii);
-                case TokenType.Increment:
+                case MathTokenType.Minus:
+                    return -_right.Evaluate(parser, ii);
+                case MathTokenType.Increment:
                 {
                     if (name == null)
                     {
-                        throw new ManhoodException(source, _token, "Increment prefix could not find a variable.");
+                        throw new ManhoodException(parser.Source, _token, "Increment prefix could not find a variable.");
                     }
-                    double d = name.Evaluate(ii) + 1;
+                    double d = name.Evaluate(parser, ii) + 1;
                     ii.Engine.Variables.SetVar(name.Name, d);
                     return d;
                 }
-                case TokenType.Decrement:
+                case MathTokenType.Decrement:
                 {
                     if (name == null)
                     {
-                        throw new ManhoodException(source, _token, "Decrement prefix could not find a variable.");
+                        throw new ManhoodException(parser.Source, _token, "Decrement prefix could not find a variable.");
                     }
-                    double d = name.Evaluate(ii) - 1;
+                    double d = name.Evaluate(parser, ii) - 1;
                     ii.Engine.Variables.SetVar(name.Name, d);
                     return d;
                 }
                 default:
-                    throw new ManhoodException(source, _token, "Invalid prefix operator '" + _token + "'.");
+                    throw new ManhoodException(parser.Source, _token, "Invalid prefix operator '" + _token + "'.");
             }
         }
     }

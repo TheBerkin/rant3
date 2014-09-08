@@ -11,7 +11,7 @@ namespace Manhood.Arithmetic.Parselets
             _precedence = precedence;
         }
 
-        public Expression Parse(Parser parser, Token<TokenType> token)
+        public Expression Parse(Parser parser, Token<MathTokenType> token)
         {
             var right = parser.ParseExpression(_precedence);
             return new PrefixOperatorExpression(token, right);

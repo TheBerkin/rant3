@@ -14,7 +14,7 @@ namespace Manhood
         private readonly int _line;
         private readonly int _col;
         private readonly int _index;
-        private readonly Source _source;
+        private readonly string _source;
         private readonly int _length;
 
         /// <summary>
@@ -40,9 +40,28 @@ namespace Manhood
         /// <summary>
         /// The source of the error.
         /// </summary>
-        public Source SourceCode { get { return _source; } }
+        public string Code { get { return _source; } }
 
         internal ManhoodException(Source source, Stringe token, string message = "A generic syntax error was encountered.") : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
+        {
+            _source = source.Code;
+            if (token != null)
+            {
+                _line = token.Line;
+                _col = token.Column;
+                _index = token.Offset;
+                _length = token.Length;
+            }
+            else
+            {
+                _line = _col = 1;
+                _index = 0;
+                _length = 0;
+            }
+        }
+
+        internal ManhoodException(string source, Stringe token, string message = "A generic syntax error was encountered.")
+            : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
         {
             _source = source;
             if (token != null)

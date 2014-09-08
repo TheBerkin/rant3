@@ -79,7 +79,7 @@ namespace Manhood
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string FormatNumber(int value)
+        public string FormatNumber(double value)
         {
             return Numerals.FormatNumber(value, _numfmt);
         }
