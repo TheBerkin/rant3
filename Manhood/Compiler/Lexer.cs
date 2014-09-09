@@ -14,7 +14,8 @@ namespace Manhood.Compiler
         public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", MhRegexOptions);
         public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", MhRegexOptions);
 
-        private static readonly Regex WhitespaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", MhRegexOptions | RegexOptions.Multiline);
+        private static readonly Regex WhitespaceRegex = new Regex(@"\s+", MhRegexOptions);
+        private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", MhRegexOptions | RegexOptions.Multiline);
         private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", MhRegexOptions);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", MhRegexOptions);
 
@@ -48,7 +49,8 @@ namespace Manhood.Compiler
                 {"!", TokenType.Exclamation},
                 {"$", TokenType.Dollar},
                 {CommentRegex, TokenType.Ignore, 3},
-                {WhitespaceRegex, TokenType.Ignore, 2}
+                {BlackspaceRegex, TokenType.Ignore, 2},
+                {WhitespaceRegex, TokenType.Whitespace}
             };
             Rules.AddUndefinedCaptureRule(TokenType.Text, TruncatePadding);
             Rules.AddEndToken(TokenType.EOF);

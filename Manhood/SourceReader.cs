@@ -111,7 +111,7 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool SkipSpace()
         {
-            return TakeAll(TokenType.SymbolSpacing);
+            return TakeAll(TokenType.Whitespace);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -178,10 +178,9 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<IEnumerable<Token<TokenType>>> ReadItemsToClosureTrimmed(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
+            SkipSpace();
             _stack.Clear();
             Token<TokenType> token = null;
-
-            TakeAll(TokenType.SymbolSpacing);
 
             int start = _pos;
             while (!End)
@@ -218,7 +217,7 @@ namespace Manhood
                 {
                     yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                     _pos++;
-                    TakeAll(TokenType.SymbolSpacing);
+                    TakeAll(TokenType.Whitespace);
                     start = _pos;
                     continue;
                 }
@@ -231,6 +230,7 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, BracketPairs bracketPairs)
         {
+            SkipSpace();
             _stack.Clear();
             Token<TokenType> token = null;
             while (!End)

@@ -170,7 +170,7 @@
         /// <summary>
         /// Used by: Tags
         /// </summary>
-        SymbolSpacing,
+        Whitespace,
         /// <summary>
         /// End of file.
         /// </summary>

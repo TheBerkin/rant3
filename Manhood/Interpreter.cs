@@ -101,7 +101,7 @@ namespace Manhood
                     _caps = Capitalization.None;
                     break;
                 case Capitalization.Proper:
-                    input = RegCapsProper.Replace(input, m => m.Value.ToUpper());
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
                     break;
             }
             _lastChar = input[input.Length - 1];
