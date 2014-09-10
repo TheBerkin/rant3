@@ -6,7 +6,7 @@ namespace Manhood
     {
         private Vocabulary _vocabulary;
 
-        private void InitializeVocab(string path, NsfwFilter filter)
+        private void LoadVocab(string path, NsfwFilter filter)
         {
             if (_vocabulary != null) return;
 
