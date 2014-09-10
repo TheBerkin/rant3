@@ -18,7 +18,16 @@ namespace Manhood
         /// </summary>
         public ChannelVisibility Visiblity { get; internal set; }
 
-        internal StringBuilder Buffer { get; set; }
+        private readonly StringBuilder _buffer = new StringBuilder(InitialBufferSize);
+
+        private char _lastChar = ' ';
+        private Capitalization _caps = Capitalization.None;
+
+        internal Capitalization Capitalization
+        {
+            get { return _caps; }
+            set { _caps = value; }
+        }
 
         internal const int InitialBufferSize = 512;
 
@@ -26,15 +35,24 @@ namespace Manhood
         {
             Name = name;
             Visiblity = visibility;
-            Buffer = new StringBuilder(InitialBufferSize);
+        }
+
+        internal void Write(string value)
+        {
+            _buffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+        }
+
+        public int Length
+        {
+            get { return _buffer.Length; }
         }
 
         /// <summary>
-        /// The output stored in the channel.
+        /// The output string stored in the channel.
         /// </summary>
-        public string Output
+        public string Value
         {
-            get { return Buffer.ToString(); }
+            get { return _buffer.ToString(); }
         }
 
         /// <summary>

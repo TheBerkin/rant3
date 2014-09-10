@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -31,7 +32,33 @@ namespace Manhood
             {'X', rng => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
         };
 
-        
+        private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+        private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string Capitalize(string input, ref Capitalization caps, ref char lastChar)
+        {
+            if (String.IsNullOrEmpty(input) || caps == Capitalization.None) return input;
+            switch (caps)
+            {
+                case Capitalization.Lower:
+                    input = input.ToLower();
+                    break;
+                case Capitalization.Upper:
+                    input = input.ToUpper();
+                    break;
+                case Capitalization.First:
+                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
+                    caps = Capitalization.None;
+                    break;
+                case Capitalization.Proper:
+                    char _lastChar = lastChar;
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
+                    break;
+            }
+            lastChar = input[input.Length - 1];
+            return input;
+        }
 
         public static string NameToCamel(string name)
         {

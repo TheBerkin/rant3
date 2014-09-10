@@ -109,6 +109,38 @@ namespace Manhood
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TakeAllUntil(TokenType takeType, TokenType untilType, bool allowEof = true)
+        {
+            if (End)
+            {
+                if (!allowEof)
+                    throw new ManhoodException(_source, null, "Unexpected end-of-file.");
+                return false;
+            }
+
+            int i = _pos;
+            TokenType t;
+            while (i < _tokens.Length)
+            {
+                t = _tokens[_pos].Identifier;
+                if (t == takeType)
+                {
+                    i++;
+                }
+                else if (t == untilType)
+                {
+                    _pos = i;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool SkipSpace()
         {
             return TakeAll(TokenType.Whitespace);

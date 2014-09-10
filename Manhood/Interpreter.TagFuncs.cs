@@ -59,7 +59,7 @@ namespace Manhood
             {
                 throw new ManhoodException(source, tagname, "Invalid capitalization format '" + caps_str + "'");
             }
-            interpreter.Capitalization = caps;
+            interpreter.CurrentState.Output.SetCaps(caps);
             return false;
         }
 

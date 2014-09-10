@@ -26,13 +26,7 @@ namespace Manhood
 
         // Number format
         private NumberFormat _numfmt = NumberFormat.Normal;
-
-        // Capitalization
-        private Capitalization _caps = Capitalization.None;
-        private char _lastChar = ' ';
-        private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-        private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-
+        
         // State information
         private int _stateCount = 0;
         private State _prevState = null;
@@ -82,36 +76,6 @@ namespace Manhood
         public string FormatNumber(double value)
         {
             return Numerals.FormatNumber(value, _numfmt);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string Capitalize(string input)
-        {
-            if (String.IsNullOrEmpty(input) || _caps == Capitalization.None) return input;
-            switch (_caps)
-            {
-                case Capitalization.Lower:
-                    input = input.ToLower();
-                    break;
-                case Capitalization.Upper:
-                    input = input.ToUpper();
-                    break;
-                case Capitalization.First:
-                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    _caps = Capitalization.None;
-                    break;
-                case Capitalization.Proper:
-                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
-                    break;
-            }
-            _lastChar = input[input.Length - 1];
-            return input;
-        }
-
-        public Capitalization Capitalization
-        {
-            get { return _caps; }
-            set { _caps = value; }
         }
 
         #region Repeaters
