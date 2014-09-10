@@ -9,13 +9,12 @@ namespace Manhood
         private readonly List<Channel> _stack;
         private readonly Dictionary<string, Channel> _channels;
         private readonly Channel _main;
-        private readonly int _sizeLimit;
+        private readonly Limit<int> _sizeLimit;
 
         private int _stackSize;
-
         private int _lastWriteSize, _size;
 
-        public ChannelStack(int sizeLimit)
+        public ChannelStack(Limit<int> sizeLimit)
         {
             _sizeLimit = sizeLimit;
             _main = new Channel("main", ChannelVisibility.Public);
@@ -27,11 +26,6 @@ namespace Manhood
             {
                 { "main", _main }
             };
-        }
-
-        public int SizeLimit
-        {
-            get { return _sizeLimit; }
         }
 
         public int LastWriteSize
@@ -64,11 +58,9 @@ namespace Manhood
 
             ch.Visiblity = visibility;
 
-            if (!_stack.Contains(ch))
-            {
-                _stack.Add(ch);
-                _stackSize++;
-            }
+            if (_stack.Contains(ch)) return;
+            _stack.Add(ch);
+            _stackSize++;
         }
 
         public void PopChannel(string channelName)
@@ -76,44 +68,35 @@ namespace Manhood
             if (channelName == "main") return;
 
             Channel ch;
-            if (_channels.TryGetValue(channelName, out ch))
-            {
-                _stack.Remove(ch);
-                _stackSize--;
-            }
+            if (!_channels.TryGetValue(channelName, out ch)) return;
+            _stack.Remove(ch);
+            _stackSize--;
         }
 
         public void SetCaps(Capitalization caps)
         {
-            var lastVisibility = ChannelVisibility.Public;
-            if (_stack.Last().Visiblity == ChannelVisibility.Public) _main.Capitalization = caps;
-
-            for (int i = _stackSize - 1; i >= 0; i--)
+            foreach (var ch in GetVisibleChannels())
             {
-                if (_stack[i] == _main) break;
-
-                switch (_stack[i].Visiblity)
-                {
-                    case ChannelVisibility.Public:
-                        if (lastVisibility == ChannelVisibility.Internal) return;
-                        break;
-                    case ChannelVisibility.Private:
-                        _stack[i].Capitalization = caps;
-                        return;
-                    case ChannelVisibility.Internal:
-                        break;
-                }
-
-                _stack[i].Capitalization = caps;
-
-                lastVisibility = _stack[i].Visiblity;
+                ch.Capitalization = caps;
             }
         }
-        
+
         public void Write(string input)
         {
+            foreach (var ch in GetVisibleChannels())
+            {
+                if (!_sizeLimit.Accumulate(input.Length))
+                    throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + " chars)");
+                ch.Write(input);
+            }
+
+            CheckSizeLimit();
+        }
+
+        private IEnumerable<Channel> GetVisibleChannels()
+        {
             var lastVisibility = ChannelVisibility.Public;
-            if (_stack.Last().Visiblity == ChannelVisibility.Public) _main.Write(input);
+            if (_stack.Last().Visiblity == ChannelVisibility.Public) yield return _main;
 
             for (int i = _stackSize - 1; i >= 0; i--)
             {
@@ -122,23 +105,19 @@ namespace Manhood
                 switch (_stack[i].Visiblity)
                 {
                     case ChannelVisibility.Public:
-                        if (lastVisibility == ChannelVisibility.Internal) goto checkLimit;
+                        if (lastVisibility == ChannelVisibility.Internal) yield break;
                         break;
                     case ChannelVisibility.Private:
-                        _stack[i].Write(input);
-                        goto checkLimit;
+                        yield return _stack[i];
+                        yield break;
                     case ChannelVisibility.Internal:
                         break;
                 }
 
-                _stack[i].Write(input);
+                yield return _stack[i];
 
                 lastVisibility = _stack[i].Visiblity;
             }
-
-            checkLimit:
-
-            CheckSizeLimit();
         }
 
         private void CheckSizeLimit()
@@ -146,11 +125,6 @@ namespace Manhood
             int _lastSize = _size;
             _size = _channels.Sum(pair => pair.Value.Length);
             _lastWriteSize = _size - _lastSize;
-            if (_sizeLimit <= 0) return;
-            if (_size > _sizeLimit)
-            {
-                throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit + " chars)");
-            }
         }
 
         public ChannelSet GetChannels()

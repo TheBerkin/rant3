@@ -49,6 +49,26 @@ namespace Manhood
             TagFuncs["arg"] = new TagDef(Arg, TagArgType.Result);
             TagFuncs["numfmt"] = new TagDef(NumFmt, TagArgType.Result);
             TagFuncs["caps"] = new TagDef(Caps, TagArgType.Result);
+            TagFuncs["out"] = new TagDef(Out, TagArgType.Result, TagArgType.Result);
+            TagFuncs["close"] = new TagDef(Close, TagArgType.Result);
+        }
+
+        private static bool Close(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            interpreter.CurrentState.Output.PopChannel(args[0].GetString());
+            return false;
+        }
+
+        private static bool Out(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            ChannelVisibility cv;
+            var cv_str = args[1].GetString();
+            if (!Enum.TryParse(Util.NameToCamel(cv_str), out cv))
+            {
+                throw new ManhoodException(source, tagname, "Invalid channel visibility option '" + cv_str + "'");
+            }
+            interpreter.CurrentState.Output.PushChannel(args[0].GetString(), cv);
+            return false;
         }
 
         private static bool Caps(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

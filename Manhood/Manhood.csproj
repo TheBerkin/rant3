@@ -57,6 +57,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -103,6 +104,7 @@
     <Compile Include="Interpreter.TagFuncs.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
     <Compile Include="IVocabulary.cs" />
+    <Compile Include="Limit.cs" />
     <Compile Include="ManhoodException.cs" />
     <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />

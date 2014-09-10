@@ -36,12 +36,19 @@ namespace Manhood
         private readonly Stack<ChannelSet> _resultStack = new Stack<ChannelSet>();
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
-        private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>(); 
-        private readonly ChannelStack _output = new ChannelStack(0);
+        private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>();
+        private readonly ChannelStack _output;
+
+        private readonly Limit<int> _charLimit; 
 
         public Engine Engine
         {
             get { return _engine; }
+        }
+
+        public Limit<int> CharLimit
+        {
+            get { return _charLimit; }
         }
 
         public BlockAttribs NextAttribs
@@ -165,12 +172,14 @@ namespace Manhood
 
         #endregion
         
-        public Interpreter(Engine engine, Source input, RNG rng)
+        public Interpreter(Engine engine, Source input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
             _rng = rng;
             _engine = engine;
             _mainState = State.Create(input, this);
+            _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => a > 0 && a <= b);
+            _output = new ChannelStack(_charLimit);
         }
 
         public void Print(object input)

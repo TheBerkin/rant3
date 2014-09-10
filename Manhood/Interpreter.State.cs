@@ -140,8 +140,7 @@ namespace Manhood
             public static State CreateDerivedDistinct(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
-                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(0));
-                    // TODO: Share size limit between sub-output and main output
+                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.CharLimit));
             }
 
             public void Print(string value)
