@@ -1,44 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Text.RegularExpressions;
+
+using Stringes.Tokens;
 
 namespace Manhood.Arithmetic
 {
     internal partial class Lexer
     {
-        public static readonly List<Tuple<string, TokenType>> Operators;
-        private static readonly HashSet<char> Punctuation = new HashSet<char>();
+        public static LexerRules<MathTokenType> Rules;
 		
         static Lexer()
         {
-			Operators = new List<Tuple<string, TokenType>>()
-			{
-			    Tuple.Create("+", TokenType.Plus),
-				Tuple.Create("-", TokenType.Minus),
-				Tuple.Create("*", TokenType.Asterisk),
-				Tuple.Create("/", TokenType.Slash),
-				Tuple.Create("^", TokenType.Caret),
-				Tuple.Create("(", TokenType.LeftParen),
-				Tuple.Create(")", TokenType.RightParen),
-				Tuple.Create("++", TokenType.Increment),
-				Tuple.Create("--", TokenType.Decrement),
-				Tuple.Create("%", TokenType.Modulo),
-				Tuple.Create("=", TokenType.Equals),
-                Tuple.Create("$=", TokenType.Swap),
-                Tuple.Create("+=", TokenType.AddAssign),
-                Tuple.Create("-=", TokenType.SubAssign),
-                Tuple.Create("*=", TokenType.MulAssign),
-                Tuple.Create("/=", TokenType.DivAssign),
-                Tuple.Create("%=", TokenType.ModAssign),
-                Tuple.Create("^=", TokenType.PowAssign),
-			};
-
-            Operators = Operators.OrderByDescending(o => o.Item1.Length).ToList();
-
-            foreach (var value in Operators.Select(o => o.Item1[0]))
+            Rules = new LexerRules<MathTokenType>
             {
-                Punctuation.Add(value);
-            }
+                {"+", MathTokenType.Plus},
+				{"-", MathTokenType.Minus},
+				{"*", MathTokenType.Asterisk},
+				{"/", MathTokenType.Slash},
+				{"^", MathTokenType.Caret},
+				{"(", MathTokenType.LeftParen},
+				{")", MathTokenType.RightParen},
+				{"++", MathTokenType.Increment},
+				{"--", MathTokenType.Decrement},
+				{"%", MathTokenType.Modulo},
+				{"=", MathTokenType.Equals},
+                {"$=", MathTokenType.Swap},
+                {"+=", MathTokenType.AddAssign},
+                {"-=", MathTokenType.SubAssign},
+                {"*=", MathTokenType.MulAssign},
+                {"/=", MathTokenType.DivAssign},
+                {"%=", MathTokenType.ModAssign},
+                {"^=", MathTokenType.PowAssign},
+                {new Regex(@"-?(\d+(\.\d+)?|\.\d+)"), MathTokenType.Number},
+                {new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*"), MathTokenType.Name}
+            };
+            Rules.AddEndToken(MathTokenType.End);
         }
     }
 }

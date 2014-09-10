@@ -1,4 +1,6 @@
-﻿namespace Manhood.Arithmetic
+﻿using Manhood.Compiler;
+
+namespace Manhood.Arithmetic
 {
     internal class NumberExpression : Expression
     {
@@ -14,7 +16,7 @@
             get { return _number; }
         }
 
-        public override double Evaluate(Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
             return _number;
         }

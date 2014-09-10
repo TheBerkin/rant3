@@ -1,47 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Manhood
 {
-    /// <summary>
-    /// Outlines search criteria for a Manhood dictionary.
-    /// </summary>
-    internal sealed class Query
+    internal class Query
     {
-        public string Name { get; set; }
+        private string _name;
+        private string _subtype;
+        private string _carrier;
+        private bool _exclusive;
+        private readonly List<Tuple<bool, string>[]> _classFilters;
+        private readonly List<Tuple<bool, Regex>> _regexFilters;
 
-        public string Subtype { get; set; }
-
-        public List<Tuple<string, string>> Filters { get; private set; }
-
-        public Query(string name, string subtype, params Tuple<string, string>[] filters)
+        public Query(string name, string subtype, string carrier, bool exclusive, IEnumerable<Tuple<bool, string>[]> classFilters,
+            IEnumerable<Tuple<bool, Regex>> regexFilters)
         {
-            Name = name;
-            Subtype = subtype;
-            Filters = new List<Tuple<string, string>>(filters);
+            _name = name;
+            _subtype = subtype;
+            _exclusive = exclusive;
+            _carrier = carrier;
+            _classFilters = new List<Tuple<bool, string>[]>(classFilters ?? Enumerable.Empty<Tuple<bool, string>[]>());
+            _regexFilters = new List<Tuple<bool, Regex>>(regexFilters ?? Enumerable.Empty<Tuple<bool, Regex>>());
         }
 
-        public static Query Parse(string input)
+        public string Carrier
         {
-            var parts = Util.SplitArgs(input.TrimStart('<').TrimEnd('>')).ToArray();
+            get { return _carrier; }
+            set { _carrier = value; }
+        }
 
-            if (!parts.Any()) return new Query("", "");
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
 
-            var entryType = parts[0].Split(new[] { '.' }, 2);
+        public string Subtype
+        {
+            get { return _subtype; }
+            set { _subtype = value; }
+        }
 
-            if (entryType.Length > 2) return new Query("", ""); // Ensure there is only two parts max to the entry type
+        public bool Exclusive
+        {
+            get { return _exclusive; }
+            set { _exclusive = value; }
+        }
 
-            var query = new Query(entryType[0], entryType.Length == 2 ? entryType[1] : "");
+        public List<Tuple<bool, string>[]> ClassFilters
+        {
+            get { return _classFilters; }
+        }
 
-            // Parse arguments into name/value pairs
-            foreach (var pair in parts.Skip(1).Select(arg => arg.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries)))
-            {
-                if (pair.Length != 2) return null;
-                query.Filters.Add(Tuple.Create(pair[0], pair[1]));
-            }
-
-            return query;
+        public List<Tuple<bool, Regex>> RegexFilters
+        {
+            get { return _regexFilters; }
         }
     }
 }

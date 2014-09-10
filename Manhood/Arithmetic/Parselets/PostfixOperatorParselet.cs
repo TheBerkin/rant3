@@ -1,4 +1,6 @@
-﻿namespace Manhood.Arithmetic.Parselets
+﻿using Stringes.Tokens;
+
+namespace Manhood.Arithmetic.Parselets
 {
     internal class PostfixOperatorParselet : IInfixParselet
     {
@@ -14,7 +16,7 @@
             get { return _precedence; }
         }
 
-        public Expression Parse(Parser parser, Expression left, Token token)
+        public Expression Parse(Parser parser, Expression left, Token<MathTokenType> token)
         {
             return new PostfixOperatorExpression(token, left);
         }

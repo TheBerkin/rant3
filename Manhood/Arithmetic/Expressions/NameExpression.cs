@@ -1,23 +1,27 @@
-﻿namespace Manhood.Arithmetic
+﻿using Manhood.Compiler;
+
+using Stringes.Tokens;
+
+namespace Manhood.Arithmetic
 {
     internal class NameExpression : Expression
     {
-        private readonly string _name;
+        private readonly Token<MathTokenType> _name;
 
-        public NameExpression(Token token)
+        public NameExpression(Token<MathTokenType> token)
         {
-            _name = token.Text;
+            _name = token;
         }
 
         public string Name
         {
-            get { return _name; }
+            get { return _name.Value; }
         }
 
-        public override double Evaluate(Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
-            var d = ii.State.Variables.GetVar(_name);
-            if (d == null) throw new ManhoodException("Tried to access undefined variable '" + _name + "'.");
+            var d = ii.Engine.Variables.GetVar(_name.Value);
+            if (d == null) throw new ManhoodException(parser.Source, _name, "Tried to access undefined variable '" + _name.Value + "'.");
             return d.Value;
         }
     }

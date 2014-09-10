@@ -1,6 +1,6 @@
 ﻿namespace Manhood.Arithmetic
 {
-    internal enum TokenType : int
+    internal enum MathTokenType : int
     {
         LeftParen, // (
         RightParen, // )

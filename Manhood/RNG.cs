@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Manhood
 {
@@ -73,6 +74,7 @@ namespace Manhood
         /// <param name="s">The seed.</param>
         /// <param name="g">The generation.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetRaw(long s, long g)
         {
             unchecked
@@ -104,6 +106,7 @@ namespace Manhood
         /// Calculates the raw 64-bit value for the next generation, and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long NextRaw()
         {
             return GetRaw(Seed, Generation++);
@@ -113,6 +116,7 @@ namespace Manhood
         /// Calculates the raw 64-bit value for the previous generation, and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long PrevRaw()
         {
             return GetRaw(Seed, --Generation);
@@ -140,6 +144,7 @@ namespace Manhood
         /// Creates a new branch at the specified generation.
         /// </summary>
         /// <param name="generation">The generation to branch from.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RNG Branch(long generation)
         {
             _sg.Add(new SG(GetRaw(Seed, generation), 0));
@@ -157,6 +162,7 @@ namespace Manhood
         /// <summary>
         /// Removes the topmost branch and resumes generation on the next one down.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Merge()
         {
             if (_sg.Count > 1)
@@ -173,6 +179,7 @@ namespace Manhood
         /// Calculates a 32-bit, non-negative integer for the current generation.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Peek()
         {
             return (int)GetRaw(Seed, Generation) & 0x7FFFFFFF;
@@ -183,6 +190,7 @@ namespace Manhood
         /// </summary>
         /// <param name="generation">The generation to peek at.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PeekAt(long generation)
         {
             return (int)GetRaw(Seed, generation) & 0x7FFFFFFF;
@@ -192,6 +200,7 @@ namespace Manhood
         /// Returns a double-precision floating point number between 0 and 1, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double NextDouble()
         {
             return Math.Abs(BitConverter.Int64BitsToDouble(NextRaw()) / Double.MaxValue);
@@ -201,6 +210,7 @@ namespace Manhood
         /// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Next()
         {
             return (int)NextRaw() & 0x7FFFFFFF;
@@ -210,6 +220,7 @@ namespace Manhood
         /// Calculates a 32-bit, non-negative integer from the previous generation and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Prev()
         {
             return (int)PrevRaw() & 0x7FFFFFFF;
@@ -220,6 +231,7 @@ namespace Manhood
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Next(int max)
         {
             return (int)(NextRaw() & 0x7FFFFFFF) % max;
@@ -230,6 +242,7 @@ namespace Manhood
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Prev(int max)
         {
             return (int)(PrevRaw() & 0x7FFFFFFF) % max;
@@ -240,6 +253,7 @@ namespace Manhood
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Peek(int max)
         {
             return ((int)GetRaw(Seed, Generation) & 0x7FFFFFFF) % max;
@@ -251,6 +265,7 @@ namespace Manhood
         /// <param name="generation">The generation whose value to calculate.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PeekAt(long generation, int max)
         {
             return ((int)GetRaw(Seed, generation) & 0x7FFFFFFF) % max;
@@ -262,6 +277,7 @@ namespace Manhood
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Next(int min, int max)
         {
             if (min >= max)
@@ -278,6 +294,7 @@ namespace Manhood
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Prev(int min, int max)
         {
             if (min >= max)
@@ -294,6 +311,7 @@ namespace Manhood
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Peek(int min, int max)
         {
             if (min >= max)
@@ -311,6 +329,7 @@ namespace Manhood
         /// <param name="max">The exclusive maximum value.</param>
         /// <param name="generation">The generation whose value to calculate.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PeekAt(int generation, int min, int max)
         {
             if (min >= max)

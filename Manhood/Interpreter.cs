@@ -1,315 +1,260 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+
+using Manhood.Compiler;
+
+using Stringes.Tokens;
 
 namespace Manhood
 {
     internal partial class Interpreter
     {
-        private readonly State _state;
-        private readonly WordBank _wordBank;
-        private readonly ChannelStack _channels;
-        private readonly StringRequestCallback _stringRequested;
-        private bool _parseMath = true;
+        // Main fields
+        private readonly RNG _rng;
+        private readonly Source _mainSource;
+        private readonly Engine _engine;
+        private readonly Vocabulary _vocab;
 
-        public bool ParseMath
-        {
-            get { return _parseMath; }
-            set { _parseMath = value; }
-        }
+        // Next block attribs
+        private BlockAttribs _blockAttribs = new BlockAttribs();
 
-        // The current block attributes that will be consumed by the next block.
-        private BlockAttribs _currentAttribs = new BlockAttribs();
+        // The chance value of the next block
+        private int _chance = 100;
 
-        // The last string written to the output. This will be a single character if the last input was text.
-        private string _lastText = "";
+        // Number format
+        private NumberFormat _numfmt = NumberFormat.Normal;
         
-        // These are to be ignored in plaintext found in patterns
-        private const string IgnoreChars = "\r\n\t";
+        // State information
+        private int _stateCount = 0;
+        private State _prevState = null;
+        private readonly State _mainState;
 
-        public Interpreter(ManhoodContext manhood, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
+        // Stacks
+        private readonly Stack<State> _stateStack = new Stack<State>();
+        private readonly Stack<ChannelSet> _resultStack = new Stack<ChannelSet>();
+        private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
+        private readonly Stack<Match> _matchStack = new Stack<Match>();
+        private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>(); 
+        private readonly ChannelStack _output = new ChannelStack(0);
+
+        public Engine Engine
         {
-            _wordBank = manhood.WordBank;
-            _channels = new ChannelStack(sizeLimit);
-            _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, DateTime.UtcNow.Ticks);
-            _stringRequested = _stringRequestCallback;
+            get { return _engine; }
         }
 
-        public Interpreter(ManhoodContext manhood, long seed, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
+        public BlockAttribs NextAttribs
         {
-            _wordBank = manhood.WordBank;
-            _channels = new ChannelStack(sizeLimit);
-            _state = new State(manhood.Subroutines, manhood.ListStore, manhood.Flags, seed);
-            _stringRequested = _stringRequestCallback;
+            get { return _blockAttribs; }
+            set { _blockAttribs = value; }
         }
 
-        private Interpreter(State state, WordBank wordBank, int sizeLimit = 0, StringRequestCallback _stringRequestCallback = null)
+        public Vocabulary Vocabulary
         {
-            _state = state;
-            _wordBank = wordBank;
-            _channels = new ChannelStack(sizeLimit);
-            _stringRequested = _stringRequestCallback;
+            get { return _vocab; }
         }
 
-        public void DoSub(Subroutine sub, string[] args)
+        public RNG RNG
         {
-            _state.PushArgs(new SubArgs(this, sub, args));
-            Do(sub.Body);
-            _state.PopArgs();
+            get { return _rng; }
         }
 
-        public string InterpretToString(Pattern input, bool stripIllegalChars = true)
+        public Stack<Dictionary<string, TagArg>> SubArgStack
         {
-            Do(input.Code, stripIllegalChars);
-            _state.Lists.DestroyLocals();
-            return _channels.GetChannels()["main"].Output;
+            get { return _subArgStack; }
         }
 
-        private string InterpretToString(string input, bool stripIllegalChars = true)
+        public NumberFormat NumberFormat
         {
-            Do(input, stripIllegalChars);
-            // Do not destroy local lists here -- this overload is never called by the external API.
-            return _channels.GetChannels()["main"].Output;
+            get { return _numfmt; }
+            set { _numfmt = value; }
         }
 
-        public ChannelSet InterpretToChannels(Pattern input, bool stripIllegalChars = true)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string FormatNumber(double value)
         {
-            Do(input.Code, stripIllegalChars);
-            _state.Lists.DestroyLocals();
-            return _channels.GetChannels();
+            return Numerals.FormatNumber(value, _numfmt);
         }
 
-        /// <summary>
-        /// Process a pattern into the current output for this instance.
-        /// </summary>
-        /// <param name="input">The input pattern.</param>
-        /// <param name="stripIllegalChars">If true, ignore blacklisted characters in input.</param>
-        internal void Do(string input, bool stripIllegalChars = true)
+        #region Repeaters
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PushRepeater(Repeater repeater)
         {
-            if (String.IsNullOrEmpty(input)) return;
-            var scanner = new Scanner(input, _state.RNG);
-            while (!scanner.EndOfString)
+            _repeaterStack.Push(repeater);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Repeater PopRepeater()
+        {
+            return _repeaterStack.Pop();
+        }
+
+        public Repeater CurrentRepeater
+        {
+            get { return _repeaterStack.Any() ? _repeaterStack.Peek() : null; }
+        }
+
+        #endregion
+
+        #region Chance
+
+        public void SetChance(int chance)
+        {
+            _chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
+        }
+
+        public bool TakeChance()
+        {
+            if (_chance == 100) return true;
+            bool pass = _rng.Next(100) < _chance;
+            _chance = 100;
+            return pass;
+        }
+
+        #endregion
+
+        #region Replacers
+
+        public string GetMatchString(string group = null)
+        {
+            if (!_matchStack.Any()) return "";
+            return !String.IsNullOrEmpty(@group) ? _matchStack.Peek().Groups[@group].Value : _matchStack.Peek().Value;
+        }
+
+        public void PushMatch(Match match)
+        {
+            _matchStack.Push(match);
+        }
+
+        public Match PopMatch()
+        {
+            return _matchStack.Pop();
+        }
+
+        #endregion
+
+        #region States
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PushState(State state)
+        {
+            if (_stateCount >= Engine.MaxStackSize)
             {
-                BlockInfo block;
-                if (scanner.ReadBlock(out block))
-                {
-                    // Consume synchronizer. Will be null if none is set. This isn't a problem, as State.SelectBlockItem handles the null case.
-                    var sync = _state.PopSynchronizer();
+                throw new ManhoodException(_mainSource, null, "Exceeded maximum stack size of " + Engine.MaxStackSize + ".");
+            }
+            if (_stateStack.Any()) _prevState = _stateStack.Peek();
+            _stateCount++;
+            _stateStack.Push(state);
+        }
 
-                    // Grab the current block attributes and replace them with defaults.
-                    var attribs = _currentAttribs;
-                    _currentAttribs = new BlockAttribs();
+        public State PrevState
+        {
+            get { return _prevState; }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public State PopState()
+        {
+            _stateCount--;
+            var s = _stateStack.Pop();
+            _prevState = _stateCount > 0 ? _stateStack.Peek() : null;
+            return s;
+        }
+
+        public State CurrentState
+        {
+            get { return _stateStack.Peek(); }
+        }
+
+        #endregion
+        
+        public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
+        {
+            _mainSource = input;
+            _rng = rng;
+            _vocab = vocab;
+            _engine = engine;
+            _mainState = State.Create(input, this);
+        }
+
+        public void Print(object input)
+        {
+            _stateStack.Peek().Print(input.ToString());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string PopResultString()
+        {
+            return !_resultStack.Any() ? "" : _resultStack.Pop().MainOutput;
+        }
+
+        public ChannelSet Run()
+        {
+            PushState(_mainState);
+
+            // ReSharper disable TooWideLocalVariableScope
+
+            State state;                // The current state object being used
+            SourceReader reader;        // The current source reader being used
+            Token<TokenType> token;     // The next token in the stream
+
+            // ReSharper restore TooWideLocalVariableScope
+
+            next:
+            while (_stateCount > 0)
+            {
+                // Because blueprints can sometimes queue more blueprints, loop until the topmost state does not have one.
+                do
+                {
+                    state = CurrentState;
+                } while (state.UsePreBlueprint());
+                
+                reader = state.Reader;
+
+                while (!reader.End)
+                {
+                    // Fetch the next token in the stream without consuming it
+                    token = reader.PeekToken();
                     
-                    if (block.IsEmpty) continue; // Skip empty blocks
-
-                    // Skip according to [chance] probability
-                    if (attribs.Chance < 100 && _state.RNG.Next(1, 101) > attribs.Chance) continue;
-
-                    // Determine the number of repetitions
-                    int reps = attribs.Repetitions < 0 ? block.ElementRanges.Length : attribs.Repetitions;
-
-                    if (reps == 0) continue; // Skip blocks with zero reps
-
-                    // Apply repeater
-                    var rep = new Repeater(reps);
-
-                    _state.PushRepeater(rep);
-                    do
+                    // Error on illegal closure
+                    if (BracketPairs.All.ContainsClosing(token.Identifier))
                     {
-                        var element =
-                            input.Substring(
-                                block.ElementRanges[_state.SelectBlockItem(block.ElementRanges.Length, sync)]);
+                        throw new ManhoodException(reader.Source, token, "Unexpected token '" + Lexer.Rules.GetSymbolForId(token.Identifier) + "'");
+                    }
 
-                        // Interpret the block item and any before/after patterns
-                        Do(attribs.BeforeString, stripIllegalChars);
-                        Do(element, stripIllegalChars);
-                        Do(attribs.AfterString, stripIllegalChars);
-
-                        // Apply separator
-                        if (!attribs.Separator.Any() || rep.CurrentRepIndex >= reps - 1) continue;
-
-                        _state.PopRepeater(); // Pop repeater to prevent conflicting usage of [first], [last], etc.
-                        Do(attribs.Separator, stripIllegalChars);
-                        _state.PushRepeater(rep); // Put the repeater back after separator is handled
-
-                    } while (rep.Step());
-
-                    // Remove repeater from stack
-                    _state.PopRepeater();
-
-                    continue;
-                }
-
-                if (ParseMath)
-                {
-                    ArithmeticInfo arithmetic;
-                    if (ArithmeticInfo.TryParse(scanner, out arithmetic))
+                    // DoElement will return true if the interpreter should skip to the top of the stack
+                    if (DoElement(reader, state))
                     {
-                        arithmetic.Evaluate(this);
-                        continue;
+                        goto next;
                     }
                 }
 
-                TagInfo tag;
-                if (scanner.ReadTag(out tag))
+                // Use post-blueprints
+                while (state.UsePostBlueprint()) { }
+
+                // Push a result string if the state's output differs from the one below it
+                if (!state.SharesOutput && state.Finish())
                 {
-                    if (!DoTag(tag))
-                    {
-                        _state.ReleaseContext();
-                        return;
-                    }
-                    _state.ReleaseContext();
-                    continue;
+                    _resultStack.Push(state.Output.GetChannels());
                 }
 
-                Query wordCall;
-                if (scanner.ReadWordCall(out wordCall))
-                {
-                    Write(_wordBank.GetWord(this, wordCall));
-                    continue;
-                }
-                
-                if (!IgnoreChars.Contains((char)scanner.Next) || !stripIllegalChars)
-                {
-                    Write(scanner.ReadChar());
-                }
-                else
-                {
-                    scanner.ReadChar();
-                }
-            }
-        }
-
-        /// <summary>
-        /// This is used by tags that emulate block behavior, such as [lstblock]
-        /// </summary>
-        /// <param name="block">The block items to use.</param>
-        public void DoEnumerableAsBlock(IEnumerable<string> block)
-        {
-            var sync = _state.PopSynchronizer();
-
-            var attribs = _currentAttribs;
-            _currentAttribs = new BlockAttribs();
-
-            var blockArray = block as string[] ?? block.ToArray();
-
-            if (!blockArray.Any()) return;
-
-            if (attribs.Chance < 100 && _state.RNG.Next(1, 101) > attribs.Chance) return;
-
-            int reps = attribs.Repetitions < 0 ? blockArray.Length : attribs.Repetitions;
-
-            if (reps == 0) return;
-
-            var rep = new Repeater(reps);
-
-            _state.PushRepeater(rep);
-
-            do
-            {
-                var element = blockArray[_state.SelectBlockItem(blockArray.Length, sync)];
-
-                Do(attribs.BeforeString);
-                Do(element);
-                Do(attribs.AfterString);
-
-                if (!attribs.Separator.Any() || rep.CurrentRepIndex >= reps - 1) continue;
-
-                _state.PopRepeater();
-                Do(attribs.Separator);
-                _state.PushRepeater(rep);
-
-            } while (rep.Step());
-
-            _state.PopRepeater();
-        }
-
-        public State State
-        {
-            get { return _state; }
-        }
-
-        /// <summary>
-        /// Creates a new interpreter that shares this instance's state object, evaluates the given pattern, and returns the main output
-        /// </summary>
-        /// <param name="input">The input pattern.</param>
-        /// <param name="stripIllegalChars">If true, ignore blacklisted characters in input.</param>
-        /// <returns></returns>
-        public string Evaluate(string input, bool stripIllegalChars = true)
-        {
-            return new Interpreter(_state, _wordBank, _channels.SizeLimit, _stringRequested).InterpretToString(input, stripIllegalChars);
-        }
-
-        internal string EvaluateMathBlock(string input)
-        {
-            var ii = new Interpreter(_state, _wordBank, _channels.SizeLimit, _stringRequested) {ParseMath = false};
-            return ii.InterpretToString(input);
-        }
-
-        public void Write(object input)
-        {
-            var inputString = input.ToString();
-
-            // Handle capitalization via the [caps] tag
-            switch (_state.CurrentCapsFormat)
-            {
-                case Capitalization.First:
-                    if (inputString.Any(Char.IsLetterOrDigit))
-                    {
-                        inputString = inputString.Substring(0, 1).ToUpper() + inputString.Substring(1);
-                        _state.CurrentCapsFormat = Capitalization.None;
-                    }
-                    break;
-                case Capitalization.Lower:
-                    inputString = inputString.ToLower();
-                    break;
-                case Capitalization.Upper:
-                    inputString = inputString.ToUpper();
-                    break;
-                case Capitalization.Proper:
-                    if (String.IsNullOrEmpty(_lastText) || " \t\n".Contains(_lastText.Last()))
-                    {
-                        inputString = Regex.Replace(inputString, @"\b\w", m => m.Value.ToUpper());
-                    }
-                    break;
+                // Remove state from stack as long as nothing else was added beforehand
+                if (state == CurrentState) PopState();
             }
 
-            _channels.Write(_lastText = inputString);
+            return _resultStack.Pop();
         }
 
-        public bool DoTag(TagInfo tag)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool DoElement(SourceReader reader, State state)
         {
-            if (tag.Name.StartsWith("$")) // Syntactic sugar for the [call] tag.
-            {
-                return CallImpl(tag);
-            }
-
-            Func<Interpreter, string[], bool> func;
-            if (!TagFuncs.TryGetValue(tag.Name.ToLower(), out func))
-            {
-                throw new ManhoodException("Invalid tag type '"+tag.Name+"'.");
-            }
-                
-            return func(this, tag.Arguments);
-        }
-
-        internal class BlockAttribs
-        {
-            public int Repetitions { get; set; }            
-            public int Chance { get; set; }
-            public string Separator { get; set; }
-            public string BeforeString { get; set; }
-            public string AfterString { get; set; }
-
-            public BlockAttribs()
-            {
-                Repetitions = 1;
-                Chance = 100;
-                Separator = "";
-                BeforeString = "";
-                AfterString = "";
-            }
+            TokenFunc func;
+            if (TokenFuncs.TryGetValue(reader.PeekToken().Identifier, out func)) return func(this, reader, state);
+            Print(reader.ReadToken().Value);
+            return false;
         }
     }
 }

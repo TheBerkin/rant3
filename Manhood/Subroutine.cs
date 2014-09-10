@@ -1,34 +1,48 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+
+using Manhood.Compiler;
+
+using Stringes.Tokens;
 
 namespace Manhood
 {
     internal class Subroutine
     {
-        public string Name { get; private set; }
-        public string Body { get; private set; }
-        public Parameter[] Parameters { get; private set; }
+        private readonly Tuple<string, TagArgType>[] _parameters;
+        private readonly int _argCount;
+        private readonly Source _source;
 
-        public Subroutine(string name, string body, params string[] parameters)
+        private Subroutine(Source source, Tuple<string, TagArgType>[] parameters)
         {
-            Name = name;
-            Body = new Pattern(body).Code; // This prevents comments/indents from being accidentally parsed as input.
-            Parameters = parameters.Select(pname => new Parameter(pname)).ToArray();
+            _source = source;
+            _parameters = parameters;
+            _argCount = _parameters.Length;
         }
 
-        public class Parameter
+        public Source Source
         {
-            public string Name { get; set; }
-            public bool Interpreted { get; set; }
+            get { return _source; }
+        }
 
-            public Parameter(string name)
-            {
-                Interpreted = name.StartsWith("@");
-                if (!Util.ValidateName(Name = name.TrimStart('@')))
-                {
-                    throw new FormatException("Invalid parameter name: " + name);
-                }
-            }
+        public Tuple<string, TagArgType>[] Parameters
+        {
+            get { return _parameters; }
+        }
+
+        public int ParamCount
+        {
+            get { return _argCount; }
+        }
+
+        public static Subroutine FromTokens(string name, Source derivedSource, IEnumerable<Token<TokenType>> tokens, Tuple<string, TagArgType>[] parameters)
+        {
+            return new Subroutine(Source.Derived(name, derivedSource, tokens), parameters);
+        }
+
+        public static Subroutine FromString(string name, string code, Tuple<string, TagArgType>[] parameters)
+        {
+            return new Subroutine(Source.FromString(name, code), parameters);
         }
     }
 }

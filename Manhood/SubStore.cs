@@ -1,32 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Manhood
 {
     internal class SubStore
     {
-        private readonly Dictionary<string, Subroutine> _subs = new Dictionary<string, Subroutine>();
+        private readonly Dictionary<Tuple<string, int>, Subroutine> _table;
 
         public SubStore()
         {
-            
+            _table = new Dictionary<Tuple<string, int>, Subroutine>();
         }
 
-        public bool Define(string name, Subroutine value)
+        public void Define(string name, Subroutine sub)
         {
-            if (!Util.ValidateName(name)) return false;
-            _subs[name.ToLower()] = value;
-            return true;
+            _table[Tuple.Create(name.ToLower().Trim(), sub.ParamCount)] = sub;
         }
 
-        public Subroutine GetSubroutine(string name)
+        public Subroutine Get(string name, int argc)
         {
             Subroutine sub;
-            return !_subs.TryGetValue(name.ToLower(), out sub) ? null : sub;
-        }
-
-        public bool Undefine(string name)
-        {
-            return _subs.Remove(name);
+            return !_table.TryGetValue(Tuple.Create(name.ToLower().Trim(), argc), out sub) ? null : sub;
         }
     }
 }

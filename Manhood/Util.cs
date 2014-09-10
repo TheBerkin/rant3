@@ -1,95 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
+
+using Manhood.Compiler;
+
+using Stringes;
+using Stringes.Tokens;
 
 namespace Manhood
 {
-    internal static class Util
+    internal class Util
     {
-        public static bool ValidateName(string name)
+        private static readonly Dictionary<char, Func<RNG, char>> _escapeChars = new Dictionary<char, Func<RNG, char>>
         {
-            return !String.IsNullOrEmpty(name) && name.All(c => Char.IsLetterOrDigit(c) || "_-".Contains(c));
+            {'n', rng => '\n'},
+            {'r', rng => '\r'},
+            {'t', rng => '\t'},
+            {'b', rng => '\b'},
+            {'f', rng => '\f'},
+            {'v', rng => '\v'},
+            {'0', rng => '\0'},
+            {'s', rng => ' '},
+            {'d', rng => rng == null ? '0' : Convert.ToChar(rng.Next(48, 58))},
+            {'c', rng => rng == null ? '?' : Convert.ToChar(rng.Next(97, 123))},
+            {'C', rng => rng == null ? '?' : Convert.ToChar(rng.Next(65, 91))},
+            {'x', rng => rng == null ? '?' : "0123456789abcdef"[rng.Next(16)]},
+            {'X', rng => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
+        };
+
+        private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+        private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string Capitalize(string input, ref Capitalization caps, ref char lastChar)
+        {
+            if (String.IsNullOrEmpty(input) || caps == Capitalization.None) return input;
+            switch (caps)
+            {
+                case Capitalization.Lower:
+                    input = input.ToLower();
+                    break;
+                case Capitalization.Upper:
+                    input = input.ToUpper();
+                    break;
+                case Capitalization.First:
+                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
+                    caps = Capitalization.None;
+                    break;
+                case Capitalization.Proper:
+                    char _lastChar = lastChar;
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
+                    break;
+            }
+            lastChar = input[input.Length - 1];
+            return input;
         }
 
-        public static IEnumerable<string> SplitArgs(string args)
+        public static string NameToCamel(string name)
         {
-            var pair = args.Split(new[] { ' ', '\r', '\n', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
-            if (pair.Length == 0) yield break;
-            yield return pair[0].Trim();
-            if (pair.Length == 1) yield break;
-
-            int balanceSquare = 0;
-            int balanceTri = 0;
-            int balanceParen = 0;
-
+            if (String.IsNullOrEmpty(name)) return name;
             var sb = new StringBuilder();
-            bool escapeNext = false;
-
-            foreach (char c in pair[1])
+            for (int i = 0; i < name.Length; i++)
             {
-                if (!escapeNext)
+                if (i == 0)
                 {
-                    switch (c)
-                    {
-                        case '\\':
-                            sb.Append('\\');
-                            escapeNext = true;
-                            continue;
-                        case '[':
-                            balanceSquare--;
-                            break;
-                        case '<':
-                            balanceTri--;
-                            break;
-                        case '(':
-                            balanceParen--;
-                            break;
-                        case ')':
-                            balanceParen++;
-                            break;
-                        case ']':
-                            if (++balanceSquare > 0)
-                            {
-                                throw new FormatException("Too many closing square brackets.");
-                            }
-                            break;
-                        case '>':
-                            if (++balanceTri > 0)
-                            {
-                                throw new FormatException("Too many closing triangular brackets.");
-                            }
-                            break;
-                        default:
-                            if (c == '/' && balanceSquare == 0 && balanceTri == 0 && balanceParen == 0)
-                            {
-                                yield return sb.ToString().Trim();
-                                sb.Clear();
-                                continue;
-                            }
-                            break;
-                    }
+                    sb.Append(Char.ToUpper(name[i]));
                 }
-                escapeNext = false;
-                sb.Append(c);
+                else if ((name[i] == '_' || name[i] == '-') && i + 1 < name.Length)
+                {
+                    sb.Append(Char.ToUpper(name[++i]));
+                }
+                else
+                {
+                    sb.Append(Char.ToLower(name[i]));
+                }
             }
+            return sb.ToString();
+        }
 
-            yield return sb.ToString().Trim();
+        public static Regex ParseRegex(string regexLiteral)
+        {
+            if (String.IsNullOrEmpty(regexLiteral)) throw new ArgumentException("Argument 'regexLiteral' cannot be null or empty.");
+            bool noCase = regexLiteral.EndsWith("i");
+            var literal = regexLiteral.TrimEnd('i');
+            if (!literal.StartsWith("/") || !literal.EndsWith("/")) throw new FormatException("Regex literal was not in the correct format.");
+            return new Regex(literal.Slice(1, literal.Length - 1), (noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture);
+        }
 
-            if (balanceSquare < 0)
+        public static string UnescapeConstantLiteral(string literal)
+        {
+            if (String.IsNullOrEmpty(literal)) return literal;
+            if (literal.StartsWith("\"")) literal = literal.Substring(1);
+            if (literal.EndsWith("\"")) literal = literal.Substring(0, literal.Length - 1);
+            return Regex.Replace(literal, @"""""", @"""");
+        }
+
+        public static string Unescape(string sequence, RNG rng = null)
+        {
+            var match = Lexer.EscapeRegex.Match(sequence);
+            var count = Int32.Parse(Alt(match.Groups["count"].Value, "1"));
+            bool unicode = match.Groups["unicode"].Success;
+            var code = Alt(match.Groups["code"].Value, match.Groups["unicode"].Value);
+            var sb = new StringBuilder();
+            if (unicode)
             {
-                throw new FormatException("Too many opening square brackets.");
+                    sb.Append((char)Convert.ToUInt16(code, 16), count);
             }
-
-            if (balanceTri < 0)
+            else
             {
-                throw new FormatException("Too many opening triangular brackets.");
+                Func<RNG, char> func;
+                if (_escapeChars.TryGetValue(code[0], out func))
+                {
+                    for (int i = 0; i < count; i++)
+                        sb.Append(func(rng));
+                }
+                else
+                {
+                    for (int i = 0; i < count; i++)
+                        sb.Append(code[0]);
+                }
             }
+            return sb.ToString();
+        }
 
-            if (balanceParen < 0)
-            {
-                throw new FormatException("Too many opening parentheses.");
-            }
+        public static bool ValidateName(string input)
+        {
+            return input.All(c => Char.IsLetterOrDigit(c) || c == '_');
+        }
+
+        public static string Alt(string input, string alternate)
+        {
+            return String.IsNullOrEmpty(input) ? alternate : input;
         }
     }
 }

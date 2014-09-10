@@ -57,25 +57,35 @@ namespace Manhood
 
         public int Step(bool force)
         {
-            if (_type == SyncType.Uniform) return _state[0];
+            if (_type == SyncType.Locked) return _state[0];
             if (_index >= _state.Length)
             {
                 _index = 0;
                 if (_type == SyncType.Deck) ScrambleSlots();
             }
             if (_pinned && !force) return _state[_index];
-            
+
             return _state[_index++];
         }
 
         public void FillSlots()
         {
-            for (int i = 0; i < _state.Length; _state[i] = i++) { }
-            if (Type != SyncType.Ordered) ScrambleSlots();
+            if (Type != SyncType.Reverse)
+            {
+                for (int i = 0; i < _state.Length; _state[i] = i++) { }
+            }
+            else
+            {
+                for (int i = 0; i < _state.Length; _state[(_state.Length - 1) - i] = i++) { }
+            }
+
+            if (Type != SyncType.Ordered && Type != SyncType.Reverse) ScrambleSlots();
         }
 
         public void ScrambleSlots()
         {
+            if (_state.Length == 1) return;
+
             int t;
 
             if (_state.Length == 2) // Handle 2-item scenario

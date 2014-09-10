@@ -1,4 +1,6 @@
-﻿namespace Manhood.Arithmetic.Parselets
+﻿using Stringes.Tokens;
+
+namespace Manhood.Arithmetic.Parselets
 {
     internal class PrefixOperatorParselet : IPrefixParselet
     {
@@ -9,7 +11,7 @@
             _precedence = precedence;
         }
 
-        public Expression Parse(Parser parser, Token token)
+        public Expression Parse(Parser parser, Token<MathTokenType> token)
         {
             var right = parser.ParseExpression(_precedence);
             return new PrefixOperatorExpression(token, right);

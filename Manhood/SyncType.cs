@@ -2,9 +2,11 @@
 {
     internal enum SyncType
     {
-        Uniform,
+        None,
+        Ordered,
+        Reverse,
         Deck,
         CDeck,
-        Ordered
+        Locked
     }
 }

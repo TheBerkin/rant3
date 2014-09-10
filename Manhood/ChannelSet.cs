@@ -37,7 +37,7 @@ namespace Manhood
         /// </summary>
         public string MainOutput
         {
-            get { return this["main"].Output; }
+            get { return this["main"].Value; }
         }
 
         /// <summary>

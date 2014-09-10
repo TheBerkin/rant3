@@ -1,39 +1,43 @@
-﻿namespace Manhood.Arithmetic
+﻿using Manhood.Compiler;
+
+using Stringes.Tokens;
+
+namespace Manhood.Arithmetic
 {
     internal class PostfixOperatorExpression : Expression
     {
-        private readonly Token _token;
+        private readonly Token<MathTokenType> _token;
         private readonly Expression _left;
 
-        public PostfixOperatorExpression(Token token, Expression left)
+        public PostfixOperatorExpression(Token<MathTokenType> token, Expression left)
         {
             _token = token;
             _left = left;
         }
 
-        public override double Evaluate(Interpreter ii)
+        public override double Evaluate(Parser parser, Interpreter ii)
         {
             var name = _left as NameExpression;
             if (name == null)
             {
-                throw new ManhoodException("Left side of increment/decrement postfix was not a variable.");
+                throw new ManhoodException(parser.Source, _token, "Left side of increment/decrement postfix was not a variable.");
             }
-            switch (_token.Type)
+            switch (_token.Identifier)
             {
-                case TokenType.Increment:
+                case MathTokenType.Increment:
                 {
-                    double d = name.Evaluate(ii);
-                    ii.State.Variables.SetVar(name.Name, d + 1);
+                    double d = name.Evaluate(parser, ii);
+                    ii.Engine.Variables.SetVar(name.Name, d + 1);
                     return d;
                 }
-                case TokenType.Decrement:
+                case MathTokenType.Decrement:
                 {
-                    double d = name.Evaluate(ii);
-                    ii.State.Variables.SetVar(name.Name, d - 1);
+                    double d = name.Evaluate(parser, ii);
+                    ii.Engine.Variables.SetVar(name.Name, d - 1);
                     return d;
                 }
                 default:
-                    throw new ManhoodException("Invalid postfix operator '" + _token.Text + "'.");
+                    throw new ManhoodException(parser.Source, _token, "Invalid postfix operator '" + _token.Value + "'.");
             }
         }
     }
