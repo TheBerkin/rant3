@@ -22,7 +22,7 @@ namespace Manhood
         /// <param name="name">the name of the list.</param>
         /// <param name="subtypes">The subtype names.</param>
         /// <param name="words">The words to add to the list.</param>
-        public Dictionary(string name, string[] subtypes, DictionaryEntry[] words)
+        public Dictionary(string name, string[] subtypes, IEnumerable<DictionaryEntry> words)
         {
             if (!Util.ValidateName(name))
             {
@@ -35,7 +35,7 @@ namespace Manhood
 
             _subtypes = subtypes;
             _name = name;
-            _words = words;
+            _words = words.ToArray();
             GenerateClassIndices();
         }
 
@@ -211,7 +211,7 @@ namespace Manhood
             return -1;
         }
 
-        internal string GetWord(Interpreter interpreter, Query query)
+        internal string Query(RNG rng, Query query)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1)
@@ -232,8 +232,8 @@ namespace Manhood
                 return "NOT_FOUND";
             }
 
-            int number = String.IsNullOrEmpty(query.Carrier) ? interpreter.RNG.Next(pool.Sum(e => e.Weight)) + 1
-                : interpreter.RNG.PeekAt(query.Carrier.Hash(), pool.Sum(e => e.Weight));
+            int number = String.IsNullOrEmpty(query.Carrier) ? rng.Next(pool.Sum(e => e.Weight)) + 1
+                : rng.PeekAt(query.Carrier.Hash(), pool.Sum(e => e.Weight));
 
             foreach (var e in pool)
             {

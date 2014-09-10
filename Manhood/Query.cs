@@ -5,7 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace Manhood
 {
-    internal class Query
+    /// <summary>
+    /// Represents a set of search criteria for a Manhood dictionary.
+    /// </summary>
+    public class Query
     {
         private string _name;
         private string _subtype;

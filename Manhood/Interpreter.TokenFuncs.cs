@@ -106,7 +106,7 @@ namespace Manhood
                 }
             }
 
-            interpreter.Print(interpreter.Vocabulary.GetWord(interpreter, q));
+            interpreter.Print(interpreter.Vocabulary.Query(interpreter.RNG, q));
 
             return false;
         }

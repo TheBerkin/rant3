@@ -12,6 +12,7 @@
 *.vshost.exe
 *.exe.config
 *.manifest
+*.DotSettings.user
 
 # Build results
 [Dd]ebug/
