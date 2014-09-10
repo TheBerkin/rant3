@@ -71,7 +71,7 @@ namespace Manhood
         /// Creates a new Engine object with the specified vocabulary.
         /// </summary>
         /// <param name="vocabulary">The vocabulary to load in this instance.</param>
-        public Engine(Vocabulary vocabulary)
+        public Engine(IVocabulary vocabulary)
         {
             if (vocabulary == null) throw new ArgumentNullException("vocabulary");
             _vocabulary = vocabulary;
@@ -86,7 +86,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw()), _vocabulary).Run();
+            return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw())).Run();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet DoFile(string path)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw()), _vocabulary).Run();
+            return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw())).Run();
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input, long seed)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(seed), _vocabulary).Run();
+            return new Interpreter(this, Source.FromString(input), new RNG(seed)).Run();
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet DoFile(string path, long seed)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(seed), _vocabulary).Run();
+            return new Interpreter(this, Source.FromFile(path), new RNG(seed)).Run();
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(string input, RNG rng)
         {
-            return new Interpreter(this, Source.FromString(input), rng, _vocabulary).Run();
+            return new Interpreter(this, Source.FromString(input), rng).Run();
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet DoFile(string path, RNG rng)
         {
-            return new Interpreter(this, Source.FromFile(path), rng, _vocabulary).Run();
+            return new Interpreter(this, Source.FromFile(path), rng).Run();
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(Source input)
         {
-            return new Interpreter(this, input, new RNG(Seeds.NextRaw()), _vocabulary).Run();
+            return new Interpreter(this, input, new RNG(Seeds.NextRaw())).Run();
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(Source input, long seed)
         {
-            return new Interpreter(this, input, new RNG(seed), _vocabulary).Run();
+            return new Interpreter(this, input, new RNG(seed)).Run();
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Manhood
         /// <returns></returns>
         public ChannelSet Do(Source input, RNG rng)
         {
-            return new Interpreter(this, input, rng, _vocabulary).Run();
+            return new Interpreter(this, input, rng).Run();
         }
     }
 }

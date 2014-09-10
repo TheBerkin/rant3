@@ -4,7 +4,20 @@ namespace Manhood
 {
     public partial class Engine
     {
-        private Vocabulary _vocabulary;
+        private IVocabulary _vocabulary;
+
+        /// <summary>
+        /// The vocabulary associated with this instance.
+        /// </summary>
+        public IVocabulary Vocabulary
+        {
+            get { return _vocabulary; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                _vocabulary = value;
+            }
+        }
 
         private void LoadVocab(string path, NsfwFilter filter)
         {
@@ -16,7 +29,7 @@ namespace Manhood
                 return;
             }
 
-            _vocabulary = Vocabulary.FromDirectory(path, filter);
+            _vocabulary = Manhood.Vocabulary.FromDirectory(path, filter);
         }
     }
 }

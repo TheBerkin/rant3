@@ -16,7 +16,6 @@ namespace Manhood
         private readonly RNG _rng;
         private readonly Source _mainSource;
         private readonly Engine _engine;
-        private readonly Vocabulary _vocab;
 
         // Next block attribs
         private BlockAttribs _blockAttribs = new BlockAttribs();
@@ -49,11 +48,6 @@ namespace Manhood
         {
             get { return _blockAttribs; }
             set { _blockAttribs = value; }
-        }
-
-        public Vocabulary Vocabulary
-        {
-            get { return _vocab; }
         }
 
         public RNG RNG
@@ -171,11 +165,10 @@ namespace Manhood
 
         #endregion
         
-        public Interpreter(Engine engine, Source input, RNG rng, Vocabulary vocab)
+        public Interpreter(Engine engine, Source input, RNG rng)
         {
             _mainSource = input;
             _rng = rng;
-            _vocab = vocab;
             _engine = engine;
             _mainState = State.Create(input, this);
         }

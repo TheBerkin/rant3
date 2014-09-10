@@ -102,6 +102,7 @@
     <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.TagFuncs.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
+    <Compile Include="IVocabulary.cs" />
     <Compile Include="ManhoodException.cs" />
     <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />

@@ -5,9 +5,9 @@ using System.Linq;
 namespace Manhood
 {
     /// <summary>
-    /// Represents a collection of named dictionaries that can be queried by Manhood.
+    /// Represents a collection of named, queryable dictionaries. This is the default vocabulary type used by Manhood.
     /// </summary>
-    public class Vocabulary
+    public class Vocabulary : IVocabulary
     {
         private readonly Dictionary<string, Dictionary> _wordLists;
 
