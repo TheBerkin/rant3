@@ -177,9 +177,9 @@ namespace Manhood
             _mainSource = input;
             _rng = rng;
             _engine = engine;
-            _mainState = State.Create(input, this);
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => a > 0 && a <= b);
             _output = new ChannelStack(_charLimit);
+            _mainState = State.Create(input, this);
         }
 
         public void Print(object input)

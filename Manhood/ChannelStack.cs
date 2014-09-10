@@ -86,7 +86,7 @@ namespace Manhood
             foreach (var ch in GetVisibleChannels())
             {
                 if (!_sizeLimit.Accumulate(input.Length))
-                    throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + " chars)");
+                    throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + ")");
                 ch.Write(input);
             }
 
