@@ -11,6 +11,8 @@ namespace Manhood
         private readonly Channel _main;
         private readonly int _sizeLimit;
 
+        private int _stackSize;
+
         private int _lastWriteSize, _size;
 
         public ChannelStack(int sizeLimit)
@@ -19,6 +21,7 @@ namespace Manhood
             _main = new Channel("main", ChannelVisibility.Public);
 
             _stack = new List<Channel> { _main };
+            _stackSize = 1;
 
             _channels = new Dictionary<string, Channel>
             {
@@ -64,6 +67,7 @@ namespace Manhood
             if (!_stack.Contains(ch))
             {
                 _stack.Add(ch);
+                _stackSize++;
             }
         }
 
@@ -75,16 +79,16 @@ namespace Manhood
             if (_channels.TryGetValue(channelName, out ch))
             {
                 _stack.Remove(ch);
+                _stackSize--;
             }
         }
 
         public void SetCaps(Capitalization caps)
         {
-            int count = _stack.Count;
             var lastVisibility = ChannelVisibility.Public;
             if (_stack.Last().Visiblity == ChannelVisibility.Public) _main.Capitalization = caps;
 
-            for (int i = count - 1; i >= 0; i--)
+            for (int i = _stackSize - 1; i >= 0; i--)
             {
                 if (_stack[i] == _main) break;
 
@@ -108,11 +112,10 @@ namespace Manhood
         
         public void Write(string input)
         {
-            int count = _stack.Count;
             var lastVisibility = ChannelVisibility.Public;
             if (_stack.Last().Visiblity == ChannelVisibility.Public) _main.Write(input);
 
-            for (int i = count - 1; i >= 0; i--)
+            for (int i = _stackSize - 1; i >= 0; i--)
             {
                 if (_stack[i] == _main) break;
 
