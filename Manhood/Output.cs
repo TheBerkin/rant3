@@ -5,14 +5,14 @@ using System.Linq;
 namespace Manhood
 {
     /// <summary>
-    /// Contains a set of outputs returned from Manhood.
+    /// Represents a collection of output channel values returned from Manhood.
     /// </summary>
-    public sealed class ChannelSet : IEnumerable<Channel>
+    public sealed class Output : IEnumerable<Channel>
     {
         private readonly Dictionary<string, Channel> _channels;
         private readonly List<Channel> _channelArray;
 
-        internal ChannelSet(Dictionary<string, Channel> channels)
+        internal Output(Dictionary<string, Channel> channels)
         {
             _channels = channels;
             _channelArray = channels.Values.ToList();
@@ -35,7 +35,7 @@ namespace Manhood
         /// <summary>
         /// The main output channel.
         /// </summary>
-        public string MainOutput
+        public string MainValue
         {
             get { return this["main"].Value; }
         }
@@ -60,16 +60,16 @@ namespace Manhood
         /// <returns></returns>
         public override string ToString()
         {
-            return MainOutput;
+            return MainValue;
         }
 
         /// <summary>
         /// Returns the output from the "main" channel.
         /// </summary>
         /// <returns></returns>
-        public static implicit operator string(ChannelSet cset)
+        public static implicit operator string(Output output)
         {
-            return cset.MainOutput;
+            return output.MainValue;
         }
     }
 }

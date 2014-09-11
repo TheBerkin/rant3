@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Manhood
@@ -8,6 +9,13 @@ namespace Manhood
     /// </summary>
     public class Channel
     {
+        private readonly StringBuilder _buffer = new StringBuilder(InitialBufferSize);
+
+        private char _lastChar = ' ';
+        private Capitalization _caps = Capitalization.None;
+
+        private Dictionary<string, int> _markers = new Dictionary<string, int>();
+
         /// <summary>
         /// The name of the channel.
         /// </summary>
@@ -17,11 +25,6 @@ namespace Manhood
         /// The visibility of the channel.
         /// </summary>
         public ChannelVisibility Visiblity { get; internal set; }
-
-        private readonly StringBuilder _buffer = new StringBuilder(InitialBufferSize);
-
-        private char _lastChar = ' ';
-        private Capitalization _caps = Capitalization.None;
 
         internal Capitalization Capitalization
         {
@@ -35,6 +38,17 @@ namespace Manhood
         {
             Name = name;
             Visiblity = visibility;
+        }
+
+        internal void SetMarker(string name)
+        {
+            _markers[name] = _buffer.Length;
+        }
+
+        internal int GetMarkerPos(string name)
+        {
+            int i;
+            return _markers.TryGetValue(name, out i) ? i : 0;
         }
 
         internal void Write(string value)

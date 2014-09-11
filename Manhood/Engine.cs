@@ -85,7 +85,7 @@ namespace Manhood
         /// <param name="input">The input string to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(string input, int charLimit = 0)
+        public Output Do(string input, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
@@ -96,7 +96,7 @@ namespace Manhood
         /// <param name="path">The path to the file to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet DoFile(string path, int charLimit = 0)
+        public Output DoFile(string path, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
@@ -108,7 +108,7 @@ namespace Manhood
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(string input, long seed, int charLimit = 0)
+        public Output Do(string input, long seed, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromString(input), new RNG(seed), charLimit).Run();
         }
@@ -120,7 +120,7 @@ namespace Manhood
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet DoFile(string path, long seed, int charLimit = 0)
+        public Output DoFile(string path, long seed, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromFile(path), new RNG(seed), charLimit).Run();
         }
@@ -132,7 +132,7 @@ namespace Manhood
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(string input, RNG rng, int charLimit = 0)
+        public Output Do(string input, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromString(input), rng, charLimit).Run();
         }
@@ -144,7 +144,7 @@ namespace Manhood
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet DoFile(string path, RNG rng, int charLimit = 0)
+        public Output DoFile(string path, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, Source.FromFile(path), rng, charLimit).Run();
         }
@@ -155,7 +155,7 @@ namespace Manhood
         /// <param name="input">The source to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(Source input, int charLimit = 0)
+        public Output Do(Source input, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
         }
@@ -167,7 +167,7 @@ namespace Manhood
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(Source input, long seed, int charLimit = 0)
+        public Output Do(Source input, long seed, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(seed), charLimit).Run();
         }
@@ -179,7 +179,7 @@ namespace Manhood
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public ChannelSet Do(Source input, RNG rng, int charLimit = 0)
+        public Output Do(Source input, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, input, rng, charLimit).Run();
         }

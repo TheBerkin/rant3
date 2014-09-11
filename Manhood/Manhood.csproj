@@ -109,7 +109,7 @@
     <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="Channel.cs" />
-    <Compile Include="ChannelSet.cs" />
+    <Compile Include="Output.cs" />
     <Compile Include="ChannelStack.cs" />
     <Compile Include="ChannelVisibility.cs" />
     <Compile Include="Extensions.cs" />

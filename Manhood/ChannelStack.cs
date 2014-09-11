@@ -127,9 +127,9 @@ namespace Manhood
             _lastWriteSize = _size - _lastSize;
         }
 
-        public ChannelSet GetChannels()
+        public Output GetChannels()
         {
-            return new ChannelSet(_channels);
+            return new Output(_channels);
         }
     }
 }

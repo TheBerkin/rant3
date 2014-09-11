@@ -33,7 +33,7 @@ namespace Manhood
 
         // Stacks
         private readonly Stack<State> _stateStack = new Stack<State>();
-        private readonly Stack<ChannelSet> _resultStack = new Stack<ChannelSet>();
+        private readonly Stack<Output> _resultStack = new Stack<Output>();
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
         private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>();
@@ -177,7 +177,7 @@ namespace Manhood
             _mainSource = input;
             _rng = rng;
             _engine = engine;
-            _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => a > 0 && a <= b);
+            _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
             _output = new ChannelStack(_charLimit);
             _mainState = State.Create(input, this);
         }
@@ -190,10 +190,10 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string PopResultString()
         {
-            return !_resultStack.Any() ? "" : _resultStack.Pop().MainOutput;
+            return !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
         }
 
-        public ChannelSet Run()
+        public Output Run()
         {
             PushState(_mainState);
 

@@ -46,11 +46,11 @@ namespace MHC
                 Console.Write("manhood> ");
                 var input = Console.ReadLine();
 #if DEBUG
-                Console.WriteLine(mh.Do(input).MainOutput);
+                Console.WriteLine(mh.Do(input));
 #else
                 try
                 {
-                    Console.WriteLine(mh.Do(input).MainOutput);
+                    Console.WriteLine(mh.Do(input));
                 }
                 catch (Exception e)
                 {
