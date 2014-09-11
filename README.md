@@ -1,4 +1,7 @@
-![Manhood logo](http://i.imgur.com/vYActli.png)
+<img align="center" src="http://i.imgur.com/vYActli.png" alt="Manhood logo"></img>
+
+#Manhood
+**Generating text has never been this simple.**
 
 Manhood is a templating language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
 
