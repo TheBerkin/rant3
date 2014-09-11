@@ -1,9 +1,9 @@
-<img align="center" src="http://i.imgur.com/vYActli.png" alt="Manhood logo"></img>
+<p align="center">
+<img src="http://i.imgur.com/vYActli.png" alt="Manhood logo"></img>
+<br/><b>Generating text has never been this simple.</b>
+</p>
 
-#Manhood
-**Generating text has never been this simple.**
-
-Manhood is a templating language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
+**Manhood** is a templating language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
 
 * Generating HTML, JSON, and other recursive text-based data structures
 * Writing randomly generated words, sentences, and even stories
