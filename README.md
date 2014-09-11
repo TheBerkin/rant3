@@ -23,7 +23,7 @@ thirteen, twenty two, thirteen, nineteen, thirty one, thirty four, forty two, tw
 
 ---
 
-**Generate a 32 random hexadecimal digits grouped into sets of eight**
+**Generate 32 random hexadecimal digits grouped into sets of eight**
 ```
 [rep:4][sep:\s]{\8,x}
 ```
