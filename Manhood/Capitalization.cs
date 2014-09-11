@@ -5,7 +5,7 @@
         None,
         Lower,
         Upper,
-        Proper,
+        Word,
         First
     }
 }

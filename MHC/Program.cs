@@ -40,7 +40,7 @@ namespace MHC
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
             var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, NsfwFilter.Allow);
-
+            
             while (true)
             {
                 Console.Write("manhood> ");

@@ -49,7 +49,7 @@ namespace Manhood
                     input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
                     caps = Capitalization.None;
                     break;
-                case Capitalization.Proper:
+                case Capitalization.Word:
                     char _lastChar = lastChar;
                     input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
                     break;
