@@ -1,4 +1,4 @@
-![Manhood logo](http://i.imgur.com/lPl7EbA.png)
+![Manhood logo](http://i.imgur.com/vYActli.png)
 
 Manhood is a templating language designed to be concise and extremely flexible. It is capable of performing a wide variety of generation tasks, including but not limited to:
 
@@ -40,5 +40,7 @@ thirteen, twenty two, thirteen, nineteen, thirty one, thirty four, forty two, tw
 ```
 Alick likes to mount shuttlecocks with his pet bat on Mondays.
 ```
+
+---
 
 See the [wiki](http://github.com/TheBerkin/Manhood/wiki) for language and API documentation.
