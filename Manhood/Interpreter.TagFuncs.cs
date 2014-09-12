@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Manhood.Blueprints;
 using Manhood.Compiler;
@@ -49,8 +50,44 @@ namespace Manhood
             TagFuncs["arg"] = new TagDef(Arg, TagArgType.Result);
             TagFuncs["numfmt"] = new TagDef(NumFmt, TagArgType.Result);
             TagFuncs["caps"] = new TagDef(Caps, TagArgType.Result);
+            TagFuncs["capsinfer"] = new TagDef(CapsInfer, TagArgType.Result);
             TagFuncs["out"] = new TagDef(Out, TagArgType.Result, TagArgType.Result);
             TagFuncs["close"] = new TagDef(Close, TagArgType.Result);
+        }
+
+        private static bool CapsInfer(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            // TODO: Make capsinfer properly infer "first" capitalization given multiple sentences. Currently, it mistakes it for "word" mode.
+            var words = Regex.Matches(args[0].GetString(), @"\w+").OfType<Match>().Select(m => m.Value).ToArray();
+            int wCount = words.Length;
+            int uCount = 0;
+            int fwCount = 0;
+            bool firstCharIsUpper = false;
+            for (int i = 0; i < wCount; i++)
+            {
+                if (words[i].All(Char.IsUpper))
+                {
+                    uCount++;
+                }
+                if (Char.IsUpper(words[i][0]))
+                {
+                    fwCount++;
+                    if (i == 0) firstCharIsUpper = true;
+                }
+            }
+            if (uCount == wCount)
+            {
+                interpreter.CurrentState.Output.SetCaps(Capitalization.Upper);
+            }
+            else if (wCount > 1 && fwCount == wCount)
+            {
+                interpreter.CurrentState.Output.SetCaps(Capitalization.Word);
+            }
+            else if (firstCharIsUpper)
+            {
+                interpreter.CurrentState.Output.SetCaps(Capitalization.First);
+            }
+            return false;
         }
 
         private static bool Close(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

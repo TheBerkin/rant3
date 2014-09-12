@@ -36,7 +36,7 @@ namespace Manhood
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Capitalize(string input, ref Capitalization caps, ref char lastChar)
         {
-            if (String.IsNullOrEmpty(input) || caps == Capitalization.None) return input;
+            if (String.IsNullOrEmpty(input)) return input;
             switch (caps)
             {
                 case Capitalization.Lower:
@@ -51,7 +51,7 @@ namespace Manhood
                     break;
                 case Capitalization.Word:
                     char _lastChar = lastChar;
-                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || _lastChar == ' ') ? m.Value.ToUpper() : m.Value);
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(_lastChar) || Char.IsWhiteSpace(_lastChar)) ? m.Value.ToUpper() : m.Value);
                     break;
             }
             lastChar = input[input.Length - 1];
@@ -107,6 +107,11 @@ namespace Manhood
             if (unicode)
             {
                     sb.Append((char)Convert.ToUInt16(code, 16), count);
+            }
+            else if (code[0] == 'N') // The only escape sequence that returns more than 1 character without a quantifier
+            {
+                for (int i = 0; i < count; i++)
+                    sb.Append(Environment.NewLine);
             }
             else
             {

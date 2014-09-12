@@ -50,7 +50,7 @@ namespace Manhood
         // 1-based
         public bool Nth(int offset, int interval)
         {
-            return ((_index - offset) + 1) % interval == 0;
+            return ((_index + 1) - offset) % interval == 0;
         }
         
         public int Count
