@@ -7,7 +7,7 @@ namespace Manhood
     /// <summary>
     /// Stores output from a pattern channel.
     /// </summary>
-    public class Channel
+    public sealed class Channel
     {
         private readonly StringBuilder _buffer = new StringBuilder(InitialBufferSize);
 
@@ -56,6 +56,9 @@ namespace Manhood
             _buffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
         }
 
+        /// <summary>
+        /// The number of characters in the output.
+        /// </summary>
         public int Length
         {
             get { return _buffer.Length; }
@@ -70,7 +73,7 @@ namespace Manhood
         }
 
         /// <summary>
-        /// Returns a string representation of the channel.
+        /// Returns a string that identifies the channel by name and visibility.
         /// </summary>
         /// <returns></returns>
         public override string ToString()

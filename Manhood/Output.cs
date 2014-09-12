@@ -41,7 +41,7 @@ namespace Manhood
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the ChannelSet.
+        /// Returns an enumerator that iterates through the channels in the collection.
         /// </summary>
         /// <returns></returns>
         public IEnumerator<Channel> GetEnumerator()
