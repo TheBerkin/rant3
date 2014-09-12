@@ -227,7 +227,7 @@ namespace Manhood
 
             if (!Util.ValidateName(tName.Value))
                 throw new ManhoodException(reader.Source, tName, "Invalid subroutine name: '" + tName.Value + "'");
-
+            
             if (!reader.Take(TokenType.Colon))
             {
                 reader.Read(TokenType.RightSquare);
@@ -243,6 +243,7 @@ namespace Manhood
                 }
             }
 
+            reader.SkipSpace();
             reader.Read(TokenType.Colon);
 
             var body = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All).ToArray();

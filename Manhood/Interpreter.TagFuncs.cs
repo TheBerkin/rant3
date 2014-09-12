@@ -32,6 +32,7 @@ namespace Manhood
             TagFuncs["pin"] = new TagDef(Pin, TagArgType.Result);
             TagFuncs["unpin"] = new TagDef(Unpin, TagArgType.Result);
             TagFuncs["step"] = new TagDef(Step, TagArgType.Result);
+            TagFuncs["reset"] = new TagDef(Reset, TagArgType.Result);
             TagFuncs["first"] = new TagDef(First, TagArgType.Tokens);
             TagFuncs["last"] = new TagDef(Last, TagArgType.Tokens);
             TagFuncs["middle"] = new TagDef(Middle, TagArgType.Tokens);
@@ -53,6 +54,12 @@ namespace Manhood
             TagFuncs["capsinfer"] = new TagDef(CapsInfer, TagArgType.Result);
             TagFuncs["out"] = new TagDef(Out, TagArgType.Result, TagArgType.Result);
             TagFuncs["close"] = new TagDef(Close, TagArgType.Result);
+        }
+
+        private static bool Reset(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)
+        {
+            interpreter.Reset(args[0].GetString());
+            return false;
         }
 
         private static bool CapsInfer(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)

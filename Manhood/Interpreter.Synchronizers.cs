@@ -20,6 +20,15 @@ namespace Manhood
             NextAttribs.Sync = sync;
         }
 
+        public void Reset(string seed)
+        {
+            Synchronizer sync;
+            if (_synchronizers.TryGetValue(seed, out sync))
+            {
+                sync.Reset();
+            }
+        }
+
         public void Step(string seed)
         {
             Synchronizer sync;

@@ -7,7 +7,7 @@ using Stringes;
 namespace Manhood
 {
     /// <summary>
-    /// Represents runtime errors raised by the Manhood engine.
+    /// Represents a runtime error raised by the Manhood engine.
     /// </summary>
     public sealed class ManhoodException : Exception
     {

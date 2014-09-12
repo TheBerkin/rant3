@@ -47,7 +47,7 @@ namespace Manhood
         /// <summary>
         /// Creates a new Engine object that loads vocabulary from the specified path.
         /// </summary>
-        /// <param name="vocabularyPath">The path to the vocabulary files.</param>
+        /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
         public Engine(string vocabularyPath)
         {
             LoadVocab(vocabularyPath, DefaultNsfwFilter);
@@ -58,7 +58,7 @@ namespace Manhood
         /// <summary>
         /// Creates a new Engine object that loads vocabulary from a path according to the specified filtering option.
         /// </summary>
-        /// <param name="vocabularyPath">The path to the vocabulary files.</param>
+        /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
         /// <param name="filter">The filtering option to apply when loading the files.</param>
         public Engine(string vocabularyPath, NsfwFilter filter)
         {

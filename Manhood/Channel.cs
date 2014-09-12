@@ -14,7 +14,7 @@ namespace Manhood
         private char _lastChar = ' ';
         private Capitalization _caps = Capitalization.None;
 
-        private Dictionary<string, int> _markers = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _markers = new Dictionary<string, int>();
 
         /// <summary>
         /// The name of the channel.

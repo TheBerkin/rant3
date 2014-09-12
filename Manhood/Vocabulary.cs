@@ -7,7 +7,7 @@ namespace Manhood
     /// <summary>
     /// Represents a collection of named, queryable dictionaries. This is the default vocabulary type used by Manhood.
     /// </summary>
-    public class Vocabulary : IVocabulary
+    public sealed class Vocabulary : IVocabulary
     {
         private readonly Dictionary<string, Dictionary> _wordLists;
 
