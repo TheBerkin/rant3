@@ -54,6 +54,19 @@ namespace Processus
             TagFuncs["capsinfer"] = new TagDef(CapsInfer, TagArgType.Result);
             TagFuncs["out"] = new TagDef(Out, TagArgType.Result, TagArgType.Result);
             TagFuncs["close"] = new TagDef(Close, TagArgType.Result);
+            TagFuncs["extern"] = new TagDef(Extern, TagArgType.Result);
+        }
+
+        private static bool Extern(Interpreter interpreter, Source source, Stringe tagname, TagArg[] args)
+        {
+            var name = args[0].GetString();
+            var result = interpreter.Engine.Hooks.Call(name);
+            if (result == null)
+            {
+                throw new ProcessusException(source, tagname, "A hook with the name '" + name + "' does not exist.");
+            }
+            interpreter.Print(result);
+            return false;
         }
 
         private static bool Reset(Interpreter interpreter, Source source, Stringe tagName, TagArg[] args)

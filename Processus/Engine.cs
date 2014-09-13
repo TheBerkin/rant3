@@ -23,6 +23,7 @@ namespace Processus
 
         private readonly VarStore _vars;
         private readonly SubStore _subs;
+        private readonly HookCollection _hooks;
 
         internal VarStore Variables
         {
@@ -32,6 +33,14 @@ namespace Processus
         internal SubStore Subroutines
         {
             get { return _subs; }
+        }
+
+        /// <summary>
+        /// The hook collection associated with the engine.
+        /// </summary>
+        public HookCollection Hooks
+        {
+            get { return _hooks; }
         }
 
         /// <summary>

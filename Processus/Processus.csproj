@@ -99,6 +99,7 @@
     <Compile Include="Engine.cs" />
     <Compile Include="Engine.Vocab.cs" />
     <Compile Include="BlockAttribs.cs" />
+    <Compile Include="HookCollection.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.TagFuncs.cs" />
