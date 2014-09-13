@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Processus</RootNamespace>
-    <AssemblyName>Manhood</AssemblyName>
+    <AssemblyName>Processus</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Manhood.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Processus.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
     <OutputPath>bin\Berkin-Release\</OutputPath>
