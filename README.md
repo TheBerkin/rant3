@@ -46,4 +46,6 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 ---
 
+[Try Processus in your browser!](http://berkin.me/probox)
+
 See the [wiki](http://github.com/TheBerkin/Processus/wiki) for language and API documentation.
