@@ -16,7 +16,7 @@ namespace Manhood.Compiler
 
         private static readonly Regex WhitespaceRegex = new Regex(@"\s+", MhRegexOptions);
         private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", MhRegexOptions | RegexOptions.Multiline);
-        private static readonly Regex CommentRegex = new Regex(@"([\r\n]+\s+)?(?<!\\)``(([\r\n]|.)*?[^\\])?``(\s+[\r\n]+)?", MhRegexOptions);
+        private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", MhRegexOptions | RegexOptions.Multiline);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", MhRegexOptions);
 
         internal static readonly LexerRules<TokenType> Rules;
