@@ -46,4 +46,6 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 ---
 
+[Try Manhood in your browser!](http://berkin.me/manbox)
+
 See the [wiki](http://github.com/TheBerkin/Manhood/wiki) for language and API documentation.
