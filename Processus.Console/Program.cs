@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Processus;
 
-namespace MHC
+namespace Processus.Console
 {
     class Program
     {
@@ -36,27 +35,39 @@ namespace MHC
             }
 
 
-            Console.Title = "Processus Console";
+            System.Console.Title = "Processus Console";
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
             var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, NsfwFilter.Allow);
             
             while (true)
             {
-                Console.Write("processus> ");
-                var input = Console.ReadLine();
+                System.Console.Write("processus> ");
+                var input = System.Console.ReadLine();
 #if DEBUG
-                Console.WriteLine(mh.Do(input));
+                foreach (var chan in mh.Do(input))
+                {
+                    Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
+                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                    Console.ResetColor();
+                    Console.WriteLine(chan.Value);
+                }
 #else
                 try
                 {
-                    Console.WriteLine(mh.Do(input));
+                    foreach (var chan in mh.Do(input))
+                    {
+                        System.Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
+                        System.Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                        System.Console.ResetColor();
+                        System.Console.WriteLine(chan.Value);
+                    }
                 }
                 catch (Exception e)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(e.Message);
-                    Console.ResetColor();
+                    System.Console.ForegroundColor = ConsoleColor.Red;
+                    System.Console.WriteLine(e.Message);
+                    System.Console.ResetColor();
                 }
 #endif
             }
