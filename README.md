@@ -3,7 +3,7 @@
 <br/><b><i>Generating text has never been this simple.</i></b>
 </p>
 
-**Processus** is a language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
+**Processus** *(Pronounced "pro-SESS-us")* is a language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
 
 * Generating HTML, JSON, and other recursive text-based data structures
 * Writing randomly generated words, sentences, and even stories
