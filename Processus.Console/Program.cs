@@ -47,10 +47,10 @@ namespace Processus.Console
 #if DEBUG
                 foreach (var chan in mh.Do(input))
                 {
-                    Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
-                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                    Console.ResetColor();
-                    Console.WriteLine(chan.Value);
+                    System.Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
+                    System.Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                    System.Console.ResetColor();
+                    System.Console.WriteLine(chan.Value);
                 }
 #else
                 try
