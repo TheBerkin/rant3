@@ -12,50 +12,50 @@ using Stringes;
 namespace Processus
 {
     // The return value is returned by the blueprint that executes the tag. If it's true, the interpreter will skip to the top of the state stack.
-    internal delegate bool FuncTagCallback(Interpreter interpreter, Source source, Stringe tagName, Argument[] args);
+    internal delegate bool TagFunc(Interpreter interpreter, Source source, Stringe tagName, Argument[] args);
 
     internal partial class Interpreter
     {
-        internal static readonly Dictionary<string, FuncTagDef> TagFuncs;
+        internal static readonly Dictionary<string, TfDefs> TagFuncs;
 
         static Interpreter()
         {
-            TagFuncs = new Dictionary<string, FuncTagDef>();
+            TagFuncs = new Dictionary<string, TfDefs>();
 
-            TagFuncs["rep"] = TagFuncs["r"] = new FuncTagSig(Repeat, ParamFlags.None);
-            TagFuncs["num"] = TagFuncs["n"] = new FuncTagSig(Number, ParamFlags.None, ParamFlags.None);
-            TagFuncs["sep"] = TagFuncs["s"] = new FuncTagSig(Separator, ParamFlags.Code);
-            TagFuncs["before"] = new FuncTagSig(Before, ParamFlags.Code);
-            TagFuncs["after"] = new FuncTagSig(After, ParamFlags.Code);
-            TagFuncs["chance"] = new FuncTagSig(Chance, ParamFlags.None);
-            TagFuncs["sync"] = new FuncTagSig(Sync, ParamFlags.None, ParamFlags.None);
-            TagFuncs["desync"] = new FuncTagSig(Desync);
-            TagFuncs["pin"] = new FuncTagSig(Pin, ParamFlags.None);
-            TagFuncs["unpin"] = new FuncTagSig(Unpin, ParamFlags.None);
-            TagFuncs["step"] = new FuncTagSig(Step, ParamFlags.None);
-            TagFuncs["reset"] = new FuncTagSig(Reset, ParamFlags.None);
-            TagFuncs["first"] = new FuncTagSig(First, ParamFlags.Code);
-            TagFuncs["last"] = new FuncTagSig(Last, ParamFlags.Code);
-            TagFuncs["middle"] = new FuncTagSig(Middle, ParamFlags.Code);
-            TagFuncs["notfirst"] = new FuncTagSig(NotFirst, ParamFlags.Code);
-            TagFuncs["notlast"] = new FuncTagSig(NotLast, ParamFlags.Code);
-            TagFuncs["notmiddle"] = new FuncTagSig(NotMiddle, ParamFlags.Code);
-            TagFuncs["odd"] = new FuncTagSig(Odd, ParamFlags.Code);
-            TagFuncs["even"] = new FuncTagSig(Even, ParamFlags.Code);
-            TagFuncs["nth"] = new FuncTagSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
-            TagFuncs["repnum"] = TagFuncs["rn"] = new FuncTagSig(RepNum);
-            TagFuncs["repindex"] = TagFuncs["ri"] = new FuncTagSig(RepIndex);
-            TagFuncs["repcount"] = TagFuncs["rc"] = new FuncTagSig(RepCount);
-            TagFuncs["alt"] = new FuncTagSig(Alt, ParamFlags.Code, ParamFlags.Code);
-            TagFuncs["match"] = new FuncTagSig(ReplaceMatch);
-            TagFuncs["group"] = new FuncTagSig(ReplaceGroup, ParamFlags.None);
-            TagFuncs["arg"] = new FuncTagSig(Arg, ParamFlags.None);
-            TagFuncs["numfmt"] = new FuncTagSig(NumFmt, ParamFlags.None);
-            TagFuncs["caps"] = new FuncTagSig(Caps, ParamFlags.None);
-            TagFuncs["capsinfer"] = new FuncTagSig(CapsInfer, ParamFlags.None);
-            TagFuncs["out"] = new FuncTagSig(Out, ParamFlags.None, ParamFlags.None);
-            TagFuncs["close"] = new FuncTagSig(Close, ParamFlags.None);
-            TagFuncs["extern"] = new FuncTagSig(Extern, ParamFlags.None);
+            TagFuncs["rep"] = TagFuncs["r"] = new TagDef(Repeat, ParamFlags.String);
+            TagFuncs["num"] = TagFuncs["n"] = new TagDef(Number, ParamFlags.String, ParamFlags.String);
+            TagFuncs["sep"] = TagFuncs["s"] = new TagDef(Separator, ParamFlags.Tokens);
+            TagFuncs["before"] = new TagDef(Before, ParamFlags.Tokens);
+            TagFuncs["after"] = new TagDef(After, ParamFlags.Tokens);
+            TagFuncs["chance"] = new TagDef(Chance, ParamFlags.String);
+            TagFuncs["sync"] = new TagDef(Sync, ParamFlags.String, ParamFlags.String);
+            TagFuncs["desync"] = new TagDef(Desync);
+            TagFuncs["pin"] = new TagDef(Pin, ParamFlags.String);
+            TagFuncs["unpin"] = new TagDef(Unpin, ParamFlags.String);
+            TagFuncs["step"] = new TagDef(Step, ParamFlags.String);
+            TagFuncs["reset"] = new TagDef(Reset, ParamFlags.String);
+            TagFuncs["first"] = new TagDef(First, ParamFlags.Tokens);
+            TagFuncs["last"] = new TagDef(Last, ParamFlags.Tokens);
+            TagFuncs["middle"] = new TagDef(Middle, ParamFlags.Tokens);
+            TagFuncs["notfirst"] = new TagDef(NotFirst, ParamFlags.Tokens);
+            TagFuncs["notlast"] = new TagDef(NotLast, ParamFlags.Tokens);
+            TagFuncs["notmiddle"] = new TagDef(NotMiddle, ParamFlags.Tokens);
+            TagFuncs["odd"] = new TagDef(Odd, ParamFlags.Tokens);
+            TagFuncs["even"] = new TagDef(Even, ParamFlags.Tokens);
+            TagFuncs["nth"] = new TagDef(Nth, ParamFlags.String, ParamFlags.String, ParamFlags.Tokens);
+            TagFuncs["repnum"] = TagFuncs["rn"] = new TagDef(RepNum);
+            TagFuncs["repindex"] = TagFuncs["ri"] = new TagDef(RepIndex);
+            TagFuncs["repcount"] = TagFuncs["rc"] = new TagDef(RepCount);
+            TagFuncs["alt"] = new TagDef(Alt, ParamFlags.Tokens, ParamFlags.Tokens);
+            TagFuncs["match"] = new TagDef(ReplaceMatch);
+            TagFuncs["group"] = new TagDef(ReplaceGroup, ParamFlags.String);
+            TagFuncs["arg"] = new TagDef(Arg, ParamFlags.String);
+            TagFuncs["numfmt"] = new TagDef(NumFmt, ParamFlags.String);
+            TagFuncs["caps"] = new TagDef(Caps, ParamFlags.String);
+            TagFuncs["capsinfer"] = new TagDef(CapsInfer, ParamFlags.String);
+            TagFuncs["out"] = new TagDef(Out, ParamFlags.String, ParamFlags.String);
+            TagFuncs["close"] = new TagDef(Close, ParamFlags.String);
+            TagFuncs["extern"] = new TagDef(Extern, ParamFlags.String);
         }
 
         private static bool Extern(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
@@ -164,7 +164,7 @@ namespace Processus
                 throw new ProcessusException(source, tagname, "Could not find argument '" + argName + "'.");
 
             // Argument is string
-            if (arg.Flags == ParamFlags.None)
+            if (arg.Flags == ParamFlags.String)
             {
                 interpreter.Print(arg.GetString());
                 return false;
@@ -395,34 +395,45 @@ namespace Processus
             return false;
         }
 
-        internal class FuncTagDef
+        internal class TfDefs : IEnumerable<TagDef>
         {
-            private readonly IEnumerable<FuncTagSig> _defs; 
+            private readonly Dictionary<int, TagDef> _defs = new Dictionary<int, TagDef>();
 
-            public FuncTagDef(params FuncTagSig[] defs)
+            public void Add(TagDef def)
             {
-                _defs = defs.OrderByDescending(d => d.MinArgCount).ThenBy(d => d.ParamCount);
+                _defs[def.Parameters.Length] = def;
             }
 
-            public FuncTagSig GetDef(int paramCount)
+            public TagDef GetDef(int paramCount)
             {
-                return _defs.FirstOrDefault(d => d.HasMultiFlag ? paramCount >= d.MinArgCount : paramCount == d.ParamCount);
+                TagDef def;
+                return _defs.TryGetValue(paramCount, out def) ? def : null;
             }
 
-            public static implicit operator FuncTagDef(FuncTagSig def)
+            public IEnumerator<TagDef> GetEnumerator()
             {
-                return new FuncTagDef(def);
+                return _defs.Values.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public static implicit operator TfDefs(TagDef def)
+            {
+                return new TfDefs{def};
             }
         }
 
-        internal class FuncTagSig
+        internal class TagDef
         {
             private readonly int _paramCount;
             private readonly int _minArgCount;
             private readonly bool _hasMultiFlag;
             private readonly ParamFlags[] _parameters;
-            private readonly FuncTagCallback _func;
-            
+            private readonly TagFunc _func;
+
             public ParamFlags[] Parameters
             {
                 get { return _parameters; }
@@ -443,15 +454,15 @@ namespace Processus
                 get { return _hasMultiFlag; }
             }
 
-            public FuncTagSig(FuncTagCallback func, params ParamFlags[] parameters)
+            public TagDef(TagFunc func, params ParamFlags[] paramFlagses)
             {
-                if (parameters.Where((t, i) => i < parameters.Length - 1 && t.HasFlag(ParamFlags.Multi)).Any())
+                if (paramFlagses.Where((t, i) => i < paramFlagses.Length - 1 && t.HasFlag(ParamFlags.Multi)).Any())
                     throw new ArgumentException("The flag 'ParamType.Multi' is only valid on the last parameter.");
 
-                _parameters = parameters;
-                _hasMultiFlag = parameters.Any() && parameters.Last().HasFlag(ParamFlags.Multi);
-                _paramCount = parameters.Length;
+                _hasMultiFlag = _parameters.Any() && _parameters.Last().HasFlag(ParamFlags.Multi);
+                _paramCount = paramFlagses.Length;
                 _minArgCount = _hasMultiFlag ? _paramCount - 1 : _paramCount;
+                _parameters = paramFlagses;
                 _func = func;
             }
 

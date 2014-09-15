@@ -36,7 +36,7 @@ namespace Processus
         private readonly Stack<Output> _resultStack = new Stack<Output>();
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
-        private readonly Stack<Dictionary<string, TagArg>> _subArgStack = new Stack<Dictionary<string, TagArg>>();
+        private readonly Stack<Dictionary<string, Argument>> _subArgStack = new Stack<Dictionary<string, Argument>>();
         private readonly ChannelStack _output;
 
         private readonly Limit<int> _charLimit; 
@@ -62,7 +62,7 @@ namespace Processus
             get { return _rng; }
         }
 
-        public Stack<Dictionary<string, TagArg>> SubArgStack
+        public Stack<Dictionary<string, Argument>> SubArgStack
         {
             get { return _subArgStack; }
         }
