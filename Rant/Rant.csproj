@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rant</RootNamespace>
+    <AssemblyName>Rant</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
+    <OutputPath>bin\Berkin-Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\Manhood.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Stringes, Version=1.0.5356.31773, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Stringes.1.2.0\lib\Stringes.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\Expression.cs" />
+    <Compile Include="Arithmetic\Expressions\NameExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\NumberExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PostfixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Expressions\PrefixOperatorExpression.cs" />
+    <Compile Include="Arithmetic\Lexer.cs" />
+    <Compile Include="Arithmetic\Lexer.Static.cs" />
+    <Compile Include="Arithmetic\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\GroupParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IInfixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\IPrefixParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NameParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\NumberParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PostfixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\PrefixOperatorParselet.cs" />
+    <Compile Include="Arithmetic\Parser.cs" />
+    <Compile Include="Arithmetic\Parser.Static.cs" />
+    <Compile Include="Arithmetic\Precedence.cs" />
+    <Compile Include="Arithmetic\MathTokenType.cs" />
+    <Compile Include="Blueprints\AltBlueprint.cs" />
+    <Compile Include="Blueprints\Blueprint.cs" />
+    <Compile Include="Blueprints\FunctionBlueprint.cs" />
+    <Compile Include="Blueprints\MetapatternBlueprint.cs" />
+    <Compile Include="Blueprints\RepeaterBlueprint.cs" />
+    <Compile Include="Blueprints\RepeaterStackBlueprint.cs" />
+    <Compile Include="Blueprints\ReplacerBlueprint.cs" />
+    <Compile Include="Blueprints\SubCallBlueprint.cs" />
+    <Compile Include="Blueprints\TagBlueprint.cs" />
+    <Compile Include="Compiler\BracketPairs.cs" />
+    <Compile Include="Compiler\Lexer.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="Engine.Vocab.cs" />
+    <Compile Include="BlockAttribs.cs" />
+    <Compile Include="HookCollection.cs" />
+    <Compile Include="Interpreter.cs" />
+    <Compile Include="Interpreter.Markers.cs" />
+    <Compile Include="Interpreter.Synchronizers.cs" />
+    <Compile Include="Interpreter.TagFuncs.cs" />
+    <Compile Include="Interpreter.TokenFuncs.cs" />
+    <Compile Include="IVocabulary.cs" />
+    <Compile Include="Limit.cs" />
+    <Compile Include="ParamType.cs" />
+    <Compile Include="RantException.cs" />
+    <Compile Include="NsfwFilter.cs" />
+    <Compile Include="Capitalization.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="Output.cs" />
+    <Compile Include="ChannelStack.cs" />
+    <Compile Include="ChannelVisibility.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="NumberFormat.cs" />
+    <Compile Include="Numerals.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Repeater.cs" />
+    <Compile Include="RNG.cs" />
+    <Compile Include="Compiler\Scanner.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DictionaryEntry.cs" />
+    <Compile Include="Compiler\TokenType.cs" />
+    <Compile Include="Compiler\Source.cs" />
+    <Compile Include="Compiler\SourceType.cs" />
+    <Compile Include="SourceReader.cs" />
+    <Compile Include="Interpreter.State.cs" />
+    <Compile Include="Subroutine.cs" />
+    <Compile Include="SubStore.cs" />
+    <Compile Include="SyncType.cs" />
+    <Compile Include="Synchronizer.cs" />
+    <Compile Include="Argument.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="VarStore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vocabulary.cs" />
+    <Compile Include="Dictionary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Rant License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
