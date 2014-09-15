@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Processus.Console
+using Processus;
+
+namespace PCon
 {
     class Program
     {
@@ -34,42 +36,66 @@ namespace Processus.Console
                 }
             }
 
+            var file = GetArg("file");
 
-            System.Console.Title = "Processus Console";
+            Console.Title = "Processus Console" + (Flags.Contains("nsfw") ? " [NSFW]" : "");
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, NsfwFilter.Allow);
-            
-            while (true)
+            var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+
+            if (!String.IsNullOrEmpty(file))
             {
-                System.Console.Write("processus> ");
-                var input = System.Console.ReadLine();
+                try
+                {
+                    PrintOutput(mh.DoFile(file));
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(ex.Message);
+                    Console.ResetColor();
+                }
+            }
+
+            while (true)
+            {   
+                Console.Write("processus");
+                if (Flags.Contains("nsfw")) Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write("> ");
+                Console.ResetColor();
+
+                var input = Console.ReadLine();
 #if DEBUG
                 foreach (var chan in mh.Do(input))
                 {
-                    System.Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
-                    System.Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                    System.Console.ResetColor();
-                    System.Console.WriteLine(chan.Value);
+                    Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
+                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                    Console.ResetColor();
+                    Console.WriteLine(chan.Value);
                 }
 #else
                 try
                 {
-                    foreach (var chan in mh.Do(input))
-                    {
-                        System.Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
-                        System.Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                        System.Console.ResetColor();
-                        System.Console.WriteLine(chan.Value);
-                    }
+                    PrintOutput(mh.Do(input));
                 }
                 catch (Exception e)
                 {
-                    System.Console.ForegroundColor = ConsoleColor.Red;
-                    System.Console.WriteLine(e.Message);
-                    System.Console.ResetColor();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(e.Message);
+                    Console.ResetColor();
                 }
 #endif
+            }
+        }
+
+        static void PrintOutput(Output output)
+        {
+            foreach (var chan in output)
+            {
+                Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
+                Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                Console.ResetColor();
+                Console.WriteLine(chan.Value);
             }
         }
     }

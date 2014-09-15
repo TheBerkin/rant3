@@ -7,8 +7,8 @@
     <ProjectGuid>{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Processus.Console</RootNamespace>
-    <AssemblyName>ProcessusConsole</AssemblyName>
+    <RootNamespace>PCon</RootNamespace>
+    <AssemblyName>PCon</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
