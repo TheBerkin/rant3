@@ -1,9 +1,9 @@
 <p align="center">
-<img src="http://i.imgur.com/vYActli.png" alt="Processus logo"></img>
+<img src="http://i.imgur.com/vYActli.png" alt="Rant logo"></img>
 <br/><b><i>Generating text has never been this simple.</i></b>
 </p>
 
-**Processus** *(Pronounced "pro-SESS-us")* is a language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
+**Rant** is a language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
 
 * Generating HTML, JSON, and other recursive text-based data structures
 * Writing randomly generated words, sentences, and even stories
@@ -46,6 +46,6 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 ---
 
-[Try Processus in your browser!](http://berkin.me/probox)
+[Try Rant in your browser!](http://berkin.me/probox)
 
-See the [wiki](http://github.com/TheBerkin/Processus/wiki) for language and API documentation.
+See the [wiki](http://github.com/TheBerkin/Rant/wiki) for language and API documentation.
