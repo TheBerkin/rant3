@@ -1,5 +1,5 @@
 <p align="center">
-<img src="http://i.imgur.com/vYActli.png" alt="Rant logo"></img>
+<img src="http://i.imgur.com/wWMQOSl.png" alt="Rant logo"></img>
 <br/><b><i>Generating text has never been this simple.</i></b>
 </p>
 
