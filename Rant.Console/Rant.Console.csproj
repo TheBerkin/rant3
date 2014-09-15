@@ -61,7 +61,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Processus\Rant.csproj">
+    <ProjectReference Include="..\Rant\Rant.csproj">
       <Project>{a4b6fd1a-44a6-42d2-b4aa-57bc85d2cdd7}</Project>
       <Name>Rant</Name>
     </ProjectReference>
