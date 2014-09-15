@@ -56,6 +56,20 @@ namespace Processus
             TagFuncs["out"] = new FuncTagSig(Out, ParamFlags.None, ParamFlags.None);
             TagFuncs["close"] = new FuncTagSig(Close, ParamFlags.None);
             TagFuncs["extern"] = new FuncTagSig(Extern, ParamFlags.None);
+            TagFuncs["mark"] = new FuncTagSig(Mark, ParamFlags.None);
+            TagFuncs["dist"] = new FuncTagSig(Dist, ParamFlags.None, ParamFlags.None);
+        }
+
+        private static bool Dist(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            interpreter.Print(interpreter.GetMarkerDistance(args[0], args[1]));
+            return false;
+        }
+
+        private static bool Mark(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            interpreter.SetMarker(args[0]);
+            return false;
         }
 
         private static bool Extern(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)

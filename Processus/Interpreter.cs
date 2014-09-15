@@ -240,7 +240,7 @@ namespace Processus
                 // Push a result string if the state's output differs from the one below it
                 if (!state.SharesOutput && state.Finish())
                 {
-                    _resultStack.Push(state.Output.GetChannels());
+                    _resultStack.Push(state.Output.GetOutput());
                 }
 
                 // Remove state from stack as long as nothing else was added beforehand

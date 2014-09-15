@@ -38,15 +38,14 @@ namespace Processus
             get { return _size; }
         }
 
-        public string GetOutput(string channelName)
+        public string GetOutputFor(string channelName)
         {
             Channel channel;
             return !_channels.TryGetValue(channelName, out channel) ? "" : channel.Value;
         }
 
         public void PushChannel(string channelName, ChannelVisibility visibility)
-        {
-            
+        {   
             Channel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
@@ -75,7 +74,7 @@ namespace Processus
 
         public void SetCaps(Capitalization caps)
         {
-            foreach (var ch in GetVisibleChannels())
+            foreach (var ch in GetActive())
             {
                 ch.Capitalization = caps;
             }
@@ -83,7 +82,7 @@ namespace Processus
 
         public void Write(string input)
         {
-            foreach (var ch in GetVisibleChannels())
+            foreach (var ch in GetActive())
             {
                 if (!_sizeLimit.Accumulate(input.Length))
                     throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + ")");
@@ -93,30 +92,33 @@ namespace Processus
             CheckSizeLimit();
         }
 
-        private IEnumerable<Channel> GetVisibleChannels()
+        public IEnumerable<Channel> GetActive()
         {
             var lastVisibility = ChannelVisibility.Public;
-            if (_stack.Last().Visiblity == ChannelVisibility.Public) yield return _main;
+            bool p = false;
 
             for (int i = _stackSize - 1; i >= 0; i--)
             {
-                if (_stack[i] == _main) break;
-
                 switch (_stack[i].Visiblity)
                 {
                     case ChannelVisibility.Public:
-                        if (lastVisibility == ChannelVisibility.Internal) yield break;
+                        if (lastVisibility == ChannelVisibility.Internal)
+                        {
+                            if (p) yield return _main;
+                            yield break;
+                        }
+                        p = true;
                         break;
                     case ChannelVisibility.Private:
                         yield return _stack[i];
+                        if (p) yield return _main;
                         yield break;
                     case ChannelVisibility.Internal:
                         break;
                 }
 
-                yield return _stack[i];
-
                 lastVisibility = _stack[i].Visiblity;
+                yield return _stack[i];
             }
         }
 
@@ -127,7 +129,7 @@ namespace Processus
             _lastWriteSize = _size - _lastSize;
         }
 
-        public Output GetChannels()
+        public Output GetOutput()
         {
             return new Output(_channels);
         }

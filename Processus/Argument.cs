@@ -53,5 +53,10 @@ namespace Processus
         {
             return new Argument(tokens);
         }
+
+        public static implicit operator string(Argument arg)
+        {
+            return arg.GetString();
+        }
     }
 }

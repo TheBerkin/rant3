@@ -30,7 +30,7 @@ namespace Processus.Arithmetic
                 {"/=", MathTokenType.DivAssign},
                 {"%=", MathTokenType.ModAssign},
                 {"^=", MathTokenType.PowAssign},
-                {new Regex(@"-?(\d+(\.\d+)?|\.\d+)"), MathTokenType.Number},
+                {new Regex(@"(\d+(\.\d+)?|\.\d+)"), MathTokenType.Number},
                 {new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*"), MathTokenType.Name}
             };
             Rules.AddEndToken(MathTokenType.End);

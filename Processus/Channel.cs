@@ -14,8 +14,6 @@ namespace Processus
         private char _lastChar = ' ';
         private Capitalization _caps = Capitalization.None;
 
-        private readonly Dictionary<string, int> _markers = new Dictionary<string, int>();
-
         /// <summary>
         /// The name of the channel.
         /// </summary>
@@ -38,17 +36,6 @@ namespace Processus
         {
             Name = name;
             Visiblity = visibility;
-        }
-
-        internal void SetMarker(string name)
-        {
-            _markers[name] = _buffer.Length;
-        }
-
-        internal int GetMarkerPos(string name)
-        {
-            int i;
-            return _markers.TryGetValue(name, out i) ? i : 0;
         }
 
         internal void Write(string value)

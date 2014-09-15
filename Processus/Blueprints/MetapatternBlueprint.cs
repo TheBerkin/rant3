@@ -15,7 +15,7 @@ namespace Processus.Blueprints
         {
             var srcstr = I.PopResultString();
             var src = new Source("Meta_" + String.Format("{0:X16}", srcstr.Hash()), SourceType.Metapattern, srcstr);
-            I.PushState(Interpreter.State.Create(src, I));
+            I.PushState(new Interpreter.State(I, src, I.CurrentState.Output));
             return true;
         }
     }
