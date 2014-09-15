@@ -222,7 +222,7 @@ namespace Processus
             bool meta = reader.Take(TokenType.Question);
             reader.Read(TokenType.LeftSquare);
 
-            var parameters = new List<Tuple<string, TagArgType>>();
+            var parameters = new List<Tuple<string, ParamFlags>>();
             var tName = reader.Read(TokenType.Text, "subroutine name");
 
             if (!Util.ValidateName(tName.Value))
@@ -237,7 +237,7 @@ namespace Processus
                 while (true)
                 {
                     bool isTokens = reader.Take(TokenType.At);
-                    parameters.Add(Tuple.Create(reader.Read(TokenType.Text, "parameter name").Value, isTokens ? TagArgType.Tokens : TagArgType.Result));
+                    parameters.Add(Tuple.Create(reader.Read(TokenType.Text, "parameter name").Value, isTokens ? ParamFlags.Code : ParamFlags.None));
                     if (reader.Take(TokenType.RightSquare, false)) break;
                     reader.Read(TokenType.Semicolon);
                 }

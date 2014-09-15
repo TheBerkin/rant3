@@ -7,15 +7,15 @@ using Stringes.Tokens;
 
 namespace Processus
 {
-    internal class TagArg
+    internal class Argument
     {
         private readonly string _str;
         private readonly IEnumerable<Token<TokenType>> _tokens;
-        private readonly TagArgType _type;
+        private readonly ParamFlags _flags;
 
-        public TagArgType Type
+        public ParamFlags Flags
         {
-            get { return _type; }
+            get { return _flags; }
         }
 
         public string GetString()
@@ -30,40 +30,28 @@ namespace Processus
             return _tokens;
         }
 
-        private TagArg(string str)
+        private Argument(string str)
         {
             _tokens = null;
             _str = str;
-            _type = TagArgType.Result;
+            _flags = ParamFlags.None;
         }
 
-        private TagArg(IEnumerable<Token<TokenType>> tokens)
+        private Argument(IEnumerable<Token<TokenType>> tokens)
         {
             _tokens = tokens;
             _str = null;
-            _type = TagArgType.Tokens;
+            _flags = ParamFlags.Code;
         }
 
-        public static TagArg FromString(string value)
+        public static Argument FromString(string value)
         {
-            return new TagArg(value);
+            return new Argument(value);
         }
 
-        public static TagArg FromTokens(IEnumerable<Token<TokenType>> tokens)
+        public static Argument FromTokens(IEnumerable<Token<TokenType>> tokens)
         {
-            return new TagArg(tokens);
+            return new Argument(tokens);
         }
-    }
-
-    internal enum TagArgType
-    {
-        /// <summary>
-        /// Argument is a string generated from the provided tokens.
-        /// </summary>
-        Result,
-        /// <summary>
-        /// Argument is a series of tokens.
-        /// </summary>
-        Tokens
     }
 }

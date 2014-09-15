@@ -2,7 +2,6 @@
 
 namespace Processus.Blueprints
 {
-    // Not currently used
     internal class FunctionBlueprint : Blueprint
     {
         private readonly Func<Interpreter, bool> _func; 

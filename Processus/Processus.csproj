@@ -106,6 +106,7 @@
     <Compile Include="Interpreter.TokenFuncs.cs" />
     <Compile Include="IVocabulary.cs" />
     <Compile Include="Limit.cs" />
+    <Compile Include="ParamType.cs" />
     <Compile Include="ProcessusException.cs" />
     <Compile Include="NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
@@ -131,7 +132,7 @@
     <Compile Include="SubStore.cs" />
     <Compile Include="SyncType.cs" />
     <Compile Include="Synchronizer.cs" />
-    <Compile Include="TagArg.cs" />
+    <Compile Include="Argument.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VarStore.cs">
       <SubType>Code</SubType>
