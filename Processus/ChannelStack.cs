@@ -28,12 +28,28 @@ namespace Processus
             };
         }
 
-        public int LastWriteSize
+        public void SetWritePoint(string name)
+        {
+            foreach (var ch in GetActive())
+            {
+                ch.CreateNamedWritePoint(name);
+            }
+        }
+
+        public void WriteToPoint(string name, string value)
+        {
+            foreach (var ch in GetActive())
+            {
+                ch.WriteToPoint(name, value);
+            }
+        }
+
+        public long LastWriteSize
         {
             get { return _lastWriteSize; }
         }
 
-        public int Size
+        public long Size
         {
             get { return _size; }
         }

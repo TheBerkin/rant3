@@ -9,7 +9,12 @@ namespace Processus
     /// </summary>
     public sealed class Channel
     {
-        private readonly StringBuilder _buffer = new StringBuilder(InitialBufferSize);
+        private StringBuilder _currentBuffer;
+        private readonly List<StringBuilder> _buffers;
+        private readonly Dictionary<string, StringBuilder> _writePoints = new Dictionary<string, StringBuilder>();
+        private readonly Dictionary<string, StringBuilder> _pendingWritePoints = new Dictionary<string, StringBuilder>();
+
+        private int _length = 0;
 
         private char _lastChar = ' ';
         private Capitalization _caps = Capitalization.None;
@@ -36,11 +41,43 @@ namespace Processus
         {
             Name = name;
             Visiblity = visibility;
+            _currentBuffer = new StringBuilder(InitialBufferSize);
+            _buffers = new List<StringBuilder>{_currentBuffer};
         }
 
         internal void Write(string value)
         {
-            _buffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+            _length += value.Length;
+            _currentBuffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+        }
+
+        internal void WriteToPoint(string name, string value)
+        {
+            StringBuilder sb;
+            if (!_writePoints.TryGetValue(name, out sb))
+            {
+                _pendingWritePoints[name] = new StringBuilder(InitialBufferSize).Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+            }
+            else
+            {
+                sb.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+            }
+        }
+
+        internal void CreateNamedWritePoint(string name)
+        {
+            StringBuilder sp;
+            if (_pendingWritePoints.TryGetValue(name, out sp))
+            {
+                _buffers.Add(sp);
+                _pendingWritePoints.Remove(name);
+            }
+            else
+            {
+                _buffers.Add(_writePoints[name] = new StringBuilder(InitialBufferSize));
+            }
+
+            _buffers.Add(_currentBuffer = new StringBuilder(InitialBufferSize));
         }
 
         /// <summary>
@@ -48,7 +85,7 @@ namespace Processus
         /// </summary>
         public int Length
         {
-            get { return _buffer.Length; }
+            get { return _length; }
         }
 
         /// <summary>
@@ -56,7 +93,15 @@ namespace Processus
         /// </summary>
         public string Value
         {
-            get { return _buffer.ToString(); }
+            get
+            {
+                var sb = new StringBuilder(InitialBufferSize);
+                foreach (var b in _buffers)
+                {
+                    sb.Append(b);
+                }
+                return sb.ToString();
+            }
         }
 
         /// <summary>

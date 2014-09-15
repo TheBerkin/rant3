@@ -9,7 +9,7 @@ namespace Processus.Blueprints
 {
     internal class AltBlueprint : Blueprint
     {
-        private readonly int _old;
+        private readonly long _old;
         private readonly Interpreter.State _target;
         private readonly IEnumerable<Token<TokenType>> _payload;
         public AltBlueprint(Interpreter interpreter, Interpreter.State target, IEnumerable<Token<TokenType>> payload) : base(interpreter)
