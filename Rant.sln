@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant", "Rant\Rant.csproj", "{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Console", "Rant.Console\Rant.Console.csproj", "{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Berkin-Release|Any CPU = Berkin-Release|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Berkin-Release|Any CPU.ActiveCfg = Berkin-Release|Any CPU
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Berkin-Release|Any CPU.Build.0 = Berkin-Release|Any CPU
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Berkin-Release|Any CPU.ActiveCfg = Berkin-Release|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Berkin-Release|Any CPU.Build.0 = Berkin-Release|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
