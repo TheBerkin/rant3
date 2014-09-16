@@ -31,6 +31,9 @@ namespace Rant
         private State _prevState = null;
         private readonly State _mainState;
 
+        // Flag conditional fields
+        private bool _else = false;
+
         // Stacks
         private readonly Stack<State> _stateStack = new Stack<State>();
         private readonly Stack<Output> _resultStack = new Stack<Output>();
@@ -78,6 +81,20 @@ namespace Rant
         {
             return Numerals.FormatNumber(value, _numfmt);
         }
+
+        #region Flag conditionals
+        public void SetElse()
+        {
+            _else = true;
+        }
+
+        public bool UseElse()
+        {
+            bool e = _else;
+            _else = false;
+            return e;
+        }
+        #endregion
 
         #region Repeaters
 

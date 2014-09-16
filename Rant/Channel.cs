@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Rant
@@ -11,8 +12,8 @@ namespace Rant
     {
         private StringBuilder _currentBuffer;
         private readonly List<StringBuilder> _buffers;
-        private readonly Dictionary<string, StringBuilder> _writePoints = new Dictionary<string, StringBuilder>();
-        private readonly Dictionary<string, StringBuilder> _pendingWritePoints = new Dictionary<string, StringBuilder>();
+        private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
+        private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
 
         private int _length = 0;
 
@@ -54,9 +55,9 @@ namespace Rant
         internal void WriteToPoint(string name, string value)
         {
             StringBuilder sb;
-            if (!_writePoints.TryGetValue(name, out sb))
+            if (!_backPrintPoints.TryGetValue(name, out sb))
             {
-                _pendingWritePoints[name] = new StringBuilder(InitialBufferSize).Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+                _forePrintPoints[name] = new StringBuilder(InitialBufferSize).Append(Util.Capitalize(value, ref _caps, ref _lastChar));
             }
             else
             {
@@ -67,14 +68,19 @@ namespace Rant
         internal void CreateNamedWritePoint(string name)
         {
             StringBuilder sp;
-            if (_pendingWritePoints.TryGetValue(name, out sp))
+            if (_forePrintPoints.TryGetValue(name, out sp))
             {
                 _buffers.Add(sp);
-                _pendingWritePoints.Remove(name);
+                _forePrintPoints.Remove(name);
             }
             else
             {
-                _buffers.Add(_writePoints[name] = new StringBuilder(InitialBufferSize));
+                StringBuilder sb;
+                if (!_backPrintPoints.TryGetValue(name, out sb))
+                {
+                    sb = _backPrintPoints[name] = new StringBuilder(InitialBufferSize);
+                }
+                _buffers.Add(sb);
             }
 
             _buffers.Add(_currentBuffer = new StringBuilder(InitialBufferSize));

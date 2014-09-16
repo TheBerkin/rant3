@@ -61,6 +61,93 @@ namespace Rant
             TagFuncs["take"] = new FuncTagSig(Take, ParamFlags.None);
             TagFuncs["send"] = new FuncTagSig(Send, ParamFlags.None, ParamFlags.None);
             TagFuncs["len"] = new FuncTagSig(Length, ParamFlags.None);
+            TagFuncs["char"] = new FuncTagDef(
+                new FuncTagSig(Character, ParamFlags.None),
+                new FuncTagSig(CharacterMulti, ParamFlags.None, ParamFlags.None));
+            TagFuncs["define"] = new FuncTagSig(DefineFlag, ParamFlags.None | ParamFlags.Multi);
+            TagFuncs["undef"] = new FuncTagSig(UndefineFlag, ParamFlags.None | ParamFlags.Multi);
+            TagFuncs["ifdef"] = new FuncTagSig(IfDef, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["ifndef"] = new FuncTagSig(IfNDef, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["else"] = new FuncTagSig(Else, ParamFlags.Code);
+        }
+
+        private static bool IfNDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            if (!interpreter.Engine.Flags.Contains(args[0]))
+            {
+                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+                return true;
+            }
+            interpreter.SetElse();
+            return false;
+        }
+
+        private static bool Else(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            if (!interpreter.UseElse()) return false;
+            interpreter.PushState(State.CreateDerivedShared(source, args[0].GetTokens(), interpreter));
+            return true;
+        }
+
+        private static bool IfDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            if (interpreter.Engine.Flags.Contains(args[0]))
+            {
+                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+                return true;
+            }
+            interpreter.SetElse();
+            return false;
+        }
+
+        private static bool CharacterMulti(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            int count;
+            if (!Int32.TryParse(args[1], out count) || count < 0)
+                throw new RantException(source, tagname, "Invalid character count specified. Must be a non-negative number greater than zero.");
+            var ranges = Util.GetRanges(args[0]);
+            if (ranges == null) throw new RantException(source, tagname, "Invalid range string.");
+            if (!ranges.Any()) return false;
+            for (int i = 0; i < count; i++)
+            {
+                var r = ranges[interpreter.RNG.Next(ranges.Length)];
+                interpreter.Print(Convert.ToChar(interpreter.RNG.Next(r.Item1, r.Item2 + 1)));
+            }
+            return false;
+        }
+
+        private static bool Character(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            var ranges = Util.GetRanges(args[0]);
+            if (ranges == null) throw new RantException(source, tagname, "Invalid range string.");
+            if (!ranges.Any()) return false;
+            var r = ranges[interpreter.RNG.Next(ranges.Length)];
+            interpreter.Print(Convert.ToChar(interpreter.RNG.Next(r.Item1, r.Item2 + 1)));
+            return false;
+        }
+
+        private static bool UndefineFlag(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
+            {
+                if (!Util.ValidateName(flag))
+                    throw new RantException(source, tagname, "Invalid flag name '" + flag + "'");
+
+                interpreter.Engine.Flags.Remove(flag);
+            }
+            return false;
+        }
+
+        private static bool DefineFlag(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
+            {
+                if (!Util.ValidateName(flag))
+                    throw new RantException(source, tagname, "Invalid flag name '" + flag + "'");
+
+                interpreter.Engine.Flags.Add(flag);
+            }
+            return false;
         }
 
         private static bool Length(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)

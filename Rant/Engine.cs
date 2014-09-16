@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Rant.Compiler;
 
@@ -21,9 +22,10 @@ namespace Rant
 
         private static readonly RNG Seeds = new RNG();
 
-        private readonly VarStore _vars;
-        private readonly SubStore _subs;
-        private readonly HookCollection _hooks;
+        private readonly VarStore _vars = new VarStore();
+        private readonly SubStore _subs = new SubStore();
+        private readonly HookCollection _hooks = new HookCollection();
+        private readonly HashSet<string> _flags = new HashSet<string>(); 
 
         internal VarStore Variables
         {
@@ -33,6 +35,14 @@ namespace Rant
         internal SubStore Subroutines
         {
             get { return _subs; }
+        }
+
+        /// <summary>
+        /// The currently set flags.
+        /// </summary>
+        public HashSet<string> Flags
+        {
+            get { return _flags; }
         }
 
         /// <summary>
@@ -49,8 +59,6 @@ namespace Rant
         public Engine()
         {
             LoadVocab("", DefaultNsfwFilter);
-            _vars = new VarStore();
-            _subs = new SubStore();
         }
 
         /// <summary>
@@ -60,8 +68,6 @@ namespace Rant
         public Engine(string vocabularyPath)
         {
             LoadVocab(vocabularyPath, DefaultNsfwFilter);
-            _vars = new VarStore();
-            _subs = new SubStore();
         }
 
         /// <summary>
@@ -72,8 +78,6 @@ namespace Rant
         public Engine(string vocabularyPath, NsfwFilter filter)
         {
             LoadVocab(vocabularyPath, filter);
-            _vars = new VarStore();
-            _subs = new SubStore();
         }
 
         /// <summary>
@@ -84,8 +88,6 @@ namespace Rant
         {
             if (vocabulary == null) throw new ArgumentNullException("vocabulary");
             _vocabulary = vocabulary;
-            _vars = new VarStore();
-            _subs = new SubStore();
         }
 
         /// <summary>

@@ -58,6 +58,41 @@ namespace Rant
             return input;
         }
 
+        public static Tuple<char, char>[] GetRanges(string rangeString)
+        {
+            if (String.IsNullOrEmpty(rangeString)) return null;
+            var list = new List<Tuple<char, char>>();
+            var chars = rangeString.GetEnumerator();
+            char a, b;
+            bool stall = false;
+            while (stall || chars.MoveNext())
+            {
+                stall = false;
+                if (Char.IsWhiteSpace(chars.Current)) continue;
+                if (!Char.IsLetterOrDigit(a = chars.Current)) return null;
+                
+                if (!chars.MoveNext())
+                {
+                    list.Add(Tuple.Create(a, a));
+                    return list.ToArray();
+                }
+
+                if (chars.Current == '-')
+                {
+                    if (!chars.MoveNext()) return null;
+                    if (!Char.IsLetterOrDigit(b = chars.Current)) return null;
+                    if (Char.IsLetter(a) != Char.IsLetter(b) || Char.IsUpper(a) != Char.IsUpper(b)) return null;
+                    list.Add(Tuple.Create(a < b ? a : b, a > b ? a : b));
+                    continue;
+                }
+
+                list.Add(Tuple.Create(a, a));
+
+                stall = true;
+            }
+            return list.ToArray();
+        }
+
         public static string NameToCamel(string name)
         {
             if (String.IsNullOrEmpty(name)) return name;

@@ -20,10 +20,10 @@ namespace Rant
             private readonly SourceReader _reader;
             private readonly Interpreter _interpreter;
             private readonly bool _sharesOutput;
-            private bool _finished;
+            private bool _finished = false;
 
-            private readonly Stack<Blueprint> _preBlueprints;
-            private readonly Stack<Blueprint> _postBlueprints;
+            private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
+            private readonly Stack<Blueprint> _postBlueprints = new Stack<Blueprint>();
 
             public bool SharesOutput
             {
@@ -40,9 +40,6 @@ namespace Rant
             private State(Interpreter ii, Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 ChannelStack output)
             {
-                _finished = false;
-                _preBlueprints = new Stack<Blueprint>();
-                _postBlueprints = new Stack<Blueprint>();
                 _interpreter = ii;
                 _output = output;
                 _reader = new SourceReader(new Source(derivedSource.Name, derivedSource.Type, tokens, derivedSource.Code));
@@ -51,9 +48,6 @@ namespace Rant
 
             public State(Interpreter ii, Source source, ChannelStack output)
             {
-                _finished = false;
-                _preBlueprints = new Stack<Blueprint>();
-                _postBlueprints = new Stack<Blueprint>();
                 _interpreter = ii;
                 _output = output;
                 _reader = new SourceReader(source);
