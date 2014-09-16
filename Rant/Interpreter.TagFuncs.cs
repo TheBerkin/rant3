@@ -58,7 +58,7 @@ namespace Rant
             TagFuncs["extern"] = new FuncTagSig(Extern, ParamFlags.None);
             TagFuncs["mark"] = new FuncTagSig(Mark, ParamFlags.None);
             TagFuncs["dist"] = new FuncTagSig(Dist, ParamFlags.None, ParamFlags.None);
-            TagFuncs["take"] = new FuncTagSig(Take, ParamFlags.None);
+            TagFuncs["get"] = new FuncTagSig(Get, ParamFlags.None);
             TagFuncs["send"] = new FuncTagSig(Send, ParamFlags.None, ParamFlags.None);
             TagFuncs["len"] = new FuncTagSig(Length, ParamFlags.None);
             TagFuncs["char"] = new FuncTagDef(
@@ -162,7 +162,7 @@ namespace Rant
             return false;
         }
 
-        private static bool Take(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Get(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             interpreter.CurrentState.Output.SetWritePoint(args[0]);
             return false;
