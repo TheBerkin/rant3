@@ -46,6 +46,6 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 ---
 
-[Try Rant in your browser!](http://berkin.me/probox)
+[Try Rant in your browser!](http://berkin.me/rantbox)
 
 See the [wiki](http://github.com/TheBerkin/Rant/wiki) for language and API documentation.
