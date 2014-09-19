@@ -58,10 +58,10 @@ namespace Rant
             return input;
         }
 
-        public static Tuple<char, char>[] GetRanges(string rangeString)
+        public static char SelectFromRanges(string rangeString, RNG rng)
         {
-            if (String.IsNullOrEmpty(rangeString)) return null;
-            var list = new List<Tuple<char, char>>();
+            if (String.IsNullOrEmpty(rangeString)) return '?';
+            var list = new List<Tuple<char, char, int>>(); // <min, max, weight>
             var chars = rangeString.GetEnumerator();
             char a, b;
             bool stall = false;
@@ -69,28 +69,44 @@ namespace Rant
             {
                 stall = false;
                 if (Char.IsWhiteSpace(chars.Current)) continue;
-                if (!Char.IsLetterOrDigit(a = chars.Current)) return null;
+                if (!Char.IsLetterOrDigit(a = chars.Current)) return '?';
                 
                 if (!chars.MoveNext())
                 {
-                    list.Add(Tuple.Create(a, a));
-                    return list.ToArray();
+                    list.Add(Tuple.Create(a, a, 1));
+                    break;
                 }
 
                 if (chars.Current == '-')
                 {
-                    if (!chars.MoveNext()) return null;
-                    if (!Char.IsLetterOrDigit(b = chars.Current)) return null;
-                    if (Char.IsLetter(a) != Char.IsLetter(b) || Char.IsUpper(a) != Char.IsUpper(b)) return null;
-                    list.Add(Tuple.Create(a < b ? a : b, a > b ? a : b));
+                    if (!chars.MoveNext()) return '?';
+                    if (!Char.IsLetterOrDigit(b = chars.Current)) return '?';
+                    if (Char.IsLetter(a) != Char.IsLetter(b) || Char.IsUpper(a) != Char.IsUpper(b)) return '?';
+                    list.Add(Tuple.Create(a < b ? a : b, a > b ? a : b, Math.Abs(b - a) + 1));
                     continue;
                 }
 
-                list.Add(Tuple.Create(a, a));
+                list.Add(Tuple.Create(a, a, 1));
 
                 stall = true;
             }
-            return list.ToArray();
+
+            if (!list.Any()) return '?';
+
+            int wSelect = rng.Next(0, list.Sum(r => r.Item3));
+            var ranges = list.GetEnumerator();
+            while (ranges.MoveNext())
+            {
+                if (wSelect > ranges.Current.Item3)
+                {
+                    wSelect -= ranges.Current.Item3;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return Convert.ToChar(rng.Next(ranges.Current.Item1, ranges.Current.Item2 + 1));
         }
 
         public static string NameToCamel(string name)

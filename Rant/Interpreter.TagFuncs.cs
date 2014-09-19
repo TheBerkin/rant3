@@ -105,24 +105,16 @@ namespace Rant
             int count;
             if (!Int32.TryParse(args[1], out count) || count < 0)
                 throw new RantException(source, tagname, "Invalid character count specified. Must be a non-negative number greater than zero.");
-            var ranges = Util.GetRanges(args[0]);
-            if (ranges == null) throw new RantException(source, tagname, "Invalid range string.");
-            if (!ranges.Any()) return false;
             for (int i = 0; i < count; i++)
             {
-                var r = ranges[interpreter.RNG.Next(ranges.Length)];
-                interpreter.Print(Convert.ToChar(interpreter.RNG.Next(r.Item1, r.Item2 + 1)));
+                interpreter.Print(Util.SelectFromRanges(args[0], interpreter.RNG));
             }
             return false;
         }
 
         private static bool Character(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
-            var ranges = Util.GetRanges(args[0]);
-            if (ranges == null) throw new RantException(source, tagname, "Invalid range string.");
-            if (!ranges.Any()) return false;
-            var r = ranges[interpreter.RNG.Next(ranges.Length)];
-            interpreter.Print(Convert.ToChar(interpreter.RNG.Next(r.Item1, r.Item2 + 1)));
+            interpreter.Print(Util.SelectFromRanges(args[0], interpreter.RNG));
             return false;
         }
 
