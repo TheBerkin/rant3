@@ -93,7 +93,7 @@ namespace Rant
 
             if (!list.Any()) return '?';
 
-            int wSelect = rng.Next(0, list.Sum(r => r.Item3));
+            int wSelect = rng.Next(0, list.Sum(r => r.Item3)) + 1;
             var ranges = list.GetEnumerator();
             while (ranges.MoveNext())
             {

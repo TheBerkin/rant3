@@ -92,10 +92,15 @@ namespace PCon
         {
             foreach (var chan in output)
             {
-                Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
-                Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                Console.ResetColor();
+                if (chan.Name != "main")
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
+                    Console.ResetColor();
+                }
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(chan.Value);
+                Console.ResetColor();
             }
         }
     }
