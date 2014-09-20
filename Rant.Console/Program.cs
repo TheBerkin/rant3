@@ -66,13 +66,7 @@ namespace PCon
 
                 var input = Console.ReadLine();
 #if DEBUG
-                foreach (var chan in mh.Do(input))
-                {
-                    Console.ForegroundColor = chan.Name == "main" ? ConsoleColor.Cyan : ConsoleColor.Green;
-                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                    Console.ResetColor();
-                    Console.WriteLine(chan.Value);
-                }
+                PrintOutput(mh.Do(input));
 #else
                 try
                 {
