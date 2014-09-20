@@ -13,7 +13,7 @@ namespace Rant.Blueprints
         public Source Source { get; private set; }
         public Stringe Name { get; private set; }
 
-        private readonly Interpreter.FuncTagSig _tagDef;
+        private readonly Interpreter.FuncSig _tagDef;
 
         private readonly Argument[] _args;
 
@@ -23,14 +23,14 @@ namespace Rant.Blueprints
             Source = source;
             Name = name;
 
-            Interpreter.FuncTagDef defs;
+            Interpreter.FuncDef defs;
 
             if (!Interpreter.TagFuncs.TryGetValue(Name.Value.ToLower().Trim(), out defs))
             {
                 throw new RantException(Source, Name, "A function of the name '" + Name.Value + "' does not exist.");
             }
 
-            if ((_tagDef = defs.GetDef((argData == null ? 0 : argData.Length))) == null)
+            if ((_tagDef = defs.GetSignature((argData == null ? 0 : argData.Length))) == null)
             {
                 throw new RantException(Source, Name, "The function '" + Name.Value + "' does not contain a signature that accomodates " + (argData == null ? 0 : argData.Length) + " argument(s).");
             }

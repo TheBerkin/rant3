@@ -103,7 +103,7 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="Interpreter.Markers.cs" />
     <Compile Include="Interpreter.Synchronizers.cs" />
-    <Compile Include="Interpreter.TagFuncs.cs" />
+    <Compile Include="Interpreter.Functions.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
     <Compile Include="IVocabulary.cs" />
     <Compile Include="Limit.cs" />

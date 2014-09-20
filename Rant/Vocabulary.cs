@@ -48,6 +48,27 @@ namespace Rant
         }
 
         /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directories and returns a Vocabulary object that contains the loaded dictionaries.
+        /// </summary>
+        /// <param name="directories">The directories from which to load dictionaries.</param>
+        /// <returns></returns>
+        public static Vocabulary FromMultiDirectory(params string[] directories)
+        {
+            return new Vocabulary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic")).Select(file => Dictionary.FromFile(file)));
+        }
+
+        /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directories and returns a Vocabulary object that contains the loaded dictionaries.
+        /// </summary>
+        /// <param name="directories">The directories from which to load dictionaries.</param>
+        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <returns></returns>
+        public static Vocabulary FromMultiDirectory(string[] directories, NsfwFilter filter)
+        {
+            return new Vocabulary(directories.SelectMany(path => Directory.GetFiles("*.dic")).Select(file => Dictionary.FromFile(file, filter)));
+        }
+
+        /// <summary>
         /// Queries the vocabulary according to the specified criteria and returns a random match.
         /// </summary>
         /// <param name="rng">The random number generator to randomize the match with.</param>

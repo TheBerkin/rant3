@@ -16,59 +16,59 @@ namespace Rant
 
     internal partial class Interpreter
     {
-        internal static readonly Dictionary<string, FuncTagDef> TagFuncs;
+        internal static readonly Dictionary<string, FuncDef> TagFuncs;
 
         static Interpreter()
         {
-            TagFuncs = new Dictionary<string, FuncTagDef>();
+            TagFuncs = new Dictionary<string, FuncDef>();
 
-            TagFuncs["rep"] = TagFuncs["r"] = new FuncTagSig(Repeat, ParamFlags.None);
-            TagFuncs["num"] = TagFuncs["n"] = new FuncTagSig(Number, ParamFlags.None, ParamFlags.None);
-            TagFuncs["sep"] = TagFuncs["s"] = new FuncTagSig(Separator, ParamFlags.Code);
-            TagFuncs["before"] = new FuncTagSig(Before, ParamFlags.Code);
-            TagFuncs["after"] = new FuncTagSig(After, ParamFlags.Code);
-            TagFuncs["chance"] = new FuncTagSig(Chance, ParamFlags.None);
-            TagFuncs["sync"] = new FuncTagSig(Sync, ParamFlags.None, ParamFlags.None);
-            TagFuncs["desync"] = new FuncTagSig(Desync);
-            TagFuncs["pin"] = new FuncTagSig(Pin, ParamFlags.None);
-            TagFuncs["unpin"] = new FuncTagSig(Unpin, ParamFlags.None);
-            TagFuncs["step"] = new FuncTagSig(Step, ParamFlags.None);
-            TagFuncs["reset"] = new FuncTagSig(Reset, ParamFlags.None);
-            TagFuncs["first"] = new FuncTagSig(First, ParamFlags.Code);
-            TagFuncs["last"] = new FuncTagSig(Last, ParamFlags.Code);
-            TagFuncs["middle"] = new FuncTagSig(Middle, ParamFlags.Code);
-            TagFuncs["notfirst"] = new FuncTagSig(NotFirst, ParamFlags.Code);
-            TagFuncs["notlast"] = new FuncTagSig(NotLast, ParamFlags.Code);
-            TagFuncs["notmiddle"] = new FuncTagSig(NotMiddle, ParamFlags.Code);
-            TagFuncs["odd"] = new FuncTagSig(Odd, ParamFlags.Code);
-            TagFuncs["even"] = new FuncTagSig(Even, ParamFlags.Code);
-            TagFuncs["nth"] = new FuncTagSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
-            TagFuncs["repnum"] = TagFuncs["rn"] = new FuncTagSig(RepNum);
-            TagFuncs["repindex"] = TagFuncs["ri"] = new FuncTagSig(RepIndex);
-            TagFuncs["repcount"] = TagFuncs["rc"] = new FuncTagSig(RepCount);
-            TagFuncs["alt"] = new FuncTagSig(Alt, ParamFlags.Code, ParamFlags.Code);
-            TagFuncs["match"] = new FuncTagSig(ReplaceMatch);
-            TagFuncs["group"] = new FuncTagSig(ReplaceGroup, ParamFlags.None);
-            TagFuncs["arg"] = new FuncTagSig(Arg, ParamFlags.None);
-            TagFuncs["numfmt"] = new FuncTagSig(NumFmt, ParamFlags.None);
-            TagFuncs["caps"] = new FuncTagSig(Caps, ParamFlags.None);
-            TagFuncs["capsinfer"] = new FuncTagSig(CapsInfer, ParamFlags.None);
-            TagFuncs["out"] = new FuncTagSig(Out, ParamFlags.None, ParamFlags.None);
-            TagFuncs["close"] = new FuncTagSig(Close, ParamFlags.None);
-            TagFuncs["extern"] = new FuncTagSig(Extern, ParamFlags.None);
-            TagFuncs["mark"] = new FuncTagSig(Mark, ParamFlags.None);
-            TagFuncs["dist"] = new FuncTagSig(Dist, ParamFlags.None, ParamFlags.None);
-            TagFuncs["get"] = new FuncTagSig(Get, ParamFlags.None);
-            TagFuncs["send"] = new FuncTagSig(Send, ParamFlags.None, ParamFlags.None);
-            TagFuncs["len"] = new FuncTagSig(Length, ParamFlags.None);
-            TagFuncs["char"] = new FuncTagDef(
-                new FuncTagSig(Character, ParamFlags.None),
-                new FuncTagSig(CharacterMulti, ParamFlags.None, ParamFlags.None));
-            TagFuncs["define"] = new FuncTagSig(DefineFlag, ParamFlags.None | ParamFlags.Multi);
-            TagFuncs["undef"] = new FuncTagSig(UndefineFlag, ParamFlags.None | ParamFlags.Multi);
-            TagFuncs["ifdef"] = new FuncTagSig(IfDef, ParamFlags.None, ParamFlags.Code);
-            TagFuncs["ifndef"] = new FuncTagSig(IfNDef, ParamFlags.None, ParamFlags.Code);
-            TagFuncs["else"] = new FuncTagSig(Else, ParamFlags.Code);
+            TagFuncs["rep"] = TagFuncs["r"] = new FuncSig(Repeat, ParamFlags.None);
+            TagFuncs["num"] = TagFuncs["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);
+            TagFuncs["sep"] = TagFuncs["s"] = new FuncSig(Separator, ParamFlags.Code);
+            TagFuncs["before"] = new FuncSig(Before, ParamFlags.Code);
+            TagFuncs["after"] = new FuncSig(After, ParamFlags.Code);
+            TagFuncs["chance"] = new FuncSig(Chance, ParamFlags.None);
+            TagFuncs["sync"] = new FuncSig(Sync, ParamFlags.None, ParamFlags.None);
+            TagFuncs["desync"] = new FuncSig(Desync);
+            TagFuncs["pin"] = new FuncSig(Pin, ParamFlags.None);
+            TagFuncs["unpin"] = new FuncSig(Unpin, ParamFlags.None);
+            TagFuncs["step"] = new FuncSig(Step, ParamFlags.None);
+            TagFuncs["reset"] = new FuncSig(Reset, ParamFlags.None);
+            TagFuncs["first"] = new FuncSig(First, ParamFlags.Code);
+            TagFuncs["last"] = new FuncSig(Last, ParamFlags.Code);
+            TagFuncs["middle"] = new FuncSig(Middle, ParamFlags.Code);
+            TagFuncs["notfirst"] = new FuncSig(NotFirst, ParamFlags.Code);
+            TagFuncs["notlast"] = new FuncSig(NotLast, ParamFlags.Code);
+            TagFuncs["notmiddle"] = new FuncSig(NotMiddle, ParamFlags.Code);
+            TagFuncs["odd"] = new FuncSig(Odd, ParamFlags.Code);
+            TagFuncs["even"] = new FuncSig(Even, ParamFlags.Code);
+            TagFuncs["nth"] = new FuncSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["repnum"] = TagFuncs["rn"] = new FuncSig(RepNum);
+            TagFuncs["repindex"] = TagFuncs["ri"] = new FuncSig(RepIndex);
+            TagFuncs["repcount"] = TagFuncs["rc"] = new FuncSig(RepCount);
+            TagFuncs["alt"] = new FuncSig(Alt, ParamFlags.Code, ParamFlags.Code);
+            TagFuncs["match"] = new FuncSig(ReplaceMatch);
+            TagFuncs["group"] = new FuncSig(ReplaceGroup, ParamFlags.None);
+            TagFuncs["arg"] = new FuncSig(Arg, ParamFlags.None);
+            TagFuncs["numfmt"] = new FuncSig(NumFmt, ParamFlags.None);
+            TagFuncs["caps"] = new FuncSig(Caps, ParamFlags.None);
+            TagFuncs["capsinfer"] = new FuncSig(CapsInfer, ParamFlags.None);
+            TagFuncs["out"] = new FuncSig(Out, ParamFlags.None, ParamFlags.None);
+            TagFuncs["close"] = new FuncSig(Close, ParamFlags.None);
+            TagFuncs["extern"] = new FuncSig(Extern, ParamFlags.None);
+            TagFuncs["mark"] = new FuncSig(Mark, ParamFlags.None);
+            TagFuncs["dist"] = new FuncSig(Dist, ParamFlags.None, ParamFlags.None);
+            TagFuncs["get"] = new FuncSig(Get, ParamFlags.None);
+            TagFuncs["send"] = new FuncSig(Send, ParamFlags.None, ParamFlags.None);
+            TagFuncs["len"] = new FuncSig(Length, ParamFlags.None);
+            TagFuncs["char"] = new FuncDef(
+                new FuncSig(Character, ParamFlags.None),
+                new FuncSig(CharacterMulti, ParamFlags.None, ParamFlags.None));
+            TagFuncs["define"] = new FuncSig(DefineFlag, ParamFlags.None | ParamFlags.Multi);
+            TagFuncs["undef"] = new FuncSig(UndefineFlag, ParamFlags.None | ParamFlags.Multi);
+            TagFuncs["ifdef"] = new FuncSig(IfDef, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["ifndef"] = new FuncSig(IfNDef, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["else"] = new FuncSig(Else, ParamFlags.Code);
         }
 
         private static bool IfNDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
@@ -509,27 +509,33 @@ namespace Rant
             return false;
         }
 
-        internal class FuncTagDef
+        /// <summary>
+        /// Represents a group of related Rant function signatures.
+        /// </summary>
+        internal class FuncDef
         {
-            private readonly IEnumerable<FuncTagSig> _defs; 
+            private readonly IEnumerable<FuncSig> _defs; 
 
-            public FuncTagDef(params FuncTagSig[] defs)
+            public FuncDef(params FuncSig[] defs)
             {
                 _defs = defs.OrderByDescending(d => d.MinArgCount).ThenBy(d => d.ParamCount);
             }
 
-            public FuncTagSig GetDef(int paramCount)
+            public FuncSig GetSignature(int paramCount)
             {
                 return _defs.FirstOrDefault(d => d.HasMultiFlag ? paramCount >= d.MinArgCount : paramCount == d.ParamCount);
             }
 
-            public static implicit operator FuncTagDef(FuncTagSig def)
+            public static implicit operator FuncDef(FuncSig def)
             {
-                return new FuncTagDef(def);
+                return new FuncDef(def);
             }
         }
 
-        internal class FuncTagSig
+        /// <summary>
+        /// Represents a Rant function signature with a specific set of parameters.
+        /// </summary>
+        internal class FuncSig
         {
             private readonly int _paramCount;
             private readonly int _minArgCount;
@@ -557,7 +563,7 @@ namespace Rant
                 get { return _hasMultiFlag; }
             }
 
-            public FuncTagSig(FuncTagCallback func, params ParamFlags[] parameters)
+            public FuncSig(FuncTagCallback func, params ParamFlags[] parameters)
             {
                 if (parameters.Where((t, i) => i < parameters.Length - 1 && t.HasFlag(ParamFlags.Multi)).Any())
                     throw new ArgumentException("The flag 'ParamType.Multi' is only valid on the last parameter.");
