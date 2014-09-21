@@ -29,6 +29,10 @@ thirteen, twenty two, thirteen, nineteen, thirty one, thirty four, forty two, tw
 **Generate 32 random hexadecimal digits grouped into sets of eight**
 ```
 [rep:4][sep:\s]{\8,x}
+
+Alternatively...
+
+[rep:32]{\x[notlast:[nth:8;0;\s]]}
 ```
 ```
 6fb34d31 42e27a48 5884bce5 bf743ec8
@@ -42,6 +46,17 @@ thirteen, twenty two, thirteen, nineteen, thirty one, thirty four, forty two, tw
 ```
 ```
 Alick likes to mount shuttlecocks with his pet bat on Mondays.
+```
+
+---
+
+**Insert text into existing output (backwriting)**
+```
+The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mark:b]\"
+[send:N;[dist:a;b]]
+```
+```
+The following word is 7 characters long: "kumquat"
 ```
 
 ---
