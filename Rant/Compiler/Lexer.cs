@@ -9,15 +9,15 @@ namespace Rant.Compiler
 {
     internal static class Lexer
     {
-        private const RegexOptions MhRegexOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+        private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
-        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", MhRegexOptions);
-        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", MhRegexOptions);
+        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
+        public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", DefaultOptions);
 
-        private static readonly Regex WhitespaceRegex = new Regex(@"\s+", MhRegexOptions);
-        private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", MhRegexOptions | RegexOptions.Multiline);
-        private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", MhRegexOptions | RegexOptions.Multiline);
-        private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", MhRegexOptions);
+        private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
+        private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", DefaultOptions | RegexOptions.Multiline);
+        private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
+        private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
 
         internal static readonly LexerRules<TokenType> Rules;
 

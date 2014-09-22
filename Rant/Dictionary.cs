@@ -231,20 +231,24 @@ namespace Rant
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1)
             {
-                return "BAD_SUBTYPE";
+                return "BAD-SUBTYPE";
             }
 
             IEnumerable<DictionaryEntry> pool = _words;
 
             pool = query.Exclusive
-                ? pool.Where(e => e.Classes.Any() && e.Classes.All(c => query.ClassFilters.Any(set => set.Any(t => t.Item2 == c))))
-                : pool.Where(e => query.ClassFilters.All(set => set.Any(t => t.Item1 == (e.Classes.Contains(t.Item2)))));
+                ? pool.Where(e => e.Classes.Any() && e.Classes.All(
+                    c => query.ClassFilters.Any(
+                        set => set.Any(t => t.Item2 == c))))
+                : pool.Where(e => query.ClassFilters.All(
+                    set => set.Any(
+                        t => t.Item1 == (e.Classes.Contains(t.Item2)))));
 
             pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Values[index])));
 
             if (!pool.Any())
             {
-                return "NOT_FOUND";
+                return "NOT-FOUND";
             }
 
             int number = String.IsNullOrEmpty(query.Carrier) ? rng.Next(pool.Sum(e => e.Weight)) + 1
@@ -256,7 +260,7 @@ namespace Rant
                 number -= e.Weight;
             }
 
-            return "NOT_FOUND";
+            return "NOT-FOUND";
         }
 
         private List<DictionaryEntry> GetClassIndexList(string className)

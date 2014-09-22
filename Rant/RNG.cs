@@ -42,7 +42,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new ManRandom instance with the specified seed.
+        /// Creates a new RNG instance with the specified seed.
         /// </summary>
         /// <param name="seed">The seed for the generator.</param>
         public RNG(long seed)
@@ -51,7 +51,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new ManRandom instance with the specified seed and generation.
+        /// Creates a new RNG instance with the specified seed and generation.
         /// </summary>
         /// <param name="seed">The seed for the generator.</param>
         /// <param name="generation">The generation to start at.</param>
@@ -61,7 +61,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new ManRandom instance seeded with the system tick count.
+        /// Creates a new RNG instance seeded with the system tick count.
         /// </summary>
         public RNG()
         {

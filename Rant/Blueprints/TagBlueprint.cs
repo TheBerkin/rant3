@@ -37,7 +37,7 @@ namespace Rant.Blueprints
 
             if (argData == null)
             {
-                _args = Enumerable.Empty<Argument>().ToArray();
+                _args = new Argument[0];
             }
             else
             {
