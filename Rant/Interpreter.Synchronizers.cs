@@ -29,6 +29,15 @@ namespace Rant
             }
         }
 
+        public void Reseed(string id, string seed)
+        {
+            Synchronizer sync;
+            if (_synchronizers.TryGetValue(seed, out sync))
+            {
+                sync.Reseed(seed);
+            }
+        }
+
         public void Step(string seed)
         {
             Synchronizer sync;

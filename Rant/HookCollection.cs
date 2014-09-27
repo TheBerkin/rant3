@@ -8,13 +8,13 @@ namespace Rant
     /// </summary>
     public class HookCollection
     {
-        private readonly Dictionary<string, Func<string>> _hooks = new Dictionary<string, Func<string>>();
-        private readonly HashSet<Func<string>> _funcs = new HashSet<Func<string>>(); 
+        private readonly Dictionary<string, Func<string[], string>> _hooks = new Dictionary<string, Func<string[], string>>();
+        private readonly HashSet<Func<string[], string>> _funcs = new HashSet<Func<string[], string>>(); 
 
-        internal string Call(string name)
+        internal string Call(string name, string[] args)
         {
-            Func<string> func;
-            return !_hooks.TryGetValue(name, out func) ? null : func();
+            Func<string[], string> func;
+            return !_hooks.TryGetValue(name, out func) ? null : func(args);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Rant
         /// </summary>
         /// <param name="name">The name of the function hook.</param>
         /// <param name="func">The function associated with the hook.</param>
-        public void AddHook(string name, Func<string> func)
+        public void AddHook(string name, Func<string[], string> func)
         {
             if (!Util.ValidateName(name)) throw new FormatException("Hook name can only contain letters, decimal digits, and underscores.");
             _hooks[name] = func;
@@ -44,7 +44,7 @@ namespace Rant
         /// </summary>
         /// <param name="func">The function to search for.</param>
         /// <returns></returns>
-        public bool HasHook(Func<string> func)
+        public bool HasHook(Func<string[], string> func)
         {
             return _funcs.Contains(func);
         }
@@ -55,7 +55,7 @@ namespace Rant
         /// <param name="name">The name of the hook to remove.</param>
         public void RemoveHook(string name)
         {
-            Func<string> func;
+            Func<string[], string> func;
             if (_hooks.TryGetValue(name, out func))
             {
                 _funcs.Remove(func);

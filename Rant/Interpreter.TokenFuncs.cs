@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 using Rant.Arithmetic;
 using Rant.Blueprints;
@@ -48,19 +49,23 @@ namespace Rant
 
         private static bool DoQuery(Interpreter interpreter, SourceReader reader, State state)
         {
-            var first = reader.ReadToken();
+            reader.Read(TokenType.LeftAngle);
+            reader.SkipSpace();
+            var namesub = reader.Read(TokenType.Text, "list name").Split(new[] { '.' }, 2).ToArray();
             reader.SkipSpace();
 
-            var namesub = reader.Read(TokenType.Text, "list name").Split(new[] { '.' }, 2).ToArray();
-            var q = new Query(namesub[0].Value.Trim(), namesub.Length == 2 ? namesub[1].Value : "", "", reader.Take(TokenType.Dollar), null, null);
+            bool exclusive = reader.Take(TokenType.Dollar);
+            List<Tuple<bool, string>> cfList = null;
+            List<Tuple<bool, string>[]> classFilterList = null;
+            List<Tuple<bool, Regex>> regList = null;
+            string carrier = "";
 
             Token<TokenType> token = null;
 
-            // Class filter list. Not initialized unless class filters actually exist.
-            List<Tuple<bool, string>> cfList = null;
-
+            // Read query arguments
             while (true)
             {
+                reader.SkipSpace();
                 if (reader.Take(TokenType.Hyphen))
                 {
                     // Initialize the filter list.
@@ -69,26 +74,26 @@ namespace Rant
                     do
                     {
                         bool notin = reader.Take(TokenType.Exclamation);
-                        if (notin && q.Exclusive)
+                        if (notin && exclusive)
                             throw new RantException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
                         cfList.Add(Tuple.Create(!notin, reader.Read(TokenType.Text, "class identifier").Value.Trim()));
                     } while (reader.Take(TokenType.Pipe));
-                    q.ClassFilters.Add(cfList.ToArray());
+                    (classFilterList ?? (classFilterList = new List<Tuple<bool, string>[]>())).Add(cfList.ToArray());
                 }
                 else if (reader.Take(TokenType.Question))
                 {
                     token = reader.Read(TokenType.Regex, "regex");
-                    q.RegexFilters.Add(Tuple.Create(true, Util.ParseRegex(token.Value)));
+                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(true, Util.ParseRegex(token.Value)));
                 }
                 else if (reader.Take(TokenType.Without))
                 {
                     token = reader.Read(TokenType.Regex, "regex");
-                    q.RegexFilters.Add(Tuple.Create(false, Util.ParseRegex(token.Value)));
+                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, Util.ParseRegex(token.Value)));
                 }
                 else if (reader.Take(TokenType.DoubleColon))
                 {
                     token = reader.Read(TokenType.Text, "carrier name");
-                    q.Carrier = token.Value.Trim();
+                    carrier = token.Value.Trim();
                     if (!reader.Take(TokenType.RightAngle))
                     {
                         throw new RantException(reader.Source, token, "Expected '>' after carrier. (The carrier should be your last query argument!)");
@@ -106,7 +111,9 @@ namespace Rant
                 }
             }
 
-            interpreter.Print(interpreter.Engine.Vocabulary.Query(interpreter.RNG, q));
+            // Query dictionary and print result
+            interpreter.Print(interpreter.Engine.Vocabulary.Query(interpreter.RNG, 
+                new Query(namesub[0].Value.Trim(), namesub.Length == 2 ? namesub[1].Value : "", carrier, exclusive, classFilterList, regList)));
 
             return false;
         }

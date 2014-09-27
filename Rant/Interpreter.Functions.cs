@@ -34,6 +34,7 @@ namespace Rant
             TagFuncs["unpin"] = new FuncSig(Unpin, ParamFlags.None);
             TagFuncs["step"] = new FuncSig(Step, ParamFlags.None);
             TagFuncs["reset"] = new FuncSig(Reset, ParamFlags.None);
+            TagFuncs["reseed"] = new FuncSig(Reseed, ParamFlags.None, ParamFlags.None);
             TagFuncs["first"] = new FuncSig(First, ParamFlags.Code);
             TagFuncs["last"] = new FuncSig(Last, ParamFlags.Code);
             TagFuncs["middle"] = new FuncSig(Middle, ParamFlags.Code);
@@ -55,7 +56,7 @@ namespace Rant
             TagFuncs["capsinfer"] = new FuncSig(CapsInfer, ParamFlags.None);
             TagFuncs["out"] = new FuncSig(Out, ParamFlags.None, ParamFlags.None);
             TagFuncs["close"] = new FuncSig(Close, ParamFlags.None);
-            TagFuncs["extern"] = new FuncSig(Extern, ParamFlags.None);
+            TagFuncs["extern"] = TagFuncs["ext"] = new FuncSig(Extern, ParamFlags.None, ParamFlags.Multi);
             TagFuncs["mark"] = new FuncSig(Mark, ParamFlags.None);
             TagFuncs["dist"] = new FuncSig(Dist, ParamFlags.None, ParamFlags.None);
             TagFuncs["get"] = new FuncSig(Get, ParamFlags.None);
@@ -69,6 +70,12 @@ namespace Rant
             TagFuncs["ifdef"] = new FuncSig(IfDef, ParamFlags.None, ParamFlags.Code);
             TagFuncs["ifndef"] = new FuncSig(IfNDef, ParamFlags.None, ParamFlags.Code);
             TagFuncs["else"] = new FuncSig(Else, ParamFlags.Code);
+        }
+
+        private static bool Reseed(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            interpreter.Reseed(args[0].GetString(), args[1].GetString());
+            return false;
         }
 
         private static bool IfNDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
@@ -175,7 +182,7 @@ namespace Rant
         private static bool Extern(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             var name = args[0].GetString();
-            var result = interpreter.Engine.Hooks.Call(name);
+            var result = interpreter.Engine.Hooks.Call(name, args.Skip(1).Select(arg => arg.GetString()).ToArray());
             if (result == null)
             {
                 throw new RantException(source, tagname, "A hook with the name '" + name + "' does not exist.");

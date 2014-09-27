@@ -96,6 +96,7 @@
     <Compile Include="Blueprints\TagBlueprint.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
+    <Compile Include="Dictionary.Loader.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Engine.Vocab.cs" />
     <Compile Include="BlockAttribs.cs" />

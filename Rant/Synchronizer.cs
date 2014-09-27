@@ -39,6 +39,14 @@ namespace Rant
             FillSlots();
         }
 
+        public void Reseed(string id)
+        {
+            _rng.Reset(id.Hash());
+            _index = 0;
+            if (_state == null) return;
+            FillSlots();
+        }
+
         public int NextItem(int count)
         {
             if (_state == null)
@@ -68,7 +76,7 @@ namespace Rant
             return _state[_index++];
         }
 
-        public void FillSlots()
+        private void FillSlots()
         {
             if (Type != SyncType.Reverse)
             {
@@ -82,7 +90,7 @@ namespace Rant
             if (Type != SyncType.Ordered && Type != SyncType.Reverse) ScrambleSlots();
         }
 
-        public void ScrambleSlots()
+        private void ScrambleSlots()
         {
             if (_state.Length == 1) return;
 

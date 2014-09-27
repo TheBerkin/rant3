@@ -41,13 +41,14 @@ namespace PCon
             Console.Title = "Rant Console" + (Flags.Contains("nsfw") ? " [NSFW]" : "");
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            var mh = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            var rant = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            rant.Hooks.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))
             {
                 try
                 {
-                    PrintOutput(mh.DoFile(file));
+                    PrintOutput(rant.DoFile(file));
                 }
                 catch (Exception ex)
                 {
@@ -70,7 +71,7 @@ namespace PCon
 #else
                 try
                 {
-                    PrintOutput(mh.Do(input));
+                    PrintOutput(rant.Do(input));
                 }
                 catch (Exception e)
                 {
