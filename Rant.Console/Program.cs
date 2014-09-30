@@ -67,7 +67,7 @@ namespace PCon
 
                 var input = Console.ReadLine();
 #if DEBUG
-                PrintOutput(mh.Do(input));
+                PrintOutput(rant.Do(input));
 #else
                 try
                 {
