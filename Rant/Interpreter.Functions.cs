@@ -89,7 +89,7 @@ namespace Rant
 
             if (result)
             {
-                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+                interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
             }
 
             return result;
@@ -101,7 +101,7 @@ namespace Rant
             var cmp = new Comparison(args[0].GetString(), args[1].GetString());
             interpreter.Comparisons.Push(cmp);
 
-            var state = State.CreateDerivedShared(source, args[2].GetTokens(), interpreter);
+            var state = State.CreateSub(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output);
             state.AddPostBlueprint(new FunctionBlueprint(interpreter, I =>
             {
                 I.Comparisons.Pop();
@@ -123,7 +123,7 @@ namespace Rant
         {
             if (!interpreter.Engine.Flags.Contains(args[0]))
             {
-                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+                interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
                 return true;
             }
             interpreter.SetElse();
@@ -133,7 +133,7 @@ namespace Rant
         private static bool Else(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (!interpreter.UseElse()) return false;
-            interpreter.PushState(State.CreateDerivedShared(source, args[0].GetTokens(), interpreter));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
@@ -141,7 +141,7 @@ namespace Rant
         {
             if (interpreter.Engine.Flags.Contains(args[0]))
             {
-                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+                interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
                 return true;
             }
             interpreter.SetElse();
@@ -333,7 +333,7 @@ namespace Rant
             }
             
             // Argument is tokens
-            interpreter.PushState(State.CreateDerivedShared(source, arg.GetTokens(), interpreter));
+            interpreter.PushState(State.CreateSub(source, arg.GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
@@ -351,7 +351,7 @@ namespace Rant
 
         private static bool Alt(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
-            var testState = State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter,
+            var testState = State.CreateSub(source, args[0].GetTokens(), interpreter,
                 interpreter.CurrentState.Output);
             testState.AddPostBlueprint(new AltBlueprint(interpreter, testState, args[1].GetTokens()));
             interpreter.PushState(testState);
@@ -398,63 +398,63 @@ namespace Rant
             }
 
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.Nth(offset, interval)) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool Even(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsEven) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool Odd(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsOdd) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool NotMiddle(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst || interpreter.CurrentRepeater.IsLast) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool NotLast(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool NotFirst(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool Middle(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast || interpreter.CurrentRepeater.IsFirst) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool Last(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsLast) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
         private static bool First(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsFirst) return false;
-            interpreter.PushState(State.CreateDerivedDistinct(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 

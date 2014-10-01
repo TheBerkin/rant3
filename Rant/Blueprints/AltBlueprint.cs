@@ -22,7 +22,7 @@ namespace Rant.Blueprints
         public override bool Use()
         {
             if (_target.Output.Size > _old) return false;
-            I.PushState(Interpreter.State.CreateDerivedDistinct(I.CurrentState.Reader.Source, _payload, I, I.CurrentState.Output));
+            I.PushState(Interpreter.State.CreateSub(I.CurrentState.Reader.Source, _payload, I, I.CurrentState.Output));
             return false;
         }
     }

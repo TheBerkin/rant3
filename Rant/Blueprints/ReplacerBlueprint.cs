@@ -46,7 +46,7 @@ namespace Rant.Blueprints
                 foreach (Match match in _matches)
                 {
                     if (!match.Success) continue;
-                    var state = Interpreter.State.CreateDerivedDistinct(I.CurrentState.Reader.Source, _evaluator, I);
+                    var state = Interpreter.State.CreateSub(I.CurrentState.Reader.Source, _evaluator, I);
 
                     Match match1 = match;
 

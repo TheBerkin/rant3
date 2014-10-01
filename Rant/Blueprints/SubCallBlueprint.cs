@@ -30,7 +30,7 @@ namespace Rant.Blueprints
                 {
                     if (_subroutine.Parameters[i].Item2 == ParamFlags.None)
                     {
-                        interpreter.PushState(Interpreter.State.CreateDerivedDistinct(source, args[i], interpreter));
+                        interpreter.PushState(Interpreter.State.CreateSub(source, args[i], interpreter));
                     }
                 }
             }

@@ -82,7 +82,7 @@ namespace Rant
             // Push separator if applicable
             if (!IsLast && _attribs.Separator != null && _attribs.Separator.Any())
             {
-                var sepState = Interpreter.State.CreateDerivedDistinct(
+                var sepState = Interpreter.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Separator,
                     ii,
@@ -98,7 +98,7 @@ namespace Rant
             // Push postfix if applicable
             if (_attribs.After != null && _attribs.After.Any())
             {
-                ii.PushState(Interpreter.State.CreateDerivedDistinct(
+                ii.PushState(Interpreter.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.After,
                     ii,
@@ -106,7 +106,7 @@ namespace Rant
             }
 
             // Push next item
-            var itemState = Interpreter.State.CreateDerivedDistinct(ii.CurrentState.Reader.Source,
+            var itemState = Interpreter.State.CreateSub(ii.CurrentState.Reader.Source,
                 _items[_attribs.Sync != null ? _attribs.Sync.NextItem(_items.Length) : ii.RNG.Next(_items.Length)],
                 ii,
                 ii.CurrentState.Output);
@@ -123,7 +123,7 @@ namespace Rant
             // Push prefix if applicable
             if (_attribs.Before != null && _attribs.Before.Any())
             {
-                ii.PushState(Interpreter.State.CreateDerivedDistinct(
+                ii.PushState(Interpreter.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Before,
                     ii,

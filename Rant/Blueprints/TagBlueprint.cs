@@ -56,7 +56,7 @@ namespace Rant.Blueprints
                 {
                     if ((i >= _tagDef.ParamCount && !lastType.HasFlag(ParamFlags.Code)) || !_tagDef.Parameters[i].HasFlag(ParamFlags.Code))
                     {
-                        interpreter.PushState(Interpreter.State.CreateDerivedDistinct(source, argData[i], interpreter));
+                        interpreter.PushState(Interpreter.State.CreateSub(source, argData[i], interpreter));
                     }
                 }
             }

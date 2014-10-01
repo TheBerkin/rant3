@@ -105,21 +105,7 @@ namespace Rant
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static State Create(Source source, Interpreter interpreter)
             {
-                return new State(interpreter, source, interpreter._output);
-            }
-
-            /// <summary>
-            /// Creates a state object that reads tokens from a custom collection that is associated with the specified source. Associates with the main output.
-            /// </summary>
-            /// <param name="derivedSource">The source with which to associate the tokens.</param>
-            /// <param name="tokens">The tokens to read.</param>
-            /// <param name="interpreter">The interpreter that will read the tokens.</param>
-            /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State CreateDerivedShared(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
-                Interpreter interpreter)
-            {
-                return new State(interpreter, derivedSource, tokens, interpreter._output);
+                return new State(interpreter, source, interpreter.CurrentState.Output);
             }
 
             /// <summary>
@@ -131,7 +117,7 @@ namespace Rant
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State CreateDerivedDistinct(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
+            public static State CreateSub(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.CharLimit));

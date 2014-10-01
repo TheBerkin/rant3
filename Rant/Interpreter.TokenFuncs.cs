@@ -34,7 +34,7 @@ namespace Rant
             reader.Read(TokenType.LeftParen);
             bool isStatement = reader.Take(TokenType.At);
             var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, BracketPairs.All);
-            interpreter.PushState(State.CreateDerivedDistinct(reader.Source, tokens, interpreter));
+            interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
             {
                 var v = Parser.Calculate(_, _.PopResultString());
@@ -145,7 +145,7 @@ namespace Rant
             if (name.Identifier == TokenType.Question)
             {
                 state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
-                interpreter.PushState(State.CreateDerivedDistinct(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
+                interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
                 return true;
             }
 
@@ -257,7 +257,7 @@ namespace Rant
 
             if (meta)
             {
-                interpreter.PushState(State.CreateDerivedDistinct(reader.Source, body, interpreter));
+                interpreter.PushState(State.CreateSub(reader.Source, body, interpreter));
                 state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
                 {
                     _.Engine.Subroutines.Define(tName.Value, Subroutine.FromString(tName.Value, _.PopResultString(), parameters.ToArray()));
@@ -282,7 +282,7 @@ namespace Rant
 
             state.AddPreBlueprint(new ReplacerBlueprint(interpreter, Util.ParseRegex(name.Value), args[1]));
 
-            interpreter.PushState(State.CreateDerivedDistinct(reader.Source, args[0], interpreter));
+            interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter));
             return true;
         }
 

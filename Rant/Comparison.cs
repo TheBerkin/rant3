@@ -46,6 +46,7 @@ namespace Rant
     internal enum ComparisonResult
     {
         NotEqual =  0x01,
+        Different = NotEqual,
         Equal =     0x02,
         Less =      0x04,
         Greater =   0x08,
