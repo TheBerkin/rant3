@@ -33,6 +33,20 @@ namespace Rant
         private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
         private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
 
+        public static bool BooleanRep(string input)
+        {
+            switch (input.ToLower().Trim())
+            {
+                case "false":
+                case "0":
+                    return false;
+                case "true":
+                case "1":
+                    return true;
+            }
+            return false;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Capitalize(string input, ref Capitalization caps, ref char lastChar)
         {

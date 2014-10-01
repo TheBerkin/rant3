@@ -40,6 +40,7 @@ namespace Rant
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
         private readonly Stack<Dictionary<string, Argument>> _subArgStack = new Stack<Dictionary<string, Argument>>();
+        private readonly Stack<Comparison> _comparisons = new Stack<Comparison>(); 
         private readonly ChannelStack _output;
 
         private readonly Limit<int> _charLimit; 
@@ -68,6 +69,11 @@ namespace Rant
         public Stack<Dictionary<string, Argument>> SubArgStack
         {
             get { return _subArgStack; }
+        }
+
+        public Stack<Comparison> Comparisons
+        {
+            get { return _comparisons; }
         }
 
         public NumberFormat NumberFormat

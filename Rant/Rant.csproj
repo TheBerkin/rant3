@@ -94,6 +94,7 @@
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Blueprints\TagBlueprint.cs" />
+    <Compile Include="Comparison.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
     <Compile Include="Dictionary.Loader.cs" />

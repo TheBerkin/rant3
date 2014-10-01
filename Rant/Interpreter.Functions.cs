@@ -70,6 +70,47 @@ namespace Rant
             TagFuncs["ifdef"] = new FuncSig(IfDef, ParamFlags.None, ParamFlags.Code);
             TagFuncs["ifndef"] = new FuncSig(IfNDef, ParamFlags.None, ParamFlags.Code);
             TagFuncs["else"] = new FuncSig(Else, ParamFlags.Code);
+            TagFuncs["cmp"] = new FuncSig(Compare, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
+        }
+
+        private static bool CmpIs(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            var cmp = interpreter.Comparisons.Peek();
+            var conStrings = args[0].GetString()
+                .Split(new[] {' ', ',', '/', '|'}, StringSplitOptions.RemoveEmptyEntries);
+            bool result = false;
+            ComparisonResult e;
+            foreach (var conString in conStrings)
+            {
+                if (!Enum.TryParse(Util.NameToCamel(conString), true, out e)) continue;
+                result = result || cmp.Result.HasFlag(e);
+            }
+
+            if (result)
+            {
+                interpreter.PushState(State.CreateDerivedShared(source, args[1].GetTokens(), interpreter));
+            }
+
+            return result;
+        }
+
+
+        private static bool Compare(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        {
+            var cmp = new Comparison(args[0].GetString(), args[1].GetString());
+            interpreter.Comparisons.Push(cmp);
+
+            var state = State.CreateDerivedShared(source, args[2].GetTokens(), interpreter);
+            state.AddPostBlueprint(new FunctionBlueprint(interpreter, I =>
+            {
+                I.Comparisons.Pop();
+                return false;
+            }));
+
+            interpreter.PushState(state);
+
+            return true;
         }
 
         private static bool Reseed(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)

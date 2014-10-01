@@ -37,11 +37,13 @@ namespace PCon
             }
 
             var file = GetArg("file");
+            var dicPath = GetArg("dicpath");
+
 
             Console.Title = "Rant Console" + (Flags.Contains("nsfw") ? " [NSFW]" : "");
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            var rant = new Engine(Directory.Exists("dictionary") ? "dictionary" : null, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            var rant = new Engine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
             rant.Hooks.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))
