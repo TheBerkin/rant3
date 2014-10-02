@@ -35,16 +35,12 @@ namespace Rant
 
         public static bool BooleanRep(string input)
         {
-            switch (input.ToLower().Trim())
-            {
-                case "false":
-                case "0":
-                    return false;
-                case "true":
-                case "1":
-                    return true;
-            }
-            return false;
+            if (String.IsNullOrWhiteSpace(input)) return false;
+            var v = input.ToLower().Trim();
+            if (v == "false" || v == "0") return false;
+            if (v == "true") return true;
+            double d;
+            return Double.TryParse(v, out d);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

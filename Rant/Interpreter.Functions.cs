@@ -77,21 +77,18 @@ namespace Rant
         {
             var cmp = interpreter.Comparisons.Peek();
             var conStrings = args[0].GetString()
-                .Split(new[] {' ', ',', '/', '|'}, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
             bool result = false;
             ComparisonResult e;
             foreach (var conString in conStrings)
             {
                 if (!Enum.TryParse(Util.NameToCamel(conString), true, out e)) continue;
-                result = result || cmp.Result.HasFlag(e);
-            }
-
-            if (result)
-            {
+                if (!cmp.Result.HasFlag(e)) continue;
                 interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
+                return true;
             }
 
-            return result;
+            return false;
         }
 
 
