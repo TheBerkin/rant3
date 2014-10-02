@@ -202,7 +202,7 @@ namespace Rant
             _engine = engine;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
             _output = new ChannelStack(_charLimit);
-            _mainState = State.Create(input, this);
+            _mainState = new State(this, input, _output);
         }
 
         public void Print(object input)
