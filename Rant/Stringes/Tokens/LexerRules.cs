@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Stringes.Tokens
+namespace Rant.Stringes.Tokens
 {
     /// <summary>
     /// Represents a set of rules for creating tokens from a stringe.
     /// </summary>
     /// <typeparam name="T">The identifier type to use in tokens created from the context.</typeparam>
-    public sealed class LexerRules<T> : IEnumerable where T : struct
+    internal sealed class LexerRules<T> : IEnumerable where T : struct
     {
         private const int DefaultPriority = 1;
 

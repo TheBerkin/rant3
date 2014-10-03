@@ -3,8 +3,7 @@ using System.Linq;
 
 using Rant.Blueprints;
 using Rant.Compiler;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant
 {

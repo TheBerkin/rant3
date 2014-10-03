@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Stringes
+namespace Rant.Stringes
 {
-    public static class Extensions
+    internal static class Extensions
     {
         /// <summary>
         /// Converts the specified value into a stringe.

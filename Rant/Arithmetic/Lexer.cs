@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-using Stringes;
-using Stringes.Tokens;
+using Rant.Stringes;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Arithmetic
 {

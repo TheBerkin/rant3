@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Stringes.Tokens
+namespace Rant.Stringes.Tokens
 {
     /// <summary>
     /// Represents a token that contains a custom identifier.
     /// </summary>
     /// <typeparam name="T">The identifier type.</typeparam>
-    public sealed class Token<T> : Stringe where T : struct
+    internal sealed class Token<T> : Stringe where T : struct
     {
         private readonly T _id;
 

@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Rant.Stringes.Tokens;
 
-using Stringes.Tokens;
-
-namespace Stringes
+namespace Rant.Stringes
 {
     /// <summary>
     /// Represents a reader that can read data from a stringe.
     /// </summary>
-    public sealed class StringeReader
+    internal sealed class StringeReader
     {
         private readonly Stringe _stringe;
         private int _pos;

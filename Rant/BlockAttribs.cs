@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Compiler;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant
 {

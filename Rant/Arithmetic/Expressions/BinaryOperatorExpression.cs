@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Arithmetic
 {

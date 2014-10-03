@@ -4,8 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 using Rant.Compiler;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant
 {

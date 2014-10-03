@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
 
-namespace Stringes
+namespace Rant.Stringes
 {
     /// <summary>
     /// Provides information about a character in a stringe.
     /// </summary>
-    public sealed class Chare
+    internal sealed class Chare
     {
         private readonly Stringe _src;
         private readonly char _character;

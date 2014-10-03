@@ -7,8 +7,7 @@ using System.Text.RegularExpressions;
 using Rant.Arithmetic;
 using Rant.Blueprints;
 using Rant.Compiler;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant
 {

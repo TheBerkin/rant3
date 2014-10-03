@@ -2,9 +2,8 @@
 using System.Linq;
 
 using Rant.Compiler;
-
-using Stringes;
-using Stringes.Tokens;
+using Rant.Stringes;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Blueprints
 {

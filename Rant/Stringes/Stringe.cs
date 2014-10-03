@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Stringes
+namespace Rant.Stringes
 {
     /// <summary>
     /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
     /// </summary>
-    public class Stringe : IEnumerable<Chare>
+    internal class Stringe : IEnumerable<Chare>
     {
         private readonly Stref _stref;
         private readonly int _offset;

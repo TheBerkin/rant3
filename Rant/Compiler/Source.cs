@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Compiler
 {

@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-
-using Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Arithmetic
 {

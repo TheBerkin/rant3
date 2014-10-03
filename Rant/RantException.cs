@@ -1,8 +1,7 @@
 ﻿using System;
 
 using Rant.Compiler;
-
-using Stringes;
+using Rant.Stringes;
 
 namespace Rant
 {
