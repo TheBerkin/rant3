@@ -78,7 +78,6 @@ namespace Rant
             var cmp = interpreter.Comparisons.Peek();
             var conStrings = args[0].GetString()
                 .Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            bool result = false;
             ComparisonResult e;
             foreach (var conString in conStrings)
             {

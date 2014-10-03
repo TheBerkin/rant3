@@ -51,10 +51,6 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Stringes, Version=1.0.5356.31773, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Stringes.1.2.0\lib\Stringes.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -131,6 +127,12 @@
     <Compile Include="Compiler\SourceType.cs" />
     <Compile Include="SourceReader.cs" />
     <Compile Include="Interpreter.State.cs" />
+    <Compile Include="Stringes\Chare.cs" />
+    <Compile Include="Stringes\Extensions.cs" />
+    <Compile Include="Stringes\Stringe.cs" />
+    <Compile Include="Stringes\StringeReader.cs" />
+    <Compile Include="Stringes\Tokens\LexerRules.cs" />
+    <Compile Include="Stringes\Tokens\Token.cs" />
     <Compile Include="Subroutine.cs" />
     <Compile Include="SubStore.cs" />
     <Compile Include="SyncType.cs" />
@@ -142,9 +144,6 @@
     </Compile>
     <Compile Include="Vocabulary.cs" />
     <Compile Include="Dictionary.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">
