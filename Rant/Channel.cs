@@ -16,6 +16,7 @@ namespace Rant
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
 
         private int _length = 0;
+        private int _bufferCount = 0;
 
         private char _lastChar = ' ';
         private Capitalization _caps = Capitalization.None;
@@ -71,6 +72,7 @@ namespace Rant
             if (_forePrintPoints.TryGetValue(name, out sp))
             {
                 _buffers.Add(sp);
+                _bufferCount++;
                 _forePrintPoints.Remove(name);
             }
             else
@@ -81,9 +83,40 @@ namespace Rant
                     sb = _backPrintPoints[name] = new StringBuilder(InitialBufferSize);
                 }
                 _buffers.Add(sb);
+                _bufferCount++;
             }
 
             _buffers.Add(_currentBuffer = new StringBuilder(InitialBufferSize));
+            _bufferCount++;
+        }
+
+        internal int MeasureDistance(int bufIndexA, int bufIndexB, int bufCharA, int bufCharB)
+        {
+            int ia = Math.Min(bufIndexA, bufIndexB);
+            int ib = Math.Max(bufIndexA, bufIndexB);
+            int len = bufCharB;
+            for (int i = ia; i < ib; i++)
+            {
+                if (i == ia)
+                {
+                    len += _buffers[i].Length - bufCharA;
+                }
+                else
+                {
+                    len += _buffers[i].Length;
+                }
+            }
+            return len;
+        }
+
+        internal int CurrentBufferIndex
+        {
+            get { return _bufferCount; }
+        }
+
+        internal int CurrentBufferLength
+        {
+            get { return _currentBuffer.Length; }
         }
 
         /// <summary>
