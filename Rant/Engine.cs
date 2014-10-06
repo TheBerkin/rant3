@@ -91,7 +91,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified string and returns the resulting output.
+        /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
         /// </summary>
         /// <param name="input">The input string to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
@@ -113,7 +113,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified string using a custom seed and returns the resulting output.
+        /// Compiles the specified string into a pattern, executes it using a custom seed, and returns the resulting output.
         /// </summary>
         /// <param name="input">The input string to execute.</param>
         /// <param name="seed">The seed to generate output with.</param>
@@ -137,7 +137,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified string using a custom random number generator and returns the resulting output.
+        /// Compiles the specified string into a pattern, executes it using a custom RNG, and returns the resulting output.
         /// </summary>
         /// <param name="input">The input string to execute.</param>
         /// <param name="rng">The random number generator to use when generating output.</param>
@@ -161,9 +161,9 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified source and returns the resulting output.
+        /// Executes the specified pattern and returns the resulting output.
         /// </summary>
-        /// <param name="input">The source to execute.</param>
+        /// <param name="input">The pattern to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
         public Output Do(Pattern input, int charLimit = 0)
@@ -172,9 +172,9 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified source using a custom seed and returns the resulting output.
+        /// Executes the specified pattern using a custom seed and returns the resulting output.
         /// </summary>
-        /// <param name="input">The source to execute.</param>
+        /// <param name="input">The pattern to execute.</param>
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
@@ -184,9 +184,9 @@ namespace Rant
         }
 
         /// <summary>
-        /// Executes the specified source using a custom random number generator and returns the resulting output.
+        /// Executes the specified pattern using a custom random number generator and returns the resulting output.
         /// </summary>
-        /// <param name="input">The source to execute.</param>
+        /// <param name="input">The pattern to execute.</param>
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
