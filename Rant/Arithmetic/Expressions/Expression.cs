@@ -1,6 +1,4 @@
-﻿using Rant.Compiler;
-
-namespace Rant.Arithmetic
+﻿namespace Rant.Arithmetic
 {
     internal abstract class Expression
     {

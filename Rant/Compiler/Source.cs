@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Rant.Stringes.Tokens;
 
 namespace Rant.Compiler
@@ -15,6 +14,11 @@ namespace Rant.Compiler
         private readonly IEnumerable<Token<TokenType>> _tokens;
         private readonly SourceType _type;
         private readonly string _name;
+
+        // This is used to cache item locations within blocks, which eliminates unnecessary multiple traversals of the blocks' tokens.
+        // Item1 = Block items
+        // Item2 = End position of block
+        private readonly Dictionary<Token<TokenType>, Tuple<IEnumerable<Token<TokenType>>[], int>> _blockJumpTable = new Dictionary<Token<TokenType>, Tuple<IEnumerable<Token<TokenType>>[], int>>();
 
         /// <summary>
         /// The name of the source code.
@@ -40,6 +44,16 @@ namespace Rant.Compiler
             get { return _code; }
         }
 
+        internal void CacheBlock(Token<TokenType> start, IEnumerable<Token<TokenType>>[] block, int end)
+        {
+            _blockJumpTable[start] = Tuple.Create(block, end);
+        }
+
+        internal bool TryGetCachedBlock(Token<TokenType> start, out Tuple<IEnumerable<Token<TokenType>>[], int> block)
+        {
+            return _blockJumpTable.TryGetValue(start, out block);
+        }
+
         internal IEnumerable<Token<TokenType>> Tokens
         {
             get { return _tokens; }
@@ -53,12 +67,24 @@ namespace Rant.Compiler
             _tokens = Lexer.GenerateTokens(code);
         }
 
-        internal Source(string name, SourceType type, IEnumerable<Token<TokenType>> tokens, string code)
+        internal Source(Source derived, IEnumerable<Token<TokenType>> sub)
+        {
+            _name = derived._name;
+            _type = derived._type;
+            _code = derived._code;
+            _blockJumpTable = derived._blockJumpTable;
+
+            _tokens = sub;
+        }
+
+        internal Source(string name, Source derived, IEnumerable<Token<TokenType>> sub)
         {
             _name = name;
-            _type = type;
-            _code = code;
-            _tokens = tokens;
+            _type = derived._type;
+            _code = derived._code;
+            _blockJumpTable = derived._blockJumpTable;
+
+            _tokens = sub;
         }
 
         /// <summary>
@@ -84,12 +110,13 @@ namespace Rant.Compiler
 
         internal static Source Derived(Source source, IEnumerable<Token<TokenType>> tokens)
         {
-            return new Source(source._name, source._type, tokens, source._code);
+            return new Source(source, tokens);
         }
-
+        
+        // Used for applying a different name to subroutines
         internal static Source Derived(string name, Source source, IEnumerable<Token<TokenType>> tokens)
         {
-            return new Source(name, source._type, tokens, source._code);
+            return new Source(name, source, tokens);
         }
 
         /// <summary>

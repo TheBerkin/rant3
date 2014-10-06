@@ -41,7 +41,7 @@ namespace Rant
             {
                 _interpreter = ii;
                 _output = output;
-                _reader = new SourceReader(new Source(derivedSource.Name, derivedSource.Type, tokens, derivedSource.Code));
+                _reader = new SourceReader(new Source(derivedSource, tokens));
                 _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 

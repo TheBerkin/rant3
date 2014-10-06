@@ -11,14 +11,14 @@ namespace Rant
     {
         public const int Each = -1;
 
-        private int _index;
+        private int _index = 0;
+        private bool _allowStats = true;
         private readonly int _count;
         private readonly IEnumerable<Token<TokenType>>[] _items;
         private readonly BlockAttribs _attribs;
 
         public Repeater(IEnumerable<Token<TokenType>>[] items, BlockAttribs attribs)
         {
-            _index = 0;
             _items = items;
             _count = attribs.Repetitons == Each ? items.Length : attribs.Repetitons;
             _attribs = attribs;
@@ -26,30 +26,30 @@ namespace Rant
 
         public bool IsFirst
         {
-            get { return _index == 0; }
+            get { return _allowStats && _index == 0; }
         }
 
         public bool IsLast
         {
-            get { return _index == _count - 1; }
+            get { return _allowStats && _index == _count - 1; }
         }
 
         // 1-based
         public bool IsOdd
         {
-            get { return _index % 2 == 0; }
+            get { return _allowStats && _index % 2 == 0; }
         }
 
         // 1-based
         public bool IsEven
         {
-            get { return _index % 2 != 0; }
+            get { return _allowStats && _index % 2 != 0; }
         }
 
         // 1-based
         public bool Nth(int offset, int interval)
         {
-            return ((_index + 1) - offset) % interval == 0;
+            return _allowStats && ((_index + 1) - offset) % interval == 0;
         }
         
         public int Count
@@ -59,7 +59,7 @@ namespace Rant
 
         public int Index
         {
-            get { return _index; }
+            get { return _allowStats ? _index : 0; }
         }
 
         public bool Finished
@@ -69,11 +69,12 @@ namespace Rant
 
         public bool Iterate(Interpreter ii, RepeaterBlueprint bp)
         {
-            if (Finished)
+            while (ii.CurrentRepeater != null && ii.CurrentRepeater.Finished)
             {
                 ii.PopRepeater();
-                return false;
             }
+
+            if (Finished) return false;
 
             // Queue the next iteration on the current state
             ii.CurrentState.AddPreBlueprint(bp);
@@ -88,8 +89,16 @@ namespace Rant
                     ii.CurrentState.Output);
 
                 // Make sure that the repeater is not available to the separator pattern
-                sepState.AddPreBlueprint(new RepeaterStackBlueprint(ii, this, RepeaterStackAction.Pop));
-                sepState.AddPostBlueprint(new RepeaterStackBlueprint(ii, this, RepeaterStackAction.Push));
+                sepState.AddPreBlueprint(new FunctionBlueprint(ii, _ =>
+                {
+                    _allowStats = false;
+                    return false;
+                }));
+                sepState.AddPostBlueprint(new FunctionBlueprint(ii, _ =>
+                {
+                    _allowStats = true;
+                    return false;
+                }));
 
                 ii.PushState(sepState);
             }

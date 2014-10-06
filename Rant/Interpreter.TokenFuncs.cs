@@ -287,13 +287,28 @@ namespace Rant
 
         private static bool DoBlock(Interpreter interpreter, SourceReader reader, State state)
         {
-            var items = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
+            Tuple<IEnumerable<Token<TokenType>>[], int> items;
+            var t = reader.PeekToken();
+
+            // Check if the block is already cached
+            if (!reader.Source.TryGetCachedBlock(t, out items))
+            {
+                var block = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
+                items = Tuple.Create(block, reader.Position);
+                reader.Source.CacheBlock(t, block, reader.Position);
+            }
+            else
+            {
+                // If the block is cached, seek to its end
+                reader.Position = items.Item2;
+            }
+            
             var attribs = interpreter.NextAttribs;
             interpreter._blockAttribs = new BlockAttribs();
 
-            if (!items.Any() || !interpreter.TakeChance()) return false;
+            if (!items.Item1.Any() || !interpreter.TakeChance()) return false;
 
-            var rep = new Repeater(items, attribs);
+            var rep = new Repeater(items.Item1, attribs);
             interpreter.PushRepeater(rep);
             state.AddPreBlueprint(new RepeaterBlueprint(interpreter, rep));
             return true;

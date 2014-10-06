@@ -86,7 +86,6 @@
     <Compile Include="Blueprints\FunctionBlueprint.cs" />
     <Compile Include="Blueprints\MetapatternBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterBlueprint.cs" />
-    <Compile Include="Blueprints\RepeaterStackBlueprint.cs" />
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Blueprints\TagBlueprint.cs" />
@@ -119,7 +118,6 @@
     <Compile Include="Query.cs" />
     <Compile Include="Repeater.cs" />
     <Compile Include="RNG.cs" />
-    <Compile Include="Compiler\Scanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
