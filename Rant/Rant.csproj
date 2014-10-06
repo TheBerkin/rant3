@@ -83,12 +83,12 @@
     <Compile Include="Arithmetic\MathTokenType.cs" />
     <Compile Include="Blueprints\AltBlueprint.cs" />
     <Compile Include="Blueprints\Blueprint.cs" />
-    <Compile Include="Blueprints\FunctionBlueprint.cs" />
+    <Compile Include="Blueprints\DelegateBlueprint.cs" />
     <Compile Include="Blueprints\MetapatternBlueprint.cs" />
     <Compile Include="Blueprints\RepeaterBlueprint.cs" />
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\SubCallBlueprint.cs" />
-    <Compile Include="Blueprints\TagBlueprint.cs" />
+    <Compile Include="Blueprints\FuncTagBlueprint.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
@@ -121,9 +121,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
-    <Compile Include="Compiler\Source.cs" />
+    <Compile Include="Compiler\Pattern.cs" />
     <Compile Include="Compiler\SourceType.cs" />
-    <Compile Include="SourceReader.cs" />
+    <Compile Include="PatternReader.cs" />
     <Compile Include="Interpreter.State.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />

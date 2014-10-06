@@ -8,22 +8,22 @@ using Rant.Stringes.Tokens;
 
 namespace Rant
 {
-    internal class SourceReader
+    internal class PatternReader
     {
-        private readonly Source _source;
+        private readonly Pattern _source;
         private readonly Token<TokenType>[] _tokens;
         private int _pos;
 
         private readonly Stack<Token<TokenType>> _stack = new Stack<Token<TokenType>>(10); 
 
-        public SourceReader(Source source)
+        public PatternReader(Pattern source)
         {
             _source = source;
             _tokens = source.Tokens.ToArray();
             _pos = 0;
         }
 
-        public Source Source
+        public Pattern Source
         {
             get { return _source; }
         }

@@ -10,7 +10,7 @@ using Rant.Stringes;
 namespace Rant
 {
     // The return value is returned by the blueprint that executes the tag. If it's true, the interpreter will skip to the top of the state stack.
-    internal delegate bool FuncTagCallback(Interpreter interpreter, Source source, Stringe tagName, Argument[] args);
+    internal delegate bool FuncTagCallback(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args);
 
     internal partial class Interpreter
     {
@@ -72,7 +72,7 @@ namespace Rant
             TagFuncs["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
         }
 
-        private static bool CmpIs(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool CmpIs(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var cmp = interpreter.Comparisons.Peek();
             var conStrings = args[0].GetString()
@@ -90,13 +90,13 @@ namespace Rant
         }
 
 
-        private static bool Compare(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Compare(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var cmp = new Comparison(args[0].GetString(), args[1].GetString());
             interpreter.Comparisons.Push(cmp);
 
             var state = State.CreateSub(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output);
-            state.AddPostBlueprint(new FunctionBlueprint(interpreter, I =>
+            state.AddPostBlueprint(new DelegateBlueprint(interpreter, I =>
             {
                 I.Comparisons.Pop();
                 return false;
@@ -107,13 +107,13 @@ namespace Rant
             return true;
         }
 
-        private static bool Reseed(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Reseed(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Reseed(args[0].GetString(), args[1].GetString());
             return false;
         }
 
-        private static bool IfNDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool IfNDef(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (!interpreter.Engine.Flags.Contains(args[0]))
             {
@@ -124,14 +124,14 @@ namespace Rant
             return false;
         }
 
-        private static bool Else(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Else(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (!interpreter.UseElse()) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool IfDef(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool IfDef(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.Engine.Flags.Contains(args[0]))
             {
@@ -142,7 +142,7 @@ namespace Rant
             return false;
         }
 
-        private static bool CharacterMulti(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool CharacterMulti(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int count;
             if (!Int32.TryParse(args[1], out count) || count < 0)
@@ -154,13 +154,13 @@ namespace Rant
             return false;
         }
 
-        private static bool Character(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Character(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Print(Util.SelectFromRanges(args[0], interpreter.RNG));
             return false;
         }
 
-        private static bool UndefineFlag(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool UndefineFlag(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
@@ -172,7 +172,7 @@ namespace Rant
             return false;
         }
 
-        private static bool DefineFlag(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool DefineFlag(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
@@ -184,37 +184,37 @@ namespace Rant
             return false;
         }
 
-        private static bool Length(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Length(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Print(args[0].GetString().Length);
             return false;
         }
 
-        private static bool Send(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Send(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.CurrentState.Output.WriteToPoint(args[0], args[1]);
             return false;
         }
 
-        private static bool Get(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Get(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.CurrentState.Output.SetWritePoint(args[0]);
             return false;
         }
 
-        private static bool Dist(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Dist(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Print(interpreter.GetMarkerDistance(args[0], args[1]));
             return false;
         }
 
-        private static bool Mark(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Mark(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.SetMarker(args[0]);
             return false;
         }
 
-        private static bool Extern(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Extern(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var name = args[0].GetString();
             var result = interpreter.Engine.Hooks.Call(name, args.Skip(1).Select(arg => arg.GetString()).ToArray());
@@ -226,13 +226,13 @@ namespace Rant
             return false;
         }
 
-        private static bool Reset(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+        private static bool Reset(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             interpreter.Reset(args[0].GetString());
             return false;
         }
 
-        private static bool CapsInfer(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool CapsInfer(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             // TODO: Make capsinfer properly infer "first" capitalization given multiple sentences. Currently, it mistakes it for "word" mode.
             var words = Regex.Matches(args[0].GetString(), @"\w+").OfType<Match>().Select(m => m.Value).ToArray();
@@ -267,13 +267,13 @@ namespace Rant
             return false;
         }
 
-        private static bool Close(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Close(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.CurrentState.Output.PopChannel(args[0].GetString());
             return false;
         }
 
-        private static bool Out(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Out(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             ChannelVisibility cv;
             var cv_str = args[1].GetString();
@@ -285,7 +285,7 @@ namespace Rant
             return false;
         }
 
-        private static bool Caps(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Caps(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             Capitalization caps;
             var caps_str = args[0].GetString();
@@ -297,7 +297,7 @@ namespace Rant
             return false;
         }
 
-        private static bool NumFmt(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool NumFmt(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             NumberFormat fmt;
             var fmtstr = args[0].GetString();
@@ -309,7 +309,7 @@ namespace Rant
             return false;
         }
 
-        private static bool Arg(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Arg(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (!interpreter.SubArgStack.Any())
                 throw new RantException(source, tagname, "Tried to access arguments outside of a subroutine body.");
@@ -331,19 +331,19 @@ namespace Rant
             return true;
         }
 
-        private static bool ReplaceGroup(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool ReplaceGroup(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Print(interpreter.GetMatchString(args[0].GetString()));
             return false;
         }
 
-        private static bool ReplaceMatch(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool ReplaceMatch(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Print(interpreter.GetMatchString());
             return false;
         }
 
-        private static bool Alt(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Alt(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var testState = State.CreateSub(source, args[0].GetTokens(), interpreter,
                 interpreter.CurrentState.Output);
@@ -352,28 +352,28 @@ namespace Rant
             return true;
         }
 
-        private static bool RepCount(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool RepCount(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new RantException(source, tagname, "No active repeater.");
             interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Count));
             return false;
         }
 
-        private static bool RepIndex(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool RepIndex(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new RantException(source, tagname, "No active repeaters.");
             interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Index));
             return false;
         }
 
-        private static bool RepNum(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool RepNum(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null) throw new RantException(source, tagname, "No active repeaters.");
             interpreter.Print(interpreter.FormatNumber(interpreter.CurrentRepeater.Index + 1));
             return false;
         }
 
-        private static bool Nth(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Nth(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int offset, interval;
             if (!Int32.TryParse(args[0].GetString(), out interval))
@@ -396,87 +396,87 @@ namespace Rant
             return true;
         }
 
-        private static bool Even(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Even(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsEven) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool Odd(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Odd(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsOdd) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool NotMiddle(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool NotMiddle(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst || interpreter.CurrentRepeater.IsLast) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool NotLast(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool NotLast(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool NotFirst(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool NotFirst(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsFirst) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool Middle(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Middle(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || interpreter.CurrentRepeater.IsLast || interpreter.CurrentRepeater.IsFirst) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool Last(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Last(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsLast) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool First(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool First(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.IsFirst) return false;
             interpreter.PushState(State.CreateSub(source, args[0].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
-        private static bool Step(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Step(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Step(args[0].GetString());
             return false;
         }
 
-        private static bool Unpin(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Unpin(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Unpin(args[0].GetString());
             return false;
         }
 
-        private static bool Pin(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Pin(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Pin(args[0].GetString());
             return false;
         }
 
-        private static bool Desync(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Desync(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.Desync();
             return false;
         }
 
-        private static bool Sync(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Sync(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var typeStr = args[1].GetString();
             SyncType type;
@@ -488,7 +488,7 @@ namespace Rant
             return false;
         }
 
-        private static bool Chance(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool Chance(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int a;
             if (!Int32.TryParse(args[0].GetString(), out a))
@@ -499,19 +499,19 @@ namespace Rant
             return false;
         }
 
-        private static bool After(Interpreter interpreter, Source source, Stringe tagname, Argument[] args)
+        private static bool After(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             interpreter.NextAttribs.After = args[0].GetTokens();
             return false;
         }
 
-        private static bool Before(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+        private static bool Before(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             interpreter.NextAttribs.Before = args[0].GetTokens();
             return false;
         }
 
-        private static bool Number(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+        private static bool Number(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             int a, b;
             if (!Int32.TryParse(args[0].GetString(), out a) || !Int32.TryParse(args[1].GetString(), out b))
@@ -522,13 +522,13 @@ namespace Rant
             return false;
         }
 
-        private static bool Separator(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+        private static bool Separator(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             interpreter.NextAttribs.Separator = args[0].GetTokens();
             return false;
         }
 
-        private static bool Repeat(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+        private static bool Repeat(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             var reps = args[0].GetString().ToLower().Trim();
             if (reps == "each")
@@ -617,7 +617,7 @@ namespace Rant
                 _func = func;
             }
 
-            public bool Invoke(Interpreter interpreter, Source source, Stringe tagName, Argument[] args)
+            public bool Invoke(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
             {
                 return _func(interpreter, source, tagName, args);
             }

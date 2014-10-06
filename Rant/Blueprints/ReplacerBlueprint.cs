@@ -49,13 +49,13 @@ namespace Rant.Blueprints
 
                     Match match1 = match;
 
-                    state.AddPreBlueprint(new FunctionBlueprint(I, _ =>
+                    state.AddPreBlueprint(new DelegateBlueprint(I, _ =>
                     {
                         _.PushMatch(match1);
                         return false;
                     }));
 
-                    state.AddPostBlueprint(new FunctionBlueprint(I, _ =>
+                    state.AddPostBlueprint(new DelegateBlueprint(I, _ =>
                     {
                         _.PopMatch();
                         return false;

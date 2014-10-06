@@ -13,7 +13,7 @@ namespace Rant
     {
         // Main fields
         private readonly RNG _rng;
-        private readonly Source _mainSource;
+        private readonly Pattern _mainSource;
         private readonly Engine _engine;
 
         // Next block attribs
@@ -194,7 +194,7 @@ namespace Rant
 
         #endregion
         
-        public Interpreter(Engine engine, Source input, RNG rng, int limitChars = 0)
+        public Interpreter(Engine engine, Pattern input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
             _rng = rng;
@@ -222,7 +222,7 @@ namespace Rant
             // ReSharper disable TooWideLocalVariableScope
 
             State state;                // The current state object being used
-            SourceReader reader;        // The current source reader being used
+            PatternReader reader;        // The current source reader being used
             Token<TokenType> token;     // The next token in the stream
 
             // ReSharper restore TooWideLocalVariableScope
@@ -273,7 +273,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool DoElement(SourceReader reader, State state)
+        private bool DoElement(PatternReader reader, State state)
         {
             TokenFunc func;
             if (TokenFuncs.TryGetValue(reader.PeekToken().Identifier, out func)) return func(this, reader, state);

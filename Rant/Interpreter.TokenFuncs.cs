@@ -13,7 +13,7 @@ namespace Rant
 {
     // TODO: Replace the dreadful multiple PeekToken() calls with a single ReadToken() call
 
-    internal delegate bool TokenFunc(Interpreter interpreter, SourceReader reader, Interpreter.State state);
+    internal delegate bool TokenFunc(Interpreter interpreter, PatternReader reader, Interpreter.State state);
 
     internal partial class Interpreter
     {
@@ -28,13 +28,13 @@ namespace Rant
             {TokenType.Text, DoText}
         };
 
-        private static bool DoMath(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoMath(Interpreter interpreter, PatternReader reader, State state)
         {
             reader.Read(TokenType.LeftParen);
             bool isStatement = reader.Take(TokenType.At);
             var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, BracketPairs.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
-            state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
+            state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
             {
                 var v = Parser.Calculate(_, _.PopResultString());
                 if (!isStatement)
@@ -46,7 +46,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoQuery(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoQuery(Interpreter interpreter, PatternReader reader, State state)
         {
             reader.Read(TokenType.LeftAngle);
             reader.SkipSpace();
@@ -117,25 +117,25 @@ namespace Rant
             return false;
         }
 
-        private static bool DoText(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoText(Interpreter interpreter, PatternReader reader, State state)
         {
             interpreter.Print(reader.ReadToken().Value);
             return false;
         }
 
-        private static bool DoConstant(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoConstant(Interpreter interpreter, PatternReader reader, State state)
         {
             interpreter.Print(Util.UnescapeConstantLiteral(reader.ReadToken().Value));
             return false;
         }
 
-        private static bool DoEscape(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoEscape(Interpreter interpreter, PatternReader reader, State state)
         {
             interpreter.Print(Util.Unescape(reader.ReadToken().Value, interpreter.RNG));
             return false;
         }
 
-        private static bool DoTag(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoTag(Interpreter interpreter, PatternReader reader, State state)
         {
             reader.Read(TokenType.LeftSquare);
             var name = reader.ReadToken();
@@ -172,20 +172,20 @@ namespace Rant
 
             if (none)
             {
-                state.AddPreBlueprint(new TagBlueprint(interpreter, reader.Source, name));
+                state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name));
             }
             else
             {
                 var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
                     TokenType.Semicolon, BracketPairs.All).ToArray();
 
-                state.AddPreBlueprint(new TagBlueprint(interpreter, reader.Source, name, items));
+                state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name, items));
             }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoSubCall(Token<TokenType> first, Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoSubCall(Token<TokenType> first, Interpreter interpreter, PatternReader reader, State state)
         {
             var name = reader.ReadToken();
             if (!Util.ValidateName(name.Value))
@@ -223,7 +223,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoSubDefinition(Token<TokenType> first, Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoSubDefinition(Token<TokenType> first, Interpreter interpreter, PatternReader reader, State state)
         {
             bool meta = reader.Take(TokenType.Question);
             reader.Read(TokenType.LeftSquare);
@@ -257,7 +257,7 @@ namespace Rant
             if (meta)
             {
                 interpreter.PushState(State.CreateSub(reader.Source, body, interpreter));
-                state.AddPreBlueprint(new FunctionBlueprint(interpreter, _ =>
+                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
                 {
                     _.Engine.Subroutines.Define(tName.Value, Subroutine.FromString(tName.Value, _.PopResultString(), parameters.ToArray()));
                     return false;
@@ -272,7 +272,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoReplacer(Token<TokenType> name, Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoReplacer(Token<TokenType> name, Interpreter interpreter, PatternReader reader, State state)
         {
             reader.Read(TokenType.Colon);
 
@@ -285,7 +285,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoBlock(Interpreter interpreter, SourceReader reader, State state)
+        private static bool DoBlock(Interpreter interpreter, PatternReader reader, State state)
         {
             Tuple<IEnumerable<Token<TokenType>>[], int> items;
             var t = reader.PeekToken();

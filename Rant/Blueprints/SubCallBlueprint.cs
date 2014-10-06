@@ -11,7 +11,7 @@ namespace Rant.Blueprints
         private readonly Subroutine _subroutine;
         private readonly Argument[] _args;
 
-        public SubCallBlueprint(Interpreter interpreter, Source source, Subroutine subroutine, IEnumerable<Token<TokenType>>[] args) : base(interpreter)
+        public SubCallBlueprint(Interpreter interpreter, Pattern source, Subroutine subroutine, IEnumerable<Token<TokenType>>[] args) : base(interpreter)
         {
             _subroutine = subroutine;
             if (args == null)
@@ -50,14 +50,14 @@ namespace Rant.Blueprints
             var state = new Interpreter.State(I, _subroutine.Source, I.CurrentState.Output);
 
             // Pre-blueprint pushes args
-            state.AddPreBlueprint(new FunctionBlueprint(I, _ =>
+            state.AddPreBlueprint(new DelegateBlueprint(I, _ =>
             {
                 _.SubArgStack.Push(argTable);
                 return false;
             }));
 
             // Post-blueprint pops args
-            state.AddPostBlueprint(new FunctionBlueprint(I, _ =>
+            state.AddPostBlueprint(new DelegateBlueprint(I, _ =>
             {
                 _.SubArgStack.Pop();
                 return false;

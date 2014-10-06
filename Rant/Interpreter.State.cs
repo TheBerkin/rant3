@@ -16,7 +16,7 @@ namespace Rant
         internal class State
         {
             private readonly ChannelStack _output;
-            private readonly SourceReader _reader;
+            private readonly PatternReader _reader;
             private readonly Interpreter _interpreter;
             private readonly bool _sharesOutput;
             private bool _finished = false;
@@ -36,20 +36,20 @@ namespace Rant
                 return true;
             }
 
-            private State(Interpreter ii, Source derivedSource, IEnumerable<Token<TokenType>> tokens,
+            private State(Interpreter ii, Pattern derivedSource, IEnumerable<Token<TokenType>> tokens,
                 ChannelStack output)
             {
                 _interpreter = ii;
                 _output = output;
-                _reader = new SourceReader(new Source(derivedSource, tokens));
+                _reader = new PatternReader(new Pattern(derivedSource, tokens));
                 _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
-            public State(Interpreter ii, Source source, ChannelStack output)
+            public State(Interpreter ii, Pattern source, ChannelStack output)
             {
                 _interpreter = ii;
                 _output = output;
-                _reader = new SourceReader(source);
+                _reader = new PatternReader(source);
                 _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
@@ -102,7 +102,7 @@ namespace Rant
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State Create(Source source, Interpreter interpreter)
+            public static State Create(Pattern source, Interpreter interpreter)
             {
                 return new State(interpreter, source, interpreter.CurrentState.Output);
             }
@@ -116,7 +116,7 @@ namespace Rant
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State CreateSub(Source derivedSource, IEnumerable<Token<TokenType>> tokens,
+            public static State CreateSub(Pattern derivedSource, IEnumerable<Token<TokenType>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.CharLimit));
@@ -127,7 +127,7 @@ namespace Rant
                 _output.Write(value);
             }
 
-            public SourceReader Reader
+            public PatternReader Reader
             {
                 get { return _reader; }
             }

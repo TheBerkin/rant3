@@ -7,16 +7,16 @@ using Rant.Stringes.Tokens;
 
 namespace Rant.Blueprints
 {
-    internal sealed class TagBlueprint : Blueprint
+    internal sealed class FuncTagBlueprint : Blueprint
     {
-        public Source Source { get; private set; }
+        public Pattern Source { get; private set; }
         public Stringe Name { get; private set; }
 
         private readonly Interpreter.FuncSig _tagDef;
 
         private readonly Argument[] _args;
 
-        public TagBlueprint(Interpreter interpreter, Source source, Stringe name, IEnumerable<Token<TokenType>>[] argData = null)
+        public FuncTagBlueprint(Interpreter interpreter, Pattern source, Stringe name, IEnumerable<Token<TokenType>>[] argData = null)
             : base(interpreter)
         {
             Source = source;

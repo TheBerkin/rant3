@@ -89,12 +89,12 @@ namespace Rant
                     ii.CurrentState.Output);
 
                 // Make sure that the repeater is not available to the separator pattern
-                sepState.AddPreBlueprint(new FunctionBlueprint(ii, _ =>
+                sepState.AddPreBlueprint(new DelegateBlueprint(ii, _ =>
                 {
                     _allowStats = false;
                     return false;
                 }));
-                sepState.AddPostBlueprint(new FunctionBlueprint(ii, _ =>
+                sepState.AddPostBlueprint(new DelegateBlueprint(ii, _ =>
                 {
                     _allowStats = true;
                     return false;
@@ -120,7 +120,7 @@ namespace Rant
                 ii.CurrentState.Output);
 
             // Add a blueprint that iterates the repeater just before reading the item. This makes sure that tags like [first] can run before this happens.
-            itemState.AddPostBlueprint(new FunctionBlueprint(ii, _ =>
+            itemState.AddPostBlueprint(new DelegateBlueprint(ii, _ =>
             {
                 Next();
                 return false;

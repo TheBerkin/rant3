@@ -2,10 +2,10 @@
 
 namespace Rant.Blueprints
 {
-    internal class FunctionBlueprint : Blueprint
+    internal class DelegateBlueprint : Blueprint
     {
         private readonly Func<Interpreter, bool> _func; 
-        public FunctionBlueprint(Interpreter interpreter, Func<Interpreter, bool> func) : base(interpreter)
+        public DelegateBlueprint(Interpreter interpreter, Func<Interpreter, bool> func) : base(interpreter)
         {
             _func = func;
         }

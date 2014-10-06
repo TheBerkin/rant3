@@ -98,7 +98,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new Interpreter(this, Pattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new Interpreter(this, Pattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromString(input), new RNG(seed), charLimit).Run();
+            return new Interpreter(this, Pattern.FromString(input), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromFile(path), new RNG(seed), charLimit).Run();
+            return new Interpreter(this, Pattern.FromFile(path), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromString(input), rng, charLimit).Run();
+            return new Interpreter(this, Pattern.FromString(input), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, Source.FromFile(path), rng, charLimit).Run();
+            return new Interpreter(this, Pattern.FromFile(path), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Rant
         /// <param name="input">The source to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Source input, int charLimit = 0)
+        public Output Do(Pattern input, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
         }
@@ -178,7 +178,7 @@ namespace Rant
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Source input, long seed, int charLimit = 0)
+        public Output Do(Pattern input, long seed, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(seed), charLimit).Run();
         }
@@ -190,7 +190,7 @@ namespace Rant
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Source input, RNG rng, int charLimit = 0)
+        public Output Do(Pattern input, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, input, rng, charLimit).Run();
         }
