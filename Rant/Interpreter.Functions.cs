@@ -145,7 +145,7 @@ namespace Rant
         private static bool CharacterMulti(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int count;
-            if (!Int32.TryParse(args[1], out count) || count < 0)
+            if (!Util.ParseInt(args[1], out count) || count < 0)
                 throw new RantException(source, tagname, "Invalid character count specified. Must be a non-negative number greater than zero.");
             for (int i = 0; i < count; i++)
             {
@@ -376,7 +376,7 @@ namespace Rant
         private static bool Nth(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int offset, interval;
-            if (!Int32.TryParse(args[0].GetString(), out interval))
+            if (!Util.ParseInt(args[0].GetString(), out interval))
             {
                 throw new RantException(source, tagname, "Invalid interval value.");
             }
@@ -386,7 +386,7 @@ namespace Rant
                 throw new RantException(source, tagname, "Interval must be greater than zero.");
             }
 
-            if (!Int32.TryParse(args[1].GetString(), out offset))
+            if (!Util.ParseInt(args[1].GetString(), out offset))
             {
                 throw new RantException(source, tagname, "Invalid offset value.");
             }
@@ -491,7 +491,7 @@ namespace Rant
         private static bool Chance(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             int a;
-            if (!Int32.TryParse(args[0].GetString(), out a))
+            if (!Util.ParseInt(args[0].GetString(), out a))
             {
                 throw new RantException(source, tagname, "Invalid chance number.");
             }
@@ -514,7 +514,7 @@ namespace Rant
         private static bool Number(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
             int a, b;
-            if (!Int32.TryParse(args[0].GetString(), out a) || !Int32.TryParse(args[1].GetString(), out b))
+            if (!Util.ParseInt(args[0].GetString(), out a) || !Util.ParseInt(args[1].GetString(), out b))
             {
                 throw new RantException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
@@ -530,15 +530,15 @@ namespace Rant
 
         private static bool Repeat(Interpreter interpreter, Pattern source, Stringe tagName, Argument[] args)
         {
-            var reps = args[0].GetString().ToLower().Trim();
-            if (reps == "each")
+            var reps = args[0].GetString().Trim();
+            if (String.Equals(reps, "each", StringComparison.OrdinalIgnoreCase))
             {
                 interpreter.NextAttribs.Repetitons = Repeater.Each;
                 return false;
             }
 
             int num;
-            if (!Int32.TryParse(reps, out num))
+            if (!Util.ParseInt(reps, out num))
             {
                 throw new RantException(source, tagName, "Invalid repetition value '" + reps + "' - must be a number.");
             }

@@ -32,6 +32,36 @@ namespace Rant
         private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
         private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
 
+        public static bool ParseInt(string value, out int number)
+        {
+            number = 0;
+            if (String.IsNullOrWhiteSpace(value)) return false;
+            value = value.Trim();
+            if (Char.IsLetter(value[value.Length - 1]))
+            {
+                char power = value[value.Length - 1];
+                value = value.Substring(0, value.Length - 1);
+                if (String.IsNullOrWhiteSpace(value)) return false;
+                double n;
+                if (!Double.TryParse(value, out n)) return false;
+                switch (power)
+                {
+                    case 'k':
+                        number = (int)(n*1000);
+                        return true;
+                    case 'M':
+                        number = (int)(n*1000000);
+                        return true;
+                    case 'B':
+                        number = (int) (n*1000000000);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            return Int32.TryParse(value, out number);
+        }
+
         public static bool BooleanRep(string input)
         {
             if (String.IsNullOrWhiteSpace(input)) return false;
