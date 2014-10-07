@@ -12,7 +12,7 @@ namespace Rant
 {
     internal class Util
     {
-        private static readonly Dictionary<char, Func<RNG, char>> _escapeChars = new Dictionary<char, Func<RNG, char>>
+        private static readonly Dictionary<char, Func<RNG, char>> EscapeChars = new Dictionary<char, Func<RNG, char>>
         {
             {'n', rng => '\n'},
             {'r', rng => '\r'},
@@ -34,32 +34,29 @@ namespace Rant
 
         public static bool ParseInt(string value, out int number)
         {
-            number = 0;
+            if (Int32.TryParse(value, out number)) return true;
             if (String.IsNullOrWhiteSpace(value)) return false;
             value = value.Trim();
-            if (Char.IsLetter(value[value.Length - 1]))
+            if (!Char.IsLetter(value[value.Length - 1])) return false;
+            char power = value[value.Length - 1];
+            value = value.Substring(0, value.Length - 1);
+            if (String.IsNullOrWhiteSpace(value)) return false;
+            double n;
+            if (!Double.TryParse(value, out n)) return false;
+            switch (power)
             {
-                char power = value[value.Length - 1];
-                value = value.Substring(0, value.Length - 1);
-                if (String.IsNullOrWhiteSpace(value)) return false;
-                double n;
-                if (!Double.TryParse(value, out n)) return false;
-                switch (power)
-                {
-                    case 'k':
-                        number = (int)(n*1000);
-                        return true;
-                    case 'M':
-                        number = (int)(n*1000000);
-                        return true;
-                    case 'B':
-                        number = (int) (n*1000000000);
-                        return true;
-                    default:
-                        return false;
-                }
+                case 'k': // Thousand
+                    number = (int)(n*1000);
+                    return true;
+                case 'M': // Million
+                    number = (int)(n*1000000);
+                    return true;
+                case 'B': // Billion
+                    number = (int)(n*1000000000);
+                    return true;
+                default:
+                    return false;
             }
-            return Int32.TryParse(value, out number);
         }
 
         public static bool BooleanRep(string input)
@@ -206,7 +203,7 @@ namespace Rant
             else
             {
                 Func<RNG, char> func;
-                if (_escapeChars.TryGetValue(code[0], out func))
+                if (EscapeChars.TryGetValue(code[0], out func))
                 {
                     for (int i = 0; i < count; i++)
                         sb.Append(func(rng));
