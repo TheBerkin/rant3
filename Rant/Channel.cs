@@ -96,16 +96,9 @@ namespace Rant
             int len = bufCharB;
             for (int i = ia; i < ib; i++)
             {
-                if (i == ia)
-                {
-                    len += _buffers[i].Length - bufCharA;
-                }
-                else
-                {
-                    len += _buffers[i].Length;
-                }
+                len += _buffers[i].Length;
             }
-            return len;
+            return len - bufCharA;
         }
 
         internal int CurrentBufferIndex
