@@ -59,7 +59,7 @@ namespace Rant
         {
             char lc = _lastChar;
             var caps = _caps;
-            var anBuilder = Tuple.Create(new StringBuilder().Append(Util.Capitalize("a", ref _caps, ref _lastChar)), caps, lc);
+            var anBuilder = Tuple.Create(new StringBuilder().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.ConsonantForm, ref _caps, ref _lastChar)), caps, lc);
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -74,7 +74,7 @@ namespace Rant
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
                 int l1 = aBuilder.Item1.Length;
-                aBuilder.Item1.Clear().Append(Util.Capitalize("a", aBuilder.Item2, aBuilder.Item3));
+                aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.ConsonantForm, aBuilder.Item2, aBuilder.Item3));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
@@ -82,7 +82,7 @@ namespace Rant
             if (Engine.CurrentIndefiniteArticleI.CanPluralize(target))
             {
                 int l1 = aBuilder.Item1.Length;
-                aBuilder.Item1.Clear().Append(Util.Capitalize("an", aBuilder.Item2, aBuilder.Item3));
+                aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.Vowel, aBuilder.Item2, aBuilder.Item3));
                 _length += -l1 + aBuilder.Item1.Length;
             }
         }
