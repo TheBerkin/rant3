@@ -41,7 +41,10 @@ namespace Rant
             TagFuncs["notmiddle"] = new FuncSig(NotMiddle, ParamFlags.Code);
             TagFuncs["odd"] = new FuncSig(Odd, ParamFlags.Code);
             TagFuncs["even"] = new FuncSig(Even, ParamFlags.Code);
-            TagFuncs["nth"] = new FuncSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
+            TagFuncs["nth"] = new FuncDef(
+                new FuncSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code),
+                new FuncSig(NthSimple, ParamFlags.None, ParamFlags.Code)
+                );
             TagFuncs["repnum"] = TagFuncs["rn"] = new FuncSig(RepNum);
             TagFuncs["repindex"] = TagFuncs["ri"] = new FuncSig(RepIndex);
             TagFuncs["repcount"] = TagFuncs["rc"] = new FuncSig(RepCount);
@@ -72,6 +75,8 @@ namespace Rant
             TagFuncs["cmp"] = new FuncSig(Compare, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
             TagFuncs["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
         }
+
+        
 
         private static bool CmpIs(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
@@ -403,6 +408,24 @@ namespace Rant
 
             if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.Nth(offset, interval)) return false;
             interpreter.PushState(State.CreateSub(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output));
+            return true;
+        }
+
+        private static bool NthSimple(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        {
+            int interval;
+            if (!Util.ParseInt(args[0].GetString(), out interval))
+            {
+                throw new RantException(source, tagname, "Invalid interval value.");
+            }
+
+            if (interval <= 0)
+            {
+                throw new RantException(source, tagname, "Interval must be greater than zero.");
+            }
+
+            if (interpreter.CurrentRepeater == null || !interpreter.CurrentRepeater.Nth(0, interval)) return false;
+            interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
             return true;
         }
 
