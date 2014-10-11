@@ -82,6 +82,7 @@
     <Compile Include="Arithmetic\Precedence.cs" />
     <Compile Include="Arithmetic\MathTokenType.cs" />
     <Compile Include="Blueprints\AltBlueprint.cs" />
+    <Compile Include="Blueprints\AnyBlueprint.cs" />
     <Compile Include="Blueprints\Blueprint.cs" />
     <Compile Include="Blueprints\DelegateBlueprint.cs" />
     <Compile Include="Blueprints\MetapatternBlueprint.cs" />

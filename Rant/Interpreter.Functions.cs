@@ -46,6 +46,7 @@ namespace Rant
             TagFuncs["repindex"] = TagFuncs["ri"] = new FuncSig(RepIndex);
             TagFuncs["repcount"] = TagFuncs["rc"] = new FuncSig(RepCount);
             TagFuncs["alt"] = new FuncSig(Alt, ParamFlags.Code, ParamFlags.Code);
+            TagFuncs["any"] = new FuncSig(Any, ParamFlags.Code, ParamFlags.Code);
             TagFuncs["match"] = new FuncSig(ReplaceMatch);
             TagFuncs["group"] = new FuncSig(ReplaceGroup, ParamFlags.None);
             TagFuncs["arg"] = new FuncSig(Arg, ParamFlags.None);
@@ -348,6 +349,15 @@ namespace Rant
             var testState = State.CreateSub(source, args[0].GetTokens(), interpreter,
                 interpreter.CurrentState.Output);
             testState.AddPostBlueprint(new AltBlueprint(interpreter, testState, args[1].GetTokens()));
+            interpreter.PushState(testState);
+            return true;
+        }
+
+        private static bool Any(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        {
+            var testState = State.CreateSub(source, args[0].GetTokens(), interpreter,
+                interpreter.CurrentState.Output);
+            testState.AddPostBlueprint(new AnyBlueprint(interpreter, testState, args[1].GetTokens()));
             interpreter.PushState(testState);
             return true;
         }
