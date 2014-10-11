@@ -19,6 +19,7 @@ namespace Rant
         private readonly string _consonantForm;
         private readonly string _vowelForm;
         private readonly IEnumerable<string> _exceptions;
+        private readonly char[] _vowels;
         private readonly int _minExceptionLength; // This is used to speed up searching
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new IndefiniteArticle object with the specified values.
+        /// Creates a new IndefiniteArticle object with the specified values and uses the default vowel set (a, e, i, o, u).
         /// </summary>
         /// <param name="consonantForm">The consonant form of the article.</param>
         /// <param name="vowelForm">The vowel form of the article.</param>
@@ -54,9 +55,26 @@ namespace Rant
             _vowelForm = vowelForm ?? "";
             _exceptions = exceptions.OrderByDescending(str => str.Length);
             _minExceptionLength = exceptions.Min(str => str.Length);
+            _vowels = new[] {'a', 'e', 'i', 'o', 'u'};
         }
 
-        internal bool CanPluralize(StringBuilder sb)
+        /// <summary>
+        /// Creates a new IndefiniteArticle object with the specified values.
+        /// </summary>
+        /// <param name="consonantForm">The consonant form of the article.</param>
+        /// <param name="vowelForm">The vowel form of the article.</param>
+        /// <param name="vowels">The vowels to search for.</param>
+        /// <param name="exceptions">A list of strings that describe word prefixes that invalidate the usage of the vowel form (i.e. "union", "unicorn", "universe")</param>
+        public IndefiniteArticle(string consonantForm, string vowelForm, char[] vowels, params string[] exceptions)
+        {
+            _vowels = vowels;
+            _consonantForm = consonantForm ?? "";
+            _vowelForm = vowelForm ?? "";
+            _exceptions = exceptions.OrderByDescending(str => str.Length);
+            _minExceptionLength = exceptions.Min(str => str.Length);
+        }
+
+        internal bool PrecedesVowel(StringBuilder sb)
         {
             if (sb.Length == 0) return false;
             char c;
@@ -66,7 +84,7 @@ namespace Rant
                 if (Char.IsWhiteSpace(c) || Char.IsSeparator(c)) continue;
                 if (Char.IsNumber(c)) return false;
                 if (!Char.IsLetter(c)) continue;
-                if ("aeiou".IndexOf(c.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCultureIgnoreCase) == -1) return false;
+                if (!_vowels.Any(ch => Char.ToUpperInvariant(ch) == Char.ToUpperInvariant(c))) return false;
 
                 if (i + _minExceptionLength > sb.Length) return true;
 

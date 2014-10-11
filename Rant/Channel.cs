@@ -79,7 +79,7 @@ namespace Rant
                 return;
             }
 
-            if (Engine.CurrentIndefiniteArticleI.CanPluralize(target))
+            if (Engine.CurrentIndefiniteArticleI.PrecedesVowel(target))
             {
                 int l1 = aBuilder.Item1.Length;
                 aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.Vowel, aBuilder.Item2, aBuilder.Item3));
