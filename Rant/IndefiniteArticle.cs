@@ -14,12 +14,12 @@ namespace Rant
         /// <summary>
         /// Indefinite articles for English.
         /// </summary>
-        public static readonly IndefiniteArticle English = new IndefiniteArticle("a", "an", "uni", "use", "U.", "one");
+        public static readonly IndefiniteArticle English = new IndefiniteArticle("a", "an", "uni", "use", "U.", "one", "uvu");
 
         private readonly string _consonantForm;
         private readonly string _vowelForm;
         private readonly IEnumerable<string> _exceptions;
-        private readonly int _maxExceptionLength; // This is used to speed up searching
+        private readonly int _minExceptionLength; // This is used to speed up searching
 
         /// <summary>
         /// The consonant form of the current indefinite article.
@@ -53,7 +53,7 @@ namespace Rant
             _consonantForm = consonantForm ?? "";
             _vowelForm = vowelForm ?? "";
             _exceptions = exceptions.OrderByDescending(str => str.Length);
-            _maxExceptionLength = exceptions.Max(str => str.Length);
+            _minExceptionLength = exceptions.Min(str => str.Length);
         }
 
         internal bool CanPluralize(StringBuilder sb)
@@ -68,10 +68,10 @@ namespace Rant
                 if (!Char.IsLetter(c)) continue;
                 if ("aeiou".IndexOf(c.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCultureIgnoreCase) == -1) return false;
 
-                if (i + _maxExceptionLength > sb.Length) return true;
+                if (i + _minExceptionLength > sb.Length) return true;
 
-                var slice = new char[_maxExceptionLength];
-                sb.CopyTo(i, slice, 0, _maxExceptionLength);
+                var slice = new char[_minExceptionLength];
+                sb.CopyTo(i, slice, 0, _minExceptionLength);
                 var sliceString = new string(slice);
                 return _exceptions.All(e => !sliceString.StartsWith(e, StringComparison.InvariantCultureIgnoreCase));
             }
