@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Rant
@@ -9,10 +10,13 @@ namespace Rant
     /// </summary>
     public sealed class Channel
     {
+        internal const int InitialBufferSize = 512;
+
         private StringBuilder _currentBuffer;
         private readonly List<StringBuilder> _buffers;
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
+        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, Capitalization, char>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, Capitalization, char>>();
 
         private int _length = 0;
         private int _bufferCount = 0;
@@ -36,8 +40,6 @@ namespace Rant
             set { _caps = value; }
         }
 
-        internal const int InitialBufferSize = 512;
-
         internal Channel(string name, ChannelVisibility visibility)
         {
             Name = name;
@@ -50,6 +52,39 @@ namespace Rant
         {
             _length += value.Length;
             _currentBuffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+            UpdateArticle(_currentBuffer);
+        }
+
+        internal void WriteArticle()
+        {
+            char lc = _lastChar;
+            var caps = _caps;
+            var anBuilder = Tuple.Create(new StringBuilder().Append(Util.Capitalize("a", ref _caps, ref _lastChar)), caps, lc);
+            var afterBuilder = _currentBuffer = new StringBuilder();
+            _articleConverters[afterBuilder] = anBuilder;
+            _buffers.Add(anBuilder.Item1);
+            _buffers.Add(_currentBuffer = afterBuilder);
+            _bufferCount += 2;
+        }
+
+        private void UpdateArticle(StringBuilder target)
+        {
+            Tuple<StringBuilder, Capitalization, char> aBuilder;
+            if (!_articleConverters.TryGetValue(target, out aBuilder)) return;
+            if (target.Length == 0) // Clear to "a" if the after-buffer is empty
+            {
+                int l1 = aBuilder.Item1.Length;
+                aBuilder.Item1.Clear().Append(Util.Capitalize("a", aBuilder.Item2, aBuilder.Item3));
+                _length += -l1 + aBuilder.Item1.Length;
+                return;
+            }
+
+            if (Engine.CurrentIndefiniteArticleI.CanPluralize(target))
+            {
+                int l1 = aBuilder.Item1.Length;
+                aBuilder.Item1.Clear().Append(Util.Capitalize("an", aBuilder.Item2, aBuilder.Item3));
+                _length += -l1 + aBuilder.Item1.Length;
+            }
         }
 
         internal void WriteToPoint(string name, string value)
@@ -62,6 +97,7 @@ namespace Rant
             else
             {
                 sb.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+                UpdateArticle(sb);
             }
         }
 

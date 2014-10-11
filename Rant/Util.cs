@@ -86,11 +86,36 @@ namespace Rant
                     caps = Capitalization.None;
                     break;
                 case Capitalization.Word:
-                    char _lastChar = lastChar;
-                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(_lastChar) || Char.IsWhiteSpace(_lastChar)) ? m.Value.ToUpper() : m.Value);
+                    char lc = lastChar;
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
                     break;
             }
             lastChar = input[input.Length - 1];
+            return input;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string Capitalize(string input, Capitalization caps, char lastChar)
+        {
+            if (String.IsNullOrEmpty(input)) return input;
+            switch (caps)
+            {
+                case Capitalization.Lower:
+                    input = input.ToLower();
+                    break;
+                case Capitalization.Upper:
+                    input = input.ToUpper();
+                    break;
+                case Capitalization.First:
+                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
+                    caps = Capitalization.None;
+                    break;
+                case Capitalization.Word:
+                    char lc = lastChar;
+                    // TODO: Prevent capitalization of a/an
+                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
+                    break;
+            }
             return input;
         }
 
@@ -184,10 +209,11 @@ namespace Rant
             return Regex.Replace(literal, @"""""", @"""");
         }
 
-        public static string Unescape(string sequence, RNG rng = null)
+        public static string Unescape(string sequence, Interpreter ii, RNG rng = null)
         {
             var match = Lexer.EscapeRegex.Match(sequence);
-            var count = Int32.Parse(Alt(match.Groups["count"].Value, "1"));
+            int count;
+            ParseInt(Alt(match.Groups["count"].Value, "1"), out count);
             bool unicode = match.Groups["unicode"].Success;
             var code = Alt(match.Groups["code"].Value, match.Groups["unicode"].Value);
             var sb = new StringBuilder();
@@ -203,7 +229,14 @@ namespace Rant
             else
             {
                 Func<RNG, char> func;
-                if (EscapeChars.TryGetValue(code[0], out func))
+                if (code[0] == 'a')
+                {
+                    foreach (var ch in ii.CurrentState.Output.GetActive())
+                    {
+                        for (int i = 0; i < count; i++) ch.WriteArticle();
+                    }
+                }
+                else if (EscapeChars.TryGetValue(code[0], out func))
                 {
                     for (int i = 0; i < count; i++)
                         sb.Append(func(rng));

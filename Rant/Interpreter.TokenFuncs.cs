@@ -131,7 +131,7 @@ namespace Rant
 
         private static bool DoEscape(Interpreter interpreter, PatternReader reader, State state)
         {
-            interpreter.Print(Util.Unescape(reader.ReadToken().Value, interpreter.RNG));
+            interpreter.Print(Util.Unescape(reader.ReadToken().Value, interpreter, interpreter.RNG));
             return false;
         }
 

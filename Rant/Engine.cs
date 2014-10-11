@@ -16,6 +16,21 @@ namespace Rant
         public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
 
         /// <summary>
+        /// The indefinite article rules to apply when running patterns.
+        /// </summary>
+        internal static IndefiniteArticle CurrentIndefiniteArticleI = IndefiniteArticle.English;
+
+        public static IndefiniteArticle CurrentIndefiniteArticle
+        {
+            get { return CurrentIndefiniteArticleI; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                CurrentIndefiniteArticleI = value;
+            }
+        }
+
+        /// <summary>
         /// The maximum stack size allowed for a pattern.
         /// </summary>
         public static int MaxStackSize = 64;
@@ -25,7 +40,7 @@ namespace Rant
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HookCollection _hooks = new HookCollection();
-        private readonly HashSet<string> _flags = new HashSet<string>(); 
+        private readonly HashSet<string> _flags = new HashSet<string>();
 
         internal VarStore Variables
         {

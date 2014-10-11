@@ -70,8 +70,7 @@ namespace Rant
             /// <returns></returns>
             public bool UsePreBlueprint()
             {
-                if (!_preBlueprints.Any()) return false;
-                return _preBlueprints.Pop().Use();
+                return _preBlueprints.Any() && _preBlueprints.Pop().Use();
             }
 
             /// <summary>
@@ -80,8 +79,7 @@ namespace Rant
             /// <returns></returns>
             public bool UsePostBlueprint()
             {
-                if (!_postBlueprints.Any()) return false;
-                return _postBlueprints.Pop().Use();
+                return _postBlueprints.Any() && _postBlueprints.Pop().Use();
             }
 
             /// <summary>

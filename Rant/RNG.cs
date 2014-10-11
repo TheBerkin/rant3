@@ -241,7 +241,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double NextDouble()
         {
-            return Math.Abs(BitConverter.Int64BitsToDouble(NextRaw()) / Double.MaxValue);
+            return Math.Abs(NextRaw() / Double.MaxValue);
         }
 
         /// <summary>

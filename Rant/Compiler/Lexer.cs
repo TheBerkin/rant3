@@ -9,7 +9,7 @@ namespace Rant.Compiler
     {
         private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
-        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
+        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
         public static readonly Regex RegexRegex = new Regex(@"/(.*?[^\\])?/i?", DefaultOptions);
 
         private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
