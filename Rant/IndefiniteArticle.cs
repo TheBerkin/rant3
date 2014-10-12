@@ -60,15 +60,14 @@ namespace Rant
                 if (start == -1)
                 {
                     if (Char.IsWhiteSpace(c) || Char.IsSeparator(c)) continue; // Must be padding, skip it
-                    if (Char.IsNumber(c)) return false; // Starts with number, no good
-                    if (!Char.IsLetter(c)) continue;
+                    if (!Char.IsLetterOrDigit(c)) continue;
                     start = i;
                     if (i == sb.Length - 1) end = start + 1; // Word is one character long
                 }
                 else
                 {
                     end = i;
-                    if (!Char.IsLetter(c)) break;
+                    if (!Char.IsLetterOrDigit(c)) break;
                     if (i == sb.Length - 1) end++; // Consume character if it's the last one in the buffer
                 }
             }
