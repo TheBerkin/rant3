@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -14,13 +13,11 @@ namespace Rant
         /// <summary>
         /// Indefinite articles for English.
         /// </summary>
-        public static readonly IndefiniteArticle English = new IndefiniteArticle("a", "an", "uni", "use", "U.", "one", "uvu");
+        public static readonly IndefiniteArticle English = new IndefiniteArticle("a", "an", IndefiniteArticleRules.English);
 
         private readonly string _consonantForm;
         private readonly string _vowelForm;
-        private readonly IEnumerable<string> _exceptions;
-        private readonly char[] _vowels;
-        private readonly int _minExceptionLength; // This is used to speed up searching
+        private readonly IndefiniteArticleRules _rules;
 
         /// <summary>
         /// The consonant form of the current indefinite article.
@@ -33,67 +30,54 @@ namespace Rant
         /// <summary>
         /// The vowel form of the current indefinite article.
         /// </summary>
-        public string Vowel
+        public string VowelForm
         {
             get { return _vowelForm; }
         }
 
-        public IEnumerable<string> Exceptions
-        {
-            get { return _exceptions; }
-        }
-
         /// <summary>
-        /// Creates a new IndefiniteArticle object with the specified values and uses the default vowel set (a, e, i, o, u).
+        /// Creates a new IndefiniteArticle object with the specified values and rules.
         /// </summary>
         /// <param name="consonantForm">The consonant form of the article.</param>
         /// <param name="vowelForm">The vowel form of the article.</param>
-        /// <param name="exceptions">A list of strings that describe word prefixes that invalidate the usage of the vowel form (i.e. "union", "unicorn", "universe")</param>
-        public IndefiniteArticle(string consonantForm, string vowelForm, params string[] exceptions)
+        /// <param name="rules"></param>
+        public IndefiniteArticle(string consonantForm, string vowelForm, IndefiniteArticleRules rules)
         {
+            _rules = rules;
             _consonantForm = consonantForm ?? "";
             _vowelForm = vowelForm ?? "";
-            _exceptions = exceptions.OrderByDescending(str => str.Length);
-            _minExceptionLength = exceptions.Min(str => str.Length);
-            _vowels = new[] {'a', 'e', 'i', 'o', 'u'};
-        }
-
-        /// <summary>
-        /// Creates a new IndefiniteArticle object with the specified values.
-        /// </summary>
-        /// <param name="consonantForm">The consonant form of the article.</param>
-        /// <param name="vowelForm">The vowel form of the article.</param>
-        /// <param name="vowels">The vowels to search for.</param>
-        /// <param name="exceptions">A list of strings that describe word prefixes that invalidate the usage of the vowel form (i.e. "union", "unicorn", "universe")</param>
-        public IndefiniteArticle(string consonantForm, string vowelForm, char[] vowels, params string[] exceptions)
-        {
-            _vowels = vowels;
-            _consonantForm = consonantForm ?? "";
-            _vowelForm = vowelForm ?? "";
-            _exceptions = exceptions.OrderByDescending(str => str.Length);
-            _minExceptionLength = exceptions.Min(str => str.Length);
         }
 
         internal bool PrecedesVowel(StringBuilder sb)
         {
             if (sb.Length == 0) return false;
             char c;
+            int start = -1;
+            int end = 0;
             for (int i = 0; i < sb.Length; i++)
             {
                 c = sb[i];
-                if (Char.IsWhiteSpace(c) || Char.IsSeparator(c)) continue;
-                if (Char.IsNumber(c)) return false;
-                if (!Char.IsLetter(c)) continue;
-                if (!_vowels.Any(ch => Char.ToUpperInvariant(ch) == Char.ToUpperInvariant(c))) return false;
-
-                if (i + _minExceptionLength > sb.Length) return true;
-
-                var slice = new char[_minExceptionLength];
-                sb.CopyTo(i, slice, 0, _minExceptionLength);
-                var sliceString = new string(slice);
-                return _exceptions.All(e => !sliceString.StartsWith(e, StringComparison.InvariantCultureIgnoreCase));
+                if (start == -1)
+                {
+                    if (Char.IsWhiteSpace(c) || Char.IsSeparator(c)) continue; // Must be padding, skip it
+                    if (Char.IsNumber(c)) return false; // Starts with number, no good
+                    if (!Char.IsLetter(c)) continue;
+                    start = i;
+                    if (i == sb.Length - 1) end = start + 1; // Word is one character long
+                }
+                else
+                {
+                    end = i;
+                    if (!Char.IsLetter(c)) break;
+                    if (i == sb.Length - 1) end++; // Consume character if it's the last one in the buffer
+                }
             }
-            return false;
+
+            if (start == -1) return false;
+
+            var buffer = new char[end - start];
+            sb.CopyTo(start, buffer, 0, end - start);
+            return _rules.Check(new string(buffer));
         }
     }
 }

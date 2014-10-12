@@ -99,6 +99,7 @@
     <Compile Include="BlockAttribs.cs" />
     <Compile Include="HookCollection.cs" />
     <Compile Include="IndefiniteArticle.cs" />
+    <Compile Include="IndefiniteArticleRules.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Interpreter.Markers.cs" />
     <Compile Include="Interpreter.Synchronizers.cs" />
