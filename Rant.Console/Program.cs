@@ -60,10 +60,9 @@ namespace PCon
             }
 
             while (true)
-            {   
-                Console.Write("rant");
-                if (Flags.Contains("nsfw")) Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.Write("> ");
+            {
+                Console.ForegroundColor = Flags.Contains("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
+                Console.Write("\u211d> "); // real number symbol
                 Console.ResetColor();
 
                 var input = Console.ReadLine();

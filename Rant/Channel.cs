@@ -108,7 +108,6 @@ namespace Rant
             {
                 _buffers.Add(sp);
                 _bufferCount++;
-                _forePrintPoints.Remove(name);
             }
             else
             {

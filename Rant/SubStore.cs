@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rant
 {
@@ -10,6 +11,11 @@ namespace Rant
         public SubStore()
         {
             _table = new Dictionary<Tuple<string, int>, Subroutine>();
+        }
+
+        internal void Remove(Subroutine sub)
+        {
+            _table.Remove(_table.FirstOrDefault(x => x.Value == sub).Key);
         }
 
         public void Define(string name, Subroutine sub)

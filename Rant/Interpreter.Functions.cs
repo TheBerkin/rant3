@@ -76,8 +76,6 @@ namespace Rant
             TagFuncs["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
         }
 
-        
-
         private static bool CmpIs(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
             var cmp = interpreter.Comparisons.Peek();
@@ -94,7 +92,6 @@ namespace Rant
 
             return false;
         }
-
 
         private static bool Compare(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
