@@ -103,10 +103,12 @@ namespace Rant
                 ii.PushState(sepState);
             }
 
+            Interpreter.State afterState = null;
+
             // Push postfix if applicable
             if (_attribs.After != null && _attribs.After.Any())
             {
-                ii.PushState(Interpreter.State.CreateSub(
+                ii.PushState(afterState = Interpreter.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.After,
                     ii,
@@ -119,8 +121,8 @@ namespace Rant
                 ii,
                 ii.CurrentState.Output);
 
-            // Add a blueprint that iterates the repeater just before reading the item. This makes sure that tags like [first] can run before this happens.
-            itemState.AddPostBlueprint(new DelegateBlueprint(ii, _ =>
+            // Apply the Next() call to the last state in the repeater iteration
+            (afterState ?? itemState).AddPostBlueprint(new DelegateBlueprint(ii, _ =>
             {
                 Next();
                 return false;
