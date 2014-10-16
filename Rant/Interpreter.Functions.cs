@@ -63,6 +63,8 @@ namespace Rant
             TagFuncs["dist"] = new FuncSig(Dist, ParamFlags.None, ParamFlags.None);
             TagFuncs["get"] = new FuncSig(Get, ParamFlags.None);
             TagFuncs["send"] = new FuncSig(Send, ParamFlags.None, ParamFlags.None);
+            TagFuncs["osend"] = new FuncSig(SendOverwrite, ParamFlags.None, ParamFlags.None);
+            TagFuncs["clrt"] = new FuncSig(ClearTarget, ParamFlags.None);
             TagFuncs["len"] = new FuncSig(Length, ParamFlags.None);
             TagFuncs["char"] = new FuncDef(
                 new FuncSig(Character, ParamFlags.None),
@@ -195,13 +197,25 @@ namespace Rant
 
         private static bool Send(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.CurrentState.Output.WriteToPoint(args[0], args[1]);
+            interpreter.CurrentState.Output.WriteToTarget(args[0], args[1]);
+            return false;
+        }
+
+        private static bool SendOverwrite(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        {
+            interpreter.CurrentState.Output.WriteToTarget(args[0], args[1], true);
             return false;
         }
 
         private static bool Get(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.CurrentState.Output.SetWritePoint(args[0]);
+            interpreter.CurrentState.Output.CreateTarget(args[0]);
+            return false;
+        }
+
+        private static bool ClearTarget(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        {
+            interpreter.CurrentState.Output.ClearTarget(args[0]);
             return false;
         }
 

@@ -87,21 +87,33 @@ namespace Rant
             }
         }
 
-        internal void WriteToPoint(string name, string value)
+        internal void ClearTarget(string name)
+        {
+            StringBuilder sb;
+            if (_backPrintPoints.TryGetValue(name, out sb) || _forePrintPoints.TryGetValue(name, out sb))
+            {
+                sb.Clear();
+            }
+        }
+
+        internal void WriteToTarget(string name, string value, bool overwrite = false)
         {
             StringBuilder sb;
             if (!_backPrintPoints.TryGetValue(name, out sb))
             {
-                _forePrintPoints[name] = new StringBuilder(InitialBufferSize).Append(Util.Capitalize(value, ref _caps, ref _lastChar));
+                sb = _forePrintPoints[name] = new StringBuilder(InitialBufferSize);
+                if (overwrite) sb.Clear();
+                sb.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
             }
             else
             {
+                if (overwrite) sb.Clear();
                 sb.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
                 UpdateArticle(sb);
             }
         }
 
-        internal void CreateNamedWritePoint(string name)
+        internal void CreateTarget(string name)
         {
             StringBuilder sp;
             if (_forePrintPoints.TryGetValue(name, out sp))

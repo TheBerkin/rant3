@@ -22,11 +22,13 @@ namespace Rant
             {'v', rng => '\v'},
             {'0', rng => '\0'},
             {'s', rng => ' '},
-            {'d', rng => rng == null ? '0' : Convert.ToChar(rng.Next(48, 58))},
-            {'c', rng => rng == null ? '?' : Convert.ToChar(rng.Next(97, 123))},
-            {'C', rng => rng == null ? '?' : Convert.ToChar(rng.Next(65, 91))},
-            {'x', rng => rng == null ? '?' : "0123456789abcdef"[rng.Next(16)]},
-            {'X', rng => rng == null ? '?' : "0123456789ABCDEF"[rng.Next(16)]}
+            {'d', rng => Convert.ToChar(rng.Next(48, 58))},
+            {'c', rng => Convert.ToChar(rng.Next(97, 123))},
+            {'C', rng => Convert.ToChar(rng.Next(65, 91))},
+            {'x', rng => "0123456789abcdef"[rng.Next(16)]},
+            {'X', rng => "0123456789ABCDEF"[rng.Next(16)]},
+            {'w', rng => "0123456789abcdefghijklmnopqrstuvwxyz"[rng.Next(36)]},
+            {'W', rng => "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rng.Next(36)]}
         };
 
         private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);

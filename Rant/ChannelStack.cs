@@ -28,19 +28,27 @@ namespace Rant
             };
         }
 
-        public void SetWritePoint(string name)
+        public void CreateTarget(string name)
         {
             foreach (var ch in GetActive())
             {
-                ch.CreateNamedWritePoint(name);
+                ch.CreateTarget(name);
             }
         }
 
-        public void WriteToPoint(string name, string value)
+        public void WriteToTarget(string name, string value, bool overwrite = false)
         {
             foreach (var ch in GetActive())
             {
-                ch.WriteToPoint(name, value);
+                ch.WriteToTarget(name, value, overwrite);
+            }
+        }
+
+        public void ClearTarget(string name)
+        {
+            foreach (var ch in GetActive())
+            {
+                ch.ClearTarget(name);
             }
         }
 
