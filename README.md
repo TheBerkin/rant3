@@ -3,16 +3,22 @@
 <br/><b><i>Generating text has never been this simple.</i></b>
 </p>
 
-**Rant** is a language for adding rich variations to text. It is capable of performing a wide variety of generation tasks, including but not limited to:
+**Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
 
-* Generating HTML, JSON, and other recursive text-based data structures
-* Writing randomly generated words, sentences, and even stories
-* Creating strong passwords
-* Generating character names and other attributes
-* Applying filters to strings
-* Random picking from uniform and weighted data sets
-* Self-generating code
-* An ass-ton more... The sky is the limit!
+Features:
+
+* A powerful dictionary querying system for selecting random words
+* Randomized branching
+* Printing loops (repeaters) with optional separators
+* Automatic capitalization and indefinite article (a/an) formatting
+* Multiple outputs
+* Insert/modify text in existing output
+* Subroutines for easy task repetition
+* Self-generating code (metapatterns)
+* Arithmetic functionality
+* Advanced control flow with flags and comparisons
+* Probability modifiers to control frequency of certain elements
+* Much, much more...
 
 Need some examples? Behold!
 
