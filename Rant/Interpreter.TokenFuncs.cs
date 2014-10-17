@@ -310,6 +310,7 @@ namespace Rant
 
             var rep = new Repeater(items.Item1, attribs);
             interpreter.PushRepeater(rep);
+            interpreter.BaseStates.Add(state);
             state.AddPreBlueprint(new RepeaterBlueprint(interpreter, rep));
             return true;
         }

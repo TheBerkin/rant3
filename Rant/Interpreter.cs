@@ -42,6 +42,8 @@ namespace Rant
         private readonly Stack<Comparison> _comparisons = new Stack<Comparison>(); 
         private readonly ChannelStack _output;
 
+        private readonly HashSet<State> _baseStates = new HashSet<State>(); 
+
         private readonly Limit<int> _charLimit; 
 
         public Engine Engine
@@ -52,6 +54,11 @@ namespace Rant
         public Limit<int> CharLimit
         {
             get { return _charLimit; }
+        }
+
+        public HashSet<State> BaseStates
+        {
+            get { return _baseStates; }
         }
 
         public BlockAttribs NextAttribs
@@ -189,7 +196,7 @@ namespace Rant
 
         public State CurrentState
         {
-            get { return _stateStack.Peek(); }
+            get { return _stateStack.Any() ? _stateStack.Peek() : null; }
         }
 
         #endregion
@@ -266,7 +273,11 @@ namespace Rant
                 }
 
                 // Remove state from stack as long as nothing else was added beforehand
-                if (state == CurrentState) PopState();
+                if (state == CurrentState)
+                {
+                    PopState();
+                    BaseStates.Remove(state);
+                }
             }
 
             return _resultStack.Pop();
