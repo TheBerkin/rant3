@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Rant
@@ -71,20 +70,18 @@ namespace Rant
         {
             Tuple<StringBuilder, Capitalization, char> aBuilder;
             if (!_articleConverters.TryGetValue(target, out aBuilder)) return;
+            int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
-                int l1 = aBuilder.Item1.Length;
                 aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.ConsonantForm, aBuilder.Item2, aBuilder.Item3));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
 
-            if (Engine.CurrentIndefiniteArticleI.PrecedesVowel(target))
-            {
-                int l1 = aBuilder.Item1.Length;
-                aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.VowelForm, aBuilder.Item2, aBuilder.Item3));
-                _length += -l1 + aBuilder.Item1.Length;
-            }
+            // Check for vowel
+            if (!Engine.CurrentIndefiniteArticleI.PrecedesVowel(target)) return;
+            aBuilder.Item1.Clear().Append(Util.Capitalize(Engine.CurrentIndefiniteArticleI.VowelForm, aBuilder.Item2, aBuilder.Item3));
+            _length += -l1 + aBuilder.Item1.Length;
         }
 
         internal void ClearTarget(string name)
@@ -115,15 +112,14 @@ namespace Rant
 
         internal void CreateTarget(string name)
         {
-            StringBuilder sp;
-            if (_forePrintPoints.TryGetValue(name, out sp))
+            StringBuilder sb;
+            if (_forePrintPoints.TryGetValue(name, out sb))
             {
-                _buffers.Add(sp);
+                _buffers.Add(sb);
                 _bufferCount++;
             }
             else
             {
-                StringBuilder sb;
                 if (!_backPrintPoints.TryGetValue(name, out sb))
                 {
                     sb = _backPrintPoints[name] = new StringBuilder(InitialBufferSize);

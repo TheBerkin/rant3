@@ -50,23 +50,8 @@ namespace Rant
         private int GetSubtypeIndex(string subtype)
         {
             if (String.IsNullOrEmpty(subtype)) return 0;
-            bool wStart = subtype.StartsWith("*");
-            bool wEnd = subtype.EndsWith("*");
-            subtype = subtype.Trim('*');
             for (int i = 0; i < _subtypes.Length; i++)
             {
-                if (wStart && wEnd)
-                {
-                    if (_subtypes[i].IndexOf(subtype, StringComparison.OrdinalIgnoreCase) != -1) return i;
-                }
-                else if (wStart)
-                {
-                    if (_subtypes[i].EndsWith(subtype, StringComparison.OrdinalIgnoreCase)) return i;
-                }
-                else if (wEnd)
-                {
-                    if (_subtypes[i].StartsWith(subtype, StringComparison.OrdinalIgnoreCase)) return i;
-                }
                 if (String.Equals(subtype, _subtypes[i], StringComparison.OrdinalIgnoreCase)) return i;
             }
             return -1;

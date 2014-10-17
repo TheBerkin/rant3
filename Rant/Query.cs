@@ -8,7 +8,7 @@ namespace Rant
     /// <summary>
     /// Represents a set of search criteria for a Rant dictionary.
     /// </summary>
-    public class Query
+    public sealed class Query
     {
         private readonly string _name;
         private readonly string _subtype;
