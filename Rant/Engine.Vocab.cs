@@ -1,4 +1,5 @@
 ﻿using System;
+using Rant.Dictionaries;
 
 namespace Rant
 {
@@ -29,7 +30,7 @@ namespace Rant
                 return;
             }
 
-            _vocabulary = Rant.Vocabulary.FromDirectory(path, filter);
+            _vocabulary = Dictionaries.Vocabulary.FromDirectory(path, filter);
         }
     }
 }

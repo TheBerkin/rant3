@@ -90,10 +90,11 @@
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Blueprints\FuncTagBlueprint.cs" />
+    <Compile Include="Dictionaries\Carrier.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
-    <Compile Include="Dictionary.Loader.cs" />
+    <Compile Include="Dictionaries\Dictionary.Loader.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Engine.Vocab.cs" />
     <Compile Include="BlockAttribs.cs" />
@@ -105,11 +106,11 @@
     <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.Functions.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
-    <Compile Include="IVocabulary.cs" />
+    <Compile Include="Dictionaries\IVocabulary.cs" />
     <Compile Include="Limit.cs" />
     <Compile Include="ParamType.cs" />
     <Compile Include="RantException.cs" />
-    <Compile Include="NsfwFilter.cs" />
+    <Compile Include="Dictionaries\NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Output.cs" />
@@ -118,11 +119,11 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Numerals.cs" />
-    <Compile Include="Query.cs" />
+    <Compile Include="Dictionaries\Query.cs" />
     <Compile Include="Repeater.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DictionaryEntry.cs" />
+    <Compile Include="Dictionaries\DictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
     <Compile Include="Compiler\Pattern.cs" />
     <Compile Include="Compiler\SourceType.cs" />
@@ -143,8 +144,8 @@
     <Compile Include="VarStore.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Vocabulary.cs" />
-    <Compile Include="Dictionary.cs" />
+    <Compile Include="Dictionaries\Vocabulary.cs" />
+    <Compile Include="Dictionaries\Dictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">

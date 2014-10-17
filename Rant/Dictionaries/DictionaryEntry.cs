@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rant
+namespace Rant.Dictionaries
 {
     /// <summary>
     /// Stores information about a dictionary entry.

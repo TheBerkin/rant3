@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace Rant
+namespace Rant.Dictionaries
 {
     /// <summary>
     /// Represents a collection of named, queryable dictionaries. This is the default vocabulary type used by Rant.

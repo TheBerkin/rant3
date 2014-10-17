@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Rant
+namespace Rant.Dictionaries
 {
     public sealed partial class Dictionary
     {

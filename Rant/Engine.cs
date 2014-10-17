@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Rant.Compiler;
+using Rant.Dictionaries;
 
 namespace Rant
 {
