@@ -150,5 +150,10 @@ namespace Rant
             _index++;
             return i;
         }
+
+        public void Finish()
+        {
+            _index = _count;
+        }
     }
 }
