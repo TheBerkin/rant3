@@ -23,6 +23,7 @@ namespace Rant
             {'0', rng => '\0'},
             {'s', rng => ' '},
             {'d', rng => Convert.ToChar(rng.Next(48, 58))},
+            {'D', rng => Convert.ToChar(rng.Next(49, 58))},
             {'c', rng => Convert.ToChar(rng.Next(97, 123))},
             {'C', rng => Convert.ToChar(rng.Next(65, 91))},
             {'x', rng => "0123456789abcdef"[rng.Next(16)]},

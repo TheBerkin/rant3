@@ -77,6 +77,13 @@ namespace Rant
             TagFuncs["cmp"] = new FuncSig(Compare, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
             TagFuncs["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
             TagFuncs["break"] = new FuncSig(Break);
+            TagFuncs["src"] = new FuncSig(Src);
+        }
+
+        private static bool Src(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        {
+            interpreter.Print(source.Code); // no no no no
+            return false;
         }
 
         private static bool Break(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
