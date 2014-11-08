@@ -26,12 +26,6 @@
             set { _syncId = value; }
         }
 
-        public string RhymeId
-        {
-            get { return _rhymeId; }
-            set { _rhymeId = value; }
-        }
-
         public int SyllablesMin
         {
             get { return _syllablesMin; }
@@ -44,12 +38,11 @@
             set { _syllablesMax = value; }
         }
 
-        public Carrier(CarrierSyncState syncState, CarrierSyncType syncType, string syncId, string rhymeId, int syllablesMin, int syllablesMax)
+        public Carrier(CarrierSyncState syncState, CarrierSyncType syncType, string syncId, int syllablesMin, int syllablesMax)
         {
             _syncState = syncState;
             _syncType = syncType;
             _syncId = syncId ?? "";
-            _rhymeId = rhymeId ?? "";
             _syllablesMin = syllablesMin;
             _syllablesMax = syllablesMax;
         }
@@ -71,6 +64,10 @@
         /// <summary>
         /// Be unique from other carriers using the same ID.
         /// </summary>
-        Unique
+        Unique,
+        /// <summary>
+        /// Rhyme with previous carrier selections using the same ID.
+        /// </summary>
+        Rhyme
     }
 }

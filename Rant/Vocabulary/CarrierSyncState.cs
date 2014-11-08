@@ -15,9 +15,9 @@ namespace Rant.Vocabulary
         private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _uniqueTable = new Dictionary<string, HashSet<RantDictionaryEntry>>();
 
         /// <summary>
-        /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the IPA CODE.
+        /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the ROOT TERM and USED TERMS.
         /// </summary>
-        private readonly Dictionary<Tuple<string, string>, string> _rhymeTable = new Dictionary<Tuple<string, string>, string>(); 
+        private readonly Dictionary<string, Tuple<Term, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<Term, HashSet<RantDictionaryEntry>>>(); 
 
         public CarrierSyncState()
         {
@@ -32,10 +32,31 @@ namespace Rant.Vocabulary
                 usedSet = _uniqueTable[uniqueId] = new HashSet<RantDictionaryEntry>();
             }
             var selection = entryPool.Except(usedSet).PickWeighted(rng, e => e.Weight);
-            usedSet.Add(selection);
+            
+            if (selection != null) usedSet.Add(selection);
+
             return selection;
         }
 
+        internal RantDictionaryEntry GetRhymingEntry(string rhymeId, int subtype,
+            IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
+        {
+            Tuple<Term, HashSet<RantDictionaryEntry>> rhymeState;
+            if (!_rhymeTable.TryGetValue(rhymeId, out rhymeState))
+            {
+                var entry = entryPool
+                    .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtype].Pronunciation))
+                    .PickWeighted(rng, e => e.Weight);
+                _rhymeTable[rhymeId] = Tuple.Create(entry.Terms[subtype], new HashSet<RantDictionaryEntry>(new[] { entry }));
+                return entry;
+            }
+            var selection =
+                entryPool.Except(rhymeState.Item2)
+                    .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtype].Pronunciation))
+                            .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1.Pronunciation, e.Terms[subtype].Pronunciation));
 
+            if (selection != null) rhymeState.Item2.Add(selection);
+            return selection;
+        }
     }
 }

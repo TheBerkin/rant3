@@ -91,27 +91,38 @@ namespace Rant.Vocabulary
                     set => set.Any(
                         t => t.Item1 == (e.Classes.Contains(t.Item2)))));
 
-            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Values[index])));
+            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
             if (!pool.Any())
             {
                 return "NOT-FOUND";
             }
 
+            RantDictionaryEntry entry = null;
+
             if (query.Carrier != null)
             {
                 switch (query.Carrier.SyncType)
                 {
                     case CarrierSyncType.Match:
-                        return
-                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n))
-                                .Values[index];
+                        entry =
+                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n));
+                        break;
                     case CarrierSyncType.Unique:
-                        return query.Carrier.SyncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng).Values[index];
+                        entry = query.Carrier.SyncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng);
+                        break;
+                    case CarrierSyncType.Rhyme:
+                        entry = query.Carrier.SyncState.GetRhymingEntry(query.Carrier.SyncId, index, pool, rng);
+                        break;
                 }
             }
+            else
+            {
+                entry = pool.PickWeighted(rng, e => e.Weight);
+            }
 
-            return pool.PickWeighted(rng, e => e.Weight).Values[index];
+
+            return entry == null ? "NOT-FOUND" : entry.Terms[index].Value;
         }
     }
 }

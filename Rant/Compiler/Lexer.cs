@@ -47,6 +47,7 @@ namespace Rant.Compiler
                 {"!", TokenType.Exclamation},
                 {"$", TokenType.Dollar},
                 {"=", TokenType.Equal},
+                {"&", TokenType.Ampersand},
                 {CommentRegex, TokenType.Ignore, 3},
                 {BlackspaceRegex, TokenType.Ignore, 2},
                 {WhitespaceRegex, TokenType.Whitespace}

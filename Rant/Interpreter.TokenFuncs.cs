@@ -94,16 +94,27 @@ namespace Rant
                 {
                     reader.SkipSpace();
 
-                    CarrierSyncType syncType = 
-                        reader.Take(TokenType.Exclamation)
-                            ? CarrierSyncType.Unique
-                            : reader.Take(TokenType.Equal) ? CarrierSyncType.Match
-                                : CarrierSyncType.None;
+                    CarrierSyncType type;
+                    Token<TokenType> typeToken;
+
+                    switch ((typeToken = reader.ReadToken()).Identifier)
+                    {
+                        case TokenType.Exclamation:
+                            type = CarrierSyncType.Unique;
+                            break;
+                        case TokenType.Equal:
+                            type = CarrierSyncType.Match;
+                            break;
+                        case TokenType.Ampersand:
+                            type = CarrierSyncType.Rhyme;
+                            break;
+                        default:
+                            throw new RantException(reader.Source, typeToken, "Unrecognized token '" + typeToken.Value + "' in carrier.");
+                    }
 
                     reader.SkipSpace();
 
-                    // TODO: Implement rhyming and syllable constraints
-                    carrier = new Carrier(interpreter.CarrierSyncState, syncType, reader.Read(TokenType.Text, "carrier sync ID").Value, "", 0, 0);
+                    carrier = new Carrier(interpreter.CarrierSyncState, type, reader.Read(TokenType.Text, "carrier sync ID").Value, 0, 0);
 
                     reader.SkipSpace();
 

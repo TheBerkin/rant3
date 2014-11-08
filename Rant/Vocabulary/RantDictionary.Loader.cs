@@ -9,16 +9,6 @@ namespace Rant.Vocabulary
 {
     public sealed partial class RantDictionary
     {
-        private static Tuple<string, string> ReadEntry(StreamReader reader)
-        {
-            var line = reader.ReadLine();
-            if (line == null) return null;
-            var match = Regex.Match(line.Trim(), @"^\s*#(?<name>[\w_\-]+)(\s+(?<value>.*)\s*)?", RegexOptions.ExplicitCapture);
-            if (!match.Success) return null;
-            var groups = match.Groups;
-            return Tuple.Create(groups["name"].Value, groups["value"].Value);
-        }
-
         /// <summary>
         /// Loads a RantDictionary from the file at the specified path.
         /// </summary>
@@ -138,14 +128,22 @@ namespace Rant.Vocabulary
                                 entry.Weight = weight;
                             }
                             break;
-                            case "ipa":
                             case "pron":
                             {
                                 if (parts.Length != 2) LoadError(path, token, "'" + parts[0] + "' property expected a value.");
-                                entry.IPA =
+                                var pron =
                                     parts[1].Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries)
                                         .Select(s => s.Trim())
                                         .ToArray();
+                                if (entry.Terms.Length != pron.Length)
+                                {
+                                    LoadError(path, token, "Pronunciation list length must match subtype count.");
+                                }
+
+                                for (int i = 0; i < entry.Terms.Length; i++)
+                                {
+                                    entry.Terms[i].Pronunciation = pron[i];
+                                }
                             }
                             break;
                         }

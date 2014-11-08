@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Rant.Vocabulary
 {
@@ -7,49 +8,46 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed class RantDictionaryEntry
     {
-        private string[] _values;
-        private string[] _ipa;
+        private Term[] _terms;
         private HashSet<string> _classes;
         private int _weight;
-        private bool _nsfw;
+        private readonly bool _nsfw;
 
         /// <summary>
         /// Creates a new Word object from the specified data.
         /// </summary>
-        /// <param name="entries">The values of the entry.</param>
+        /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        public RantDictionaryEntry(string[] entries, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
+        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
-            _values = entries ?? new string[0];
+            _terms = terms.Select(s => new Term(s)).ToArray();
             _classes = new HashSet<string>(classes);
             _weight = weight;
             _nsfw = nsfw;
-            _ipa = new string[entries.Length];
         }
 
         /// <summary>
         /// Creates a new Word object from the specified data.
         /// </summary>
-        /// <param name="entries">The values of the entry.</param>
+        /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        public RantDictionaryEntry(string[] entries, IEnumerable<string> classes, string[] ipa, bool nsfw = false, int weight = 1)
+        public RantDictionaryEntry(Term[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
-            _values = entries ?? new string[0];
+            _terms = terms;
             _classes = new HashSet<string>(classes);
             _weight = weight;
             _nsfw = nsfw;
-            _ipa = ipa.Length == entries.Length ? ipa : new string[entries.Length];
         }
 
         /// <summary>
-        /// The values of the entry.
+        /// The terms in the entry.
         /// </summary>
-        public string[] Values
+        public Term[] Terms
         {
-            get { return _values; }
-            set { _values = value ?? new string[0]; }
+            get { return _terms; }
+            set { _terms = value ?? new Term[0]; }
         }
 
         /// <summary>
@@ -76,15 +74,6 @@ namespace Rant.Vocabulary
         public bool NSFW
         {
             get { return _nsfw; }
-        }
-
-        /// <summary>
-        /// The IPA pronunciation strings for the values.
-        /// </summary>
-        public string[] IPA
-        {
-            get { return _ipa; }
-            set { _ipa = value; }
         }
     }
 }

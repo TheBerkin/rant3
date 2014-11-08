@@ -179,6 +179,13 @@
         /// </summary>
         Equal,
         /// <summary>
+        /// &
+        /// <para>
+        /// Used by: Carriers
+        /// </para>
+        /// </summary>
+        Ampersand,
+        /// <summary>
         /// End of file.
         /// </summary>
         EOF

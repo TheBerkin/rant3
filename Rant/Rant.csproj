@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="Vocabulary\RantVocabulary.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />
+    <Compile Include="Vocabulary\Term.cs" />
     <Compile Include="Vocabulary\VocabUtils.cs" />
   </ItemGroup>
   <ItemGroup>
