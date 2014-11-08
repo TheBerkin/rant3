@@ -100,7 +100,7 @@ namespace Rant
         /// Creates a new Engine object with the specified vocabulary.
         /// </summary>
         /// <param name="vocabulary">The vocabulary to load in this instance.</param>
-        public RantEngine(IVocabulary vocabulary)
+        public RantEngine(IRantVocabulary vocabulary)
         {
             if (vocabulary == null) throw new ArgumentNullException("vocabulary");
             _vocabulary = vocabulary;

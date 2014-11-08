@@ -5,12 +5,12 @@ namespace Rant
 {
     public partial class RantEngine
     {
-        private IVocabulary _vocabulary;
+        private IRantVocabulary _vocabulary;
 
         /// <summary>
         /// The vocabulary associated with this instance.
         /// </summary>
-        public IVocabulary Vocabulary
+        public IRantVocabulary Vocabulary
         {
             get { return _vocabulary; }
             set

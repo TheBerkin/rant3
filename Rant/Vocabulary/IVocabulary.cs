@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a collection of named, queryable dictionaries.
     /// </summary>
-    public interface IVocabulary
+    public interface IRantVocabulary
     {
         /// <summary>
         /// Queries the vocabulary according to the specified criteria and returns a random match.

@@ -7,7 +7,7 @@ namespace Rant.Vocabulary
     /// <summary>
     /// Represents a collection of named, queryable dictionaries. This is the default vocabulary type used by Rant.
     /// </summary>
-    public sealed class RantVocabulary : IVocabulary
+    public sealed class RantVocabulary : IRantVocabulary
     {
         private readonly Dictionary<string, RantDictionary> _wordLists;
 
