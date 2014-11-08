@@ -280,6 +280,7 @@ namespace Rant
                     }
 
                     var lastOpening = _stack.Pop();
+                    
                     if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier))
                     {
                         throw new RantException(_source, token,

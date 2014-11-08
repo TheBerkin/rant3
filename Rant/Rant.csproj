@@ -31,9 +31,9 @@
     <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
-    <OutputPath>bin\Berkin-Release\</OutputPath>
+    <OutputPath>..\..\..\..\Desktop\Rant\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\Manhood.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arithmetic\Expressions\AbsExpression.cs" />
     <Compile Include="Arithmetic\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Arithmetic\Expressions\Expression.cs" />
     <Compile Include="Arithmetic\Expressions\NameExpression.cs" />
@@ -70,7 +71,7 @@
     <Compile Include="Arithmetic\Lexer.cs" />
     <Compile Include="Arithmetic\Lexer.Static.cs" />
     <Compile Include="Arithmetic\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Arithmetic\Parselets\GroupParselet.cs" />
+    <Compile Include="Arithmetic\Parselets\AbsParselet.cs" />
     <Compile Include="Arithmetic\Parselets\IInfixParselet.cs" />
     <Compile Include="Arithmetic\Parselets\IPrefixParselet.cs" />
     <Compile Include="Arithmetic\Parselets\NameParselet.cs" />

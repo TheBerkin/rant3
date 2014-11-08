@@ -67,7 +67,7 @@ namespace PCon
                 Console.ResetColor();
 
                 var input = Console.ReadLine();
-#if !DEBUG
+#if DEBUG
                 PrintOutput(rant.Do(input));
 #else
                 try
