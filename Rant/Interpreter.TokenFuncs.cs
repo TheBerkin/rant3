@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using Rant.Arithmetic;
 using Rant.Blueprints;
 using Rant.Compiler;
-using Rant.Dictionaries;
+using Rant.Vocabulary;
 using Rant.Stringes.Tokens;
 
 namespace Rant
@@ -58,7 +58,7 @@ namespace Rant
             List<Tuple<bool, string>> cfList = null;
             List<Tuple<bool, string>[]> classFilterList = null;
             List<Tuple<bool, Regex>> regList = null;
-            string carrier = "";
+            Carrier carrier = null;
 
             Token<TokenType> token = null;
 
@@ -90,10 +90,23 @@ namespace Rant
                     token = reader.Read(TokenType.Regex, "regex");
                     (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, Util.ParseRegex(token.Value)));
                 }
-                else if (reader.Take(TokenType.DoubleColon))
+                else if (reader.Take(TokenType.DoubleColon)) // Start of carrier
                 {
-                    token = reader.Read(TokenType.Text, "carrier name");
-                    carrier = token.Value.Trim();
+                    reader.SkipSpace();
+
+                    CarrierSyncType syncType = 
+                        reader.Take(TokenType.Exclamation)
+                            ? CarrierSyncType.Unique
+                            : reader.Take(TokenType.Equal) ? CarrierSyncType.Match
+                                : CarrierSyncType.None;
+
+                    reader.SkipSpace();
+
+                    // TODO: Implement rhyming and syllable constraints
+                    carrier = new Carrier(interpreter.CarrierSyncState, syncType, reader.Read(TokenType.Text, "carrier sync ID").Value, "", 0, 0);
+
+                    reader.SkipSpace();
+
                     if (!reader.Take(TokenType.RightAngle))
                     {
                         throw new RantException(reader.Source, token, "Expected '>' after carrier. (The carrier should be your last query argument!)");

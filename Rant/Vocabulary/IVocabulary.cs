@@ -1,4 +1,4 @@
-﻿namespace Rant.Dictionaries
+﻿namespace Rant.Vocabulary
 {
     /// <summary>
     /// Represents a collection of named, queryable dictionaries.

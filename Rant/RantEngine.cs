@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 
 using Rant.Compiler;
-using Rant.Dictionaries;
+using Rant.Vocabulary;
 
 namespace Rant
 {
     /// <summary>
     /// The central class of the Rant engine that allows the execution of patterns.
     /// </summary>
-    public sealed partial class Engine
+    public sealed partial class RantEngine
     {
         /// <summary>
         /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
@@ -72,7 +72,7 @@ namespace Rant
         /// <summary>
         /// Creates a new Engine object with no vocabulary.
         /// </summary>
-        public Engine()
+        public RantEngine()
         {
             LoadVocab("", DefaultNsfwFilter);
         }
@@ -81,7 +81,7 @@ namespace Rant
         /// Creates a new Engine object that loads vocabulary from the specified path.
         /// </summary>
         /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
-        public Engine(string vocabularyPath)
+        public RantEngine(string vocabularyPath)
         {
             LoadVocab(vocabularyPath, DefaultNsfwFilter);
         }
@@ -91,7 +91,7 @@ namespace Rant
         /// </summary>
         /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
         /// <param name="filter">The filtering option to apply when loading the files.</param>
-        public Engine(string vocabularyPath, NsfwFilter filter)
+        public RantEngine(string vocabularyPath, NsfwFilter filter)
         {
             LoadVocab(vocabularyPath, filter);
         }
@@ -100,7 +100,7 @@ namespace Rant
         /// Creates a new Engine object with the specified vocabulary.
         /// </summary>
         /// <param name="vocabulary">The vocabulary to load in this instance.</param>
-        public Engine(IVocabulary vocabulary)
+        public RantEngine(IVocabulary vocabulary)
         {
             if (vocabulary == null) throw new ArgumentNullException("vocabulary");
             _vocabulary = vocabulary;
@@ -114,7 +114,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new Interpreter(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new Interpreter(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromString(input), new RNG(seed), charLimit).Run();
+            return new Interpreter(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromFile(path), new RNG(seed), charLimit).Run();
+            return new Interpreter(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Rant
         /// <returns></returns>
         public Output Do(string input, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromString(input), rng, charLimit).Run();
+            return new Interpreter(this, RantPattern.FromString(input), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Rant
         /// <returns></returns>
         public Output DoFile(string path, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, Pattern.FromFile(path), rng, charLimit).Run();
+            return new Interpreter(this, RantPattern.FromFile(path), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Rant
         /// <param name="input">The pattern to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Pattern input, int charLimit = 0)
+        public Output Do(RantPattern input, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
         }
@@ -194,7 +194,7 @@ namespace Rant
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Pattern input, long seed, int charLimit = 0)
+        public Output Do(RantPattern input, long seed, int charLimit = 0)
         {
             return new Interpreter(this, input, new RNG(seed), charLimit).Run();
         }
@@ -206,7 +206,7 @@ namespace Rant
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(Pattern input, RNG rng, int charLimit = 0)
+        public Output Do(RantPattern input, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, input, rng, charLimit).Run();
         }

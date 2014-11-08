@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rant.Dictionaries
+namespace Rant.Vocabulary
 {
     /// <summary>
     /// Stores a Rant dictionary.
     /// </summary>
-    public sealed partial class Dictionary
+    public sealed partial class RantDictionary
     {
         private readonly string _name;
         private readonly string[] _subtypes;
-        private readonly DictionaryEntry[] _words;
+        private readonly RantDictionaryEntry[] _words;
 
         /// <summary>
         /// Creates a new WordList from the specified data.
@@ -19,7 +19,7 @@ namespace Rant.Dictionaries
         /// <param name="name">the name of the list.</param>
         /// <param name="subtypes">The subtype names.</param>
         /// <param name="words">The words to add to the list.</param>
-        public Dictionary(string name, string[] subtypes, IEnumerable<DictionaryEntry> words)
+        public RantDictionary(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> words)
         {
             if (!Util.ValidateName(name))
             {
@@ -37,6 +37,22 @@ namespace Rant.Dictionaries
             _subtypes = subtypes;
             _name = name;
             _words = words.ToArray();
+        }
+        
+        /// <summary>
+        /// The entries stored in the dictionary.
+        /// </summary>
+        public RantDictionaryEntry[] Entries
+        {
+            get { return _words; }
+        }
+
+        /// <summary>
+        /// The subtypes in the dictionary.
+        /// </summary>
+        public string[] Subtypes
+        {
+            get { return _subtypes; }
         }
 
         /// <summary>
@@ -65,7 +81,7 @@ namespace Rant.Dictionaries
                 return "BAD-SUBTYPE";
             }
 
-            IEnumerable<DictionaryEntry> pool = _words;
+            IEnumerable<RantDictionaryEntry> pool = _words;
 
             pool = query.Exclusive
                 ? pool.Where(e => e.Classes.Any() && e.Classes.All(
@@ -82,16 +98,20 @@ namespace Rant.Dictionaries
                 return "NOT-FOUND";
             }
 
-            int number = String.IsNullOrEmpty(query.Carrier) ? rng.Next(pool.Sum(e => e.Weight)) + 1
-                : rng.PeekAt(query.Carrier.Hash(), pool.Sum(e => e.Weight));
-
-            foreach (var e in pool)
+            if (query.Carrier != null)
             {
-                if (number <= e.Weight) return e.Values[index];
-                number -= e.Weight;
+                switch (query.Carrier.SyncType)
+                {
+                    case CarrierSyncType.Match:
+                        return
+                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n))
+                                .Values[index];
+                    case CarrierSyncType.Unique:
+                        return query.Carrier.SyncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng).Values[index];
+                }
             }
 
-            return "NOT-FOUND";
+            return pool.PickWeighted(rng, e => e.Weight).Values[index];
         }
     }
 }

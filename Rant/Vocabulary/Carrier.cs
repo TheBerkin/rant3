@@ -1,8 +1,9 @@
-﻿namespace Rant.Dictionaries
+﻿namespace Rant.Vocabulary
 {
     public sealed class Carrier
     {
         private CarrierSyncType _syncType;
+        private CarrierSyncState _syncState;
         private string _syncId;
         private string _rhymeId;
         private int _syllablesMin, _syllablesMax;
@@ -11,6 +12,12 @@
         {
             get { return _syncType; }
             set { _syncType = value; }
+        }
+
+        public CarrierSyncState SyncState
+        {
+            get { return _syncState; }
+            set { _syncState = value; }
         }
 
         public string SyncId
@@ -37,8 +44,9 @@
             set { _syllablesMax = value; }
         }
 
-        public Carrier(CarrierSyncType syncType, string syncId, string rhymeId, int syllablesMin, int syllablesMax)
+        public Carrier(CarrierSyncState syncState, CarrierSyncType syncType, string syncId, string rhymeId, int syllablesMin, int syllablesMax)
         {
+            _syncState = syncState;
             _syncType = syncType;
             _syncId = syncId ?? "";
             _rhymeId = rhymeId ?? "";

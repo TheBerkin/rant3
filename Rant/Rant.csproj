@@ -90,13 +90,15 @@
     <Compile Include="Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Blueprints\FuncTagBlueprint.cs" />
-    <Compile Include="Dictionaries\Carrier.cs" />
+    <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
     <Compile Include="Compiler\Lexer.cs" />
-    <Compile Include="Dictionaries\Dictionary.Loader.cs" />
-    <Compile Include="Engine.cs" />
-    <Compile Include="Engine.Vocab.cs" />
+    <Compile Include="Vocabulary\CarrierSyncState.cs" />
+    <Compile Include="Vocabulary\Dic2Lexer.cs" />
+    <Compile Include="Vocabulary\RantDictionary.Loader.cs" />
+    <Compile Include="RantEngine.cs" />
+    <Compile Include="RantEngine.Vocab.cs" />
     <Compile Include="BlockAttribs.cs" />
     <Compile Include="HookCollection.cs" />
     <Compile Include="IndefiniteArticle.cs" />
@@ -106,11 +108,11 @@
     <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.Functions.cs" />
     <Compile Include="Interpreter.TokenFuncs.cs" />
-    <Compile Include="Dictionaries\IVocabulary.cs" />
+    <Compile Include="Vocabulary\IVocabulary.cs" />
     <Compile Include="Limit.cs" />
     <Compile Include="ParamType.cs" />
     <Compile Include="RantException.cs" />
-    <Compile Include="Dictionaries\NsfwFilter.cs" />
+    <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Capitalization.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Output.cs" />
@@ -119,13 +121,13 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Numerals.cs" />
-    <Compile Include="Dictionaries\Query.cs" />
+    <Compile Include="Vocabulary\Query.cs" />
     <Compile Include="Repeater.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Dictionaries\DictionaryEntry.cs" />
+    <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
-    <Compile Include="Compiler\Pattern.cs" />
+    <Compile Include="Compiler\RantPattern.cs" />
     <Compile Include="Compiler\SourceType.cs" />
     <Compile Include="PatternReader.cs" />
     <Compile Include="Interpreter.State.cs" />
@@ -144,8 +146,9 @@
     <Compile Include="VarStore.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Dictionaries\Vocabulary.cs" />
-    <Compile Include="Dictionaries\Dictionary.cs" />
+    <Compile Include="Vocabulary\RantVocabulary.cs" />
+    <Compile Include="Vocabulary\RantDictionary.cs" />
+    <Compile Include="Vocabulary\VocabUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">

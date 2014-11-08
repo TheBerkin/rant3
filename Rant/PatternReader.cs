@@ -10,20 +10,20 @@ namespace Rant
 {
     internal class PatternReader
     {
-        private readonly Pattern _source;
+        private readonly RantPattern _source;
         private readonly Token<TokenType>[] _tokens;
         private int _pos;
 
         private readonly Stack<Token<TokenType>> _stack = new Stack<Token<TokenType>>(10); 
 
-        public PatternReader(Pattern source)
+        public PatternReader(RantPattern source)
         {
             _source = source;
             _tokens = source.Tokens.ToArray();
             _pos = 0;
         }
 
-        public Pattern Source
+        public RantPattern Source
         {
             get { return _source; }
         }

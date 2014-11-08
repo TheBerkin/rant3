@@ -46,6 +46,7 @@ namespace Rant.Compiler
                 {"-", TokenType.Hyphen},
                 {"!", TokenType.Exclamation},
                 {"$", TokenType.Dollar},
+                {"=", TokenType.Equal},
                 {CommentRegex, TokenType.Ignore, 3},
                 {BlackspaceRegex, TokenType.Ignore, 2},
                 {WhitespaceRegex, TokenType.Whitespace}

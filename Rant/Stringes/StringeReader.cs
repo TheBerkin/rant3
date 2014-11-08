@@ -238,9 +238,8 @@ namespace Rant.Stringes
                     if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
                     return new Token<T>(t.Item2, c);
                 }
-
                 
-                const string tokenGroupName = "token";
+                const string tokenGroupName = "value";
 
                 // Check regex rules
                 if (rules.RegexList.Any())

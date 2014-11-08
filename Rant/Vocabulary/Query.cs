@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Rant.Dictionaries
+namespace Rant.Vocabulary
 {
     /// <summary>
     /// Represents a set of search criteria for a Rant dictionary.

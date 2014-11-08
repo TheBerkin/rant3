@@ -1,9 +1,9 @@
 ﻿using System;
-using Rant.Dictionaries;
+using Rant.Vocabulary;
 
 namespace Rant
 {
-    public partial class Engine
+    public partial class RantEngine
     {
         private IVocabulary _vocabulary;
 
@@ -26,11 +26,11 @@ namespace Rant
 
             if (String.IsNullOrEmpty(path))
             {
-                _vocabulary = new Vocabulary(null);
+                _vocabulary = new RantVocabulary(null);
                 return;
             }
 
-            _vocabulary = Dictionaries.Vocabulary.FromDirectory(path, filter);
+            _vocabulary = RantVocabulary.FromDirectory(path, filter);
         }
     }
 }

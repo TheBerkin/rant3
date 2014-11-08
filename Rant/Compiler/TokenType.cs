@@ -172,6 +172,13 @@
         /// </summary>
         Whitespace,
         /// <summary>
+        /// =
+        /// <para>
+        /// Used by: Carriers
+        /// </para> 
+        /// </summary>
+        Equal,
+        /// <summary>
         /// End of file.
         /// </summary>
         EOF

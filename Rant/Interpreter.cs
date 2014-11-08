@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 using Rant.Compiler;
 using Rant.Stringes.Tokens;
+using Rant.Vocabulary;
 
 namespace Rant
 {
@@ -13,8 +14,11 @@ namespace Rant
     {
         // Main fields
         private readonly RNG _rng;
-        private readonly Pattern _mainSource;
-        private readonly Engine _engine;
+        private readonly RantPattern _mainSource;
+        private readonly RantEngine _engine;
+
+        // Queries
+        private readonly CarrierSyncState _carrierSyncState = new CarrierSyncState();
 
         // Next block attribs
         private BlockAttribs _blockAttribs = new BlockAttribs();
@@ -44,9 +48,14 @@ namespace Rant
 
         private readonly HashSet<State> _baseStates = new HashSet<State>(); 
 
-        private readonly Limit<int> _charLimit; 
+        private readonly Limit<int> _charLimit;
 
-        public Engine Engine
+        public CarrierSyncState CarrierSyncState
+        {
+            get { return _carrierSyncState; }
+        }
+
+        public RantEngine Engine
         {
             get { return _engine; }
         }
@@ -171,9 +180,9 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PushState(State state)
         {
-            if (_stateCount >= Engine.MaxStackSize)
+            if (_stateCount >= RantEngine.MaxStackSize)
             {
-                throw new RantException(_mainSource, null, "Exceeded maximum stack size of " + Engine.MaxStackSize + ".");
+                throw new RantException(_mainSource, null, "Exceeded maximum stack size of " + RantEngine.MaxStackSize + ".");
             }
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;
@@ -201,7 +210,7 @@ namespace Rant
 
         #endregion
         
-        public Interpreter(Engine engine, Pattern input, RNG rng, int limitChars = 0)
+        public Interpreter(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
             _rng = rng;
