@@ -53,7 +53,7 @@ namespace Rant.Vocabulary
             var selection =
                 entryPool.Except(rhymeState.Item2)
                     .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtype].Pronunciation))
-                            .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1.Pronunciation, e.Terms[subtype].Pronunciation));
+                            .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1, e.Terms[subtype]));
 
             if (selection != null) rhymeState.Item2.Add(selection);
             return selection;

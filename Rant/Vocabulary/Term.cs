@@ -1,4 +1,6 @@
-﻿namespace Rant.Vocabulary
+﻿using System;
+
+namespace Rant.Vocabulary
 {
     /// <summary>
     /// Represents a Rant dictionary term. A dictionary entry will contain one term for every subtype.
@@ -7,6 +9,9 @@
     {
         private string _value;
         private string _pronunciation;
+        private string[] _pronParts;
+        private string[] _syllables;
+        private int _syllableCount;
 
         /// <summary>
         /// Creates a new Term with the specified value.
@@ -44,7 +49,38 @@
         public string Pronunciation
         {
             get { return _pronunciation; }
-            set { _pronunciation = value; }
+            set
+            {
+                _pronunciation = value;
+                if (_pronParts != null) CreatePronParts();
+                if (_syllables != null) CreateSyllables();
+            }
+        }
+
+        /// <summary>
+        /// An array containing the individual elements of the pronunciation string. Used by the rhyming system.
+        /// </summary>
+        public string[] PronunciationParts
+        {
+            get { return _pronParts ?? CreatePronParts(); }
+        }
+
+        /// <summary>
+        /// An array containing the individual syllables of the pronunciation string.
+        /// </summary>
+        public string[] Syllables
+        {
+            get { return _syllables ?? CreateSyllables(); }
+        }
+
+        private string[] CreatePronParts()
+        {
+            return _pronParts = _pronunciation.Split(new[] {' ', '-'}, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private string[] CreateSyllables()
+        {
+            return _syllables = _pronunciation.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

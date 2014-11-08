@@ -78,7 +78,7 @@ namespace Rant.Vocabulary
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1)
             {
-                return "BAD-SUBTYPE";
+                return "[Missing Subtype]";
             }
 
             IEnumerable<RantDictionaryEntry> pool = _words;
@@ -95,7 +95,7 @@ namespace Rant.Vocabulary
 
             if (!pool.Any())
             {
-                return "NOT-FOUND";
+                return "[?]";
             }
 
             RantDictionaryEntry entry = null;
@@ -122,7 +122,7 @@ namespace Rant.Vocabulary
             }
 
 
-            return entry == null ? "NOT-FOUND" : entry.Terms[index].Value;
+            return entry == null ? "[?]" : entry.Terms[index].Value;
         }
     }
 }

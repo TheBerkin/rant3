@@ -36,11 +36,11 @@ namespace Rant.Vocabulary
             return defaultValue;
         }
 
-        public static int RhymeIndex(string baseValue, string testValue)
+        public static int RhymeIndex(Term baseValue, Term testValue)
         {
-            if (String.IsNullOrEmpty(baseValue) || String.IsNullOrEmpty(testValue)) return 0;
-            var baseParts = baseValue.Split(new[] {'-', ' '}, StringSplitOptions.RemoveEmptyEntries);
-            var testParts = testValue.Split(new[] {'-', ' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (baseValue == null || testValue == null) return 0;
+            var baseParts = baseValue.PronunciationParts;
+            var testParts = testValue.PronunciationParts;
             int index = 0;
             int len = Math.Min(baseParts.Length, testParts.Length);
             for (int i = 0; i < len; i++)
