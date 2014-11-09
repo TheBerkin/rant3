@@ -51,6 +51,53 @@ namespace Rant
         {
             reader.Read(TokenType.LeftAngle);
             reader.SkipSpace();
+
+            bool storeMacro = false;
+            bool macroIsGlobal = false;
+            string macroName = null;
+
+            // Check if this is a macro
+            if (reader.Take(TokenType.At))
+            {
+                reader.SkipSpace();
+
+                var macroNameToken = reader.Read(TokenType.Text, "query macro name");
+                if (!Util.ValidateName(macroNameToken.Value))
+                    throw new RantException(reader.Source, macroNameToken, "Invalid macro name.");
+
+                macroName = macroNameToken.Value;
+
+                reader.SkipSpace();
+
+                // Check if the macro is a definition or a call.
+                // A definition will start with a colon ':' or equals '=' after the name. A call will only consist of the name.
+                switch (reader.ReadToken().Identifier)
+                {
+                    case TokenType.Colon: // Local definition
+                    {
+                        storeMacro = true;
+                    }
+                    break;
+                    case TokenType.Equal: // Global definition
+                    {
+                        storeMacro = true;
+                        macroIsGlobal = true;
+                    }
+                    break;
+                    case TokenType.RightAngle: // Call
+                    {
+                        Query q;
+                        if (!interpreter.LocalQueryMacros.TryGetValue(macroName, out q) && !interpreter.Engine.GlobalQueryMacros.TryGetValue(macroName, out q))
+                        {
+                            throw new RantException(reader.Source, macroNameToken, "Nonexistent query macro '" + macroName + "'");
+                        }
+                        interpreter.Print(interpreter.Engine.Vocabulary.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
+                        return false;
+                    }
+                }
+            }
+
+            reader.SkipSpace();
             var namesub = reader.Read(TokenType.Text, "list name").Split(new[] { '.' }, 2).ToArray();
             reader.SkipSpace();
 
@@ -114,7 +161,7 @@ namespace Rant
 
                     reader.SkipSpace();
 
-                    carrier = new Carrier(interpreter.CarrierSyncState, type, reader.Read(TokenType.Text, "carrier sync ID").Value, 0, 0);
+                    carrier = new Carrier(type, reader.Read(TokenType.Text, "carrier sync ID").Value, 0, 0);
 
                     reader.SkipSpace();
 
@@ -135,9 +182,26 @@ namespace Rant
                 }
             }
 
+            var query = new Query(
+                namesub[0].Value.Trim(),
+                namesub.Length == 2 ? namesub[1].Value : "",
+                carrier, exclusive, classFilterList, regList);
+
+            if (storeMacro)
+            {
+                if (macroIsGlobal)
+                {
+                    interpreter.Engine.GlobalQueryMacros[macroName] = query;
+                }
+                else
+                {
+                    interpreter.LocalQueryMacros[macroName] = query;
+                }
+                return false;
+            }
+
             // Query dictionary and print result
-            interpreter.Print(interpreter.Engine.Vocabulary.Query(interpreter.RNG, 
-                new Query(namesub[0].Value.Trim(), namesub.Length == 2 ? namesub[1].Value : "", carrier, exclusive, classFilterList, regList)));
+            interpreter.Print(interpreter.Engine.Vocabulary.Query(interpreter.RNG, query, interpreter.CarrierSyncState));
 
             return false;
         }

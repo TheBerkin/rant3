@@ -73,7 +73,7 @@ namespace Rant.Vocabulary
             return -1;
         }
 
-        internal string Query(RNG rng, Query query)
+        internal string Query(RNG rng, Query query, CarrierSyncState syncState)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1)
@@ -109,10 +109,10 @@ namespace Rant.Vocabulary
                             pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n));
                         break;
                     case CarrierSyncType.Unique:
-                        entry = query.Carrier.SyncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng);
+                        entry = syncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng);
                         break;
                     case CarrierSyncType.Rhyme:
-                        entry = query.Carrier.SyncState.GetRhymingEntry(query.Carrier.SyncId, index, pool, rng);
+                        entry = syncState.GetRhymingEntry(query.Carrier.SyncId, index, pool, rng);
                         break;
                 }
             }

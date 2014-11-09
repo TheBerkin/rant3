@@ -36,12 +36,15 @@ namespace Rant
         /// </summary>
         public static int MaxStackSize = 64;
 
+        internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>(); 
+
         private static readonly RNG Seeds = new RNG();
 
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HookCollection _hooks = new HookCollection();
         private readonly HashSet<string> _flags = new HashSet<string>();
+        
 
         internal VarStore Variables
         {

@@ -73,13 +73,14 @@ namespace Rant.Vocabulary
         /// </summary>
         /// <param name="rng">The random number generator to randomize the match with.</param>
         /// <param name="query">The search criteria to use.</param>
+        /// <param name="syncState">The state object to use for carrier synchronization.</param>
         /// <returns></returns>
-        public string Query(RNG rng, Query query)
+        public string Query(RNG rng, Query query, CarrierSyncState syncState)
         {
             RantDictionary wordList;
             return !_wordLists.TryGetValue(query.Name, out wordList) 
-                ? "MISSINGDIC" 
-                : wordList.Query(rng, query);
+                ? "[Missing Dic]" 
+                : wordList.Query(rng, query, syncState);
         }
     }
 }

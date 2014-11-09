@@ -3,7 +3,6 @@
     public sealed class Carrier
     {
         private CarrierSyncType _syncType;
-        private CarrierSyncState _syncState;
         private string _syncId;
         private string _rhymeId;
         private int _syllablesMin, _syllablesMax;
@@ -12,12 +11,6 @@
         {
             get { return _syncType; }
             set { _syncType = value; }
-        }
-
-        public CarrierSyncState SyncState
-        {
-            get { return _syncState; }
-            set { _syncState = value; }
         }
 
         public string SyncId
@@ -38,9 +31,8 @@
             set { _syllablesMax = value; }
         }
 
-        public Carrier(CarrierSyncState syncState, CarrierSyncType syncType, string syncId, int syllablesMin, int syllablesMax)
+        public Carrier(CarrierSyncType syncType, string syncId, int syllablesMin, int syllablesMax)
         {
-            _syncState = syncState;
             _syncType = syncType;
             _syncId = syncId ?? "";
             _syllablesMin = syllablesMin;

@@ -19,6 +19,7 @@ namespace Rant
 
         // Queries
         private readonly CarrierSyncState _carrierSyncState = new CarrierSyncState();
+        private readonly Dictionary<string, Query> _localQueryMacros = new Dictionary<string, Query>(); 
 
         // Next block attribs
         private BlockAttribs _blockAttribs = new BlockAttribs();
@@ -53,6 +54,11 @@ namespace Rant
         public CarrierSyncState CarrierSyncState
         {
             get { return _carrierSyncState; }
+        }
+
+        public Dictionary<string, Query> LocalQueryMacros
+        {
+            get { return _localQueryMacros; }
         }
 
         public RantEngine Engine
