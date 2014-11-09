@@ -146,13 +146,12 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
+        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(Token<TokenType> first, TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
             _stack.Clear();
-            // This exception should not happen when running patterns - only if I mess something up in the code.
-            if (!IsNext(open)) throw new InvalidOperationException("The specified opening token does not occur at the reader position.");
+            _stack.Push(first);
 
-            int start = _pos + 1;
+            int start = _pos;
             Token<TokenType> token = null;
 
             while (!End)

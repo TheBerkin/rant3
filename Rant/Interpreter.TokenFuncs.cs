@@ -372,14 +372,13 @@ namespace Rant
         private static bool DoBlock(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
             Tuple<IEnumerable<Token<TokenType>>[], int> items;
-            var t = reader.PeekToken();
 
             // Check if the block is already cached
-            if (!reader.Source.TryGetCachedBlock(t, out items))
+            if (!reader.Source.TryGetCachedBlock(firstToken, out items))
             {
-                var block = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
+                var block = reader.ReadMultiItemScope(firstToken, TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
                 items = Tuple.Create(block, reader.Position);
-                reader.Source.CacheBlock(t, block, reader.Position);
+                reader.Source.CacheBlock(firstToken, block, reader.Position);
             }
             else
             {
