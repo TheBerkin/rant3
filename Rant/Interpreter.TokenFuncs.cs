@@ -12,9 +12,7 @@ using Rant.Stringes.Tokens;
 
 namespace Rant
 {
-    // TODO: Replace the dreadful multiple PeekToken() calls with a single ReadToken() call
-
-    internal delegate bool TokenFunc(Interpreter interpreter, PatternReader reader, Interpreter.State state);
+    internal delegate bool TokenFunc(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, Interpreter.State state);
 
     internal partial class Interpreter
     {
@@ -29,9 +27,8 @@ namespace Rant
             {TokenType.Text, DoText}
         };
 
-        private static bool DoMath(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoMath(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            reader.Read(TokenType.LeftParen);
             bool isStatement = reader.Take(TokenType.At);
             var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, BracketPairs.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
@@ -47,9 +44,8 @@ namespace Rant
             return true;
         }
 
-        private static bool DoQuery(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoQuery(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            reader.Read(TokenType.LeftAngle);
             reader.SkipSpace();
 
             bool storeMacro = false;
@@ -107,7 +103,7 @@ namespace Rant
             List<Tuple<bool, Regex>> regList = null;
             Carrier carrier = null;
 
-            Token<TokenType> token = null;
+            Token<TokenType> queryToken = null;
 
             // Read query arguments
             while (true)
@@ -129,13 +125,13 @@ namespace Rant
                 }
                 else if (reader.Take(TokenType.Question))
                 {
-                    token = reader.Read(TokenType.Regex, "regex");
-                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(true, Util.ParseRegex(token.Value)));
+                    queryToken = reader.Read(TokenType.Regex, "regex");
+                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(true, Util.ParseRegex(queryToken.Value)));
                 }
                 else if (reader.Take(TokenType.Without))
                 {
-                    token = reader.Read(TokenType.Regex, "regex");
-                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, Util.ParseRegex(token.Value)));
+                    queryToken = reader.Read(TokenType.Regex, "regex");
+                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, Util.ParseRegex(queryToken.Value)));
                 }
                 else if (reader.Take(TokenType.DoubleColon)) // Start of carrier
                 {
@@ -167,7 +163,7 @@ namespace Rant
 
                     if (!reader.Take(TokenType.RightAngle))
                     {
-                        throw new RantException(reader.Source, token, "Expected '>' after carrier. (The carrier should be your last query argument!)");
+                        throw new RantException(reader.Source, queryToken, "Expected '>' after carrier. (The carrier should be your last query argument!)");
                     }
                     break;
                 }
@@ -206,27 +202,26 @@ namespace Rant
             return false;
         }
 
-        private static bool DoText(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoText(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            interpreter.Print(reader.ReadToken().Value);
+            interpreter.Print(firstToken.Value);
             return false;
         }
 
-        private static bool DoConstant(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoConstant(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            interpreter.Print(Util.UnescapeConstantLiteral(reader.ReadToken().Value));
+            interpreter.Print(Util.UnescapeConstantLiteral(firstToken.Value));
             return false;
         }
 
-        private static bool DoEscape(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoEscape(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            interpreter.Print(Util.Unescape(reader.ReadToken().Value, interpreter, interpreter.RNG));
+            interpreter.Print(Util.Unescape(firstToken.Value, interpreter, interpreter.RNG));
             return false;
         }
 
-        private static bool DoTag(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoTag(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
-            reader.Read(TokenType.LeftSquare);
             var name = reader.ReadToken();
 
             // Check if metapattern
@@ -374,7 +369,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoBlock(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoBlock(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
             Tuple<IEnumerable<Token<TokenType>>[], int> items;
             var t = reader.PeekToken();

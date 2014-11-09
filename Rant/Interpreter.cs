@@ -263,7 +263,7 @@ namespace Rant
                 while (!reader.End)
                 {
                     // Fetch the next token in the stream without consuming it
-                    token = reader.PeekToken();
+                    token = reader.ReadToken();
                     
                     // Error on illegal closure
                     if (BracketPairs.All.ContainsClosing(token.Identifier))
@@ -272,7 +272,7 @@ namespace Rant
                     }
 
                     // DoElement will return true if the interpreter should skip to the top of the stack
-                    if (DoElement(reader, state))
+                    if (DoElement(token, reader, state))
                     {
                         goto next;
                     }
@@ -299,11 +299,11 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool DoElement(PatternReader reader, State state)
+        private bool DoElement(Token<TokenType> token, PatternReader reader, State state)
         {
             TokenFunc func;
-            if (TokenFuncs.TryGetValue(reader.PeekToken().Identifier, out func)) return func(this, reader, state);
-            Print(reader.ReadToken().Value);
+            if (TokenFuncs.TryGetValue(token.Identifier, out func)) return func(this, token, reader, state);
+            Print(token.Value);
             return false;
         }
     }
