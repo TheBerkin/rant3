@@ -31,7 +31,7 @@ namespace Rant.Vocabulary
         public Term(string value, string pronunciation)
         {
             Value = value;
-            Pronunciation = pronunciation;
+            Pronunciation = pronunciation ?? "";
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Rant.Vocabulary
             get { return _pronunciation; }
             set
             {
-                _pronunciation = value;
+                _pronunciation = value ?? "";
                 if (_pronParts != null) CreatePronParts();
                 if (_syllables != null) CreateSyllables();
             }
@@ -73,6 +73,18 @@ namespace Rant.Vocabulary
             get { return _syllables ?? CreateSyllables(); }
         }
 
+        /// <summary>
+        /// The number of syllables in the pronunciation string.
+        /// </summary>
+        public int SyllableCount
+        {
+            get
+            {
+                if (_syllables == null) CreateSyllables();
+                return _syllableCount;
+            }
+        }
+
         private string[] CreatePronParts()
         {
             return _pronParts = _pronunciation.Split(new[] {' ', '-'}, StringSplitOptions.RemoveEmptyEntries);
@@ -80,7 +92,9 @@ namespace Rant.Vocabulary
 
         private string[] CreateSyllables()
         {
-            return _syllables = _pronunciation.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
+            _syllables = _pronunciation.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
+            _syllableCount = _syllables.Length;
+            return _syllables;
         }
     }
 }
