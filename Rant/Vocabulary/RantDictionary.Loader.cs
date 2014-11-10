@@ -161,7 +161,6 @@ namespace Rant.Vocabulary
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetClass(Dictionary<string, string> classTable, string className)
         {
-            return className;
             string c;
             if (!classTable.TryGetValue(className, out c))
             {
