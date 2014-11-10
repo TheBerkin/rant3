@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Rant.Stringes;
 
@@ -20,6 +21,8 @@ namespace Rant.Vocabulary
             var name = "";
             var version = "2";
             string[] subtypes = {"default"};
+
+            var classTable = new Dictionary<string, string>();
 
             bool header = true;
 
@@ -75,7 +78,7 @@ namespace Rant.Vocabulary
                                         case "add":
                                             foreach (var cl in parts.Skip(2))
                                             {
-                                                scopedClassSet.Add(cl.ToLower());
+                                                scopedClassSet.Add(GetClass(classTable, cl.ToLower()));
                                             }
                                             break;
                                         case "remove":
@@ -113,7 +116,7 @@ namespace Rant.Vocabulary
                                 if (parts.Length < 2) continue;
                                 foreach (var cl in parts[1].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    entry.Classes.Add(cl.ToLower());
+                                    entry.Classes.Add(GetClass(classTable, cl.ToLower()));
                                 }
                             }
                             break;
@@ -152,6 +155,19 @@ namespace Rant.Vocabulary
                 }
             }
             return new RantDictionary(name, subtypes, entries);
+        }
+
+        // This saves memory by reusing references to common class names.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string GetClass(Dictionary<string, string> classTable, string className)
+        {
+            return className;
+            string c;
+            if (!classTable.TryGetValue(className, out c))
+            {
+                classTable[className] = c = className;
+            }
+            return c;
         }
 
         private static void LoadError(string file, Stringe data, string message)
