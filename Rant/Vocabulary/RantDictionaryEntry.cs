@@ -8,7 +8,7 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed class RantDictionaryEntry
     {
-        private Term[] _terms;
+        private RantDictionaryTerm[] _terms;
         private HashSet<string> _classes;
         private int _weight;
         private readonly bool _nsfw;
@@ -21,7 +21,7 @@ namespace Rant.Vocabulary
         /// <param name="weight">The weight of the entry.</param>
         public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
-            _terms = terms.Select(s => new Term(s)).ToArray();
+            _terms = terms.Select(s => new RantDictionaryTerm(s)).ToArray();
             _classes = new HashSet<string>(classes);
             _weight = weight;
             _nsfw = nsfw;
@@ -33,7 +33,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        public RantDictionaryEntry(Term[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
+        public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms;
             _classes = new HashSet<string>(classes);
@@ -44,10 +44,10 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The terms in the entry.
         /// </summary>
-        public Term[] Terms
+        public RantDictionaryTerm[] Terms
         {
             get { return _terms; }
-            set { _terms = value ?? new Term[0]; }
+            set { _terms = value ?? new RantDictionaryTerm[0]; }
         }
 
         /// <summary>

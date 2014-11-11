@@ -17,7 +17,7 @@ namespace Rant.Vocabulary
         /// <summary>
         /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the ROOT TERM and USED TERMS.
         /// </summary>
-        private readonly Dictionary<string, Tuple<Term, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<Term, HashSet<RantDictionaryEntry>>>(); 
+        private readonly Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>(); 
 
         public CarrierSyncState()
         {
@@ -41,7 +41,7 @@ namespace Rant.Vocabulary
         internal RantDictionaryEntry GetRhymingEntry(string rhymeId, int subtype,
             IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
         {
-            Tuple<Term, HashSet<RantDictionaryEntry>> rhymeState;
+            Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
             if (!_rhymeTable.TryGetValue(rhymeId, out rhymeState))
             {
                 var entry = entryPool

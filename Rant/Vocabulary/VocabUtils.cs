@@ -36,7 +36,7 @@ namespace Rant.Vocabulary
             return defaultValue;
         }
 
-        public static int RhymeIndex(Term baseValue, Term testValue)
+        public static int RhymeIndex(RantDictionaryTerm baseValue, RantDictionaryTerm testValue)
         {
             if (baseValue == null || testValue == null) return 0;
             var baseParts = baseValue.PronunciationParts;

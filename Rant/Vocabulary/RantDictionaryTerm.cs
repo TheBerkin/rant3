@@ -5,7 +5,7 @@ namespace Rant.Vocabulary
     /// <summary>
     /// Represents a Rant dictionary term. A dictionary entry will contain one term for every subtype.
     /// </summary>
-    public sealed class Term
+    public sealed class RantDictionaryTerm
     {
         private string _value;
         private string _pronunciation;
@@ -14,21 +14,21 @@ namespace Rant.Vocabulary
         private int _syllableCount;
 
         /// <summary>
-        /// Creates a new Term with the specified value.
+        /// Creates a new dictionary term with the specified value.
         /// </summary>
         /// <param name="value">The value of the term.</param>
-        public Term(string value)
+        public RantDictionaryTerm(string value)
         {
             Value = value;
             Pronunciation = "";
         }
 
         /// <summary>
-        /// Creates a new Term with the specified value and pronunciation.
+        /// Creates a new dictionary term with the specified value and pronunciation.
         /// </summary>
         /// <param name="value">The value of the term.</param>
         /// <param name="pronunciation">The pronunciation of the term.</param>
-        public Term(string value, string pronunciation)
+        public RantDictionaryTerm(string value, string pronunciation)
         {
             Value = value;
             Pronunciation = pronunciation ?? "";
