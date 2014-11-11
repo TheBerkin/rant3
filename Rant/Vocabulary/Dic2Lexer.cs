@@ -7,7 +7,7 @@ namespace Rant.Vocabulary
 {
     internal static class Dic2Lexer
     {
-        private const RegexOptions DicRegexOptions = RegexOptions.Multiline | RegexOptions.Compiled;
+        private const RegexOptions DicRegexOptions = RegexOptions.Compiled;
 
         private static readonly LexerRules<DicTokenType> Rules;
 
@@ -15,9 +15,9 @@ namespace Rant.Vocabulary
         {
             Rules = new LexerRules<DicTokenType>
             {
-                {new Regex(@"\#\s*(?<value>[^\r]*)[\s\r]*$", DicRegexOptions), DicTokenType.Directive, 2},
-                {new Regex(@"\|\s*(?<value>[^\r]*)[\s\r]$", DicRegexOptions), DicTokenType.Property, 2},
-                {new Regex(@"\>\s*(?<value>[^\r]*)[\s\r]$", DicRegexOptions), DicTokenType.Entry, 2},
+                {new Regex(@"\#\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Directive, 2},
+                {new Regex(@"\|\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Property, 2},
+                {new Regex(@"\>\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Entry, 2},
                 {new Regex(@"\s+"), DicTokenType.Ignore}
             };
             Rules.AddEndToken(DicTokenType.EOF);
