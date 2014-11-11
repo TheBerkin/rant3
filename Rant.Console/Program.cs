@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Rant;
 using Rant.Vocabulary;
 
-namespace PCon
+namespace RantConsole
 {
     class Program
     {

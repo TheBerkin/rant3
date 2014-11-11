@@ -80,9 +80,9 @@ namespace Rant
             TagFuncs["src"] = new FuncSig(Src);
         }
 
-        private static bool Src(Interpreter interpreter, Pattern source, Stringe tagname, Argument[] args)
+        private static bool Src(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Print(source.Code); // no no no no
+            interpreter.Print(source.Code);
             return false;
         }
 
