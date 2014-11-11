@@ -94,7 +94,7 @@ namespace Rant
             }
 
             reader.SkipSpace();
-            var namesub = reader.Read(TokenType.Text, "list name").Split(new[] { '.' }, 2).ToArray();
+            var namesub = reader.Read(TokenType.Text, "dictionary name").Split(new[] { '.' }, 2).ToArray();
             reader.SkipSpace();
 
             bool exclusive = reader.Take(TokenType.Dollar);
@@ -111,25 +111,29 @@ namespace Rant
                 reader.SkipSpace();
                 if (reader.Take(TokenType.Hyphen))
                 {
+                    reader.SkipSpace();
                     // Initialize the filter list.
                     (cfList ?? (cfList = new List<Tuple<bool, string>>())).Clear();
-
                     do
                     {
                         bool notin = reader.Take(TokenType.Exclamation);
+                        reader.SkipSpace();
                         if (notin && exclusive)
                             throw new RantException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
                         cfList.Add(Tuple.Create(!notin, reader.Read(TokenType.Text, "class identifier").Value.Trim()));
+                        reader.SkipSpace();
                     } while (reader.Take(TokenType.Pipe));
                     (classFilterList ?? (classFilterList = new List<Tuple<bool, string>[]>())).Add(cfList.ToArray());
                 }
                 else if (reader.Take(TokenType.Question))
                 {
+                    reader.SkipSpace();
                     queryToken = reader.Read(TokenType.Regex, "regex");
                     (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(true, Util.ParseRegex(queryToken.Value)));
                 }
                 else if (reader.Take(TokenType.Without))
                 {
+                    reader.SkipSpace();
                     queryToken = reader.Read(TokenType.Regex, "regex");
                     (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, Util.ParseRegex(queryToken.Value)));
                 }
