@@ -15,9 +15,9 @@ namespace Rant.Vocabulary
         {
             Rules = new LexerRules<DicTokenType>
             {
-                {new Regex(@"\#\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Directive, 2},
-                {new Regex(@"\|\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Property, 2},
-                {new Regex(@"\>\s*(?<value>[^\r]*)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Entry, 2},
+                {new Regex(@"\#\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Directive, 2},
+                {new Regex(@"\|\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Property, 2},
+                {new Regex(@"\>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|$)", DicRegexOptions), DicTokenType.Entry, 2},
                 {new Regex(@"\s+"), DicTokenType.Ignore}
             };
             Rules.AddEndToken(DicTokenType.EOF);
