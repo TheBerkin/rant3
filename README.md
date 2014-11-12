@@ -23,7 +23,7 @@
 * Lists
 * *And much, much more...*
 
-Need some examples? Behold!
+###Examples
 
 **Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
 ```
@@ -67,8 +67,6 @@ The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mar
 ```
 The following word is 7 characters long: "kumquat"
 ```
-
----
 
 ##License
 Rant is licensed under the [MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
