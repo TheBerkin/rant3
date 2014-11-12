@@ -143,7 +143,7 @@ namespace Rant.Vocabulary
                             {
                                 if (parts.Length != 2) LoadError(path, token, "'" + parts[0] + "' property expected a value.");
                                 var pron =
-                                    parts[1].Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries)
+                                    parts[1].Split('/')
                                         .Select(s => s.Trim())
                                         .ToArray();
                                 if (entry.Terms.Length != pron.Length)
