@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using Rant.Stringes;
 
 namespace Rant.Vocabulary
 {
     public sealed partial class RantDictionary
     {
+        private static void Debug(string message, params object[] args)
+        {
+            if (RantVocabulary.ShowDebugOutput) Console.WriteLine(message, args);
+        }
+
         /// <summary>
         /// Loads a RantDictionary from the file at the specified path.
         /// </summary>
@@ -57,7 +61,11 @@ namespace Rant.Vocabulary
                                 break;
                             case "version":
                                 if (!header) LoadError(path, token, "The #version directive may only be used in the file header.");
-                                if (parts.Length != 2) LoadError(path, token, "The #version directive requires a value.");
+                                if (parts.Length != 2)
+                                {
+                                    Debug("Loader found {0}-part array for #version directive ({1})", parts.Length, path);
+                                    LoadError(path, token, "The #version directive requires a value.");
+                                }
                                 version = parts[1];
                                 if (version != "2")
                                 {

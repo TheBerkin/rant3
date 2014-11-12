@@ -9,6 +9,11 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed class RantVocabulary : IRantVocabulary
     {
+        /// <summary>
+        /// Determines if the loader should display debug output when parsing files.
+        /// </summary>
+        public static bool ShowDebugOutput = true;
+
         private readonly Dictionary<string, RantDictionary> _wordLists;
 
         /// <summary>
