@@ -97,6 +97,9 @@
     <Compile Include="Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierSyncState.cs" />
     <Compile Include="Vocabulary\Dic2Lexer.cs" />
+    <Compile Include="Vocabulary\RantDictionary.Exporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Vocabulary\RantDictionary.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="RantEngine.Vocab.cs" />
@@ -108,7 +111,7 @@
     <Compile Include="Interpreter.Markers.cs" />
     <Compile Include="Interpreter.Synchronizers.cs" />
     <Compile Include="Interpreter.Functions.cs" />
-    <Compile Include="Interpreter.TokenFuncs.cs" />
+    <Compile Include="Interpreter.Parser.cs" />
     <Compile Include="Vocabulary\IVocabulary.cs" />
     <Compile Include="Limit.cs" />
     <Compile Include="ParamType.cs" />

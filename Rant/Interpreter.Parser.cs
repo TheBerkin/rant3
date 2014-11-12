@@ -231,7 +231,7 @@ namespace Rant
             switch (name.Identifier)
             {
                 case TokenType.Percent: // List
-                    return DoListAction(interpreter, reader, state);
+                    return DoListAction(interpreter, firstToken, reader, state);
                 case TokenType.Question: // Metapattern
                     state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
                     interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
@@ -259,7 +259,7 @@ namespace Rant
             }
             else
             {
-                var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
+                var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
                     TokenType.Semicolon, BracketPairs.All).ToArray();
 
                 state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name, items));
@@ -267,7 +267,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoListAction(Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoListAction(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
             bool create = false;
             bool createGlobal = false;
@@ -347,7 +347,7 @@ namespace Rant
                     return true;
                 }
 
-                var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
+                var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
                     TokenType.Semicolon, BracketPairs.All).ToArray();
                 int count = items.Length;
 
@@ -390,7 +390,7 @@ namespace Rant
                     return true;
                 }
 
-                var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
+                var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
                     TokenType.Semicolon, BracketPairs.All).ToArray();
                 int count = items.Length;
 
@@ -414,6 +414,28 @@ namespace Rant
             #region "=" functions
             if (reader.TakeLoose(TokenType.Equal))
             {
+                if (reader.TakeLoose(TokenType.At)) // set item at index to value
+                {
+                    var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
+                    if (args.Length != 2) throw new RantException(args.SelectMany(a => a), reader.Source, "Two arguments are required for this operation.");
+                    interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter)); // index
+                    interpreter.PushState(State.CreateSub(reader.Source, args[1], interpreter)); // value
+                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    {
+                        var indexString = _.PopResultString();
+                        var valueString = _.PopResultString();
+                        int index;
+                        if (!Int32.TryParse(indexString, out index))
+                            throw new RantException(args[0], reader.Source, "'" + indexString + "' is not a valid index. Index must be a non-negative integer.");
+                        if (index >= list.Count)
+                            throw new RantException(args[0], reader.Source, "Index was out of range. (" + index + " > " + (list.Count - 1) + ")");
+
+                        list[index] = valueString;
+                        return false;
+                    }));
+                    return true;
+                }
+
                 var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
                 interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
                 state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
@@ -574,7 +596,7 @@ namespace Rant
             }
             else
             {
-                args = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon,
+                args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon,
                     BracketPairs.All).ToArray();
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
                     throw new RantException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and " + args.Length + " parameter" + (args.Length != 1 ? "s" : "") + ".");
@@ -639,7 +661,7 @@ namespace Rant
         {
             reader.Read(TokenType.Colon);
 
-            var args = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
+            var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
             if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected 2 arguments, but got " + args.Length + ".");
 
             state.AddPreBlueprint(new ReplacerBlueprint(interpreter, Util.ParseRegex(name.Value), args[1]));
@@ -681,7 +703,7 @@ namespace Rant
             // Check if the block is already cached
             if (!reader.Source.TryGetCachedBlock(firstToken, out items))
             {
-                var block = reader.ReadMultiItemScope(firstToken, TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
+                var block = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
                 items = Tuple.Create(block, reader.Position);
                 reader.Source.CacheBlock(firstToken, block, reader.Position);
             }

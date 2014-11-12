@@ -232,11 +232,14 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(Token<TokenType> first, TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
+        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
         {
+            SkipSpace();
             _stack.Clear();
-            _stack.Push(first);
 
+            // Assumes first bracket was already read.
+            _stack.Push(new Token<TokenType>(open, RantLexer.Rules.GetSymbolForId(open)));
+            
             int start = _pos;
             Token<TokenType> token = null;
 
@@ -274,6 +277,7 @@ namespace Rant
                     {
                         yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                         _pos++;
+                        SkipSpace();
                         yield break;
                     }
                 }
@@ -282,62 +286,13 @@ namespace Rant
                 else if (token.Identifier == separator && _stack.Count == 1)
                 {
                     yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
-                    start = _pos + 1;
-                }
-
-                // Move to next position
-                _pos++;
-            }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadItemsToClosureTrimmed(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
-        {
-            SkipSpace();
-            _stack.Clear();
-            Token<TokenType> token = null;
-
-            int start = _pos;
-            while (!End)
-            {
-                token = PeekToken();
-                if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Allows nesting
-                {
-                    _stack.Push(token);
-                }
-                else if (bracketPairs.ContainsClosing(token.Identifier) || token.Identifier == close) // Allows nesting
-                {
-                    // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
-                    if (!_stack.Any() && token.Identifier == close)
-                    {
-                        yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
-                        _pos++;
-                        yield break;
-                    }
-
-                    var lastOpening = _stack.Pop();
-                    if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier))
-                    {
-                        throw new RantException(_source, token,
-                            "Invalid closure '"
-                            + lastOpening.Value
-                            + " ... "
-                            + token.Value
-                            + "' - expected '"
-                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
-                            + "'");
-                    }
-                }
-                else if (token.Identifier == separator && !_stack.Any())
-                {
-                    yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
                     _pos++;
-                    TakeAll(TokenType.Whitespace);
+                    SkipSpace();
                     start = _pos;
                     continue;
                 }
 
+                // Move to next position
                 _pos++;
             }
             throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
