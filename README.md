@@ -5,7 +5,7 @@
 
 **Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
 
-Features:
+###Features:
 
 * A powerful dictionary querying system for selecting random words
 * Randomized branching
@@ -67,6 +67,11 @@ The following word is 7 characters long: "kumquat"
 
 ---
 
-[Try Rant in your browser!](http://berkin.me/rantbox)
+##License
+Rant is licensed under the [MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
-See the [wiki](http://github.com/TheBerkin/Rant/wiki) for language and API documentation.
+##Documentation
+See the [wiki](http://github.com/TheBerkin/Rant/wiki) for full documentation of the API and Rant language, as well as additional example code.
+
+##Try Rant
+[RantBox - Online Rant Interpreter](http://berkin.me/rantbox)
