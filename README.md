@@ -5,20 +5,23 @@
 
 **Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
 
-###Features:
+###Features
 
-* A powerful dictionary querying system for selecting random words
-* Randomized branching
+* Use dictionaries to add random words
+* Flexible dictionary queries
+* Random branching
 * Printing loops (repeaters) with optional separators
-* Automatic capitalization and indefinite article (a/an) formatting
+* Automatic capitalization modes
+* Automatic indefinite articles (a/an)
 * Multiple outputs
-* Insert/modify text in existing output
-* Subroutines for easy task repetition
+* Change existing output
+* Subroutines
 * Self-generating code (metapatterns)
-* Arithmetic functionality
-* Advanced control flow with flags and comparisons
-* Probability modifiers to control frequency of certain elements
-* Much, much more...
+* Arithmetic
+* Control flow with flags and comparisons
+* Probability modifiers
+* Lists
+* *And much, much more...*
 
 Need some examples? Behold!
 
