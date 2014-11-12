@@ -21,6 +21,9 @@ namespace Rant
         private readonly CarrierSyncState _carrierSyncState = new CarrierSyncState();
         private readonly Dictionary<string, Query> _localQueryMacros = new Dictionary<string, Query>(); 
 
+        // Lists
+        private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>(); 
+
         // Next block attribs
         private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -59,6 +62,16 @@ namespace Rant
         public Dictionary<string, Query> LocalQueryMacros
         {
             get { return _localQueryMacros; }
+        }
+
+        public Dictionary<string, List<string>> LocalLists
+        {
+            get { return _localLists; }
+        }
+
+        public bool GetList(string name, out List<string> list)
+        {
+            return _localLists.TryGetValue(name, out list) || _engine.GlobalLists.TryGetValue(name, out list);
         }
 
         public RantEngine Engine
@@ -268,7 +281,7 @@ namespace Rant
                     // Error on illegal closure
                     if (BracketPairs.All.ContainsClosing(token.Identifier))
                     {
-                        throw new RantException(reader.Source, token, "Unexpected token '" + Lexer.Rules.GetSymbolForId(token.Identifier) + "'");
+                        throw new RantException(reader.Source, token, "Unexpected token '" + RantLexer.Rules.GetSymbolForId(token.Identifier) + "'");
                     }
 
                     // DoElement will return true if the interpreter should skip to the top of the stack

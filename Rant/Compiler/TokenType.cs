@@ -186,6 +186,27 @@
         /// </summary>
         Ampersand,
         /// <summary>
+        /// %
+        /// <para>
+        /// Used by: Lists
+        /// </para>
+        /// </summary>
+        Percent,
+        /// <summary>
+        /// ^
+        /// <para>
+        /// Used by: Lists
+        /// </para>
+        /// </summary>
+        Caret,
+        /// <summary>
+        /// +
+        /// <para>
+        /// Used by: Lists
+        /// </para>
+        /// </summary>
+        Plus,
+        /// <summary>
         /// End of file.
         /// </summary>
         EOF

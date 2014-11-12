@@ -5,7 +5,7 @@ using Rant.Stringes.Tokens;
 
 namespace Rant.Compiler
 {
-    internal static class Lexer
+    internal static class RantLexer
     {
         private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
@@ -25,7 +25,7 @@ namespace Rant.Compiler
             return ls.RightPadded ? ls.TrimEnd() : ls;
         }
 
-        static Lexer()
+        static RantLexer()
         {
             Rules = new LexerRules<TokenType>
             {
@@ -48,6 +48,9 @@ namespace Rant.Compiler
                 {"$", TokenType.Dollar},
                 {"=", TokenType.Equal},
                 {"&", TokenType.Ampersand},
+                {"%", TokenType.Percent},
+                {"+", TokenType.Plus},
+                {"^", TokenType.Caret},
                 {CommentRegex, TokenType.Ignore, 3},
                 {BlackspaceRegex, TokenType.Ignore, 2},
                 {WhitespaceRegex, TokenType.Whitespace}

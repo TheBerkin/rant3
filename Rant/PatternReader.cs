@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -79,6 +78,78 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TakeLoose(TokenType type, bool allowEof = true)
+        {
+            if (End)
+            {
+                if (!allowEof)
+                    throw new RantException(_source, null, "Unexpected end-of-file.");
+                return false;
+            }
+            SkipSpace();
+            if (_tokens[_pos].Identifier != type) return false;
+            _pos++;
+            SkipSpace();
+            return true;
+        }
+
+        public bool TakeAny(params TokenType[] types)
+        {
+            if (End) return false;
+            foreach (var type in types)
+            {
+                if (_tokens[_pos].Identifier != type) continue;
+                _pos++;
+                return true;
+            }
+            return false;
+        }
+
+        public bool TakeAny(out TokenType result, params TokenType[] types)
+        {
+            result = default(TokenType);
+            if (End) return false;
+            foreach (var type in types)
+            {
+                if (_tokens[_pos].Identifier != type) continue;
+                result = type;
+                _pos++;
+                return true;
+            }
+            return false;
+        }
+
+        public bool TakeAnyLoose(params TokenType[] types)
+        {
+            if (End) return false;
+            SkipSpace();
+            foreach (var type in types)
+            {
+                if (_tokens[_pos].Identifier != type) continue;
+                _pos++;
+                SkipSpace();
+                return true;
+            }
+            return false;
+        }
+
+        public bool TakeAnyLoose(out TokenType result, params TokenType[] types)
+        {
+            result = default(TokenType);
+            if (End) return false;
+            SkipSpace();
+            foreach (var type in types)
+            {
+                if (_tokens[_pos].Identifier != type) continue;
+                result = type;
+                _pos++;
+                SkipSpace();
+                return true;
+            }
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TakeAll(TokenType type, bool allowEof = true)
         {
             if (End)
@@ -99,12 +170,27 @@ namespace Rant
         public Token<TokenType> Read(TokenType type, string expectedTokenName = null)
         {
             if (End) 
-                throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + Lexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+                throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
             if (_tokens[_pos].Identifier != type)
             {
-                throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + Lexer.Rules.GetSymbolForId(type) + "'"));
+                throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
             }
             return _tokens[_pos++];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Token<TokenType> ReadLoose(TokenType type, string expectedTokenName = null)
+        {
+            if (End)
+                throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+            SkipSpace();
+            if (_tokens[_pos].Identifier != type)
+            {
+                throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
+            }
+            var t = _tokens[_pos++];
+            SkipSpace();
+            return t;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -179,7 +265,7 @@ namespace Rant
                             + " ... " 
                             + token.Value 
                             + "' - expected '" 
-                            + Lexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier)) 
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier)) 
                             + "'");
                     }
 
@@ -202,7 +288,7 @@ namespace Rant
                 // Move to next position
                 _pos++;
             }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + Lexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -239,7 +325,7 @@ namespace Rant
                             + " ... "
                             + token.Value
                             + "' - expected '"
-                            + Lexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
                             + "'");
                     }
                 }
@@ -254,7 +340,7 @@ namespace Rant
 
                 _pos++;
             }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + Lexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -288,13 +374,13 @@ namespace Rant
                             + " ... "
                             + token.Value
                             + "' - expected '"
-                            + Lexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
                             + "'");
                     }
                 }
                 yield return token;
             }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + Lexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
     }
 }

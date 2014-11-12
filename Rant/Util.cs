@@ -214,7 +214,7 @@ namespace Rant
 
         public static string Unescape(string sequence, Interpreter ii, RNG rng = null)
         {
-            var match = Lexer.EscapeRegex.Match(sequence);
+            var match = RantLexer.EscapeRegex.Match(sequence);
             int count;
             ParseInt(Alt(match.Groups["count"].Value, "1"), out count);
             bool unicode = match.Groups["unicode"].Success;

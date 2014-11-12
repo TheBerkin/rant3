@@ -94,7 +94,7 @@
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="Compiler\BracketPairs.cs" />
-    <Compile Include="Compiler\Lexer.cs" />
+    <Compile Include="Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierSyncState.cs" />
     <Compile Include="Vocabulary\Dic2Lexer.cs" />
     <Compile Include="Vocabulary\RantDictionary.Loader.cs" />

@@ -9,6 +9,11 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed partial class RantDictionary
     {
+        /// <summary>
+        /// The current version number of the dictionary format.
+        /// </summary>
+        public const string Version = "2";
+
         private readonly string _name;
         private readonly string[] _subtypes;
         private readonly RantDictionaryEntry[] _words;

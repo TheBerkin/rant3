@@ -64,7 +64,7 @@ namespace Rant.Compiler
             _name = name;
             _type = type;
             _code = code;
-            _tokens = Lexer.GenerateTokens(code);
+            _tokens = RantLexer.GenerateTokens(code);
         }
 
         internal RantPattern(RantPattern derived, IEnumerable<Token<TokenType>> sub)

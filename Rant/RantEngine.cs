@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Rant.Compiler;
+using Rant.Stringes.Tokens;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -37,6 +38,7 @@ namespace Rant
         public static int MaxStackSize = 64;
 
         internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>(); 
+        internal readonly Dictionary<string, List<string>> GlobalLists = new Dictionary<string, List<string>>(); 
 
         private static readonly RNG Seeds = new RNG();
 

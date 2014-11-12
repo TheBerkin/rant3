@@ -228,23 +228,18 @@ namespace Rant
         {
             var name = reader.ReadToken();
 
-            // Check if metapattern
-            if (name.Identifier == TokenType.Question)
+            switch (name.Identifier)
             {
-                state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
-                interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
-                return true;
-            }
-
-            // Check if replacer
-            if (name.Identifier == TokenType.Regex)
-            {
-                return DoReplacer(name, interpreter, reader, state);
-            }
-
-            if (name.Identifier == TokenType.Dollar)
-            {
-                return reader.IsNext(TokenType.Text) ? DoSubCall(name, interpreter, reader, state) : DoSubDefinition(name, interpreter, reader, state);
+                case TokenType.Percent: // List
+                    return DoListAction(interpreter, reader, state);
+                case TokenType.Question: // Metapattern
+                    state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
+                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
+                    return true;
+                case TokenType.Regex: // Replacer
+                    return DoReplacer(name, interpreter, reader, state);
+                case TokenType.Dollar: // Subroutine
+                    return reader.IsNext(TokenType.Text) ? DoSubCall(name, interpreter, reader, state) : DoSubDefinition(name, interpreter, reader, state);
             }
 
             if (!Util.ValidateName(name.Value.Trim()))
@@ -270,6 +265,286 @@ namespace Rant
                 state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name, items));
             }
             return true;
+        }
+
+        private static bool DoListAction(Interpreter interpreter, PatternReader reader, State state)
+        {
+            bool create = false;
+            bool createGlobal = false;
+            bool clear = false;
+            if (reader.TakeLoose(TokenType.Equal))
+            {
+                create = createGlobal = true;
+            }
+            else if (reader.TakeLoose(TokenType.Colon))
+            {
+                create = true;
+            }
+            else if (reader.TakeLoose(TokenType.Exclamation))
+            {
+                clear = true;
+            }
+
+            var nameToken = reader.ReadLoose(TokenType.Text, "list name");
+            var name = nameToken.Value;
+
+            if (!Util.ValidateName(name))
+                throw new RantException(reader.Source, nameToken, "Invalid list name '" + name + "'");
+
+            List<string> list;
+            if (create)
+            {
+                list = new List<string>();
+                if (createGlobal)
+                {
+                    interpreter.Engine.GlobalLists[name] = list;
+                }
+                else
+                {
+                    interpreter.LocalLists[name] = list;
+                }
+                reader.Read(TokenType.RightSquare);
+                return false;
+            }
+
+            if (!interpreter.LocalLists.TryGetValue(name, out list) &&
+                !interpreter.Engine.GlobalLists.TryGetValue(name, out list))
+                throw new RantException(reader.Source, nameToken, "Tried to access nonexistent list '" + name + "'");
+
+            if (clear)
+            {
+                list.Clear();
+                reader.Read(TokenType.RightSquare);
+                return false;
+            }
+
+            #region "+" Functions
+            if (reader.TakeLoose(TokenType.Plus)) // add items
+            {
+                var atStart = reader.TakeLoose(TokenType.Caret);
+                var fromList = reader.TakeLoose(TokenType.Percent);
+
+                if (fromList) // add items from other list
+                {
+                    var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
+                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    {
+                        var srcName = _.PopResultString();
+                        List<string> src;
+                        if (!_.GetList(srcName, out src))
+                            throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '" + srcName + "'");
+                        if (atStart)
+                        {
+                            list.InsertRange(0, src);
+                        }
+                        else
+                        {
+                            list.AddRange(src);
+                        }
+                        return false;
+                    }));
+                    return true;
+                }
+
+                var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
+                    TokenType.Semicolon, BracketPairs.All).ToArray();
+                int count = items.Length;
+
+                foreach (var item in items)
+                {
+                    interpreter.PushState(State.CreateSub(reader.Source, item, interpreter));
+                }
+
+                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                {
+                    if (atStart)
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            list.Insert(i, _.PopResultString());
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            list.Add(_.PopResultString());
+                        }
+                    }
+                    return false;
+                }));
+                return true;
+            }
+
+            #endregion
+
+            #region "^" functions
+            if (reader.TakeLoose(TokenType.Caret)) // add items to start
+            {
+                
+                if (reader.Take(TokenType.Exclamation)) // remove first item
+                {
+                    if (list.Any()) list.RemoveAt(0);
+                    reader.ReadLoose(TokenType.RightSquare);
+                    return true;
+                }
+
+                var items = reader.ReadItemsToClosureTrimmed(TokenType.LeftSquare, TokenType.RightSquare,
+                    TokenType.Semicolon, BracketPairs.All).ToArray();
+                int count = items.Length;
+
+                foreach (var item in items)
+                {
+                    interpreter.PushState(State.CreateSub(reader.Source, item, interpreter));
+                }
+
+                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        list.Insert(0, _.PopResultString());
+                    }
+                    return false;
+                }));
+                return true;
+            }
+            #endregion
+
+            #region "=" functions
+            if (reader.TakeLoose(TokenType.Equal))
+            {
+                var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
+                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                {
+                    List<string> srcList;
+                    var srcName = _.PopResultString();
+                    if (!_.GetList(srcName, out srcList))
+                        throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '" + srcName + "'");
+                    list.Clear();
+                    list.AddRange(srcList);
+                    return false;
+                }));
+
+                return true;
+            }
+            #endregion
+
+            #region "!" functions
+            if (reader.TakeLoose(TokenType.Exclamation)) // remove item
+            {
+                TokenType special;
+                bool isSpecial = reader.TakeAny(out special, TokenType.At, TokenType.Caret, TokenType.Dollar);
+
+                if (!isSpecial || special == TokenType.At) // remove by value or index
+                {
+                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
+
+                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    {
+                        var value = _.PopResultString();
+
+                        if (isSpecial && special == TokenType.At)
+                        {
+                            int index;
+                            if (!Int32.TryParse(value, out index) || index < 0)
+                                throw new RantException(valueTokens, reader.Source, "'" + value + "' is not a valid index. Index must be a non-negative integer.");
+                            if (index >= list.Count) return false;
+                            list.RemoveAt(index);
+                            return false;
+                        }
+                        list.Remove(value);
+                        return false;
+                    }));
+                    return true;
+                }
+
+                switch (special)
+                {
+                    case TokenType.Caret: // remove first
+                        if (list.Any()) list.RemoveAt(0);
+                        break;
+                    case TokenType.Dollar: // remove last
+                        if (list.Any()) list.RemoveAt(list.Count - 1);
+                        break;
+                }
+
+                reader.Read(TokenType.RightSquare);
+
+                return false;
+            }
+            #endregion
+
+            #region "$" functions
+            if (reader.TakeLoose(TokenType.Dollar)) // list length
+            {
+                if (reader.Take(TokenType.Caret)) // reverse list
+                {
+                    list.Reverse();
+                }
+                else
+                {
+                    interpreter.Print(interpreter.FormatNumber(list.Count)); // count
+                }
+
+                reader.Read(TokenType.RightSquare);
+                return false;
+            }
+            #endregion
+
+            #region "@" functions
+            if (reader.TakeLoose(TokenType.At)) // get item
+            {
+                TokenType special;
+                bool isSpecial = reader.TakeAny(out special, TokenType.Question, TokenType.Caret, TokenType.Dollar);
+
+                if (!isSpecial || special == TokenType.Question)
+                {
+                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
+
+                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    {
+                        var arg = _.PopResultString();
+                        if (isSpecial && special == TokenType.Question) // index of value
+                        {
+                            _.Print(_.FormatNumber(list.IndexOf(arg)));
+                        }
+                        else // value of index
+                        {
+                            int index;
+                            if (!Int32.TryParse(arg, out index))
+                                throw new RantException(valueTokens, reader.Source, "'" + arg + "' is not a valid index. Index must be a non-negative integer.");
+                            if (index >= list.Count)
+                                throw new RantException(valueTokens, reader.Source, "Index was out of range. (" + arg + " > " + (list.Count - 1) + ")");
+
+                            _.Print(list[index]);
+                        }
+                        return false;
+                    }));
+                    return true;
+                }
+
+                switch (special)
+                {
+                    case TokenType.Caret: // get first
+                        if (list.Any()) interpreter.Print(list.First());
+                        break;
+                    case TokenType.Dollar: // get last
+                        if (list.Any()) interpreter.Print(list.Last());
+                        break;
+                }
+
+                reader.Read(TokenType.RightSquare);
+
+                return false;
+            }
+            #endregion
+
+
+            throw new RantException(reader.Source, nameToken, "Expected operator after list name.");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -375,6 +650,32 @@ namespace Rant
 
         private static bool DoBlock(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
+            var attribs = interpreter.NextAttribs;
+            interpreter._blockAttribs = new BlockAttribs();
+
+            if (reader.Take(TokenType.Percent)) // List as block
+            {
+                reader.SkipSpace();
+                var listNameToken = reader.Read(TokenType.Text, "list name");
+                reader.SkipSpace();
+                reader.Read(TokenType.RightCurly);
+
+                var listName = listNameToken.Value;
+
+                List<string> list;
+                if (!interpreter.LocalLists.TryGetValue(listName, out list) && !interpreter.Engine.GlobalLists.TryGetValue(listName, out list))
+                    throw new RantException(reader.Source, listNameToken, "Tried to access nonexistent list '" + listName + "'");
+
+                var listItems = list.Any()
+                    ? list.Select(str => new[] {new Token<TokenType>(TokenType.Text, str)}.AsEnumerable()).ToArray()
+                    : new[] {Enumerable.Empty<Token<TokenType>>()};
+                var listRep = new Repeater(listItems, attribs);
+                interpreter.PushRepeater(listRep);
+                interpreter.BaseStates.Add(state);
+                state.AddPreBlueprint(new RepeaterBlueprint(interpreter, listRep));
+                return true;
+            }
+
             Tuple<IEnumerable<Token<TokenType>>[], int> items;
 
             // Check if the block is already cached
@@ -389,9 +690,6 @@ namespace Rant
                 // If the block is cached, seek to its end
                 reader.Position = items.Item2;
             }
-            
-            var attribs = interpreter.NextAttribs;
-            interpreter._blockAttribs = new BlockAttribs();
 
             if (!items.Item1.Any() || !interpreter.TakeChance()) return false;
 

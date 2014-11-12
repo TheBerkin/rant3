@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Linq;
 using Rant.Compiler;
 using Rant.Stringes;
 
@@ -41,7 +42,8 @@ namespace Rant
         /// </summary>
         public string Code { get { return _source; } }
 
-        internal RantException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") : base((token != null ? ("(" + source.Name + " @ Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
+        internal RantException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
+            : base((token != null ? ("(" + source.Name + " @ Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
         {
             _source = source.Code;
             if (token != null)
@@ -53,6 +55,29 @@ namespace Rant
             }
             else
             {
+                _line = _col = 1;
+                _index = 0;
+                _length = 0;
+            }
+        }
+
+        internal RantException(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
+            : base((tokens != null ? ("(" + source.Name + " @ Ln " + tokens.First().Line + ", Col " + tokens.First().Column + ") - ") : "") + message)
+        {
+            _source = source.Code;
+            
+            if (tokens != null)
+            {
+                var first = tokens.First();
+                var last = tokens.Last();
+                _line = first.Line;
+                _col = first.Column;
+                _index = first.Offset;
+                _length = (last.Offset + last.Length) - first.Offset;
+            }
+            else
+            {
+
                 _line = _col = 1;
                 _index = 0;
                 _length = 0;
