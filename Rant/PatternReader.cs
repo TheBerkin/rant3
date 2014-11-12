@@ -275,9 +275,15 @@ namespace Rant
                     // If the _stack is empty, this is the last item. Stop the iterator.
                     if (!_stack.Any())
                     {
-                        yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
+                        yield return _tokens
+                        .SkipWhile((t, i) => i < start) // Cut to start of section
+                        .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
+                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove leading whitespace
+                        .Reverse() // Reverse to trim end
+                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove trailing whitespace
+                        .Reverse() // Reverse back
+                        .ToArray();
                         _pos++;
-                        SkipSpace();
                         yield break;
                     }
                 }
@@ -285,9 +291,15 @@ namespace Rant
                 // Separator
                 else if (token.Identifier == separator && _stack.Count == 1)
                 {
-                    yield return _tokens.SkipWhile((t, i) => i < start).TakeWhile((t, i) => i < _pos - start).ToArray();
+                    yield return _tokens
+                        .SkipWhile((t, i) => i < start) // Cut to start of section
+                        .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
+                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove leading whitespace
+                        .Reverse() // Reverse to trim end
+                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove trailing whitespace
+                        .Reverse() // Reverse back
+                        .ToArray();
                     _pos++;
-                    SkipSpace();
                     start = _pos;
                     continue;
                 }

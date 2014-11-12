@@ -23,7 +23,7 @@ namespace Rant.Vocabulary
         public static RantDictionary FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             var name = "";
-            var version = "2";
+            var version = Version;
             string[] subtypes = {"default"};
 
             var classTable = new Dictionary<string, string>();
@@ -67,7 +67,7 @@ namespace Rant.Vocabulary
                                     LoadError(path, token, "The #version directive requires a value.");
                                 }
                                 version = parts[1];
-                                if (version != "2")
+                                if (version != Version)
                                 {
                                     LoadError(path, token, "Unsupported file version '" + version + "'");
                                 }
