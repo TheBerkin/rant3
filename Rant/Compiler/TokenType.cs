@@ -179,7 +179,7 @@
         /// </summary>
         Equal,
         /// <summary>
-        /// &
+        /// &amp;
         /// <para>
         /// Used by: Carriers
         /// </para>

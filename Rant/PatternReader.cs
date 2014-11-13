@@ -42,7 +42,7 @@ namespace Rant
         {
             get { return _pos == 0 ? null : _tokens[_pos - 1]; }
         }
-            
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Token<TokenType> ReadToken()
         {
@@ -57,13 +57,11 @@ namespace Rant
             return _tokens[_pos];
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsNext(TokenType type)
         {
             return !End && _tokens[_pos].Identifier == type;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Take(TokenType type, bool allowEof = true)
         {
             if (End)
@@ -77,7 +75,6 @@ namespace Rant
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TakeLoose(TokenType type, bool allowEof = true)
         {
             if (End)
@@ -149,7 +146,6 @@ namespace Rant
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TakeAll(TokenType type, bool allowEof = true)
         {
             if (End)
@@ -166,7 +162,6 @@ namespace Rant
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Token<TokenType> Read(TokenType type, string expectedTokenName = null)
         {
             if (End) 

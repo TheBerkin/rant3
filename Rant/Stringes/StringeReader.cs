@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Rant.Stringes.Tokens;
 
@@ -179,6 +180,7 @@ namespace Rant.Stringes
         /// <summary>
         /// Advances the reader position past any immediate white space characters.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipWhiteSpace()
         {
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
@@ -193,6 +195,7 @@ namespace Rant.Stringes
         /// <typeparam name="T">The token identifier type to use.</typeparam>
         /// <param name="rules">The lexer rules to use.</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Token<T> ReadToken<T>(LexerRules<T> rules) where T : struct
         {
             readStart:

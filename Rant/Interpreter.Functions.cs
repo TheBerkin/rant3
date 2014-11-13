@@ -18,7 +18,7 @@ namespace Rant
 
         static Interpreter()
         {
-            TagFuncs = new Dictionary<string, FuncDef>();
+            TagFuncs = new Dictionary<string, FuncDef>(StringComparer.InvariantCultureIgnoreCase);
 
             TagFuncs["rep"] = TagFuncs["r"] = new FuncSig(Repeat, ParamFlags.None);
             TagFuncs["num"] = TagFuncs["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);

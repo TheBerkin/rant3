@@ -532,7 +532,7 @@ namespace Rant.Stringes
 
         public static explicit operator string(Stringe stringe)
         {
-            return stringe._stref.String.Substring(stringe._offset, stringe._length);
+            return stringe.Value;
         }        
 
         /// <summary>
@@ -541,11 +541,11 @@ namespace Rant.Stringes
         /// <returns></returns>
         public override string ToString()
         {
-            return _stref.String.Substring(_offset, _length);
+            return Value;
         }
 
         /// <summary>
-        /// Stores a reference to a string, to prevent unnecessary copies being created.
+        /// Stores cached character data for a Stringe.
         /// </summary>
         private class Stref
         {

@@ -20,11 +20,11 @@ namespace Rant.Blueprints
             : base(interpreter)
         {
             Source = source;
-            Name = name;
+            Name = name.Trim();
 
             Interpreter.FuncDef defs;
 
-            if (!Interpreter.TagFuncs.TryGetValue(Name.Value.ToLower().Trim(), out defs))
+            if (!Interpreter.TagFuncs.TryGetValue(Name.Value, out defs))
             {
                 throw new RantException(Source, Name, "A function of the name '" + Name.Value + "' does not exist.");
             }
