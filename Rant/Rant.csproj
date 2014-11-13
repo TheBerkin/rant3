@@ -93,7 +93,7 @@
     <Compile Include="Blueprints\FuncTagBlueprint.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Comparison.cs" />
-    <Compile Include="Compiler\BracketPairs.cs" />
+    <Compile Include="Compiler\Brackets.cs" />
     <Compile Include="Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierSyncState.cs" />
     <Compile Include="Vocabulary\Dic2Lexer.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
     <Compile Include="Compiler\RantPattern.cs" />
-    <Compile Include="Compiler\SourceType.cs" />
+    <Compile Include="Compiler\RantPatternSource.cs" />
     <Compile Include="PatternReader.cs" />
     <Compile Include="Interpreter.State.cs" />
     <Compile Include="Stringes\Chare.cs" />

@@ -3,7 +3,7 @@
     /// <summary>
     /// Indicates the manner in which a referenced code source was created.
     /// </summary>
-    public enum SourceType
+    public enum RantPatternSource
     {
         /// <summary>
         /// Source was loaded from a file.

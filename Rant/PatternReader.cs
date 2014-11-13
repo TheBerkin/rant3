@@ -232,7 +232,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, BracketPairs bracketPairs)
+        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, Brackets bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
@@ -311,7 +311,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, BracketPairs bracketPairs)
+        public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, Brackets bracketPairs)
         {
             SkipSpace();
             _stack.Clear();

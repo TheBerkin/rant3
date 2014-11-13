@@ -12,7 +12,7 @@ namespace Rant.Compiler
     {
         private readonly string _code;
         private readonly IEnumerable<Token<TokenType>> _tokens;
-        private readonly SourceType _type;
+        private readonly RantPatternSource _type;
         private readonly string _name;
 
         // This is used to cache item locations within blocks, which eliminates unnecessary multiple traversals of the blocks' tokens.
@@ -31,7 +31,7 @@ namespace Rant.Compiler
         /// <summary>
         /// Describes the origin of the source.
         /// </summary>
-        public SourceType Type
+        public RantPatternSource Type
         {
             get { return _type; }
         }
@@ -59,7 +59,7 @@ namespace Rant.Compiler
             get { return _tokens; }
         }
 
-        internal RantPattern(string name, SourceType type, string code)
+        internal RantPattern(string name, RantPatternSource type, string code)
         {
             _name = name;
             _type = type;
@@ -94,7 +94,7 @@ namespace Rant.Compiler
         /// <returns></returns>
         public static RantPattern FromString(string code)
         {
-            return new RantPattern("Source", SourceType.String, code);
+            return new RantPattern("Source", RantPatternSource.String, code);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Rant.Compiler
         /// <returns></returns>
         public static RantPattern FromString(string name, string code)
         {
-            return new RantPattern(name, SourceType.String, code);
+            return new RantPattern(name, RantPatternSource.String, code);
         }
 
         internal static RantPattern Derived(RantPattern source, IEnumerable<Token<TokenType>> tokens)
@@ -126,7 +126,7 @@ namespace Rant.Compiler
         /// <returns></returns>
         public static RantPattern FromFile(string path)
         {
-            return new RantPattern(Path.GetFileName(path), SourceType.File, File.ReadAllText(path));
+            return new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
         }
 
         /// <summary>

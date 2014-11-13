@@ -30,7 +30,7 @@ namespace Rant
         private static bool DoMath(Interpreter interpreter, Token<TokenType> firstToken, PatternReader reader, State state)
         {
             bool isStatement = reader.Take(TokenType.At);
-            var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, BracketPairs.All);
+            var tokens = reader.ReadToScopeClose(TokenType.LeftParen, TokenType.RightParen, Brackets.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
             {
@@ -234,7 +234,7 @@ namespace Rant
                     return DoListAction(interpreter, firstToken, reader, state);
                 case TokenType.Question: // Metapattern
                     state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
-                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All), interpreter));
+                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All), interpreter));
                     return true;
                 case TokenType.Regex: // Replacer
                     return DoReplacer(name, interpreter, reader, state);
@@ -260,7 +260,7 @@ namespace Rant
             else
             {
                 var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
-                    TokenType.Semicolon, BracketPairs.All).ToArray();
+                    TokenType.Semicolon, Brackets.All).ToArray();
 
                 state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name, items));
             }
@@ -303,8 +303,7 @@ namespace Rant
                 {
                     interpreter.LocalLists[name] = list;
                 }
-                reader.Read(TokenType.RightSquare);
-                return false;
+                if (reader.TakeLoose(TokenType.RightSquare)) return false;
             }
 
             if (!interpreter.LocalLists.TryGetValue(name, out list) &&
@@ -314,8 +313,7 @@ namespace Rant
             if (clear)
             {
                 list.Clear();
-                reader.Read(TokenType.RightSquare);
-                return false;
+                if (reader.TakeLoose(TokenType.RightSquare)) return false;
             }
 
             #region "+" Functions
@@ -326,7 +324,7 @@ namespace Rant
 
                 if (fromList) // add items from other list
                 {
-                    var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
                     state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
                     {
@@ -348,7 +346,7 @@ namespace Rant
                 }
 
                 var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
-                    TokenType.Semicolon, BracketPairs.All).ToArray();
+                    TokenType.Semicolon, Brackets.All).ToArray();
                 int count = items.Length;
 
                 foreach (var item in items)
@@ -391,7 +389,7 @@ namespace Rant
                 }
 
                 var items = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare,
-                    TokenType.Semicolon, BracketPairs.All).ToArray();
+                    TokenType.Semicolon, Brackets.All).ToArray();
                 int count = items.Length;
 
                 foreach (var item in items)
@@ -416,7 +414,7 @@ namespace Rant
             {
                 if (reader.TakeLoose(TokenType.At)) // set item at index to value
                 {
-                    var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
+                    var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, Brackets.All).ToArray();
                     if (args.Length != 2) throw new RantException(args.SelectMany(a => a), reader.Source, "Two arguments are required for this operation.");
                     interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter)); // index
                     interpreter.PushState(State.CreateSub(reader.Source, args[1], interpreter)); // value
@@ -436,7 +434,7 @@ namespace Rant
                     return true;
                 }
 
-                var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                var nameTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All);
                 interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
                 state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
                 {
@@ -461,7 +459,7 @@ namespace Rant
 
                 if (!isSpecial || special == TokenType.At) // remove by value or index
                 {
-                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
                     state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
@@ -524,7 +522,7 @@ namespace Rant
 
                 if (!isSpecial || special == TokenType.Question)
                 {
-                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All);
+                    var valueTokens = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
                     state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
@@ -597,7 +595,7 @@ namespace Rant
             else
             {
                 args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon,
-                    BracketPairs.All).ToArray();
+                    Brackets.All).ToArray();
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
                     throw new RantException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and " + args.Length + " parameter" + (args.Length != 1 ? "s" : "") + ".");
             }
@@ -637,7 +635,7 @@ namespace Rant
             reader.SkipSpace();
             reader.Read(TokenType.Colon);
 
-            var body = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, BracketPairs.All).ToArray();
+            var body = reader.ReadToScopeClose(TokenType.LeftSquare, TokenType.RightSquare, Brackets.All).ToArray();
 
             if (meta)
             {
@@ -661,7 +659,7 @@ namespace Rant
         {
             reader.Read(TokenType.Colon);
 
-            var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, BracketPairs.All).ToArray();
+            var args = reader.ReadMultiItemScope(TokenType.LeftSquare, TokenType.RightSquare, TokenType.Semicolon, Brackets.All).ToArray();
             if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected 2 arguments, but got " + args.Length + ".");
 
             state.AddPreBlueprint(new ReplacerBlueprint(interpreter, Util.ParseRegex(name.Value), args[1]));
@@ -703,7 +701,7 @@ namespace Rant
             // Check if the block is already cached
             if (!reader.Source.TryGetCachedBlock(firstToken, out items))
             {
-                var block = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, BracketPairs.All).ToArray();
+                var block = reader.ReadMultiItemScope(TokenType.LeftCurly, TokenType.RightCurly, TokenType.Pipe, Brackets.All).ToArray();
                 items = Tuple.Create(block, reader.Position);
                 reader.Source.CacheBlock(firstToken, block, reader.Position);
             }

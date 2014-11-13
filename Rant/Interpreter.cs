@@ -279,7 +279,7 @@ namespace Rant
                     token = reader.ReadToken();
                     
                     // Error on illegal closure
-                    if (BracketPairs.All.ContainsClosing(token.Identifier))
+                    if (Brackets.All.ContainsClosing(token.Identifier))
                     {
                         throw new RantException(reader.Source, token, "Unexpected token '" + RantLexer.Rules.GetSymbolForId(token.Identifier) + "'");
                     }

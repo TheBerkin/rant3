@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Rant.Compiler
 {
-    internal class BracketPairs : IEnumerable<Tuple<TokenType, TokenType>>
+    internal class Brackets : IEnumerable<Tuple<TokenType, TokenType>>
     {
         #region Static members
 
         /// <summary>
         /// Used everywhere except for reading constant literals.
         /// </summary>
-        public static readonly BracketPairs All = new BracketPairs
+        public static readonly Brackets All = new Brackets
         {
             {TokenType.LeftAngle, TokenType.RightAngle},
             {TokenType.LeftSquare, TokenType.RightSquare},
@@ -25,7 +25,7 @@ namespace Rant.Compiler
         private readonly HashSet<TokenType> _openings;
         private readonly HashSet<TokenType> _closings; 
 
-        public BracketPairs()
+        public Brackets()
         {
             _pairs = new List<Tuple<TokenType, TokenType>>(5);
             _openings = new HashSet<TokenType>();
