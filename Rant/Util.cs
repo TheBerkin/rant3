@@ -32,7 +32,7 @@ namespace Rant
             {'W', rng => "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rng.Next(36)]}
         };
 
-        private static readonly Regex RegCapsProper = new Regex(@"\b[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+        private static readonly Regex RegCapsWord = new Regex(@"\b(?<!['""])[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
         private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
 
         public static bool ParseInt(string value, out int number)
@@ -90,7 +90,7 @@ namespace Rant
                     break;
                 case Capitalization.Word:
                     char lc = lastChar;
-                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
+                    input = RegCapsWord.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
                     break;
             }
             lastChar = input[input.Length - 1];
@@ -116,7 +116,7 @@ namespace Rant
                 case Capitalization.Word:
                     char lc = lastChar;
                     // TODO: Prevent capitalization of a/an
-                    input = RegCapsProper.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
+                    input = RegCapsWord.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
                     break;
             }
             return input;
