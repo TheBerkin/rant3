@@ -207,7 +207,7 @@ namespace Rant.Stringes.Tokens
     /// <summary>
     /// Used to manipulate the order in which symbol (non-regex) rules are tested.
     /// </summary>
-    public enum SymbolPriority
+    internal enum SymbolPriority
     {
         /// <summary>
         /// Test symbol after testing regex symbols. This is the default value for all symbols rules.
