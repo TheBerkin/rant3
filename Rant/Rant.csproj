@@ -111,7 +111,7 @@
     <Compile Include="Engine\Interpreter.Synchronizers.cs" />
     <Compile Include="Engine\Interpreter.Functions.cs" />
     <Compile Include="Engine\Interpreter.Parser.cs" />
-    <Compile Include="Vocabulary\IVocabulary.cs" />
+    <Compile Include="Vocabulary\IRantVocabulary.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="Engine\ParamType.cs" />
     <Compile Include="RantException.cs" />
