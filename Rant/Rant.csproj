@@ -117,10 +117,10 @@
     <Compile Include="RantException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Capitalization.cs" />
-    <Compile Include="Engine\Channel.cs" />
+    <Compile Include="Channel.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Engine\ChannelStack.cs" />
-    <Compile Include="Engine\ChannelVisibility.cs" />
+    <Compile Include="ChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\NumberFormat.cs" />
     <Compile Include="Engine\Numerals.cs" />
