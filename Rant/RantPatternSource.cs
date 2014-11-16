@@ -1,4 +1,4 @@
-﻿namespace Rant.Compiler
+﻿namespace Rant
 {
     /// <summary>
     /// Indicates the manner in which a referenced code source was created.
