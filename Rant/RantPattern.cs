@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Rant.Compiler;
 using Rant.Stringes.Tokens;
 
-namespace Rant.Compiler
+namespace Rant
 {
     /// <summary>
     /// Represents a compiled pattern that can be executed by the engine. It is recommended to use this class when running the same patern multiple times.

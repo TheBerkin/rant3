@@ -130,7 +130,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Compiler\TokenType.cs" />
-    <Compile Include="Compiler\RantPattern.cs" />
+    <Compile Include="RantPattern.cs" />
     <Compile Include="Compiler\RantPatternSource.cs" />
     <Compile Include="PatternReader.cs" />
     <Compile Include="Interpreter.State.cs" />
