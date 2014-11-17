@@ -14,10 +14,10 @@ namespace Rant
         private int _index = 0;
         private bool _allowStats = true;
         private readonly int _count;
-        private readonly IEnumerable<Token<TokenType>>[] _items;
+        private readonly IEnumerable<Token<R>>[] _items;
         private readonly BlockAttribs _attribs;
 
-        public Repeater(IEnumerable<Token<TokenType>>[] items, BlockAttribs attribs)
+        public Repeater(IEnumerable<Token<R>>[] items, BlockAttribs attribs)
         {
             _items = items;
             _count = attribs.Repetitons == Each ? items.Length : attribs.Repetitons;

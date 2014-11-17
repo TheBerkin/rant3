@@ -409,7 +409,7 @@ namespace Rant.Stringes
             get
             {
                 bool found = false;
-
+                
                 // The end of the stringe is at the end of the parent string.
                 if (_offset + _length == _stref.String.Length) 
                 {

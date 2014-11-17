@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rant.Compiler;
 using Rant.Stringes;
 
 namespace Rant
@@ -20,30 +19,30 @@ namespace Rant
         /// <summary>
         /// The line on which the error occurred.
         /// </summary>
-        public int Line { get { return _line; } }
+        public int Line => _line;
 
         /// <summary>
         /// The column on which the error occurred.
         /// </summary>
-        public int Column { get { return _col; } }
+        public int Column => _col;
 
         /// <summary>
         /// The character index on which the error occurred.
         /// </summary>
-        public int Index { get { return _index; } }
+        public int Index => _index;
 
         /// <summary>
         /// The length of the substring in which the error occurred.
         /// </summary>
-        public int Length { get { return _length; } }
+        public int Length => _length;
 
         /// <summary>
         /// The source of the error.
         /// </summary>
-        public string Code { get { return _source; } }
+        public string Code => _source;
 
         internal RantException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
-            : base((token != null ? ("(" + source.Name + " @ Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
+            : base((token != null ? ("(\{source.Name}@ Ln \{token.Line}, Col \{token.Column}) - ") : "") + message)
         {
             _source = source.Code;
             if (token != null)
@@ -62,7 +61,7 @@ namespace Rant
         }
 
         internal RantException(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
-            : base((tokens != null ? ("(" + source.Name + " @ Ln " + tokens.First().Line + ", Col " + tokens.First().Column + ") - ") : "") + message)
+            : base((tokens != null ? ("(\{source.Name} @ Ln \{tokens.First().Line}, Col \{tokens.First().Column}) - ") : "") + message)
         {
             _source = source.Code;
             
@@ -85,7 +84,7 @@ namespace Rant
         }
 
         internal RantException(string source, Stringe token, string message = "A generic syntax error was encountered.")
-            : base((token != null ? ("(Ln " + token.Line + ", Col " + token.Column + ") - ") : "") + message)
+            : base((token != null ? ("(Ln \{token.Line}, Col \{token.Column}) - ") : "") + message)
         {
             _source = source;
             if (token != null)

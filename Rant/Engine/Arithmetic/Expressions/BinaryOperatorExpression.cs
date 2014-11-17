@@ -8,9 +8,9 @@ namespace Rant.Arithmetic
     {
         private readonly Expression _left;
         private readonly Expression _right;
-        private readonly Token<MathTokenType> _token;
+        private readonly Token<RMathToken> _token;
 
-        public BinaryOperatorExpression(Expression left, Expression right, Token<MathTokenType> token)
+        public BinaryOperatorExpression(Expression left, Expression right, Token<RMathToken> token)
         {
             _left = left;
             _right = right;
@@ -19,7 +19,7 @@ namespace Rant.Arithmetic
 
         public override double Evaluate(Parser parser, Interpreter ii)
         {
-            if (_token.Identifier == MathTokenType.Swap)
+            if (_token.Identifier == RMathToken.Swap)
             {
                 var left = _left as NameExpression;
                 var right = _right as NameExpression;
@@ -47,60 +47,60 @@ namespace Rant.Arithmetic
             return func(_left.Evaluate(parser, ii), _right.Evaluate(parser, ii));
         }
 
-        private static readonly Dictionary<MathTokenType, Func<double, double, double>> Operations;
-        private static readonly Dictionary<MathTokenType, Func<Parser, Interpreter, NameExpression, Expression, double>> AssignOperations; 
+        private static readonly Dictionary<RMathToken, Func<double, double, double>> Operations;
+        private static readonly Dictionary<RMathToken, Func<Parser, Interpreter, NameExpression, Expression, double>> AssignOperations; 
 
         static BinaryOperatorExpression()
         {
-            Operations = new Dictionary<MathTokenType, Func<double, double, double>>
+            Operations = new Dictionary<RMathToken, Func<double, double, double>>
             {
-                {MathTokenType.Plus, (a, b) => a + b},
-                {MathTokenType.Minus, (a, b) => a - b},
-                {MathTokenType.Asterisk, (a, b) => a * b},
-                {MathTokenType.Slash, (a, b) => a / b},
-                {MathTokenType.Modulo, (a, b) => a % b},
-                {MathTokenType.Caret, System.Math.Pow}
+                {RMathToken.Plus, (a, b) => a + b},
+                {RMathToken.Minus, (a, b) => a - b},
+                {RMathToken.Asterisk, (a, b) => a * b},
+                {RMathToken.Slash, (a, b) => a / b},
+                {RMathToken.Modulo, (a, b) => a % b},
+                {RMathToken.Caret, System.Math.Pow}
             };
 
-            AssignOperations = new Dictionary<MathTokenType, Func<Parser, Interpreter, NameExpression, Expression, double>>
+            AssignOperations = new Dictionary<RMathToken, Func<Parser, Interpreter, NameExpression, Expression, double>>
             {
-                {MathTokenType.Equals, (s, ii, a, b) =>
+                {RMathToken.Equals, (s, ii, a, b) =>
                 {
                     double d = b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.AddAssign, (s, ii, a, b) =>
+                {RMathToken.AddAssign, (s, ii, a, b) =>
                 {
                     double d = a.Evaluate(s, ii) + b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.SubAssign, (s, ii, a, b) =>
+                {RMathToken.SubAssign, (s, ii, a, b) =>
                 {
                     double d = a.Evaluate(s, ii) - b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.DivAssign, (s, ii, a, b) =>
+                {RMathToken.DivAssign, (s, ii, a, b) =>
                 {
                     double d = a.Evaluate(s, ii) / b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.MulAssign, (s, ii, a, b) =>
+                {RMathToken.MulAssign, (s, ii, a, b) =>
                 {
                     double d = a.Evaluate(s, ii) * b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.ModAssign, (s, ii, a, b) =>
+                {RMathToken.ModAssign, (s, ii, a, b) =>
                 {
                     double d = a.Evaluate(s, ii) % b.Evaluate(s, ii);
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
-                {MathTokenType.PowAssign, (s, ii, a, b) =>
+                {RMathToken.PowAssign, (s, ii, a, b) =>
                 {
                     double d = Math.Pow(a.Evaluate(s, ii), b.Evaluate(s, ii));
                     ii.Engine.Variables.SetVar(a.Name, d);

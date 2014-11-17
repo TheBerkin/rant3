@@ -17,7 +17,7 @@ namespace Rant.Compiler
         private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
 
-        internal static readonly LexerRules<TokenType> Rules;
+        internal static readonly LexerRules<R> Rules;
 
         private static Stringe TruncatePadding(Stringe input)
         {
@@ -27,40 +27,40 @@ namespace Rant.Compiler
 
         static RantLexer()
         {
-            Rules = new LexerRules<TokenType>
+            Rules = new LexerRules<R>
             {
-                {EscapeRegex, TokenType.EscapeSequence},
-                {RegexRegex, TokenType.Regex},
-                {ConstantLiteralRegex, TokenType.ConstantLiteral},
-                {"[", TokenType.LeftSquare}, {"]", TokenType.RightSquare},
-                {"{", TokenType.LeftCurly}, {"}", TokenType.RightCurly},
-                {"(", TokenType.LeftParen}, {")", TokenType.RightParen},
-                {"<", TokenType.LeftAngle}, {">", TokenType.RightAngle},
-                {"|", TokenType.Pipe},
-                {";", TokenType.Semicolon},
-                {":", TokenType.Colon},
-                {"@", TokenType.At},
-                {"?", TokenType.Question},
-                {"::", TokenType.DoubleColon},
-                {"?!", TokenType.Without},
-                {"-", TokenType.Hyphen},
-                {"!", TokenType.Exclamation},
-                {"$", TokenType.Dollar},
-                {"=", TokenType.Equal},
-                {"&", TokenType.Ampersand},
-                {"%", TokenType.Percent},
-                {"+", TokenType.Plus},
-                {"^", TokenType.Caret},
-                {CommentRegex, TokenType.Ignore, 3},
-                {BlackspaceRegex, TokenType.Ignore, 2},
-                {WhitespaceRegex, TokenType.Whitespace}
+                {EscapeRegex, R.EscapeSequence},
+                {RegexRegex, R.Regex},
+                {ConstantLiteralRegex, R.ConstantLiteral},
+                {"[", R.LeftSquare}, {"]", R.RightSquare},
+                {"{", R.LeftCurly}, {"}", R.RightCurly},
+                {"(", R.LeftParen}, {")", R.RightParen},
+                {"<", R.LeftAngle}, {">", R.RightAngle},
+                {"|", R.Pipe},
+                {";", R.Semicolon},
+                {":", R.Colon},
+                {"@", R.At},
+                {"?", R.Question},
+                {"::", R.DoubleColon},
+                {"?!", R.Without},
+                {"-", R.Hyphen},
+                {"!", R.Exclamation},
+                {"$", R.Dollar},
+                {"=", R.Equal},
+                {"&", R.Ampersand},
+                {"%", R.Percent},
+                {"+", R.Plus},
+                {"^", R.Caret},
+                {CommentRegex, R.Ignore, 3},
+                {BlackspaceRegex, R.Ignore, 2},
+                {WhitespaceRegex, R.Whitespace}
             };
-            Rules.AddUndefinedCaptureRule(TokenType.Text, TruncatePadding);
-            Rules.AddEndToken(TokenType.EOF);
-            Rules.IgnoreRules.Add(TokenType.Ignore);
+            Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
+            Rules.AddEndToken(R.EOF);
+            Rules.IgnoreRules.Add(R.Ignore);
         }
 
-        public static IEnumerable<Token<TokenType>> GenerateTokens(string input)
+        public static IEnumerable<Token<R>> GenerateTokens(string input)
         {
             var reader = new StringeReader(input);
             while (!reader.EndOfStringe)

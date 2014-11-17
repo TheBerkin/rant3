@@ -52,31 +52,19 @@ namespace Rant
         private IRantVocabulary _vocabulary;
         
 
-        internal VarStore Variables
-        {
-            get { return _vars; }
-        }
+        internal VarStore Variables => _vars;
 
-        internal SubStore Subroutines
-        {
-            get { return _subs; }
-        }
+        internal SubStore Subroutines => _subs;
 
         /// <summary>
         /// The currently set flags.
         /// </summary>
-        public HashSet<string> Flags
-        {
-            get { return _flags; }
-        }
+        public HashSet<string> Flags => _flags;
 
         /// <summary>
         /// The hook collection associated with the engine.
         /// </summary>
-        public HookCollection Hooks
-        {
-            get { return _hooks; }
-        }
+        public HookCollection Hooks => _hooks;
 
         /// <summary>
         /// The vocabulary associated with this instance.
@@ -132,13 +120,10 @@ namespace Rant
         {
             if (_vocabulary != null) return;
 
-            if (String.IsNullOrEmpty(path))
+            if (!String.IsNullOrEmpty(path))
             {
-                _vocabulary = new RantVocabulary(null);
-                return;
+                _vocabulary = RantVocabulary.FromDirectory(path, filter);
             }
-
-            _vocabulary = RantVocabulary.FromDirectory(path, filter);
         }
 
         #region Execution methods

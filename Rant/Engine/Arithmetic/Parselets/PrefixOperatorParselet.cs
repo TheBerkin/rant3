@@ -11,7 +11,7 @@ namespace Rant.Arithmetic.Parselets
             _precedence = precedence;
         }
 
-        public Expression Parse(Parser parser, Token<MathTokenType> token)
+        public Expression Parse(Parser parser, Token<RMathToken> token)
         {
             var right = parser.ParseExpression(_precedence);
             return new PrefixOperatorExpression(token, right);

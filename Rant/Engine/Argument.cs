@@ -9,7 +9,7 @@ namespace Rant
     internal class Argument
     {
         private readonly string _str;
-        private readonly IEnumerable<Token<TokenType>> _tokens;
+        private readonly IEnumerable<Token<R>> _tokens;
         private readonly ParamFlags _flags;
 
         public ParamFlags Flags
@@ -23,7 +23,7 @@ namespace Rant
             return _str;
         }
 
-        public IEnumerable<Token<TokenType>> GetTokens()
+        public IEnumerable<Token<R>> GetTokens()
         {
             if(_tokens == null) throw new InvalidOperationException("Tried to use a 'string' argument as a 'tokens' argument.");
             return _tokens;
@@ -36,7 +36,7 @@ namespace Rant
             _flags = ParamFlags.None;
         }
 
-        private Argument(IEnumerable<Token<TokenType>> tokens)
+        private Argument(IEnumerable<Token<R>> tokens)
         {
             _tokens = tokens;
             _str = null;
@@ -48,7 +48,7 @@ namespace Rant
             return new Argument(value);
         }
 
-        public static Argument FromTokens(IEnumerable<Token<TokenType>> tokens)
+        public static Argument FromTokens(IEnumerable<Token<R>> tokens)
         {
             return new Argument(tokens);
         }

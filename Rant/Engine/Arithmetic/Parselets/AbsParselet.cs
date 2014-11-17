@@ -5,10 +5,10 @@ namespace Rant.Arithmetic.Parselets
 {
     internal class AbsParselet : IPrefixParselet
     {
-        public Expression Parse(Parser parser, Token<MathTokenType> token)
+        public Expression Parse(Parser parser, Token<RMathToken> token)
         {
             var e = new AbsExpression(parser.ParseExpression());
-            parser.Take(MathTokenType.Pipe);
+            parser.Take(RMathToken.Pipe);
             return e;
         }
     }

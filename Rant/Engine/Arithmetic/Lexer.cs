@@ -5,7 +5,7 @@ using Rant.Stringes.Tokens;
 
 namespace Rant.Arithmetic
 {
-    internal sealed partial class Lexer : IEnumerable<Token<MathTokenType>>
+    internal sealed partial class Lexer : IEnumerable<Token<RMathToken>>
     {
         private readonly StringeReader _reader;
 
@@ -14,7 +14,7 @@ namespace Rant.Arithmetic
             _reader = new StringeReader(input);
         }
 
-        public IEnumerator<Token<MathTokenType>> GetEnumerator()
+        public IEnumerator<Token<RMathToken>> GetEnumerator()
         {
             while (!_reader.EndOfStringe)
             {

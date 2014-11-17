@@ -36,7 +36,7 @@ namespace Rant
                 return true;
             }
 
-            private State(Interpreter ii, RantPattern derivedSource, IEnumerable<Token<TokenType>> tokens,
+            private State(Interpreter ii, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 ChannelStack output)
             {
                 _interpreter = ii;
@@ -114,7 +114,7 @@ namespace Rant
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<TokenType>> tokens,
+            public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 Interpreter interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.CharLimit));

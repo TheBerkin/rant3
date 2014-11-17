@@ -9,8 +9,8 @@ namespace Rant.Blueprints
     {
         private readonly long _old;
         private readonly Interpreter.State _target;
-        private readonly IEnumerable<Token<TokenType>> _payload;
-        public AltBlueprint(Interpreter interpreter, Interpreter.State target, IEnumerable<Token<TokenType>> payload) : base(interpreter)
+        private readonly IEnumerable<Token<R>> _payload;
+        public AltBlueprint(Interpreter interpreter, Interpreter.State target, IEnumerable<Token<R>> payload) : base(interpreter)
         {
             _target = target;
             _payload = payload;

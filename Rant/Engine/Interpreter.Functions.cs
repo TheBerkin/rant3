@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Rant.Blueprints;
-using Rant.Compiler;
+using Rant.Util;
 using Rant.Stringes;
 
 namespace Rant
@@ -19,7 +19,6 @@ namespace Rant
         static Interpreter()
         {
             TagFuncs = new Dictionary<string, FuncDef>(StringComparer.InvariantCultureIgnoreCase);
-
             TagFuncs["rep"] = TagFuncs["r"] = new FuncSig(Repeat, ParamFlags.None);
             TagFuncs["num"] = TagFuncs["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);
             TagFuncs["sep"] = TagFuncs["s"] = new FuncSig(Separator, ParamFlags.Code);
@@ -107,7 +106,7 @@ namespace Rant
             ComparisonResult e;
             foreach (var conString in conStrings)
             {
-                if (!Enum.TryParse(Util.NameToCamel(conString), true, out e)) continue;
+                if (!Enum.TryParse(NameToCamel(conString), true, out e)) continue;
                 if (!cmp.Result.HasFlag(e)) continue;
                 interpreter.PushState(State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output));
                 return true;
@@ -171,18 +170,18 @@ namespace Rant
         private static bool CharacterMulti(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             int count;
-            if (!Util.ParseInt(args[1], out count) || count < 0)
+            if (!ParseInt(args[1], out count) || count < 0)
                 throw new RantException(source, tagname, "Invalid character count specified. Must be a non-negative number greater than zero.");
             for (int i = 0; i < count; i++)
             {
-                interpreter.Print(Util.SelectFromRanges(args[0], interpreter.RNG));
+                interpreter.Print(SelectFromRanges(args[0], interpreter.RNG));
             }
             return false;
         }
 
         private static bool Character(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Print(Util.SelectFromRanges(args[0], interpreter.RNG));
+            interpreter.Print(SelectFromRanges(args[0], interpreter.RNG));
             return false;
         }
 
@@ -190,7 +189,7 @@ namespace Rant
         {
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
-                if (!Util.ValidateName(flag))
+                if (!ValidateName(flag))
                     throw new RantException(source, tagname, "Invalid flag name '" + flag + "'");
 
                 interpreter.Engine.Flags.Remove(flag);
@@ -202,7 +201,7 @@ namespace Rant
         {
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
-                if (!Util.ValidateName(flag))
+                if (!ValidateName(flag))
                     throw new RantException(source, tagname, "Invalid flag name '" + flag + "'");
 
                 interpreter.Engine.Flags.Add(flag);
@@ -315,7 +314,7 @@ namespace Rant
         {
             ChannelVisibility cv;
             var cv_str = args[1].GetString();
-            if (!Enum.TryParse(Util.NameToCamel(cv_str), out cv))
+            if (!Enum.TryParse(NameToCamel(cv_str), out cv))
             {
                 throw new RantException(source, tagname, "Invalid channel visibility option '" + cv_str + "'");
             }
@@ -327,7 +326,7 @@ namespace Rant
         {
             Capitalization caps;
             var caps_str = args[0].GetString();
-            if (!Enum.TryParse(Util.NameToCamel(caps_str), out caps))
+            if (!Enum.TryParse(NameToCamel(caps_str), out caps))
             {
                 throw new RantException(source, tagname, "Invalid capitalization format '" + caps_str + "'");
             }
@@ -339,7 +338,7 @@ namespace Rant
         {
             NumberFormat fmt;
             var fmtstr = args[0].GetString();
-            if (!Enum.TryParse(Util.NameToCamel(fmtstr), out fmt))
+            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
             {
                 throw new RantException(source, tagname, "Invalid number format '" + fmtstr + "'");
             }
@@ -423,7 +422,7 @@ namespace Rant
         private static bool Nth(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             int offset, interval;
-            if (!Util.ParseInt(args[0].GetString(), out interval))
+            if (!ParseInt(args[0].GetString(), out interval))
             {
                 throw new RantException(source, tagname, "Invalid interval value.");
             }
@@ -433,7 +432,7 @@ namespace Rant
                 throw new RantException(source, tagname, "Interval must be greater than zero.");
             }
 
-            if (!Util.ParseInt(args[1].GetString(), out offset))
+            if (!ParseInt(args[1].GetString(), out offset))
             {
                 throw new RantException(source, tagname, "Invalid offset value.");
             }
@@ -446,7 +445,7 @@ namespace Rant
         private static bool NthSimple(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             int interval;
-            if (!Util.ParseInt(args[0].GetString(), out interval))
+            if (!ParseInt(args[0].GetString(), out interval))
             {
                 throw new RantException(source, tagname, "Invalid interval value.");
             }
@@ -556,7 +555,7 @@ namespace Rant
         private static bool Chance(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             int a;
-            if (!Util.ParseInt(args[0].GetString(), out a))
+            if (!ParseInt(args[0].GetString(), out a))
             {
                 throw new RantException(source, tagname, "Invalid chance number.");
             }
@@ -579,7 +578,7 @@ namespace Rant
         private static bool Number(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
         {
             int a, b;
-            if (!Util.ParseInt(args[0].GetString(), out a) || !Util.ParseInt(args[1].GetString(), out b))
+            if (!ParseInt(args[0].GetString(), out a) || !ParseInt(args[1].GetString(), out b))
             {
                 throw new RantException(source, tagName, "Range values could not be parsed. They must be numbers.");
             }
@@ -603,7 +602,7 @@ namespace Rant
             }
 
             int num;
-            if (!Util.ParseInt(reps, out num))
+            if (!ParseInt(reps, out num))
             {
                 throw new RantException(source, tagName, "Invalid repetition value '" + reps + "' - must be a number.");
             }

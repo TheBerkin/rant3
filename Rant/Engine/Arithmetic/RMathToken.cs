@@ -1,6 +1,6 @@
 ﻿namespace Rant.Arithmetic
 {
-    internal enum MathTokenType
+    internal enum RMathToken
     {
         LeftParen,
         RightParen,

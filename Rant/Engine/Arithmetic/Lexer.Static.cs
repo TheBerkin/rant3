@@ -5,35 +5,35 @@ namespace Rant.Arithmetic
 {
     internal partial class Lexer
     {
-        public static LexerRules<MathTokenType> Rules;
+        public static LexerRules<RMathToken> Rules;
 		
         static Lexer()
         {
-            Rules = new LexerRules<MathTokenType>
+            Rules = new LexerRules<RMathToken>
             {
-                {"+", MathTokenType.Plus},
-				{"-", MathTokenType.Minus},
-				{"*", MathTokenType.Asterisk},
-				{"/", MathTokenType.Slash},
-				{"^", MathTokenType.Caret},
-				{"(", MathTokenType.LeftParen},
-				{")", MathTokenType.RightParen},
-				{"++", MathTokenType.Increment},
-				{"--", MathTokenType.Decrement},
-				{"%", MathTokenType.Modulo},
-				{"=", MathTokenType.Equals},
-                {"$=", MathTokenType.Swap},
-                {"+=", MathTokenType.AddAssign},
-                {"-=", MathTokenType.SubAssign},
-                {"*=", MathTokenType.MulAssign},
-                {"/=", MathTokenType.DivAssign},
-                {"%=", MathTokenType.ModAssign},
-                {"^=", MathTokenType.PowAssign},
-                {"|", MathTokenType.Pipe},
-                {new Regex(@"(\d+(\.\d+)?|\.\d+)"), MathTokenType.Number},
-                {new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*"), MathTokenType.Name}
+                {"+", RMathToken.Plus},
+				{"-", RMathToken.Minus},
+				{"*", RMathToken.Asterisk},
+				{"/", RMathToken.Slash},
+				{"^", RMathToken.Caret},
+				{"(", RMathToken.LeftParen},
+				{")", RMathToken.RightParen},
+				{"++", RMathToken.Increment},
+				{"--", RMathToken.Decrement},
+				{"%", RMathToken.Modulo},
+				{"=", RMathToken.Equals},
+                {"$=", RMathToken.Swap},
+                {"+=", RMathToken.AddAssign},
+                {"-=", RMathToken.SubAssign},
+                {"*=", RMathToken.MulAssign},
+                {"/=", RMathToken.DivAssign},
+                {"%=", RMathToken.ModAssign},
+                {"^=", RMathToken.PowAssign},
+                {"|", RMathToken.Pipe},
+                {new Regex(@"(\d+(\.\d+)?|\.\d+)"), RMathToken.Number},
+                {new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*"), RMathToken.Name}
             };
-            Rules.AddEndToken(MathTokenType.End);
+            Rules.AddEndToken(RMathToken.End);
         }
     }
 }

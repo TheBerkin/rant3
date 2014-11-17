@@ -11,12 +11,13 @@ namespace Rant.Arithmetic
     {
         private int _pos;
         private string _src;
-        private readonly Token<MathTokenType>[] _tokens;
+        private readonly Token<RMathToken>[] _tokens;
 
-        public Parser(IEnumerable<Token<MathTokenType>> tokens)
+        public Parser(string expression)
         {
             _pos = 0;
-            _tokens = tokens.ToArray();
+            _src = expression;
+            _tokens = new Lexer(expression.ToStringe()).ToArray();
         }
 
         public string Source
@@ -29,7 +30,7 @@ namespace Rant.Arithmetic
             double result = 0;
             foreach (var expr in expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                var p = new Parser(new Lexer(expr.ToStringe()));
+                var p = new Parser(expr);
                 result = p.ParseExpression().Evaluate(p, ii);
             }
             return result;
@@ -38,23 +39,23 @@ namespace Rant.Arithmetic
         public Expression ParseExpression(int precedence = 0)
         {
             var token = Take();
+            IPrefixParselet prefix;
+            IInfixParselet infix;
 
-            IPrefixParselet prefixParselet;
-            if (!PrefixParselets.TryGetValue(token.Identifier, out prefixParselet))
+            if (!PrefixParselets.TryGetValue(token.Identifier, out prefix))
             {
-                throw new RantException(_src, token, "Invalid expression '" + token.Value + "'.");
+                throw new RantException(_src, token, "Invalid expression '\{token.Value}'.");
             }
 
-            var left = prefixParselet.Parse(this, token);
+            var left = prefix.Parse(this, token);
             // Break when the next token's precedence is less than or equal to the current precedence
             // This will assure that higher precedence operations like multiplication are parsed before lower operations.
             while (GetPrecedence() > precedence)
             {
-                token = Take();
-                IInfixParselet infix;
+                token = Take();                
                 if (!InfixParselets.TryGetValue(token.Identifier, out infix))
                 {
-                    throw new RantException(_src, token, "Invalid operator '" + token.Value + "'.");
+                    throw new RantException(_src, token, "Invalid operator '\{token.Value}'.");
                 }
 
                 // Replace the left expression with the next parsed expression.
@@ -73,27 +74,27 @@ namespace Rant.Arithmetic
             if (_pos == _tokens.Length) return 0;
             IInfixParselet infix;
             InfixParselets.TryGetValue(Peek().Identifier, out infix);
-            return infix != null ? infix.Precedence : 0;
+            return infix?.Precedence ?? 0;
         }
 
-        public Token<MathTokenType> Peek(int distance = 0)
+        public Token<RMathToken> Peek(int distance = 0)
         {
             if (_pos == _tokens.Length) return null;
             if (distance < 0) throw new ArgumentOutOfRangeException("distance");
             return _tokens[_pos + distance];
         }
 
-        public Token<MathTokenType> Take(MathTokenType type)
+        public Token<RMathToken> Take(RMathToken type)
         {
             var token = Take();
             if (token.Identifier != type)
             {
-                throw new RantException(_src, token, String.Concat("Expression expected ", type, ", but found ", token.Identifier, "."));
+                throw new RantException(_src, token, "Expression expected \{type}, but found \{token.Identifier}.");
             }
             return token;
         }
 
-        public Token<MathTokenType> Take()
+        public Token<RMathToken> Take()
         {
             if (_pos < _tokens.Length) return _tokens[_pos++];
             return null;

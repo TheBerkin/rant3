@@ -4,9 +4,9 @@ namespace Rant.Arithmetic
 {
     internal class NameExpression : Expression
     {
-        private readonly Token<MathTokenType> _name;
+        private readonly Token<RMathToken> _name;
 
-        public NameExpression(Token<MathTokenType> token)
+        public NameExpression(Token<RMathToken> token)
         {
             _name = token;
         }

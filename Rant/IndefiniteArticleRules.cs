@@ -4,8 +4,14 @@ using System.Linq;
 
 namespace Rant
 {
+    /// <summary>
+    /// Represents a rule set for determining the correct indefinite article to place before a word.
+    /// </summary>
     public sealed class IndefiniteArticleRules
     {
+        /// <summary>
+        /// Predefined article rules for English.
+        /// </summary>
         public static readonly IndefiniteArticleRules English = new IndefiniteArticleRules(
             new []{"uni", "use", "uri", "urol", "euro", "U.", "one", "uvu"},
             new []{"honest", "honor", "8"},
@@ -18,6 +24,13 @@ namespace Rant
         private readonly IEnumerable<string> _allowWords;
         private readonly IEnumerable<char> _vowels;
 
+        /// <summary>
+        /// Creates a new IndefiniteArticleRules instance with the specified parameters that uses default vowels (a, e, i, o, u).
+        /// </summary>
+        /// <param name="ignorePrefixes">The word prefixes that are to be excluded from vowel tests.</param>
+        /// <param name="allowPrefixes">The word prefixes that are to be included in vowel tests, which would normally test negative.</param>
+        /// <param name="ignoreWords">The words that should be ignored in vowel tests.</param>
+        /// <param name="allowWords">The words that should be included in vowel tests, which would normally test negative.</param>
         public IndefiniteArticleRules(string[] ignorePrefixes, string[] allowPrefixes, string[] ignoreWords, string[] allowWords)
         {
             _vowels = new[] {'a', 'e', 'i', 'o', 'u'};
@@ -27,6 +40,14 @@ namespace Rant
             _allowWords = (allowWords ?? new string[0]);
         }
 
+        /// <summary>
+        /// Creates a new IndefiniteArticleRules instance with the specified parameters.
+        /// </summary>
+        /// <param name="vowels">The vowel characters that the rules should test for.</param>
+        /// <param name="ignorePrefixes">The word prefixes that are to be excluded from vowel tests.</param>
+        /// <param name="allowPrefixes">The word prefixes that are to be included in vowel tests, which would normally test negative.</param>
+        /// <param name="ignoreWords">The words that should be ignored in vowel tests.</param>
+        /// <param name="allowWords">The words that should be included in vowel tests, which would normally test negative.</param>
         public IndefiniteArticleRules(char[] vowels, string[] ignorePrefixes, string[] allowPrefixes, string[] ignoreWords, string[] allowWords)
         {
             _vowels = vowels ?? new[] {'a', 'e', 'i', 'o', 'u'};
@@ -36,30 +57,30 @@ namespace Rant
             _allowWords = (allowWords ?? new string[0]);
         }
 
-        public IEnumerable<char> Vowels
-        {
-            get { return _vowels; }
-        }
+        /// <summary>
+        /// The vowel characters that the rules should test for.
+        /// </summary>
+        public IEnumerable<char> Vowels => _vowels;
 
-        public IEnumerable<string> IgnorePrefixes
-        {
-            get { return _ignorePrefixes; }
-        }
+        /// <summary>
+        /// The word prefixes that are to be excluded from vowel tests.
+        /// </summary>
+        public IEnumerable<string> IgnorePrefixes => _ignorePrefixes;
 
-        public IEnumerable<string> AllowPrefixes
-        {
-            get { return _allowPrefixes; }
-        }
+        /// <summary>
+        /// The word prefixes that are to be included in vowel tests, which would normally test negative.
+        /// </summary>
+        public IEnumerable<string> AllowPrefixes => _allowPrefixes;
 
-        public IEnumerable<string> IgnoreWords
-        {
-            get { return _ignoreWords; }
-        }
+        /// <summary>
+        /// The words that should be ignored in vowel tests.
+        /// </summary>
+        public IEnumerable<string> IgnoreWords => _ignoreWords;
 
-        public IEnumerable<string> AllowWords
-        {
-            get { return _allowWords; }
-        }
+        /// <summary>
+        /// The words that should be included in vowel tests, which would normally test negative.
+        /// </summary>
+        public IEnumerable<string> AllowWords => _allowWords;
 
         internal bool Check(string value)
         {

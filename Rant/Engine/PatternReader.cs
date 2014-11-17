@@ -10,10 +10,10 @@ namespace Rant
     internal class PatternReader
     {
         private readonly RantPattern _source;
-        private readonly Token<TokenType>[] _tokens;
+        private readonly Token<R>[] _tokens;
         private int _pos;
 
-        private readonly Stack<Token<TokenType>> _stack = new Stack<Token<TokenType>>(10); 
+        private readonly Stack<Token<R>> _stack = new Stack<Token<R>>(10); 
 
         public PatternReader(RantPattern source)
         {
@@ -38,31 +38,31 @@ namespace Rant
             get { return _pos >= _tokens.Length; }
         }
 
-        public Token<TokenType> PrevToken
+        public Token<R> PrevToken
         {
             get { return _pos == 0 ? null : _tokens[_pos - 1]; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Token<TokenType> ReadToken()
+        public Token<R> ReadToken()
         {
             if (End) throw new RantException(_source, null, "Unexpected end of file.");
             return _tokens[_pos++];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Token<TokenType> PeekToken()
+        public Token<R> PeekToken()
         {
             if (End) throw new RantException(_source, null, "Unexpected end of file.");
             return _tokens[_pos];
         }
 
-        public bool IsNext(TokenType type)
+        public bool IsNext(R type)
         {
             return !End && _tokens[_pos].Identifier == type;
         }
 
-        public bool Take(TokenType type, bool allowEof = true)
+        public bool Take(R type, bool allowEof = true)
         {
             if (End)
             {
@@ -75,7 +75,7 @@ namespace Rant
             return true;
         }
 
-        public bool TakeLoose(TokenType type, bool allowEof = true)
+        public bool TakeLoose(R type, bool allowEof = true)
         {
             if (End)
             {
@@ -90,7 +90,7 @@ namespace Rant
             return true;
         }
 
-        public bool TakeAny(params TokenType[] types)
+        public bool TakeAny(params R[] types)
         {
             if (End) return false;
             foreach (var type in types)
@@ -102,9 +102,9 @@ namespace Rant
             return false;
         }
 
-        public bool TakeAny(out TokenType result, params TokenType[] types)
+        public bool TakeAny(out R result, params R[] types)
         {
-            result = default(TokenType);
+            result = default(R);
             if (End) return false;
             foreach (var type in types)
             {
@@ -116,7 +116,7 @@ namespace Rant
             return false;
         }
 
-        public bool TakeAnyLoose(params TokenType[] types)
+        public bool TakeAnyLoose(params R[] types)
         {
             if (End) return false;
             SkipSpace();
@@ -130,9 +130,9 @@ namespace Rant
             return false;
         }
 
-        public bool TakeAnyLoose(out TokenType result, params TokenType[] types)
+        public bool TakeAnyLoose(out R result, params R[] types)
         {
-            result = default(TokenType);
+            result = default(R);
             if (End) return false;
             SkipSpace();
             foreach (var type in types)
@@ -146,7 +146,7 @@ namespace Rant
             return false;
         }
 
-        public bool TakeAll(TokenType type, bool allowEof = true)
+        public bool TakeAll(R type, bool allowEof = true)
         {
             if (End)
             {
@@ -162,7 +162,7 @@ namespace Rant
             return true;
         }
 
-        public Token<TokenType> Read(TokenType type, string expectedTokenName = null)
+        public Token<R> Read(R type, string expectedTokenName = null)
         {
             if (End) 
                 throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
@@ -174,7 +174,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Token<TokenType> ReadLoose(TokenType type, string expectedTokenName = null)
+        public Token<R> ReadLoose(R type, string expectedTokenName = null)
         {
             if (End)
                 throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
@@ -189,7 +189,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TakeAllUntil(TokenType takeType, TokenType untilType, bool allowEof = true)
+        public bool TakeAllUntil(R takeType, R untilType, bool allowEof = true)
         {
             if (End)
             {
@@ -199,7 +199,7 @@ namespace Rant
             }
 
             int i = _pos;
-            TokenType t;
+            R t;
             while (i < _tokens.Length)
             {
                 t = _tokens[_pos].Identifier;
@@ -223,20 +223,20 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool SkipSpace()
         {
-            return TakeAll(TokenType.Whitespace);
+            return TakeAll(R.Whitespace);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<TokenType>>> ReadMultiItemScope(TokenType open, TokenType close, TokenType separator, Brackets bracketPairs)
+        public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Brackets bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
 
             // Assumes first bracket was already read.
-            _stack.Push(new Token<TokenType>(open, RantLexer.Rules.GetSymbolForId(open)));
+            _stack.Push(new Token<R>(open, RantLexer.Rules.GetSymbolForId(open)));
             
             int start = _pos;
-            Token<TokenType> token = null;
+            Token<R> token = null;
 
             while (!End)
             {
@@ -273,9 +273,9 @@ namespace Rant
                         yield return _tokens
                         .SkipWhile((t, i) => i < start) // Cut to start of section
                         .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
-                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove leading whitespace
+                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove leading whitespace
                         .Reverse() // Reverse to trim end
-                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove trailing whitespace
+                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove trailing whitespace
                         .Reverse() // Reverse back
                         .ToArray();
                         _pos++;
@@ -289,9 +289,9 @@ namespace Rant
                     yield return _tokens
                         .SkipWhile((t, i) => i < start) // Cut to start of section
                         .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
-                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove leading whitespace
+                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove leading whitespace
                         .Reverse() // Reverse to trim end
-                        .SkipWhile(t => t.Identifier == TokenType.Whitespace) // Remove trailing whitespace
+                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove trailing whitespace
                         .Reverse() // Reverse back
                         .ToArray();
                     _pos++;
@@ -306,11 +306,11 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<Token<TokenType>> ReadToScopeClose(TokenType open, TokenType close, Brackets bracketPairs)
+        public IEnumerable<Token<R>> ReadToScopeClose(R open, R close, Brackets bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
-            Token<TokenType> token = null;
+            Token<R> token = null;
             while (!End)
             {
                 token = ReadToken();

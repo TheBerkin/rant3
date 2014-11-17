@@ -4,10 +4,10 @@ namespace Rant.Arithmetic
 {
     internal class PostfixOperatorExpression : Expression
     {
-        private readonly Token<MathTokenType> _token;
+        private readonly Token<RMathToken> _token;
         private readonly Expression _left;
 
-        public PostfixOperatorExpression(Token<MathTokenType> token, Expression left)
+        public PostfixOperatorExpression(Token<RMathToken> token, Expression left)
         {
             _token = token;
             _left = left;
@@ -22,13 +22,13 @@ namespace Rant.Arithmetic
             }
             switch (_token.Identifier)
             {
-                case MathTokenType.Increment:
+                case RMathToken.Increment:
                 {
                     double d = name.Evaluate(parser, ii);
                     ii.Engine.Variables.SetVar(name.Name, d + 1);
                     return d;
                 }
-                case MathTokenType.Decrement:
+                case RMathToken.Decrement:
                 {
                     double d = name.Evaluate(parser, ii);
                     ii.Engine.Variables.SetVar(name.Name, d - 1);

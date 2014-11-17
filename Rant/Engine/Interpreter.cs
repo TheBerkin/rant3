@@ -241,7 +241,7 @@ namespace Rant
 
         public void Print(object input)
         {
-            _stateStack.Peek().Print(input.ToString());
+            _stateStack.Peek().Print(input?.ToString());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -258,7 +258,7 @@ namespace Rant
 
             State state;                // The current state object being used
             PatternReader reader;        // The current source reader being used
-            Token<TokenType> token;     // The next token in the stream
+            Token<R> token;     // The next token in the stream
 
             // ReSharper restore TooWideLocalVariableScope
 
@@ -312,7 +312,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool DoElement(Token<TokenType> token, PatternReader reader, State state)
+        private bool DoElement(Token<R> token, PatternReader reader, State state)
         {
             TokenFunc func;
             if (TokenFuncs.TryGetValue(token.Identifier, out func)) return func(this, token, reader, state);

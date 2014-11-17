@@ -13,12 +13,12 @@ namespace Rant.Blueprints
     internal class ReplacerBlueprint : Blueprint
     {
         private readonly Regex _regex;
-        private readonly IEnumerable<Token<TokenType>> _evaluator;
+        private readonly IEnumerable<Token<R>> _evaluator;
         private MatchCollection _matches;
         private string _input;
         private bool _inputCollected;
 
-        public ReplacerBlueprint(Interpreter interpreter, Regex regex, IEnumerable<Token<TokenType>> evaluator) : base(interpreter)
+        public ReplacerBlueprint(Interpreter interpreter, Regex regex, IEnumerable<Token<R>> evaluator) : base(interpreter)
         {
             _evaluator = evaluator;
             _regex = regex;

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rant.Compiler
 {
-    internal class Brackets : IEnumerable<Tuple<TokenType, TokenType>>
+    internal class Brackets : IEnumerable<Tuple<R, R>>
     {
         #region Static members
 
@@ -13,26 +13,26 @@ namespace Rant.Compiler
         /// </summary>
         public static readonly Brackets All = new Brackets
         {
-            {TokenType.LeftAngle, TokenType.RightAngle},
-            {TokenType.LeftSquare, TokenType.RightSquare},
-            {TokenType.LeftParen, TokenType.RightParen},
-            {TokenType.LeftCurly, TokenType.RightCurly}
+            {R.LeftAngle, R.RightAngle},
+            {R.LeftSquare, R.RightSquare},
+            {R.LeftParen, R.RightParen},
+            {R.LeftCurly, R.RightCurly}
         };
 
         #endregion
 
-        private readonly List<Tuple<TokenType, TokenType>> _pairs;
-        private readonly HashSet<TokenType> _openings;
-        private readonly HashSet<TokenType> _closings; 
+        private readonly List<Tuple<R, R>> _pairs;
+        private readonly HashSet<R> _openings;
+        private readonly HashSet<R> _closings; 
 
         public Brackets()
         {
-            _pairs = new List<Tuple<TokenType, TokenType>>(5);
-            _openings = new HashSet<TokenType>();
-            _closings = new HashSet<TokenType>();
+            _pairs = new List<Tuple<R, R>>(5);
+            _openings = new HashSet<R>();
+            _closings = new HashSet<R>();
         }
 
-        public void Add(TokenType openingToken, TokenType closingToken)
+        public void Add(R openingToken, R closingToken)
         {
             if (openingToken == closingToken)
                 throw new ArgumentException("The opening and closing tokens cannot match. Ever. You monster.");
@@ -46,22 +46,22 @@ namespace Rant.Compiler
             _pairs.Add(Tuple.Create(openingToken, closingToken));
         }
 
-        public bool Contains(TokenType opening, TokenType closing)
+        public bool Contains(R opening, R closing)
         {
             return _pairs.Any(pair => pair.Item1 == opening && pair.Item2 == closing);
         }
 
-        public bool ContainsOpening(TokenType openingToken)
+        public bool ContainsOpening(R openingToken)
         {
             return _openings.Contains(openingToken);
         }
 
-        public bool ContainsClosing(TokenType closingToken)
+        public bool ContainsClosing(R closingToken)
         {
             return _closings.Contains(closingToken);
         }
 
-        public TokenType GetOpening(TokenType closingToken)
+        public R GetOpening(R closingToken)
         {
             foreach (var pair in _pairs)
             {
@@ -70,7 +70,7 @@ namespace Rant.Compiler
             throw new KeyNotFoundException("Cannot find the specified closing token type in this set.");
         }
 
-        public TokenType GetClosing(TokenType openingToken)
+        public R GetClosing(R openingToken)
         {
             foreach (var pair in _pairs)
             {
@@ -79,7 +79,7 @@ namespace Rant.Compiler
             throw new KeyNotFoundException("Cannot find the specified opening token type in this set.");
         }
 
-        public IEnumerator<Tuple<TokenType, TokenType>> GetEnumerator()
+        public IEnumerator<Tuple<R, R>> GetEnumerator()
         {
             return _pairs.GetEnumerator();
         }

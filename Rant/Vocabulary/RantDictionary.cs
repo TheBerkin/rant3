@@ -28,7 +28,7 @@ namespace Rant.Vocabulary
         {
             if (!Util.ValidateName(name))
             {
-                throw new FormatException("Invalid dictionary name: '" + name + "'");
+                throw new FormatException("Invalid dictionary name: '\{name}'");
             }
 
             if (!subtypes.All(Util.ValidateName))
@@ -111,13 +111,13 @@ namespace Rant.Vocabulary
                 {
                     case CarrierSyncType.Match:
                         entry =
-                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n));
+                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.ID.Hash(), n));
                         break;
                     case CarrierSyncType.Unique:
-                        entry = syncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng);
+                        entry = syncState.GetUniqueEntry(query.Carrier.ID, pool, rng);
                         break;
                     case CarrierSyncType.Rhyme:
-                        entry = syncState.GetRhymingEntry(query.Carrier.SyncId, index, pool, rng);
+                        entry = syncState.GetRhymingEntry(query.Carrier.ID, index, pool, rng);
                         break;
                 }
             }

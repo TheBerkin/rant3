@@ -10,7 +10,7 @@ using Rant.Stringes;
 
 namespace Rant
 {
-    internal class Util
+    internal static class Util
     {
         private static readonly Dictionary<char, Func<RNG, char>> EscapeChars = new Dictionary<char, Func<RNG, char>>
         {

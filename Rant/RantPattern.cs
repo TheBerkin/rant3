@@ -12,14 +12,14 @@ namespace Rant
     public sealed class RantPattern
     {
         private readonly string _code;
-        private readonly IEnumerable<Token<TokenType>> _tokens;
+        private readonly IEnumerable<Token<R>> _tokens;
         private readonly RantPatternSource _type;
         private readonly string _name;
 
         // This is used to cache item locations within blocks, which eliminates unnecessary multiple traversals of the blocks' tokens.
         // Item1 = Block items
         // Item2 = End position of block
-        private readonly Dictionary<Token<TokenType>, Tuple<IEnumerable<Token<TokenType>>[], int>> _blockJumpTable = new Dictionary<Token<TokenType>, Tuple<IEnumerable<Token<TokenType>>[], int>>();
+        private readonly Dictionary<Token<R>, Tuple<IEnumerable<Token<R>>[], int>> _blockJumpTable = new Dictionary<Token<R>, Tuple<IEnumerable<Token<R>>[], int>>();
 
         /// <summary>
         /// The name of the source code.
@@ -45,17 +45,17 @@ namespace Rant
             get { return _code; }
         }
 
-        internal void CacheBlock(Token<TokenType> start, IEnumerable<Token<TokenType>>[] block, int end)
+        internal void CacheBlock(Token<R> start, IEnumerable<Token<R>>[] block, int end)
         {
             _blockJumpTable[start] = Tuple.Create(block, end);
         }
 
-        internal bool TryGetCachedBlock(Token<TokenType> start, out Tuple<IEnumerable<Token<TokenType>>[], int> block)
+        internal bool TryGetCachedBlock(Token<R> start, out Tuple<IEnumerable<Token<R>>[], int> block)
         {
             return _blockJumpTable.TryGetValue(start, out block);
         }
 
-        internal IEnumerable<Token<TokenType>> Tokens
+        internal IEnumerable<Token<R>> Tokens
         {
             get { return _tokens; }
         }
@@ -68,7 +68,7 @@ namespace Rant
             _tokens = RantLexer.GenerateTokens(code);
         }
 
-        internal RantPattern(RantPattern derived, IEnumerable<Token<TokenType>> sub)
+        internal RantPattern(RantPattern derived, IEnumerable<Token<R>> sub)
         {
             _name = derived._name;
             _type = derived._type;
@@ -78,7 +78,7 @@ namespace Rant
             _tokens = sub;
         }
 
-        internal RantPattern(string name, RantPattern derived, IEnumerable<Token<TokenType>> sub)
+        internal RantPattern(string name, RantPattern derived, IEnumerable<Token<R>> sub)
         {
             _name = name;
             _type = derived._type;
@@ -93,10 +93,7 @@ namespace Rant
         /// </summary>
         /// <param name="code">The code to compile.</param>
         /// <returns></returns>
-        public static RantPattern FromString(string code)
-        {
-            return new RantPattern("Source", RantPatternSource.String, code);
-        }
+        public static RantPattern FromString(string code) => new RantPattern("Source", RantPatternSource.String, code);
 
         /// <summary>
         /// Compiles a Source object from a string with the specified name.
@@ -104,39 +101,24 @@ namespace Rant
         /// <param name="name">The name to give the source.</param>
         /// <param name="code">The code to compile.</param>
         /// <returns></returns>
-        public static RantPattern FromString(string name, string code)
-        {
-            return new RantPattern(name, RantPatternSource.String, code);
-        }
+        public static RantPattern FromString(string name, string code) => new RantPattern(name, RantPatternSource.String, code);
 
-        internal static RantPattern Derived(RantPattern source, IEnumerable<Token<TokenType>> tokens)
-        {
-            return new RantPattern(source, tokens);
-        }
-        
+        internal static RantPattern Derived(RantPattern source, IEnumerable<Token<R>> tokens) => new RantPattern(source, tokens);
+
         // Used for applying a different name to subroutines
-        internal static RantPattern Derived(string name, RantPattern source, IEnumerable<Token<TokenType>> tokens)
-        {
-            return new RantPattern(name, source, tokens);
-        }
+        internal static RantPattern Derived(string name, RantPattern source, IEnumerable<Token<R>> tokens) => new RantPattern(name, source, tokens);
 
         /// <summary>
         /// Loads the file located at the specified path and creates a Source object from its contents.
         /// </summary>
         /// <param name="path">The path to the file to load.</param>
         /// <returns></returns>
-        public static RantPattern FromFile(string path)
-        {
-            return new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
-        }
+        public static RantPattern FromFile(string path) => new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
 
         /// <summary>
         /// Returns a string describing the source.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return String.Concat("(", Type, ") ", Name);
-        }
+        public override string ToString() => "(\{Type}) \{Name}";
     }
 }

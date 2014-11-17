@@ -34,7 +34,7 @@ namespace Rant
             get { return _argCount; }
         }
 
-        public static Subroutine FromTokens(string name, RantPattern derivedSource, IEnumerable<Token<TokenType>> tokens, Tuple<string, ParamFlags>[] parameters)
+        public static Subroutine FromTokens(string name, RantPattern derivedSource, IEnumerable<Token<R>> tokens, Tuple<string, ParamFlags>[] parameters)
         {
             return new Subroutine(RantPattern.Derived(name, derivedSource, tokens), parameters);
         }

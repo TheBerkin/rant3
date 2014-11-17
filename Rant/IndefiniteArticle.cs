@@ -20,18 +20,12 @@ namespace Rant
         /// <summary>
         /// The consonant form of the current indefinite article.
         /// </summary>
-        public string ConsonantForm
-        {
-            get { return _consonantForm; }
-        }
+        public string ConsonantForm => _consonantForm;
 
         /// <summary>
         /// The vowel form of the current indefinite article.
         /// </summary>
-        public string VowelForm
-        {
-            get { return _vowelForm; }
-        }
+        public string VowelForm => _vowelForm;
 
         /// <summary>
         /// Creates a new IndefiniteArticle object with the specified values and rules.

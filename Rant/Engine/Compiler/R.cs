@@ -1,6 +1,9 @@
 ﻿namespace Rant.Compiler
 {
-    internal enum TokenType
+    /// <summary>
+    /// Contains all the token identifiers for the Rant lexer.
+    /// </summary>
+    internal enum R
     {
         /// <summary>
         /// Regular text with no special function.

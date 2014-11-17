@@ -4,10 +4,10 @@ namespace Rant.Arithmetic
 {
     internal class PrefixOperatorExpression : Expression
     {
-        private readonly Token<MathTokenType> _token;
+        private readonly Token<RMathToken> _token;
         private readonly Expression _right;
 
-        public PrefixOperatorExpression(Token<MathTokenType> token, Expression right)
+        public PrefixOperatorExpression(Token<RMathToken> token, Expression right)
         {
             _token = token;
             _right = right;
@@ -18,9 +18,9 @@ namespace Rant.Arithmetic
             var name = _right as NameExpression;
             switch (_token.Identifier)
             {
-                case MathTokenType.Minus:
+                case RMathToken.Minus:
                     return -_right.Evaluate(parser, ii);
-                case MathTokenType.Increment:
+                case RMathToken.Increment:
                 {
                     if (name == null)
                     {
@@ -30,7 +30,7 @@ namespace Rant.Arithmetic
                     ii.Engine.Variables.SetVar(name.Name, d);
                     return d;
                 }
-                case MathTokenType.Decrement:
+                case RMathToken.Decrement:
                 {
                     if (name == null)
                     {

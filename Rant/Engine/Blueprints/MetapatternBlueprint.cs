@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Rant.Compiler;
-
 namespace Rant.Blueprints
 {
     internal sealed class MetapatternBlueprint : Blueprint
@@ -14,7 +12,7 @@ namespace Rant.Blueprints
         public override bool Use()
         {
             var srcstr = I.PopResultString();
-            var src = new RantPattern("Meta_" + String.Format("{0:X16}", srcstr.Hash()), RantPatternSource.Metapattern, srcstr);
+            var src = new RantPattern("Meta_\{srcstr.Hash():X16}", RantPatternSource.Metapattern, srcstr);
             I.PushState(new Interpreter.State(I, src, I.CurrentState.Output));
             return true;
         }

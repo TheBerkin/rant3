@@ -1,47 +1,48 @@
 ﻿namespace Rant.Vocabulary
 {
+    /// <summary>
+    /// Represents information that can be used to synchronize query selections based on certain criteria.
+    /// </summary>
     public sealed class Carrier
     {
-        private CarrierSyncType _syncType;
-        private string _syncId;
-        private string _rhymeId;
-        private int _syllablesMin, _syllablesMax;
+        /// <summary>
+        /// The type of synchronization to perform with the carrier.
+        /// </summary>
+        public CarrierSyncType SyncType { get; set; }
 
-        public CarrierSyncType SyncType
-        {
-            get { return _syncType; }
-            set { _syncType = value; }
-        }
+        /// <summary>
+        /// The ID assigned to the carrier.
+        /// </summary>
+        public string ID { get; set; }
 
-        public string SyncId
-        {
-            get { return _syncId; }
-            set { _syncId = value; }
-        }
+        /// <summary>
+        /// (Unused) The minimum number of syllables the selected term should have.
+        /// </summary>
+        public int SyllablesMin { get; set; }
 
-        public int SyllablesMin
-        {
-            get { return _syllablesMin; }
-            set { _syllablesMin = value; }
-        }
+        /// <summary>
+        /// (Unused) The maximum number of syllables the selected term should have.
+        /// </summary>
+        public int SyllablesMax { get; set; }
 
-        public int SyllablesMax
+        /// <summary>
+        /// Creates a new Carrier instance with the specified parameters.
+        /// </summary>
+        /// <param name="syncType">The type of synchronization to perform with the carrier.</param>
+        /// <param name="id">The ID assigned to the carrier.</param>
+        /// <param name="syllablesMin">The minimum number of syllables the selected term should have.</param>
+        /// <param name="syllablesMax">The maximum number of syllables the selected term should have.</param>
+        public Carrier(CarrierSyncType syncType, string id, int syllablesMin, int syllablesMax)
         {
-            get { return _syllablesMax; }
-            set { _syllablesMax = value; }
-        }
-
-        public Carrier(CarrierSyncType syncType, string syncId, int syllablesMin, int syllablesMax)
-        {
-            _syncType = syncType;
-            _syncId = syncId ?? "";
-            _syllablesMin = syllablesMin;
-            _syllablesMax = syllablesMax;
+            SyncType = syncType;
+            ID = id ?? "";
+            SyllablesMin = syllablesMin;
+            SyllablesMax = syllablesMax;
         }
     }
 
     /// <summary>
-    /// 
+    /// Defines synchronization types for query carriers.
     /// </summary>
     public enum CarrierSyncType
     {

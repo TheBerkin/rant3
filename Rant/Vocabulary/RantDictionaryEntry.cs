@@ -19,6 +19,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
+        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
         public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms.Select(s => new RantDictionaryTerm(s)).ToArray();
@@ -33,6 +34,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
+        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
         public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms;
@@ -71,9 +73,6 @@ namespace Rant.Vocabulary
         /// <summary>
         /// Indicates if the entry is marked as "Not Safe For Work."
         /// </summary>
-        public bool NSFW
-        {
-            get { return _nsfw; }
-        }
+        public bool NSFW => _nsfw;
     }
 }

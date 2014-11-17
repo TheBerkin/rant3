@@ -16,7 +16,7 @@ namespace Rant.Blueprints
 
         private readonly Argument[] _args;
 
-        public FuncTagBlueprint(Interpreter interpreter, RantPattern source, Stringe name, IEnumerable<Token<TokenType>>[] argData = null)
+        public FuncTagBlueprint(Interpreter interpreter, RantPattern source, Stringe name, IEnumerable<Token<R>>[] argData = null)
             : base(interpreter)
         {
             Source = source;
