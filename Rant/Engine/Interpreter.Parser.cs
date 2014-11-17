@@ -87,7 +87,7 @@ namespace Rant
                         Query q;
                         if (!interpreter.LocalQueryMacros.TryGetValue(macroName, out q) && !interpreter.Engine.GlobalQueryMacros.TryGetValue(macroName, out q))
                         {
-                            throw new RantException(reader.Source, macroNameToken, "Nonexistent query macro '" + macroName + "'");
+                            throw new RantException(reader.Source, macroNameToken, "Nonexistent query macro '\{macroName}'");
                         }
                         interpreter.Print(interpreter.Engine.Vocabulary?.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
                         return false;
@@ -158,7 +158,7 @@ namespace Rant
                             type = CarrierSyncType.Rhyme;
                             break;
                         default:
-                            throw new RantException(reader.Source, typeToken, "Unrecognized token '" + typeToken.Value + "' in carrier.");
+                            throw new RantException(reader.Source, typeToken, "Unrecognized token '\{typeToken.Value}' in carrier.");
                     }
 
                     reader.SkipSpace();
@@ -180,7 +180,7 @@ namespace Rant
                 else if (!reader.SkipSpace())
                 {
                     var t = !reader.End ? reader.ReadToken() : null;
-                    throw new RantException(reader.Source, t, t == null ? "Unexpected end-of-file in query." : "Unexpected token '" + t.Value + "' in query.");
+                    throw new RantException(reader.Source, t, t == null ? "Unexpected end-of-file in query." : "Unexpected token '\{t.Value}' in query.");
                 }
             }
 
@@ -245,7 +245,7 @@ namespace Rant
             }
 
             if (!ValidateName(name.Value.Trim()))
-                throw new RantException(reader.Source, name, "Invalid tag name '" + name.Value + "'");
+                throw new RantException(reader.Source, name, "Invalid tag name '\{name.Value}'");
 
             bool none = false;
             if (!reader.Take(R.Colon))
@@ -291,7 +291,7 @@ namespace Rant
             var name = nameToken.Value;
 
             if (!ValidateName(name))
-                throw new RantException(reader.Source, nameToken, "Invalid list name '" + name + "'");
+                throw new RantException(reader.Source, nameToken, "Invalid list name '\{name}'");
 
             List<string> list;
             if (create)
@@ -310,7 +310,7 @@ namespace Rant
 
             if (!interpreter.LocalLists.TryGetValue(name, out list) &&
                 !interpreter.Engine.GlobalLists.TryGetValue(name, out list))
-                throw new RantException(reader.Source, nameToken, "Tried to access nonexistent list '" + name + "'");
+                throw new RantException(reader.Source, nameToken, "Tried to access nonexistent list '\{name}'");
 
             if (clear)
             {
@@ -333,7 +333,7 @@ namespace Rant
                         var srcName = _.PopResultString();
                         List<string> src;
                         if (!_.GetList(srcName, out src))
-                            throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '" + srcName + "'");
+                            throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '\{srcName}'");
                         if (atStart)
                         {
                             list.InsertRange(0, src);
@@ -426,9 +426,9 @@ namespace Rant
                         var valueString = _.PopResultString();
                         int index;
                         if (!Int32.TryParse(indexString, out index))
-                            throw new RantException(args[0], reader.Source, "'" + indexString + "' is not a valid index. Index must be a non-negative integer.");
+                            throw new RantException(args[0], reader.Source, "'\{indexString}' is not a valid index. Index must be a non-negative integer.");
                         if (index >= list.Count)
-                            throw new RantException(args[0], reader.Source, "Index was out of range. (" + index + " > " + (list.Count - 1) + ")");
+                            throw new RantException(args[0], reader.Source, "Index was out of range. (\{index} > \{list.Count - 1})");
 
                         list[index] = valueString;
                         return false;
@@ -443,7 +443,7 @@ namespace Rant
                     List<string> srcList;
                     var srcName = _.PopResultString();
                     if (!_.GetList(srcName, out srcList))
-                        throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '" + srcName + "'");
+                        throw new RantException(nameTokens, reader.Source, "Tried to access nonexistent list '\{srcName}'");
                     list.Clear();
                     list.AddRange(srcList);
                     return false;
@@ -472,7 +472,7 @@ namespace Rant
                         {
                             int index;
                             if (!Int32.TryParse(value, out index) || index < 0)
-                                throw new RantException(valueTokens, reader.Source, "'" + value + "' is not a valid index. Index must be a non-negative integer.");
+                                throw new RantException(valueTokens, reader.Source, "'\{value}' is not a valid index. Index must be a non-negative integer.");
                             if (index >= list.Count) return false;
                             list.RemoveAt(index);
                             return false;
@@ -538,9 +538,9 @@ namespace Rant
                         {
                             int index;
                             if (!Int32.TryParse(arg, out index))
-                                throw new RantException(valueTokens, reader.Source, "'" + arg + "' is not a valid index. Index must be a non-negative integer.");
+                                throw new RantException(valueTokens, reader.Source, "'\{arg}' is not a valid index. Index must be a non-negative integer.");
                             if (index >= list.Count)
-                                throw new RantException(valueTokens, reader.Source, "Index was out of range. (" + arg + " > " + (list.Count - 1) + ")");
+                                throw new RantException(valueTokens, reader.Source, "Index was out of range. (\{arg} > \{list.Count - 1})");
 
                             _.Print(list[index]);
                         }
@@ -574,7 +574,7 @@ namespace Rant
         {
             var name = reader.ReadToken();
             if (!ValidateName(name.Value))
-                throw new RantException(reader.Source, name, "Invalid subroutine name '" + name.Value + "'");
+                throw new RantException(reader.Source, name, "Invalid subroutine name '\{name.Value}'");
             
             bool none = false;
 
@@ -592,14 +592,14 @@ namespace Rant
             if (none)
             {
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, 0)) == null)
-                    throw new RantException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and 0 parameters.");
+                    throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and 0 parameters.");
             }
             else
             {
                 args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon,
                     Brackets.All).ToArray();
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
-                    throw new RantException(reader.Source, name, "No subroutine was found with the name '" + name.Value + "' and " + args.Length + " parameter" + (args.Length != 1 ? "s" : "") + ".");
+                    throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and \{args.Length} parameter\{(args.Length != 1 ? "s" : "")}.");
             }
 
             state.AddPreBlueprint(new SubCallBlueprint(interpreter, reader.Source, sub, args));
@@ -617,7 +617,7 @@ namespace Rant
             var tName = reader.Read(R.Text, "subroutine name");
 
             if (!ValidateName(tName.Value))
-                throw new RantException(reader.Source, tName, "Invalid subroutine name: '" + tName.Value + "'");
+                throw new RantException(reader.Source, tName, "Invalid subroutine name: '\{tName.Value}'");
             
             if (!reader.Take(R.Colon))
             {
@@ -662,7 +662,7 @@ namespace Rant
             reader.Read(R.Colon);
 
             var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Brackets.All).ToArray();
-            if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected 2 arguments, but got " + args.Length + ".");
+            if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected two arguments, but got \{args.Length}.");
 
             state.AddPreBlueprint(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
 
@@ -686,7 +686,7 @@ namespace Rant
 
                 List<string> list;
                 if (!interpreter.LocalLists.TryGetValue(listName, out list) && !interpreter.Engine.GlobalLists.TryGetValue(listName, out list))
-                    throw new RantException(reader.Source, listNameToken, "Tried to access nonexistent list '" + listName + "'");
+                    throw new RantException(reader.Source, listNameToken, "Tried to access nonexistent list '\{listName}'");
 
                 var listItems = list.Any()
                     ? list.Select(str => new[] {new Token<R>(R.Text, str)}.AsEnumerable()).ToArray()
