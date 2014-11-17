@@ -33,10 +33,7 @@ namespace Rant.Vocabulary
 
             if (!subtypes.All(Util.ValidateName))
             {
-                throw new FormatException("Invalid subtype name(s): " + 
-                    subtypes.Where(s => !Util.ValidateName(s))
-                    .Select(s => String.Concat("'", s, "'"))
-                    .Aggregate((c,n) => c + ", " + n));
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'")));
             }
 
             _subtypes = subtypes;
@@ -47,26 +44,17 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The entries stored in the dictionary.
         /// </summary>
-        public RantDictionaryEntry[] Entries
-        {
-            get { return _words; }
-        }
+        public RantDictionaryEntry[] Entries => _words;
 
         /// <summary>
         /// The subtypes in the dictionary.
         /// </summary>
-        public string[] Subtypes
-        {
-            get { return _subtypes; }
-        }
+        public string[] Subtypes => _subtypes;
 
         /// <summary>
         /// The name of the dictionary.
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         private int GetSubtypeIndex(string subtype)
         {
