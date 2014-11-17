@@ -28,17 +28,14 @@ namespace Rant
             get
             {
                 Channel chan;
-                return _channels.TryGetValue(index, out chan) ? chan : new Channel("", ChannelVisibility.Public);
+                return _channels.TryGetValue(index, out chan) ? chan : null;
             }
         }
 
         /// <summary>
         /// The main output channel.
         /// </summary>
-        public string MainValue
-        {
-            get { return this["main"].Value; }
-        }
+        public string MainValue => this["main"].Value;
 
         /// <summary>
         /// Returns an enumerator that iterates through the channels in the collection.
@@ -58,18 +55,12 @@ namespace Rant
         /// Returns the output from the "main" channel.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return MainValue;
-        }
+        public override string ToString() => MainValue;
 
         /// <summary>
         /// Returns the output from the "main" channel.
         /// </summary>
         /// <returns></returns>
-        public static implicit operator string(Output output)
-        {
-            return output.MainValue;
-        }
+        public static implicit operator string(Output output) => output.MainValue;
     }
 }
