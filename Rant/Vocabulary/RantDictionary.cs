@@ -127,7 +127,7 @@ namespace Rant.Vocabulary
             }
 
 
-            return entry == null ? "[?]" : entry.Terms[index].Value;
+            return entry == null ? "[?]" : entry[index];
         }
     }
 }

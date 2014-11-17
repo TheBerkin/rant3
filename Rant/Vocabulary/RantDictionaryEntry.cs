@@ -44,6 +44,13 @@ namespace Rant.Vocabulary
         }
 
         /// <summary>
+        /// Gets the value for the specified term index in the entry. If the index is out of range, [Missing Term] will be returned.
+        /// </summary>
+        /// <param name="index">The index of the term whose value to request.</param>
+        /// <returns></returns>
+        public string this[int index] => (index < 0 || index >= _terms.Length) ? "[Missing Term]" : _terms[index].Value;
+
+        /// <summary>
         /// The terms in the entry.
         /// </summary>
         public RantDictionaryTerm[] Terms
