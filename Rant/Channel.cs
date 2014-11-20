@@ -49,6 +49,7 @@ namespace Rant
 
         internal void Write(string value)
         {
+            if (value == null) return;
             _length += value.Length;
             _currentBuffer.Append(Util.Capitalize(value, ref _caps, ref _lastChar));
             UpdateArticle(_currentBuffer);
@@ -144,23 +145,14 @@ namespace Rant
             return len - bufCharA;
         }
 
-        internal int CurrentBufferIndex
-        {
-            get { return _bufferCount; }
-        }
+        internal int CurrentBufferIndex => _bufferCount;
 
-        internal int CurrentBufferLength
-        {
-            get { return _currentBuffer.Length; }
-        }
+        internal int CurrentBufferLength => _currentBuffer.Length;
 
         /// <summary>
         /// The number of characters in the output.
         /// </summary>
-        public int Length
-        {
-            get { return _length; }
-        }
+        public int Length => _length;
 
         /// <summary>
         /// The output string stored in the channel.
@@ -182,9 +174,6 @@ namespace Rant
         /// Returns a string that identifies the channel by name and visibility.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return String.Concat(Name, " (", Visiblity, ")");
-        }
+        public override string ToString() => "\{Name} (\{Visiblity})";
     }
 }

@@ -1,29 +1,39 @@
 <p align="center">
-<img src="http://i.imgur.com/TFMydmj.png" alt="Rant logo"></img>
-<br/><b><i>Generating text has never been this simple.</i></b>
+<img src="http://i.imgur.com/cDFy2w7.png" alt="Rant logo"></img>
 </p>
 
-**Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
+##What is Rant?
+
+Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
 
 ###Features
+Some of the highlights of what Rant offers:
 
-* Use dictionaries to add random words
-* Flexible dictionary queries
-* Random branching
-* Printing loops (repeaters) with optional separators
-* Automatic capitalization modes
-* Automatic indefinite articles (a/an)
-* Multiple outputs
-* Change existing output
-* Subroutines
-* Self-generating code (metapatterns)
-* Arithmetic
-* Control flow with flags and comparisons
+* Recursive, branching choices with various selection strategies (random, ordered, locked...)
+* Access to external dictionaries using queries
+* Word rhyming using pronunciation metadata
+* Synchronize sections of random output
+* Automatic capitalization
+* Indefinite article (a/an) automation
+* Multiple outputs (channels)
 * Probability modifiers
-* Lists
+* Overwriting (targets)
+* Looping (repeaters)
+* Conditionals
+* List objects
+* Subroutines
+* Arithmetic
 * *And much, much more...*
 
-###Examples
+##Examples
+
+**Generate random sentence**
+```
+<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <time_noun.plural-dayofweek>.
+```
+```
+Alick likes to mount shuttlecocks with his pet bat on Mondays.
+```
 
 **Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
 ```
@@ -49,17 +59,7 @@ Alternatively...
 
 ---
 
-**Generate random sentences**
-```
-<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <time_noun.plural-dayofweek>.
-```
-```
-Alick likes to mount shuttlecocks with his pet bat on Mondays.
-```
-
----
-
-**Insert text into existing output (backwriting)**
+**Insert text into existing output**
 ```
 The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mark:b]\"
 [send:N;[dist:a;b]]
@@ -69,7 +69,7 @@ The following word is 7 characters long: "kumquat"
 ```
 
 ##License
-Rant is licensed under the [MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
+Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
 ##Documentation
 See the [wiki](http://github.com/TheBerkin/Rant/wiki) for full documentation of the API and Rant language, as well as additional example code.

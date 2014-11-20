@@ -10,19 +10,18 @@ namespace Rant.Vocabulary
     public sealed class CarrierSyncState
     {
         /// <summary>
+        /// Unique carrier table.
         /// Wherein the KEY is the UNIQUE ID, and the VALUE is the collection of used entries.
         /// </summary>
         private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _uniqueTable = new Dictionary<string, HashSet<RantDictionaryEntry>>();
 
         /// <summary>
+        /// Rhyme carrier table.
         /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the ROOT TERM and USED TERMS.
         /// </summary>
         private readonly Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>(); 
+        
 
-        public CarrierSyncState()
-        {
-            
-        }
 
         internal RantDictionaryEntry GetUniqueEntry(string uniqueId, IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
         {

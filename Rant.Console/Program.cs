@@ -1,48 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Rant;
 using Rant.Vocabulary;
+
+using System.Console;
+
+using RantConsole.CmdLine;
 
 namespace RantConsole
 {
     class Program
     {
-        private static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
-        private static readonly HashSet<string> Flags = new HashSet<string>();
-
-        private static string GetArg(string name)
-        {
-            string arg;
-            if (!Arguments.TryGetValue(name.ToLower(), out arg))
-            {
-                arg = "";
-            }
-            return arg;
-        }
-
         static void Main(string[] args)
         {
-            foreach (var argKeyVal in args.Where(arg => arg.StartsWith("-")).Select(arg => arg.TrimStart('-').Split(new[] {'='}, 2)))
-            {
-                if (argKeyVal.Length == 2)
-                {
-                    Arguments[argKeyVal[0].ToLower().Trim()] = argKeyVal[1];
-                }
-                else
-                {
-                    Flags.Add(argKeyVal[0]);
-                }
-            }
+            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;            
 
-            var file = GetArg("file");
-            var dicPath = GetArg("dicpath");
+            var file = GetProperty("file");
+            var dicPath = GetProperty("dicpath");
+            Title = "Rant Console" + (GetFlag("nsfw") ? " [NSFW]" : "");            
 
-
-            Console.Title = "Rant Console" + (Flags.Contains("nsfw") ? " [NSFW]" : "");
-            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-            var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flags.Contains("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, GetFlag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
             rant.Hooks.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))
@@ -53,19 +29,19 @@ namespace RantConsole
                 }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(ex.Message);
-                    Console.ResetColor();
+                    ForegroundColor = ConsoleColor.Red;
+                    WriteLine(ex.Message);
+                    ResetColor();
                 }
             }
 
             while (true)
             {
-                Console.ForegroundColor = Flags.Contains("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
-                Console.Write("\u211d> "); // real number symbol
-                Console.ResetColor();
+                ForegroundColor = GetFlag("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
+                Write("\u211d> "); // real number symbol
+                ResetColor();
 
-                var input = Console.ReadLine();
+                var input = ReadLine();
 #if DEBUG
                 PrintOutput(rant.Do(input));
 #else
@@ -75,9 +51,16 @@ namespace RantConsole
                 }
                 catch (Exception e)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(e.Message);
-                    Console.ResetColor();
+                    ForegroundColor = ConsoleColor.Red;
+                    if (e is RantException)
+                    {
+                        WriteLine(e.Message);
+                    }
+                    else
+                    {
+                        WriteLine(e.ToString()); // Print the whole stack trace if it isn't a syntax error
+                    }                    
+                    ResetColor();
                 }
 #endif
             }
@@ -89,13 +72,21 @@ namespace RantConsole
             {
                 if (chan.Name != "main")
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("{0} ({1}):", chan.Name, chan.Visiblity);
-                    Console.ResetColor();
+                    ForegroundColor = ConsoleColor.Green;
+                    WriteLine("\{chan.Name} (\{chan.Visiblity}):");
+                    ResetColor();
                 }
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(chan.Value);
-                Console.ResetColor();
+                ForegroundColor = ConsoleColor.White;
+                if (chan.Length > 0)
+                {
+                    WriteLine(chan.Value);
+                }
+                else
+                {
+                    ForegroundColor = ConsoleColor.DarkGray;
+                    WriteLine("[Empty]");
+                }
+                ResetColor();
             }
         }
     }

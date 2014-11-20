@@ -28,15 +28,12 @@ namespace Rant.Vocabulary
         {
             if (!Util.ValidateName(name))
             {
-                throw new FormatException("Invalid dictionary name: '" + name + "'");
+                throw new FormatException("Invalid dictionary name: '\{name}'");
             }
 
             if (!subtypes.All(Util.ValidateName))
             {
-                throw new FormatException("Invalid subtype name(s): " + 
-                    subtypes.Where(s => !Util.ValidateName(s))
-                    .Select(s => String.Concat("'", s, "'"))
-                    .Aggregate((c,n) => c + ", " + n));
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'")));
             }
 
             _subtypes = subtypes;
@@ -47,26 +44,17 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The entries stored in the dictionary.
         /// </summary>
-        public RantDictionaryEntry[] Entries
-        {
-            get { return _words; }
-        }
+        public RantDictionaryEntry[] Entries => _words;
 
         /// <summary>
         /// The subtypes in the dictionary.
         /// </summary>
-        public string[] Subtypes
-        {
-            get { return _subtypes; }
-        }
+        public string[] Subtypes => _subtypes;
 
         /// <summary>
         /// The name of the dictionary.
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         private int GetSubtypeIndex(string subtype)
         {
@@ -111,13 +99,13 @@ namespace Rant.Vocabulary
                 {
                     case CarrierSyncType.Match:
                         entry =
-                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.SyncId.Hash(), n));
+                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.ID.Hash(), n));
                         break;
                     case CarrierSyncType.Unique:
-                        entry = syncState.GetUniqueEntry(query.Carrier.SyncId, pool, rng);
+                        entry = syncState.GetUniqueEntry(query.Carrier.ID, pool, rng);
                         break;
                     case CarrierSyncType.Rhyme:
-                        entry = syncState.GetRhymingEntry(query.Carrier.SyncId, index, pool, rng);
+                        entry = syncState.GetRhymingEntry(query.Carrier.ID, index, pool, rng);
                         break;
                 }
             }
@@ -127,7 +115,7 @@ namespace Rant.Vocabulary
             }
 
 
-            return entry == null ? "[?]" : entry.Terms[index].Value;
+            return entry == null ? "[?]" : entry[index];
         }
     }
 }

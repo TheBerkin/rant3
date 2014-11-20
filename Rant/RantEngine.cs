@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Rant.Compiler;
-using Rant.Stringes.Tokens;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -10,7 +9,7 @@ namespace Rant
     /// <summary>
     /// The central class of the Rant engine that allows the execution of patterns.
     /// </summary>
-    public sealed partial class RantEngine
+    public sealed class RantEngine
     {
         /// <summary>
         /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
@@ -22,6 +21,9 @@ namespace Rant
         /// </summary>
         internal static IndefiniteArticle CurrentIndefiniteArticleI = IndefiniteArticle.English;
 
+        /// <summary>
+        /// The current indefinite article set being used by the engine.
+        /// </summary>
         public static IndefiniteArticle CurrentIndefiniteArticle
         {
             get { return CurrentIndefiniteArticleI; }
@@ -46,32 +48,35 @@ namespace Rant
         private readonly SubStore _subs = new SubStore();
         private readonly HookCollection _hooks = new HookCollection();
         private readonly HashSet<string> _flags = new HashSet<string>();
+
+        private IRantVocabulary _vocabulary;
         
 
-        internal VarStore Variables
-        {
-            get { return _vars; }
-        }
+        internal VarStore Variables => _vars;
 
-        internal SubStore Subroutines
-        {
-            get { return _subs; }
-        }
+        internal SubStore Subroutines => _subs;
 
         /// <summary>
         /// The currently set flags.
         /// </summary>
-        public HashSet<string> Flags
-        {
-            get { return _flags; }
-        }
+        public HashSet<string> Flags => _flags;
 
         /// <summary>
         /// The hook collection associated with the engine.
         /// </summary>
-        public HookCollection Hooks
+        public HookCollection Hooks => _hooks;
+
+        /// <summary>
+        /// The vocabulary associated with this instance.
+        /// </summary>
+        public IRantVocabulary Vocabulary
         {
-            get { return _hooks; }
+            get { return _vocabulary; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                _vocabulary = value;
+            }
         }
 
         /// <summary>
@@ -111,6 +116,17 @@ namespace Rant
             _vocabulary = vocabulary;
         }
 
+        private void LoadVocab(string path, NsfwFilter filter)
+        {
+            if (_vocabulary != null) return;
+
+            if (!String.IsNullOrEmpty(path))
+            {
+                _vocabulary = RantVocabulary.FromDirectory(path, filter);
+            }
+        }
+
+        #region Execution methods
         /// <summary>
         /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
         /// </summary>
@@ -215,5 +231,6 @@ namespace Rant
         {
             return new Interpreter(this, input, rng, charLimit).Run();
         }
+        #endregion
     }
 }

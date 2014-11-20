@@ -19,6 +19,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
+        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
         public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms.Select(s => new RantDictionaryTerm(s)).ToArray();
@@ -33,6 +34,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
+        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
         public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms;
@@ -40,6 +42,13 @@ namespace Rant.Vocabulary
             _weight = weight;
             _nsfw = nsfw;
         }
+
+        /// <summary>
+        /// Gets the value for the specified term index in the entry. If the index is out of range, [Missing Term] will be returned.
+        /// </summary>
+        /// <param name="index">The index of the term whose value to request.</param>
+        /// <returns></returns>
+        public string this[int index] => (index < 0 || index >= _terms.Length) ? "[Missing Term]" : _terms[index].Value;
 
         /// <summary>
         /// The terms in the entry.
@@ -71,9 +80,6 @@ namespace Rant.Vocabulary
         /// <summary>
         /// Indicates if the entry is marked as "Not Safe For Work."
         /// </summary>
-        public bool NSFW
-        {
-            get { return _nsfw; }
-        }
+        public bool NSFW => _nsfw;
     }
 }
