@@ -27,6 +27,14 @@ Some of the highlights of what Rant offers:
 
 ##Examples
 
+**Generate random sentence**
+```
+<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <time_noun.plural-dayofweek>.
+```
+```
+Alick likes to mount shuttlecocks with his pet bat on Mondays.
+```
+
 **Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
 ```
 [numfmt:verbal-en][rep:10][sep:,\s]{[num:1;50]}
@@ -51,17 +59,7 @@ Alternatively...
 
 ---
 
-**Generate random sentences**
-```
-<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <time_noun.plural-dayofweek>.
-```
-```
-Alick likes to mount shuttlecocks with his pet bat on Mondays.
-```
-
----
-
-**Insert text into existing output (backwriting)**
+**Insert text into existing output**
 ```
 The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mark:b]\"
 [send:N;[dist:a;b]]
@@ -71,7 +69,7 @@ The following word is 7 characters long: "kumquat"
 ```
 
 ##License
-Rant is licensed under the [MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
+Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
 ##Documentation
 See the [wiki](http://github.com/TheBerkin/Rant/wiki) for full documentation of the API and Rant language, as well as additional example code.
