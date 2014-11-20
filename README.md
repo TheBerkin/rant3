@@ -1,29 +1,31 @@
 <p align="center">
 <img src="http://i.imgur.com/cDFy2w7.png" alt="Rant logo"></img>
-<br/><b>Generating text has never been this simple.</b>
 </p>
 
-**Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
+##What is Rant?
+
+Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
 
 ###Features
+Some of the highlights of what Rant offers:
 
-* Use dictionaries to add random words
-* Flexible dictionary queries
-* Random branching
-* Printing loops (repeaters) with optional separators
-* Automatic capitalization modes
-* Automatic indefinite articles (a/an)
-* Multiple outputs
-* Change existing output
-* Subroutines
-* Self-generating code (metapatterns)
-* Arithmetic
-* Control flow with flags and comparisons
+* Recursive, branching choices with various selection strategies (random, ordered, locked...)
+* Access to external dictionaries using queries
+* Word rhyming using pronunciation metadata
+* Synchronize sections of random output
+* Automatic capitalization
+* Indefinite article (a/an) automation
+* Multiple outputs (channels)
 * Probability modifiers
-* Lists
+* Overwriting (targets)
+* Looping (repeaters)
+* Conditionals
+* List objects
+* Subroutines
+* Arithmetic
 * *And much, much more...*
 
-###Examples
+##Examples
 
 **Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
 ```
