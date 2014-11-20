@@ -1,6 +1,6 @@
 <p align="center">
-<img src="http://i.imgur.com/TFMydmj.png" alt="Rant logo"></img>
-<br/><b><i>Generating text has never been this simple.</i></b>
+<img src="http://i.imgur.com/cDFy2w7.png" alt="Rant logo"></img>
+<br/><b>Generating text has never been this simple.</b>
 </p>
 
 **Rant** is a language for adding rich variations to text. It writes what you don't want to, faster.
