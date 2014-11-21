@@ -25,7 +25,8 @@ namespace RantConsole
             {
                 try
                 {
-                    PrintOutput(rant.DoFile(file));
+                    PrintOutput(rant.DoFile(file), true);
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -66,7 +67,7 @@ namespace RantConsole
             }
         }
 
-        static void PrintOutput(Output output)
+        static void PrintOutput(Output output, bool file = false)
         {
             foreach (var chan in output)
             {
@@ -84,7 +85,7 @@ namespace RantConsole
                 else
                 {
                     ForegroundColor = ConsoleColor.DarkGray;
-                    WriteLine("[Empty]");
+                    if (!file) WriteLine("[Empty]");
                 }
                 ResetColor();
             }
