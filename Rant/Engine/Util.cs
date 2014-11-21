@@ -262,5 +262,20 @@ namespace Rant
         {
             return String.IsNullOrEmpty(input) ? alternate : input;
         }
+
+        internal static RantException Error(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.")
+        {
+            return new RantException(source, token, message);
+        }
+
+        internal static RantException Error(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
+        {
+            return new RantException(tokens, source, message);
+        }
+
+        internal static RantException Error(string source, Stringe token, string message = "A generic syntax error was encountered.")
+        {
+            return new RantException(source, token, message);
+        }
     }
 }

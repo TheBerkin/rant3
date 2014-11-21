@@ -109,7 +109,7 @@
     <Compile Include="Engine\Interpreter.cs" />
     <Compile Include="Engine\Interpreter.Markers.cs" />
     <Compile Include="Engine\Interpreter.Synchronizers.cs" />
-    <Compile Include="Engine\Interpreter.Functions.cs" />
+    <Compile Include="Engine\Functions.cs" />
     <Compile Include="Engine\Interpreter.Parser.cs" />
     <Compile Include="Vocabulary\IRantVocabulary.cs" />
     <Compile Include="Engine\Limit.cs" />

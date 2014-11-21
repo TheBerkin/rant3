@@ -12,7 +12,7 @@ namespace Rant.Blueprints
         public RantPattern Source { get; private set; }
         public Stringe Name { get; private set; }
 
-        private readonly Interpreter.FuncSig _tagDef;
+        private readonly FuncSig _tagDef;
 
         private readonly Argument[] _args;
 
@@ -22,9 +22,9 @@ namespace Rant.Blueprints
             Source = source;
             Name = name.Trim();
 
-            Interpreter.FuncDef defs;
+            FuncDef defs;
 
-            if (!Interpreter.TagFuncs.TryGetValue(Name.Value, out defs))
+            if (!RantFuncs.F.TryGetValue(Name.Value, out defs))
             {
                 throw new RantException(Source, Name, "A function of the name '" + Name.Value + "' does not exist.");
             }
