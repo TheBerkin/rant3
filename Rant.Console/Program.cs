@@ -25,8 +25,7 @@ namespace RantConsole
             {
                 try
                 {
-                    PrintOutput(rant.DoFile(file), true);
-                    return;
+                    PrintOutput(rant.DoFile(file), true);                    
                 }
                 catch (Exception ex)
                 {
@@ -34,6 +33,7 @@ namespace RantConsole
                     WriteLine(ex.Message);
                     ResetColor();
                 }
+                return;
             }
 
             while (true)
