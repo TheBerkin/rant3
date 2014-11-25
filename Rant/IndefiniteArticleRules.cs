@@ -14,7 +14,7 @@ namespace Rant
         /// </summary>
         public static readonly IndefiniteArticleRules English = new IndefiniteArticleRules(
             new []{"uni", "use", "uri", "urol", "euro", "U.", "one", "uvu"},
-            new []{"honest", "honor", "8"},
+            new []{"honest", "honor", "hour", "8"},
             new []{"u"},
             new string[0]);
 
