@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Rant
 {
@@ -114,16 +115,42 @@ namespace Rant
         {
             unchecked
             {
-                ulong
-                    hash = 0,
-                    ss = (ulong)s,
-                    gg = (ulong)g;
+                var state = new RNGHashState(s, g);
                 for (int i = 0; i < 8; i++)
                 {
-                    hash += 31 * Table[((ss ^ hash) >> (i * 8)) & 0xff].RotR(i) + 47 * Table[((gg ^ hash) >> (i * 8)) & 0xff].RotL(i) + 11;
-                    hash *= 6364136223846793005;
+                    state.HashUnsigned += 31 * Table[((state.Seed ^ state.HashUnsigned) >> (i * 8)) & 0xff].RotR(i) + 47 * Table[((state.Generation ^ state.HashUnsigned) >> (i * 8)) & 0xff].RotL(i) + 11;
+                    state.HashUnsigned *= 6364136223846793005;
                 }
-                return (long)hash;
+                return state.HashSigned;
+            }
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct RNGHashState
+        {
+            [FieldOffset(0)]
+            public long HashSigned;
+            [FieldOffset(0)]
+            public ulong HashUnsigned;
+
+            [FieldOffset(8)]
+            public ulong Seed;
+            [FieldOffset(8)]
+            private long _Seed;
+
+            [FieldOffset(16)]
+            public ulong Generation;
+            [FieldOffset(16)]
+            private long _Generation;
+
+            public RNGHashState(long s, long g)
+            {
+                Seed = 0;
+                _Seed = s;
+                Generation = 0;
+                _Generation = g;
+                HashSigned = 0;
+                HashUnsigned = 0;
             }
         }
 

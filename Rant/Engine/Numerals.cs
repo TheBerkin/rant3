@@ -89,11 +89,11 @@ namespace Rant
         {
             if (number == 0) return "zero";
 
-            var buffer = new StringBuilder();
+            var numBuilder = new StringBuilder();
 
             if (number < 0)
             {
-                buffer.Append("negative ");
+                numBuilder.Append("negative ");
                 number *= -1;
             }
 
@@ -112,55 +112,57 @@ namespace Rant
             
             input.Enqueue(Tuple.Create(number, ""));
 
+            var buffer = new StringBuilder();
+
             while (input.Any())
             {
                 var pair = input.Dequeue();
                 long value = pair.Item1;
                 if (value == 0) continue;
 
-                if (buffer.Length > 0)
+                if (numBuilder.Length > 0)
                 {
                     if (input.Any())
                     {
-                        buffer.Append(", ");
+                        numBuilder.Append(", ");
                     }
                     else if (value > 0)
                     {
-                        buffer.Append(" and ");
+                        numBuilder.Append(" and ");
                     }
                 }
 
-                var builder = new StringBuilder();
+                buffer.Clear();
 
                 foreach (var hundred in Hundreds)
                 {
                     if (value < hundred.Item1) continue;
                     value -= hundred.Item1;
-                    builder.AppendFormat("{0}{1}{2}", builder.Length > 0 ? " " : String.Empty, hundred.Item2, value > 0 ? " and" : String.Empty);
+                    buffer.AppendFormat("{0}{1}{2}", buffer.Length > 0 ? " " : String.Empty, hundred.Item2, value > 0 ? " and" : String.Empty);
                 }
 
                 foreach (var tenunit in TenUnits)
                 {
                     if (value < tenunit.Item1) continue;
                     value -= tenunit.Item1;
-                    builder.AppendFormat("{0}{1}", builder.Length > 0 ? " " : String.Empty, tenunit.Item2);
+                    buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : String.Empty, tenunit.Item2);
                     break;
                 }
 
                 foreach (var ten in Tens)
                 {
                     if (value != ten.Item1) continue;
-                    builder.AppendFormat("{0}{1}", builder.Length > 0 ? " " : String.Empty, ten.Item2);
+                    buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : String.Empty, ten.Item2);
                     break;
                 }
 
-                buffer.Append(builder);
+                numBuilder.Append(buffer);
                 if (pair.Item2.Length > 0)
                 {
-                    buffer.Append(" ").Append(pair.Item2);
+                    numBuilder.Append(" ").Append(pair.Item2);
                 }
             }
-            return buffer.ToString();
+            return numBuilder.ToString();
         }
 
         private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo()
