@@ -19,19 +19,41 @@ namespace Rant
         static RantFuncs()
         {
             F = new Dictionary<string, FuncDef>(StringComparer.InvariantCultureIgnoreCase);
+
+            // Repeaters, probability, and block attributes
             F["rep"] = F["r"] = new FuncSig(Repeat, ParamFlags.None);
             F["num"] = F["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);
             F["sep"] = F["s"] = new FuncSig(Separator, ParamFlags.Code);
             F["before"] = new FuncSig(Before, ParamFlags.Code);
             F["after"] = new FuncSig(After, ParamFlags.Code);
             F["chance"] = new FuncSig(Chance, ParamFlags.None);
-            F["sync"] = new FuncSig(Sync, ParamFlags.None, ParamFlags.None);
-            F["desync"] = new FuncSig(Desync);
-            F["pin"] = new FuncSig(Pin, ParamFlags.None);
-            F["unpin"] = new FuncSig(Unpin, ParamFlags.None);
-            F["step"] = new FuncSig(Step, ParamFlags.None);
-            F["reset"] = new FuncSig(Reset, ParamFlags.None);
-            F["reseed"] = new FuncSig(Reseed, ParamFlags.None, ParamFlags.None);
+            F["break"] = new FuncSig(Break);
+            F["repnum"] = F["rn"] = new FuncSig(RepNum);
+            F["repindex"] = F["ri"] = new FuncSig(RepIndex);
+            F["repcount"] = F["rc"] = new FuncSig(RepCount);
+
+            // Synchronizers
+            F["sync"] = F["x"] = new FuncDef(
+                new FuncSig(SyncCreateApply, ParamFlags.None, ParamFlags.None),
+                new FuncSig(SyncApply, ParamFlags.None)
+                );
+            F["xreset"] = new FuncSig(SyncReset, ParamFlags.None);
+            F["xseed"] = new FuncSig(SyncReseed, ParamFlags.None, ParamFlags.None);
+            F["xnone"] = new FuncSig(Desync);
+            F["xnew"] = new FuncSig(SyncCreate, ParamFlags.None, ParamFlags.None);
+            F["xpin"] = new FuncSig(Pin, ParamFlags.None);
+            F["xunpin"] = new FuncSig(Unpin, ParamFlags.None);
+            F["xstep"] = new FuncSig(Step, ParamFlags.None);
+
+            // RNG manipulation
+            F["branch"] = F["b"] = new FuncDef(
+                new FuncSig(Branch, ParamFlags.None),
+                new FuncSig(BranchScope, ParamFlags.None, ParamFlags.Code)
+                );
+            F["merge"] = F["m"] = new FuncSig(Merge);
+            F["generation"] = F["g"] = new FuncDef(new FuncSig(Generation), new FuncSig(GenerationSet, ParamFlags.None));
+
+            // Repeater conditionals
             F["first"] = new FuncSig(First, ParamFlags.Code);
             F["last"] = new FuncSig(Last, ParamFlags.Code);
             F["middle"] = new FuncSig(Middle, ParamFlags.Code);
@@ -44,39 +66,100 @@ namespace Rant
                 new FuncSig(Nth, ParamFlags.None, ParamFlags.None, ParamFlags.Code),
                 new FuncSig(NthSimple, ParamFlags.None, ParamFlags.Code)
                 );
-            F["repnum"] = F["rn"] = new FuncSig(RepNum);
-            F["repindex"] = F["ri"] = new FuncSig(RepIndex);
-            F["repcount"] = F["rc"] = new FuncSig(RepCount);
+
+            // Quantifier conditionals
             F["alt"] = new FuncSig(Alt, ParamFlags.Code, ParamFlags.Code);
             F["any"] = new FuncSig(Any, ParamFlags.Code, ParamFlags.Code);
+
+            // Replacers
             F["match"] = new FuncSig(ReplaceMatch);
             F["group"] = new FuncSig(ReplaceGroup, ParamFlags.None);
+
+            // Subrotuine interaction
             F["arg"] = new FuncSig(Arg, ParamFlags.None);
+
+            // Formatting
             F["numfmt"] = new FuncSig(NumFmt, ParamFlags.None);
             F["caps"] = new FuncSig(Caps, ParamFlags.None);
             F["capsinfer"] = new FuncSig(CapsInfer, ParamFlags.None);
+
+            // Channels
             F["out"] = new FuncSig(Out, ParamFlags.None, ParamFlags.None);
             F["close"] = new FuncSig(Close, ParamFlags.None);
+
+            // External interaction
             F["extern"] = F["ext"] = new FuncSig(Extern, ParamFlags.None, ParamFlags.Multi);
+
+            // Markers and targets
             F["mark"] = new FuncSig(Mark, ParamFlags.None);
             F["dist"] = new FuncSig(Dist, ParamFlags.None, ParamFlags.None);
             F["get"] = new FuncSig(Get, ParamFlags.None);
             F["send"] = new FuncSig(Send, ParamFlags.None, ParamFlags.None);
             F["osend"] = new FuncSig(SendOverwrite, ParamFlags.None, ParamFlags.None);
             F["clrt"] = new FuncSig(ClearTarget, ParamFlags.None);
+
+            // String generation, manipulation, and analysis
             F["len"] = new FuncSig(Length, ParamFlags.None);
             F["char"] = new FuncDef(
                 new FuncSig(Character, ParamFlags.None),
                 new FuncSig(CharacterMulti, ParamFlags.None, ParamFlags.None));
+
+            // Flags
             F["define"] = new FuncSig(DefineFlag, ParamFlags.None | ParamFlags.Multi);
             F["undef"] = new FuncSig(UndefineFlag, ParamFlags.None | ParamFlags.Multi);
             F["ifdef"] = new FuncSig(IfDef, ParamFlags.None, ParamFlags.Code);
             F["ifndef"] = new FuncSig(IfNDef, ParamFlags.None, ParamFlags.Code);
             F["else"] = new FuncSig(Else, ParamFlags.Code);
+
+            // Comparisons
             F["cmp"] = new FuncSig(Compare, ParamFlags.None, ParamFlags.None, ParamFlags.Code);
             F["is"] = new FuncSig(CmpIs, ParamFlags.None, ParamFlags.Code);
-            F["break"] = new FuncSig(Break);
+            
+            // Misc
             F["src"] = new FuncSig(Src);
+        }
+
+        private static bool GenerationSet(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            var gStr = args[0].GetString();
+            long g;
+            if (!Int64.TryParse(gStr, out g))
+            {
+                throw Error(source, tagName, "Invalid generation value '\{gStr}'");
+            }
+            interpreter.RNG.Generation = g;
+            return false;
+        }
+
+        private static bool Generation(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            interpreter.Print(interpreter.RNG.Generation);
+            return false;
+        }
+
+        private static bool Merge(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            interpreter.RNG.Merge();
+            return false;
+        }
+
+        private static bool BranchScope(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            interpreter.RNG.Branch(args[0].GetString().Hash());
+            var state = Interpreter.State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output);
+            state.AddPostBlueprint(new DelegateBlueprint(interpreter, _ =>
+            {
+                interpreter.RNG.Merge();
+                return false;
+            }));
+            interpreter.PushState(state);
+            return true;
+        }
+
+        private static bool Branch(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            interpreter.RNG.Branch(args[0].GetString().Hash());
+            return false;
         }
 
         private static bool Src(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
@@ -132,9 +215,9 @@ namespace Rant
             return true;
         }
 
-        private static bool Reseed(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool SyncReseed(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Reseed(args[0].GetString(), args[1].GetString());
+            interpreter.SyncSeed(args[0].GetString(), args[1].GetString());
             return false;
         }
 
@@ -263,9 +346,9 @@ namespace Rant
             return false;
         }
 
-        private static bool Reset(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        private static bool SyncReset(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
         {
-            interpreter.Reset(args[0].GetString());
+            interpreter.SyncReset(args[0].GetString());
             return false;
         }
 
@@ -518,19 +601,19 @@ namespace Rant
 
         private static bool Step(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Step(args[0].GetString());
+            interpreter.SyncStep(args[0].GetString());
             return false;
         }
 
         private static bool Unpin(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Unpin(args[0].GetString());
+            interpreter.SyncUnpin(args[0].GetString());
             return false;
         }
 
         private static bool Pin(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.Pin(args[0].GetString());
+            interpreter.SyncPin(args[0].GetString());
             return false;
         }
 
@@ -540,7 +623,7 @@ namespace Rant
             return false;
         }
 
-        private static bool Sync(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool SyncCreateApply(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             var typeStr = args[1].GetString();
             SyncType type;
@@ -548,7 +631,40 @@ namespace Rant
             {
                 throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
             }
-            interpreter.Sync(args[0].GetString(), type);
+            interpreter.SyncCreateApply(args[0].GetString(), type);
+            return false;
+        }
+
+        private static bool SyncCreate(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            var typeStr = args[1].GetString();
+            SyncType type;
+            if (!Enum.TryParse(typeStr, true, out type))
+            {
+                throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
+            }
+            interpreter.SyncCreate(args[0].GetString(), type);
+            return false;
+        }
+
+        private static bool SyncApply(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            var syncName = args[0].GetString();
+            if (!interpreter.SyncApply(syncName))
+            {
+                throw Error(source, tagname, "Tried to use nonexistent synchronizer '\{syncName}");
+            }
+            return false;
+        }
+
+        private static bool SyncSeed(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            
+            var syncName = args[0].GetString();
+            if (!interpreter.SyncApply(syncName))
+            {
+                throw Error(source, tagname, "Tried to use nonexistent synchronizer '\{syncName}");
+            }
             return false;
         }
 

@@ -7,7 +7,7 @@ namespace Rant
         private readonly HashSet<string> _pinQueue = new HashSet<string>(); 
         private readonly Dictionary<string, Synchronizer> _synchronizers = new Dictionary<string, Synchronizer>(4);
 
-        public void Sync(string seed, SyncType type)
+        public void SyncCreateApply(string seed, SyncType type)
         {
             Synchronizer sync;
             if (!_synchronizers.TryGetValue(seed, out sync))
@@ -20,7 +20,30 @@ namespace Rant
             NextAttribs.Sync = sync;
         }
 
-        public void Reset(string seed)
+        public void SyncCreate(string seed, SyncType type)
+        {
+            Synchronizer sync = _synchronizers[seed] = new Synchronizer(type, RNG.GetRaw(seed.Hash(), RNG.Seed));
+            if (_pinQueue.Contains(seed)) sync.Pinned = true;
+            _pinQueue.Remove(seed);
+        }
+
+        public bool TryGetSynchronizer(string seed, out Synchronizer sync)
+        {
+            return _synchronizers.TryGetValue(seed, out sync);
+        }
+
+        public bool SyncApply(string seed)
+        {
+            Synchronizer sync;
+            if (_synchronizers.TryGetValue(seed, out sync))
+            {
+                NextAttribs.Sync = sync;
+                return true;
+            }
+            return false;
+        }
+
+        public void SyncReset(string seed)
         {
             Synchronizer sync;
             if (_synchronizers.TryGetValue(seed, out sync))
@@ -29,7 +52,7 @@ namespace Rant
             }
         }
 
-        public void Reseed(string id, string seed)
+        public void SyncSeed(string id, string seed)
         {
             Synchronizer sync;
             if (_synchronizers.TryGetValue(seed, out sync))
@@ -38,7 +61,7 @@ namespace Rant
             }
         }
 
-        public void Step(string seed)
+        public void SyncStep(string seed)
         {
             Synchronizer sync;
             if (_synchronizers.TryGetValue(seed, out sync))
@@ -47,7 +70,7 @@ namespace Rant
             }
         }
 
-        public void Pin(string seed)
+        public void SyncPin(string seed)
         {
             Synchronizer sync;
             if (!_synchronizers.TryGetValue(seed, out sync))
@@ -60,7 +83,7 @@ namespace Rant
             }
         }
 
-        public void Unpin(string seed)
+        public void SyncUnpin(string seed)
         {
             Synchronizer sync;
             if (_synchronizers.TryGetValue(seed, out sync))

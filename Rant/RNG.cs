@@ -210,9 +210,20 @@ namespace Rant
         /// </summary>
         /// <param name="generation">The generation to branch from.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RNG Branch(long generation)
+        public RNG BranchG(long generation)
         {
             _sg.Add(new SG(GetRaw(Seed, generation), 0));
+            return this;
+        }
+
+        /// <summary>
+        /// Creates a new branch based off the current seed and the specified seed.
+        /// </summary>
+        /// <param name="seed">The seed to create the branch with.</param>
+        /// <returns></returns>
+        public RNG Branch(long seed)
+        {
+            _sg.Add(new SG(GetRaw(seed, Seed), 0));
             return this;
         }
 
@@ -228,16 +239,13 @@ namespace Rant
         /// Removes the topmost branch and resumes generation on the next one down.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Merge()
+        public RNG Merge()
         {
             if (_sg.Count > 1)
             {
                 _sg.RemoveAt(_sg.Count - 1);
             }
-            else
-            {
-                throw new InvalidOperationException("Cannot merge the base branch.");
-            }
+            return this;
         }
 
         /// <summary>
