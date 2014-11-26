@@ -49,7 +49,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public static RantVocabulary FromDirectory(string directory, NsfwFilter filter)
         {
-            return new RantVocabulary(Directory.GetFiles(directory, "*.dic").Select(file => RantDictionary.FromFile(file, filter)).ToList());
+            return new RantVocabulary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(file => RantDictionary.FromFile(file, filter)).ToList());
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public static RantVocabulary FromMultiDirectory(params string[] directories)
         {
-            return new RantVocabulary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic")).Select(file => RantDictionary.FromFile(file)));
+            return new RantVocabulary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionary.FromFile(file)));
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public static RantVocabulary FromMultiDirectory(string[] directories, NsfwFilter filter)
         {
-            return new RantVocabulary(directories.SelectMany(path => Directory.GetFiles("*.dic")).Select(file => RantDictionary.FromFile(file, filter)));
+            return new RantVocabulary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionary.FromFile(file, filter)));
         }
 
         /// <summary>
