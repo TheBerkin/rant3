@@ -24,7 +24,7 @@ namespace RantConsole
             }
         }
 
-        public static string GetProperty(string name)
+        public static string Property(string name)
         {
             string arg;
             if (!Arguments.TryGetValue(name.ToLower(), out arg))
@@ -34,6 +34,6 @@ namespace RantConsole
             return arg;
         }
 
-        public static bool GetFlag(string name) => Flags.Contains(name);
+        public static bool Flag(string name) => Flags.Contains(name);
     }
 }

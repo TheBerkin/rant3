@@ -14,11 +14,11 @@ namespace RantConsole
         {
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;            
 
-            var file = GetProperty("file");
-            var dicPath = GetProperty("dicpath");
-            Title = "Rant Console" + (GetFlag("nsfw") ? " [NSFW]" : "");            
+            var file = Property("file");
+            var dicPath = Property("dicpath");
+            Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");            
 
-            var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, GetFlag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
             rant.Hooks.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))
@@ -33,12 +33,13 @@ namespace RantConsole
                     WriteLine(ex.Message);
                     ResetColor();
                 }
+                if (Flag("wait")) ReadKey(true);
                 return;
             }
 
             while (true)
             {
-                ForegroundColor = GetFlag("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
+                ForegroundColor = Flag("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
                 Write("\u211d> "); // real number symbol
                 ResetColor();
 
@@ -73,6 +74,7 @@ namespace RantConsole
             {
                 if (chan.Name != "main")
                 {
+                    if (Flag("main")) continue;
                     ForegroundColor = ConsoleColor.Green;
                     WriteLine("\{chan.Name} (\{chan.Visiblity}):");
                     ResetColor();

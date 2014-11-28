@@ -31,7 +31,7 @@ namespace Rant.Blueprints
 
             if ((_tagDef = defs.GetSignature((argData == null ? 0 : argData.Length))) == null)
             {
-                throw new RantException(Source, Name, "The function '" + Name.Value + "' does not contain a signature that accomodates " + (argData == null ? 0 : argData.Length) + " argument(s).");
+                throw new RantException(Source, Name, "The function '" + Name.Value + "' has no signature that accepts " + (argData == null ? 0 : argData.Length) + " argument(s).");
             }
 
             if (argData == null)
