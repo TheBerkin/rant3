@@ -20,7 +20,7 @@ namespace Rant.Arithmetic
             {
                 throw new RantException(parser.Source, _token, "Left side of increment/decrement postfix was not a variable.");
             }
-            switch (_token.Identifier)
+            switch (_token.ID)
             {
                 case RMathToken.Increment:
                 {

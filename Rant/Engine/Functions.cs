@@ -21,8 +21,7 @@ namespace Rant
             F = new Dictionary<string, FuncDef>(StringComparer.InvariantCultureIgnoreCase);
 
             // Repeaters, probability, and block attributes
-            F["rep"] = F["r"] = new FuncSig(Repeat, ParamFlags.None);
-            F["num"] = F["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);
+            F["rep"] = F["r"] = new FuncSig(Repeat, ParamFlags.None);            
             F["sep"] = F["s"] = new FuncSig(Separator, ParamFlags.Code);
             F["before"] = new FuncSig(Before, ParamFlags.Code);
             F["after"] = new FuncSig(After, ParamFlags.Code);
@@ -103,6 +102,8 @@ namespace Rant
             F["char"] = new FuncDef(
                 new FuncSig(Character, ParamFlags.None),
                 new FuncSig(CharacterMulti, ParamFlags.None, ParamFlags.None));
+            F["num"] = F["n"] = new FuncSig(Number, ParamFlags.None, ParamFlags.None);
+            F["dec"] = new FuncSig(NumberDec);
 
             // Flags
             F["define"] = new FuncSig(DefineFlag, ParamFlags.None | ParamFlags.Multi);
@@ -117,6 +118,12 @@ namespace Rant
             
             // Misc
             F["src"] = new FuncSig(Src);
+        }
+
+        private static bool NumberDec(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
+        {
+            interpreter.Print(interpreter.RNG.NextDouble());
+            return false;
         }
 
         private static bool GenerationSet(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)

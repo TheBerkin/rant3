@@ -279,9 +279,9 @@ namespace Rant
                     token = reader.ReadToken();
                     
                     // Error on illegal closure
-                    if (Brackets.All.ContainsClosing(token.Identifier))
+                    if (Brackets.All.ContainsClosing(token.ID))
                     {
-                        throw new RantException(reader.Source, token, "Unexpected token '" + RantLexer.Rules.GetSymbolForId(token.Identifier) + "'");
+                        throw new RantException(reader.Source, token, "Unexpected token '" + RantLexer.Rules.GetSymbolForId(token.ID) + "'");
                     }
 
                     // DoElement will return true if the interpreter should skip to the top of the stack
@@ -315,7 +315,7 @@ namespace Rant
         private bool DoElement(Token<R> token, PatternReader reader, State state)
         {
             TokenFunc func;
-            if (TokenFuncs.TryGetValue(token.Identifier, out func)) return func(this, token, reader, state);
+            if (TokenFuncs.TryGetValue(token.ID, out func)) return func(this, token, reader, state);
             Print(token.Value);
             return false;
         }

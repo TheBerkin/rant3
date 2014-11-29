@@ -273,14 +273,14 @@ namespace Rant.Stringes
 
                         // Return longest match, narrow down to <value> group if available.
                         var group = longestMatch.Groups[tokenGroupName];
+                        _pos += longestMatch.Length;
+
                         if (group.Success)
                         {
-                            _pos = group.Index + group.Length;
                             if (rules.IgnoreRules.Contains(id)) goto readStart;
                             return new Token<T>(id, _stringe.Substringe(group.Index, group.Length));
                         }
-
-                        _pos += longestMatch.Length;
+                        
                         if (rules.IgnoreRules.Contains(id)) goto readStart;
                         return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
                     }

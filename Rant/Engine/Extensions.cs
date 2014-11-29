@@ -1,4 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Rant
 {
@@ -112,6 +115,66 @@ namespace Rant
                 }
                 return seed;
             }
+        }
+
+        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, int> weightSelectionFunc, T defaultValue = default(T))
+        {
+            int selection = rng.Next(collection.Sum(weightSelectionFunc));
+
+            foreach (T t in collection)
+            {
+                if (selection < weightSelectionFunc(t))
+                {
+                    return t;
+                }
+                selection -= weightSelectionFunc(t);
+            }
+            return defaultValue;
+        }
+
+        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, int> weightSelectionFunc, Func<RNG, int, int> rngSelectionFunc, T defaultValue = default(T))
+        {
+            int selection = rngSelectionFunc(rng, collection.Sum(weightSelectionFunc));
+
+            foreach (T t in collection)
+            {
+                if (selection < weightSelectionFunc(t))
+                {
+                    return t;
+                }
+                selection -= weightSelectionFunc(t);
+            }
+            return defaultValue;
+        }
+
+        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, double> weightSelectionFunc, T defaultValue = default(T))
+        {
+            double selection = rng.NextDouble(collection.Sum(weightSelectionFunc));
+
+            foreach (T t in collection)
+            {
+                if (selection < weightSelectionFunc(t))
+                {
+                    return t;
+                }
+                selection -= weightSelectionFunc(t);
+            }
+            return defaultValue;
+        }
+
+        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, double> weightSelectionFunc, Func<RNG, double, double> rngSelectionFunc, T defaultValue = default(T))
+        {
+            double selection = rngSelectionFunc(rng, collection.Sum(weightSelectionFunc));
+
+            foreach (T t in collection)
+            {
+                if (selection < weightSelectionFunc(t))
+                {
+                    return t;
+                }
+                selection -= weightSelectionFunc(t);
+            }
+            return defaultValue;
         }
     }
 }

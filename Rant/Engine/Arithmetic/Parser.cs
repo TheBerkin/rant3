@@ -41,7 +41,7 @@ namespace Rant.Arithmetic
             IPrefixParselet prefix;
             IInfixParselet infix;
 
-            if (!PrefixParselets.TryGetValue(token.Identifier, out prefix))
+            if (!PrefixParselets.TryGetValue(token.ID, out prefix))
             {
                 throw new RantException(_src, token, "Invalid expression '\{token.Value}'.");
             }
@@ -52,7 +52,7 @@ namespace Rant.Arithmetic
             while (GetPrecedence() > precedence)
             {
                 token = Take();                
-                if (!InfixParselets.TryGetValue(token.Identifier, out infix))
+                if (!InfixParselets.TryGetValue(token.ID, out infix))
                 {
                     throw new RantException(_src, token, "Invalid operator '\{token.Value}'.");
                 }
@@ -72,7 +72,7 @@ namespace Rant.Arithmetic
         {
             if (_pos == _tokens.Length) return 0;
             IInfixParselet infix;
-            InfixParselets.TryGetValue(Peek().Identifier, out infix);
+            InfixParselets.TryGetValue(Peek().ID, out infix);
             return infix?.Precedence ?? 0;
         }
 
@@ -86,9 +86,9 @@ namespace Rant.Arithmetic
         public Token<RMathToken> Take(RMathToken type)
         {
             var token = Take();
-            if (token.Identifier != type)
+            if (token.ID != type)
             {
-                throw new RantException(_src, token, "Expression expected \{type}, but found \{token.Identifier}.");
+                throw new RantException(_src, token, "Expression expected \{type}, but found \{token.ID}.");
             }
             return token;
         }

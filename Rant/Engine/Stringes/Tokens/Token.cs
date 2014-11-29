@@ -13,7 +13,7 @@ namespace Rant.Stringes.Tokens
         /// <summary>
         /// The token identifier.
         /// </summary>
-        public T Identifier
+        public T ID
         {
             get { return _id; }
         }

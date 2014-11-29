@@ -19,7 +19,7 @@ namespace Rant.Arithmetic
 
         public override double Evaluate(Parser parser, Interpreter ii)
         {
-            if (_token.Identifier == RMathToken.Swap)
+            if (_token.ID == RMathToken.Swap)
             {
                 var left = _left as NameExpression;
                 var right = _right as NameExpression;
@@ -32,7 +32,7 @@ namespace Rant.Arithmetic
                 return b;
             }
             Func<Parser, Interpreter, NameExpression, Expression, double> assignFunc;
-            if (AssignOperations.TryGetValue(_token.Identifier, out assignFunc))
+            if (AssignOperations.TryGetValue(_token.ID, out assignFunc))
             {
                 var left = _left as NameExpression;
                 if (left == null) throw new RantException(parser.Source, _token, "Left side of assignment was not a variable.");
@@ -40,7 +40,7 @@ namespace Rant.Arithmetic
             }
 
             Func<double, double, double> func;
-            if (!Operations.TryGetValue(_token.Identifier, out func))
+            if (!Operations.TryGetValue(_token.ID, out func))
             {
                 throw new RantException(parser.Source, _token, "Invalid binary operation '" + _token + "'.");
             }

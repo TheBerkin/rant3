@@ -16,7 +16,7 @@ namespace Rant.Arithmetic
         public override double Evaluate(Parser parser, Interpreter ii)
         {
             var name = _right as NameExpression;
-            switch (_token.Identifier)
+            switch (_token.ID)
             {
                 case RMathToken.Minus:
                     return -_right.Evaluate(parser, ii);

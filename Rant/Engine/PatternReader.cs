@@ -59,7 +59,7 @@ namespace Rant
 
         public bool IsNext(R type)
         {
-            return !End && _tokens[_pos].Identifier == type;
+            return !End && _tokens[_pos].ID == type;
         }
 
         public bool Take(R type, bool allowEof = true)
@@ -70,7 +70,7 @@ namespace Rant
                     throw new RantException(_source, null, "Unexpected end-of-file.");
                 return false;
             }
-            if (_tokens[_pos].Identifier != type) return false;
+            if (_tokens[_pos].ID != type) return false;
             _pos++;
             return true;
         }
@@ -84,7 +84,7 @@ namespace Rant
                 return false;
             }
             SkipSpace();
-            if (_tokens[_pos].Identifier != type) return false;
+            if (_tokens[_pos].ID != type) return false;
             _pos++;
             SkipSpace();
             return true;
@@ -95,7 +95,7 @@ namespace Rant
             if (End) return false;
             foreach (var type in types)
             {
-                if (_tokens[_pos].Identifier != type) continue;
+                if (_tokens[_pos].ID != type) continue;
                 _pos++;
                 return true;
             }
@@ -108,7 +108,7 @@ namespace Rant
             if (End) return false;
             foreach (var type in types)
             {
-                if (_tokens[_pos].Identifier != type) continue;
+                if (_tokens[_pos].ID != type) continue;
                 result = type;
                 _pos++;
                 return true;
@@ -122,7 +122,7 @@ namespace Rant
             SkipSpace();
             foreach (var type in types)
             {
-                if (_tokens[_pos].Identifier != type) continue;
+                if (_tokens[_pos].ID != type) continue;
                 _pos++;
                 SkipSpace();
                 return true;
@@ -137,7 +137,7 @@ namespace Rant
             SkipSpace();
             foreach (var type in types)
             {
-                if (_tokens[_pos].Identifier != type) continue;
+                if (_tokens[_pos].ID != type) continue;
                 result = type;
                 _pos++;
                 SkipSpace();
@@ -154,11 +154,11 @@ namespace Rant
                     throw new RantException(_source, null, "Unexpected end-of-file.");
                 return false;
             }
-            if (_tokens[_pos].Identifier != type) return false;
+            if (_tokens[_pos].ID != type) return false;
             do
             {
                 _pos++;
-            } while (!End && _tokens[_pos].Identifier == type);
+            } while (!End && _tokens[_pos].ID == type);
             return true;
         }
 
@@ -166,7 +166,7 @@ namespace Rant
         {
             if (End) 
                 throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
-            if (_tokens[_pos].Identifier != type)
+            if (_tokens[_pos].ID != type)
             {
                 throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
             }
@@ -179,7 +179,7 @@ namespace Rant
             if (End)
                 throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
             SkipSpace();
-            if (_tokens[_pos].Identifier != type)
+            if (_tokens[_pos].ID != type)
             {
                 throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
             }
@@ -202,7 +202,7 @@ namespace Rant
             R t;
             while (i < _tokens.Length)
             {
-                t = _tokens[_pos].Identifier;
+                t = _tokens[_pos].ID;
                 if (t == takeType)
                 {
                     i++;
@@ -244,18 +244,18 @@ namespace Rant
                 token = PeekToken();
 
                 // Opening bracket
-                if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Previous bracket allows nesting
+                if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Previous bracket allows nesting
                 {
                     _stack.Push(token);
                 }
 
                 // Closing bracket
-                else if (bracketPairs.ContainsClosing(token.Identifier) || close == token.Identifier) // Previous bracket allows nesting
+                else if (bracketPairs.ContainsClosing(token.ID) || close == token.ID) // Previous bracket allows nesting
                 {
                     var lastOpening = _stack.Pop();
 
                     // Handle invalid closures
-                    if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier)) // Not in main pair
+                    if (!bracketPairs.Contains(lastOpening.ID, token.ID)) // Not in main pair
                     {
                         throw new RantException(_source, token, 
                             "Invalid closure '"
@@ -263,7 +263,7 @@ namespace Rant
                             + " ... " 
                             + token.Value 
                             + "' - expected '" 
-                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier)) 
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.ID)) 
                             + "'");
                     }
 
@@ -273,9 +273,9 @@ namespace Rant
                         yield return _tokens
                         .SkipWhile((t, i) => i < start) // Cut to start of section
                         .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
-                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove leading whitespace
+                        .SkipWhile(t => t.ID == R.Whitespace) // Remove leading whitespace
                         .Reverse() // Reverse to trim end
-                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove trailing whitespace
+                        .SkipWhile(t => t.ID == R.Whitespace) // Remove trailing whitespace
                         .Reverse() // Reverse back
                         .ToArray();
                         _pos++;
@@ -284,14 +284,14 @@ namespace Rant
                 }
 
                 // Separator
-                else if (token.Identifier == separator && _stack.Count == 1)
+                else if (token.ID == separator && _stack.Count == 1)
                 {
                     yield return _tokens
                         .SkipWhile((t, i) => i < start) // Cut to start of section
                         .TakeWhile((t, i) => i < _pos - start) // Cut to end of section
-                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove leading whitespace
+                        .SkipWhile(t => t.ID == R.Whitespace) // Remove leading whitespace
                         .Reverse() // Reverse to trim end
-                        .SkipWhile(t => t.Identifier == R.Whitespace) // Remove trailing whitespace
+                        .SkipWhile(t => t.ID == R.Whitespace) // Remove trailing whitespace
                         .Reverse() // Reverse back
                         .ToArray();
                     _pos++;
@@ -314,21 +314,21 @@ namespace Rant
             while (!End)
             {
                 token = ReadToken();
-                if (bracketPairs.ContainsOpening(token.Identifier) || open == token.Identifier) // Allows nesting
+                if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Allows nesting
                 {
                     _stack.Push(token);
                 }
-                else if (bracketPairs.ContainsClosing(token.Identifier) || token.Identifier == close) // Allows nesting
+                else if (bracketPairs.ContainsClosing(token.ID) || token.ID == close) // Allows nesting
                 {
                     // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
-                    if (!_stack.Any() && token.Identifier == close)
+                    if (!_stack.Any() && token.ID == close)
                     {
                         yield break;
                     }
 
                     var lastOpening = _stack.Pop();
                     
-                    if (!bracketPairs.Contains(lastOpening.Identifier, token.Identifier))
+                    if (!bracketPairs.Contains(lastOpening.ID, token.ID))
                     {
                         throw new RantException(_source, token,
                             "Invalid closure '"
@@ -336,7 +336,7 @@ namespace Rant
                             + " ... "
                             + token.Value
                             + "' - expected '"
-                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.Identifier))
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.ID))
                             + "'");
                     }
                 }

@@ -69,7 +69,7 @@ namespace Rant
 
                 // Check if the macro is a definition or a call.
                 // A definition will start with a colon ':' or equals '=' after the name. A call will only consist of the name.
-                switch (reader.ReadToken().Identifier)
+                switch (reader.ReadToken().ID)
                 {
                     case R.Colon: // Local definition
                     {
@@ -146,7 +146,7 @@ namespace Rant
                     CarrierSyncType type;
                     Token<R> typeToken;
 
-                    switch ((typeToken = reader.ReadToken()).Identifier)
+                    switch ((typeToken = reader.ReadToken()).ID)
                     {
                         case R.Exclamation:
                             type = CarrierSyncType.Unique;
@@ -230,7 +230,7 @@ namespace Rant
         {
             var name = reader.ReadToken();
 
-            switch (name.Identifier)
+            switch (name.ID)
             {
                 case R.Percent: // List
                     return DoListAction(interpreter, firstToken, reader, state);
@@ -691,31 +691,31 @@ namespace Rant
                 var listItems = list.Any()
                     ? list.Select(str => new[] {new Token<R>(R.Text, str)}.AsEnumerable()).ToArray()
                     : new[] {Enumerable.Empty<Token<R>>()};
-                var listRep = new Repeater(listItems, attribs);
+                var listRep = new Repeater(Block.Create(listItems), attribs);
                 interpreter.PushRepeater(listRep);
                 interpreter.BaseStates.Add(state);
                 state.AddPreBlueprint(new RepeaterBlueprint(interpreter, listRep));
                 return true;
             }
 
-            Tuple<IEnumerable<Token<R>>[], int> items;
+            Tuple<Block, int> block;
 
             // Check if the block is already cached
-            if (!reader.Source.TryGetCachedBlock(firstToken, out items))
+            if (!reader.Source.TryGetCachedBlock(firstToken, out block))
             {
-                var block = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Brackets.All).ToArray();
-                items = Tuple.Create(block, reader.Position);
-                reader.Source.CacheBlock(firstToken, block, reader.Position);
+                var elements = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Brackets.All).ToArray();
+                block = Tuple.Create(Block.Create(elements), reader.Position);
+                reader.Source.CacheBlock(firstToken, block);
             }
             else
             {
                 // If the block is cached, seek to its end
-                reader.Position = items.Item2;
+                reader.Position = block.Item2;
             }
 
-            if (!items.Item1.Any() || !interpreter.TakeChance()) return false;
+            if (!block.Item1.Items.Any() || !interpreter.TakeChance()) return false;
 
-            var rep = new Repeater(items.Item1, attribs);
+            var rep = new Repeater(block.Item1, attribs);
             interpreter.PushRepeater(rep);
             interpreter.BaseStates.Add(state);
             state.AddPreBlueprint(new RepeaterBlueprint(interpreter, rep));

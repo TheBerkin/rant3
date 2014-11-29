@@ -40,7 +40,7 @@ namespace Rant.Vocabulary
 
             foreach (var token in Dic2Lexer.Tokenize(File.ReadAllText(path)))
             {
-                switch (token.Identifier)
+                switch (token.ID)
                 {
                     case DicTokenType.Directive:
                     {

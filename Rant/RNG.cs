@@ -10,6 +10,11 @@ namespace Rant
     /// </summary>
     public class RNG
     {
+        private const int Mask32 = 0x7FFFFFFF;
+        private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
+
+        private const double MaxDouble = Int64.MaxValue;
+
         private static readonly ulong[] Table =
         {
             0x78601daa5225473d, 0x21d0a62df46ee118, 0xdcf4f088ea63c826, 0x8b509ad5d20d2223, 0x36d7e1354010ad6a, 0xceb515261afffce4, 0x1546c29edf0dc626, 0xc8b67f24d6cf5a39,
@@ -255,7 +260,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Peek()
         {
-            return (int)GetRaw(Seed, Generation) & 0x7FFFFFFF;
+            return (int)GetRaw(Seed, Generation) & Mask32;
         }
 
         /// <summary>
@@ -266,7 +271,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int PeekAt(long generation)
         {
-            return (int)GetRaw(Seed, generation) & 0x7FFFFFFF;
+            return (int)GetRaw(Seed, generation) & Mask32;
         }
 
         /// <summary>
@@ -276,7 +281,26 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double NextDouble()
         {
-            return Math.Abs(NextRaw() / Double.MaxValue);
+            return (NextRaw() & Mask64) / MaxDouble;
+        }
+
+        /// <summary>
+        /// Returns a double-precision floating point number between 0 and the specified maximum value, and advances the generation by 1.
+        /// </summary>
+        /// <returns></returns>
+        public double NextDouble(double max)
+        {
+            return (Next((int)max + 1) + NextDouble()) % max;           
+        }
+
+        /// <summary>
+        /// Returns a double-precision floating point number between the specified minimum and maximum values, and advances the generation by 1.
+        /// </summary>
+        /// <returns></returns>
+        public double NextDouble(double min, double max)
+        {
+            if (max == 0) return 0;
+            return (Next((int)max + 1) + NextDouble()) % (max - min) + min;
         }
 
         /// <summary>
@@ -286,7 +310,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Next()
         {
-            return (int)NextRaw() & 0x7FFFFFFF;
+            return (int)NextRaw() & Mask32;
         }
 
         /// <summary>
@@ -296,7 +320,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Prev()
         {
-            return (int)PrevRaw() & 0x7FFFFFFF;
+            return (int)PrevRaw() & Mask32;
         }
 
         /// <summary>
@@ -308,7 +332,7 @@ namespace Rant
         public int Next(int max)
         {
             if (max == 0) return 0;
-            return (int)(NextRaw() & 0x7FFFFFFF) % max;
+            return (int)(NextRaw() & Mask32) % max;
         }
 
         /// <summary>
@@ -320,7 +344,7 @@ namespace Rant
         public int Prev(int max)
         {
             if (max == 0) return 0;
-            return (int)(PrevRaw() & 0x7FFFFFFF) % max;
+            return (int)(PrevRaw() & Mask32) % max;
         }
 
         /// <summary>
@@ -332,7 +356,7 @@ namespace Rant
         public int Peek(int max)
         {
             if (max == 0) return 0;
-            return ((int)GetRaw(Seed, Generation) & 0x7FFFFFFF) % max;
+            return ((int)GetRaw(Seed, Generation) & Mask32) % max;
         }
 
         /// <summary>
@@ -345,7 +369,7 @@ namespace Rant
         public int PeekAt(long generation, int max)
         {
             if (max == 0) return 0;
-            return ((int)GetRaw(Seed, generation) & 0x7FFFFFFF) % max;
+            return ((int)GetRaw(Seed, generation) & Mask32) % max;
         }
 
         /// <summary>
@@ -363,7 +387,7 @@ namespace Rant
                 throw new ArgumentException("Min must be less than max.");
             }
 
-            return (((int)NextRaw() & 0x7FFFFFFF) - min) % (max - min) + min;
+            return (((int)NextRaw() & Mask32) - min) % (max - min) + min;
         }
 
         /// <summary>
@@ -381,7 +405,7 @@ namespace Rant
                 throw new ArgumentException("Min must be less than max.");
             }
 
-            return (((int)PrevRaw() & 0x7FFFFFFF) - min) % (max - min) + min;
+            return (((int)PrevRaw() & Mask32) - min) % (max - min) + min;
         }
 
         /// <summary>
@@ -399,7 +423,7 @@ namespace Rant
                 throw new ArgumentException("Min must be less than max.");
             }
 
-            return (((int)GetRaw(Seed, Generation) & 0x7FFFFFFF) - min) % (max - min) + min;
+            return (((int)GetRaw(Seed, Generation) & Mask32) - min) % (max - min) + min;
         }
 
         /// <summary>
@@ -418,7 +442,7 @@ namespace Rant
                 throw new ArgumentException("Min must be less than max.");
             }
 
-            return (((int)GetRaw(Seed, generation) & 0x7FFFFFFF) - min) % (max - min) + min;
+            return (((int)GetRaw(Seed, generation) & Mask32) - min) % (max - min) + min;
         }
     }
 }

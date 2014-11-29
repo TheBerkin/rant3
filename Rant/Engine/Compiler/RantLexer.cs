@@ -12,6 +12,7 @@ namespace Rant.Compiler
         public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
         public static readonly Regex RegexRegex = new Regex(@"//(.*?[^\\])?//i?", DefaultOptions);
 
+        private static readonly Regex WeightRegex = new Regex(@"\*[ ]*(?<value>\d+(\.\d+)?)[ ]*\*", DefaultOptions);
         private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
         private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", DefaultOptions | RegexOptions.Multiline);
         private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
@@ -51,6 +52,7 @@ namespace Rant.Compiler
                 {"%", R.Percent},
                 {"+", R.Plus},
                 {"^", R.Caret},
+                {WeightRegex, R.Weight},
                 {CommentRegex, R.Ignore, 3},
                 {BlackspaceRegex, R.Ignore, 2},
                 {WhitespaceRegex, R.Whitespace}

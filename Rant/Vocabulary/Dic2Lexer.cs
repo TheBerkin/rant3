@@ -29,7 +29,7 @@ namespace Rant.Vocabulary
         {
             Token<DicTokenType> token;
             var reader = new StringeReader(data);
-            while ((token = reader.ReadToken(Rules)).Identifier != DicTokenType.EOF)
+            while ((token = reader.ReadToken(Rules)).ID != DicTokenType.EOF)
             {
                 yield return token;
             }

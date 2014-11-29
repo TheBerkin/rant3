@@ -82,6 +82,7 @@
     <Compile Include="Engine\Arithmetic\Parser.Static.cs" />
     <Compile Include="Engine\Arithmetic\Precedence.cs" />
     <Compile Include="Engine\Arithmetic\RMathToken.cs" />
+    <Compile Include="Engine\Block.cs" />
     <Compile Include="Engine\Blueprints\AltBlueprint.cs" />
     <Compile Include="Engine\Blueprints\AnyBlueprint.cs" />
     <Compile Include="Engine\Blueprints\Blueprint.cs" />

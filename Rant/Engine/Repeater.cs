@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using Rant.Blueprints;
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
 
 namespace Rant
 {
@@ -14,13 +11,13 @@ namespace Rant
         private int _index = 0;
         private bool _allowStats = true;
         private readonly int _count;
-        private readonly IEnumerable<Token<R>>[] _items;
+        private readonly Block _block;
         private readonly BlockAttribs _attribs;
 
-        public Repeater(IEnumerable<Token<R>>[] items, BlockAttribs attribs)
+        public Repeater(Block block, BlockAttribs attribs)
         {
-            _items = items;
-            _count = attribs.Repetitons == Each ? items.Length : attribs.Repetitons;
+            _block = block;
+            _count = attribs.Repetitons == Each ? block.Items.Length : attribs.Repetitons;
             _attribs = attribs;
         }
 
@@ -116,8 +113,8 @@ namespace Rant
             }
 
             // Push next item
-            var itemState = Interpreter.State.CreateSub(ii.CurrentState.Reader.Source,
-                _items[_attribs.Sync != null ? _attribs.Sync.NextItem(_items.Length) : ii.RNG.Next(_items.Length)],
+            var itemState = Interpreter.State.CreateSub(ii.CurrentState.Reader.Source,                
+                _attribs.Sync != null ? _block.Items[_attribs.Sync.NextItem(_block.Items.Length)].Item2 : _block.Items.PickWeighted(ii.RNG, item => item.Item1).Item2,
                 ii,
                 ii.CurrentState.Output);
 

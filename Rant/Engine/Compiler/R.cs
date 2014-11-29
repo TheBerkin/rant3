@@ -210,6 +210,13 @@
         /// </summary>
         Plus,
         /// <summary>
+        /// *123:
+        /// <para>
+        /// Used by: Blocks
+        /// </para>
+        /// </summary>
+        Weight,
+        /// <summary>
         /// End of file.
         /// </summary>
         EOF
