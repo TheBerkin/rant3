@@ -290,7 +290,7 @@ namespace Rant
         /// <returns></returns>
         public double NextDouble(double max)
         {
-            return (Next((int)max + 1) + NextDouble()) % max;           
+            return (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % max;
         }
 
         /// <summary>
@@ -299,8 +299,8 @@ namespace Rant
         /// <returns></returns>
         public double NextDouble(double min, double max)
         {
-            if (max == 0) return 0;
-            return (Next((int)max + 1) + NextDouble()) % (max - min) + min;
+            if (max - min == 0) return 0;
+            return (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % (max - min) + min;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Rant;
 using Rant.Vocabulary;
 
@@ -16,6 +17,10 @@ namespace RantConsole
 
             var file = Property("file");
             var dicPath = Property("dicpath");
+
+            long seed = 0;
+            bool useCustomSeed = Int64.TryParse(Property("seed"), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out seed);
+
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");            
 
             var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
@@ -25,7 +30,7 @@ namespace RantConsole
             {
                 try
                 {
-                    PrintOutput(rant.DoFile(file), true);                    
+                    PrintOutput(useCustomSeed ? rant.DoFile(file, seed) : rant.DoFile(file), true);                    
                 }
                 catch (Exception ex)
                 {
@@ -33,6 +38,7 @@ namespace RantConsole
                     WriteLine(ex.Message);
                     ResetColor();
                 }
+
                 if (Flag("wait")) ReadKey(true);
                 return;
             }
@@ -88,6 +94,23 @@ namespace RantConsole
                 {
                     ForegroundColor = ConsoleColor.DarkGray;
                     if (!file) WriteLine("[Empty]");
+                }
+                ResetColor();
+            }
+
+            if ((!file || Flag("wait")) && !Flag("nostats"))
+            {
+                WriteLine();
+                ForegroundColor = ConsoleColor.DarkGray;
+                Write("Seed: ");
+                ForegroundColor = ConsoleColor.DarkMagenta;
+                WriteLine(String.Format("{0:X16}", output.Seed));
+                ForegroundColor = ConsoleColor.DarkGray;
+                if (output.BaseGeneration != 0)
+                {
+                    Write("Base Gen: ");
+                    ForegroundColor = ConsoleColor.DarkMagenta;
+                    WriteLine(output.BaseGeneration);
                 }
                 ResetColor();
             }

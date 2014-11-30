@@ -153,9 +153,6 @@ namespace Rant
             _lastWriteSize = _size - _lastSize;
         }
 
-        public Output GetOutput()
-        {
-            return new Output(_channels);
-        }
+        public Dictionary<string, Channel> Channels => _channels;
     }
 }

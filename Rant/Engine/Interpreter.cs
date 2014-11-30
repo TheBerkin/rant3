@@ -16,6 +16,7 @@ namespace Rant
         private readonly RNG _rng;
         private readonly RantPattern _mainSource;
         private readonly RantEngine _engine;
+        private readonly long _startingGen;
 
         // Queries
         private readonly CarrierSyncState _carrierSyncState = new CarrierSyncState();
@@ -233,6 +234,7 @@ namespace Rant
         {
             _mainSource = input;
             _rng = rng;
+            _startingGen = rng.Generation;
             _engine = engine;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
             _output = new ChannelStack(_charLimit);
@@ -297,7 +299,7 @@ namespace Rant
                 // Push a result string if the state's output differs from the one below it
                 if (!state.SharesOutput && state.Finish())
                 {
-                    _resultStack.Push(state.Output.GetOutput());
+                    _resultStack.Push(new Output(_rng.Seed, _startingGen, state.Output.Channels));
                 }
 
                 // Remove state from stack as long as nothing else was added beforehand
