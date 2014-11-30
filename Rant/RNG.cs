@@ -12,9 +12,12 @@ namespace Rant
     {
         private const int Mask32 = 0x7FFFFFFF;
         private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
-
         private const double MaxDouble = Int64.MaxValue;
 
+        [ThreadStatic]
+        private static RNGHashState _hashState = new RNGHashState();
+
+        #region Table
         private static readonly ulong[] Table =
         {
             0x78601daa5225473d, 0x21d0a62df46ee118, 0xdcf4f088ea63c826, 0x8b509ad5d20d2223, 0x36d7e1354010ad6a, 0xceb515261afffce4, 0x1546c29edf0dc626, 0xc8b67f24d6cf5a39,
@@ -50,26 +53,9 @@ namespace Rant
             0x04029e4b58d2d1b5, 0xe2295d61a85fd012, 0x081eafea16c37513, 0x363ada331ed8fcbc, 0x962465ec560b08d3, 0x80c848a65d14ad68, 0xe8da599afcd5006d, 0x61a6d1b75517d513,
             0x22d45ccb8be9e32a, 0x2289686b10b01f78, 0xb851936366ec178c, 0xf03f146455ca74c3, 0x2be7cadd1f62f2a7, 0x01d211fe2b138898, 0xe3ec3a6c9f7f8792, 0xfb68fcf8b8e2f20b
         };
-        private readonly List<SG> _sg;
+        #endregion
 
-        /// <summary>
-        /// The current seed.
-        /// </summary>
-        public long Seed
-        {
-            get { return _sg[_sg.Count - 1].Seed; }
-            set { _sg[_sg.Count - 1].Seed = value; }
-        }
-
-        /// <summary>
-        /// The current generation.
-        /// </summary>
-        public long Generation
-        {
-            get { return _sg[_sg.Count - 1].Generation; }
-            set { _sg[_sg.Count - 1].Generation = value; }
-        }
-
+        #region RNG structures
         // ReSharper disable once InconsistentNaming
         private class SG
         {
@@ -79,54 +65,6 @@ namespace Rant
             {
                 Seed = s;
                 Generation = g;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new RNG instance with the specified seed.
-        /// </summary>
-        /// <param name="seed">The seed for the generator.</param>
-        public RNG(long seed)
-        {
-            _sg = new List<SG> { new SG(seed, 0) };
-        }
-
-        /// <summary>
-        /// Creates a new RNG instance with the specified seed and generation.
-        /// </summary>
-        /// <param name="seed">The seed for the generator.</param>
-        /// <param name="generation">The generation to start at.</param>
-        public RNG(long seed, long generation)
-        {
-            _sg = new List<SG> {new SG(seed, generation)};
-        }
-
-        /// <summary>
-        /// Creates a new RNG instance seeded with the system tick count.
-        /// </summary>
-        public RNG()
-        {
-            _sg = new List<SG> { new SG(Environment.TickCount, 0) };
-        }
-
-        /// <summary>
-        /// Calculates the raw 64-bit value for a given seed/generation pair.
-        /// </summary>
-        /// <param name="s">The seed.</param>
-        /// <param name="g">The generation.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetRaw(long s, long g)
-        {
-            unchecked
-            {
-                var state = new RNGHashState(s, g);
-                for (int i = 0; i < 8; i++)
-                {
-                    state.HashUnsigned += 31 * Table[((state.Seed ^ state.HashUnsigned) >> (i * 8)) & 0xff].RotR(i) + 47 * Table[((state.Generation ^ state.HashUnsigned) >> (i * 8)) & 0xff].RotL(i) + 11;
-                    state.HashUnsigned *= 6364136223846793005;
-                }
-                return state.HashSigned;
             }
         }
 
@@ -157,6 +95,103 @@ namespace Rant
                 HashSigned = 0;
                 HashUnsigned = 0;
             }
+
+            public void Init(long s, long g)
+            {
+                _Seed = s;
+                _Generation = g;
+                HashSigned = 0;
+            }
+        }
+        #endregion
+
+        private readonly SG _root;
+        private readonly List<SG> _tree;
+
+        /// <summary>
+        /// The root seed.
+        /// </summary>
+        public long BaseSeed
+        {
+            get { return _root.Seed; }
+            set
+            {
+                if (_tree.Count > 1)
+                    throw new InvalidOperationException("Cannot change the seed of a branched RNG.");
+                _root.Seed = value;
+            }
+        }
+
+        /// <summary>
+        /// The seed of the top branch.
+        /// </summary>
+        public long Seed
+        {
+            get { return _tree[_tree.Count - 1].Seed; }
+            set { _tree[_tree.Count - 1].Seed = value; }
+        }
+
+        /// <summary>
+        /// The current generation.
+        /// </summary>
+        public long Generation
+        {
+            get { return _tree[_tree.Count - 1].Generation; }
+            set { _tree[_tree.Count - 1].Generation = value; }
+        }
+
+        /// <summary>
+        /// Creates a new RNG instance with the specified seed.
+        /// </summary>
+        /// <param name="seed">The seed for the generator.</param>
+        public RNG(long seed)
+        {
+            _root = new SG(seed, 0);
+            _tree = new List<SG> { _root };
+        }
+
+        /// <summary>
+        /// Creates a new RNG instance with the specified seed and generation.
+        /// </summary>
+        /// <param name="seed">The seed for the generator.</param>
+        /// <param name="generation">The generation to start at.</param>
+        public RNG(long seed, long generation)
+        {
+            _root = new SG(seed, generation);
+            _tree = new List<SG> { _root };
+        }
+
+        /// <summary>
+        /// Creates a new RNG instance seeded with the system tick count.
+        /// </summary>
+        public RNG()
+        {
+            _root = new SG(Environment.TickCount, 0);
+            _tree = new List<SG> { _root };
+        }
+
+        /// <summary>
+        /// Calculates the raw 64-bit value for a given seed/generation pair.
+        /// </summary>
+        /// <param name="s">The seed.</param>
+        /// <param name="g">The generation.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetRaw(long s, long g)
+        {
+            unchecked
+            {
+                _hashState.Init(s, g);
+                for (int i = 0; i < 8; i++)
+                {
+                    _hashState.HashUnsigned =
+                        (_hashState.HashUnsigned + 31 
+                        * Table[((_hashState.Seed ^ _hashState.HashUnsigned) >> (i * 8)) & 0xff].RotR(i) + 47 
+                        * Table[((_hashState.Generation ^ _hashState.HashUnsigned) >> (i * 8)) & 0xff].RotL(i) + 11)
+                        * 6364136223846793005;
+                }
+                return _hashState.HashSigned;
+            }
         }
 
         /// <summary>
@@ -164,41 +199,26 @@ namespace Rant
         /// </summary>
         /// <param name="g">The generation.</param>
         /// <returns></returns>
-        public long this[int g]
-        {
-            get
-            {
-                return GetRaw(Seed, g);
-            }
-        }
+        public long this[int g] => GetRaw(Seed, g);
 
         /// <summary>
         /// Calculates the raw 64-bit value for the next generation, and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long NextRaw()
-        {
-            return GetRaw(Seed, Generation++);
-        }
+        public long NextRaw() => GetRaw(Seed, Generation++);
 
         /// <summary>
         /// Calculates the raw 64-bit value for the previous generation, and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long PrevRaw()
-        {
-            return GetRaw(Seed, --Generation);
-        }
+        public long PrevRaw() => GetRaw(Seed, --Generation);
 
         /// <summary>
         /// Sets the current generation to zero.
         /// </summary>
-        public void Reset()
-        {
-            Generation = 0;
-        }
+        public void Reset() => Generation = 0;
 
         /// <summary>
         /// Sets the seed to the specified value and the current generation to zero.
@@ -211,34 +231,20 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new branch at the specified generation.
-        /// </summary>
-        /// <param name="generation">The generation to branch from.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public RNG BranchG(long generation)
-        {
-            _sg.Add(new SG(GetRaw(Seed, generation), 0));
-            return this;
-        }
-
-        /// <summary>
         /// Creates a new branch based off the current seed and the specified seed.
         /// </summary>
         /// <param name="seed">The seed to create the branch with.</param>
         /// <returns></returns>
         public RNG Branch(long seed)
         {
-            _sg.Add(new SG(GetRaw(seed, Seed), 0));
+            _tree.Add(new SG(GetRaw(seed, Seed), 0));
             return this;
         }
 
         /// <summary>
         /// The current branching depth of the generator.
         /// </summary>
-        public int Depth
-        {
-            get { return _sg.Count; }
-        }
+        public int Depth => _tree.Count;
 
         /// <summary>
         /// Removes the topmost branch and resumes generation on the next one down.
@@ -246,10 +252,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RNG Merge()
         {
-            if (_sg.Count > 1)
-            {
-                _sg.RemoveAt(_sg.Count - 1);
-            }
+            if (_tree.Count > 1) _tree.RemoveAt(_tree.Count - 1);
             return this;
         }
 
@@ -258,10 +261,7 @@ namespace Rant
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Peek()
-        {
-            return (int)GetRaw(Seed, Generation) & Mask32;
-        }
+        public int Peek() => (int)GetRaw(Seed, Generation) & Mask32;
 
         /// <summary>
         /// Calculates the 32-bitnon-negative integer for the specified generation.
@@ -269,59 +269,40 @@ namespace Rant
         /// <param name="generation">The generation to peek at.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int PeekAt(long generation)
-        {
-            return (int)GetRaw(Seed, generation) & Mask32;
-        }
+        public int PeekAt(long generation) => (int)GetRaw(Seed, generation) & Mask32;
 
         /// <summary>
         /// Returns a double-precision floating point number between 0 and 1, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public double NextDouble()
-        {
-            return (NextRaw() & Mask64) / MaxDouble;
-        }
+        public double NextDouble() => (NextRaw() & Mask64) / MaxDouble;
 
         /// <summary>
         /// Returns a double-precision floating point number between 0 and the specified maximum value, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
-        public double NextDouble(double max)
-        {
-            return (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % max;
-        }
+        public double NextDouble(double max) => (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % max;
 
         /// <summary>
         /// Returns a double-precision floating point number between the specified minimum and maximum values, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
-        public double NextDouble(double min, double max)
-        {
-            if (max - min == 0) return 0;
-            return (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % (max - min) + min;
-        }
+        public double NextDouble(double min, double max) => max - min != 0 ? (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % (max - min) + min : 0;
 
         /// <summary>
         /// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Next()
-        {
-            return (int)NextRaw() & Mask32;
-        }
+        public int Next() => (int)NextRaw() & Mask32;
 
         /// <summary>
         /// Calculates a 32-bit, non-negative integer from the previous generation and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Prev()
-        {
-            return (int)PrevRaw() & Mask32;
-        }
+        public int Prev() => (int)PrevRaw() & Mask32;
 
         /// <summary>
         /// Calculates a 32-bit integer between 0 and a specified upper bound for the current generation and increases the current generation by 1.
@@ -329,11 +310,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Next(int max)
-        {
-            if (max == 0) return 0;
-            return (int)(NextRaw() & Mask32) % max;
-        }
+        public int Next(int max) => max != 0 ? (int)(NextRaw() & Mask32) % max : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between 0 and a specified upper bound from the previous generation and decreases the current generation by 1.
@@ -341,11 +318,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Prev(int max)
-        {
-            if (max == 0) return 0;
-            return (int)(PrevRaw() & Mask32) % max;
-        }
+        public int Prev(int max) => max != 0 ? (int)(PrevRaw() & Mask32) % max : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between 0 and a specified upper bound for the current generation.
@@ -353,11 +326,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Peek(int max)
-        {
-            if (max == 0) return 0;
-            return ((int)GetRaw(Seed, Generation) & Mask32) % max;
-        }
+        public int Peek(int max) => max != 0 ? ((int)GetRaw(Seed, Generation) & Mask32) % max : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between 0 and a specified upper bound for the specified generation.
@@ -366,11 +335,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int PeekAt(long generation, int max)
-        {
-            if (max == 0) return 0;
-            return ((int)GetRaw(Seed, generation) & Mask32) % max;
-        }
+        public int PeekAt(long generation, int max) => max != 0 ? ((int)GetRaw(Seed, generation) & Mask32) % max : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between the specified minimum and maximum values for the current generation, and increases the current generation by 1.
@@ -382,10 +347,7 @@ namespace Rant
         public int Next(int min, int max)
         {
             if (max == 0) return 0;
-            if (min >= max)
-            {
-                throw new ArgumentException("Min must be less than max.");
-            }
+            if (min >= max) throw new ArgumentException("Min must be less than max.");
 
             return (((int)NextRaw() & Mask32) - min) % (max - min) + min;
         }
@@ -400,10 +362,7 @@ namespace Rant
         public int Prev(int min, int max)
         {
             if (max == 0) return 0;
-            if (min >= max)
-            {
-                throw new ArgumentException("Min must be less than max.");
-            }
+            if (min >= max) throw new ArgumentException("Min must be less than max.");
 
             return (((int)PrevRaw() & Mask32) - min) % (max - min) + min;
         }
@@ -418,10 +377,7 @@ namespace Rant
         public int Peek(int min, int max)
         {
             if (max == 0) return 0;
-            if (min >= max)
-            {
-                throw new ArgumentException("Min must be less than max.");
-            }
+            if (min >= max) throw new ArgumentException("Min must be less than max.");
 
             return (((int)GetRaw(Seed, Generation) & Mask32) - min) % (max - min) + min;
         }
@@ -437,10 +393,7 @@ namespace Rant
         public int PeekAt(int generation, int min, int max)
         {
             if (max == 0) return 0;
-            if (min >= max)
-            {
-                throw new ArgumentException("Min must be less than max.");
-            }
+            if (min >= max) throw new ArgumentException("Min must be less than max.");
 
             return (((int)GetRaw(Seed, generation) & Mask32) - min) % (max - min) + min;
         }
