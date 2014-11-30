@@ -36,10 +36,7 @@ namespace Rant
         /// </summary>
         public string Code => _code;
 
-        internal void CacheBlock(Token<R> start, Tuple<Block, int> block)
-        {
-            _blockJumpTable[start] = block;
-        }
+        internal void CacheBlock(Token<R> start, Tuple<Block, int> block) => _blockJumpTable[start] = block;
 
         internal bool TryGetCachedBlock(Token<R> start, out Tuple<Block, int> block) => _blockJumpTable.TryGetValue(start, out block);
 
@@ -59,7 +56,6 @@ namespace Rant
             _type = derived._type;
             _code = derived._code;
             _blockJumpTable = derived._blockJumpTable;
-
             _tokens = sub;
         }
 

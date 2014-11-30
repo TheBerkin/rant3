@@ -104,7 +104,6 @@
     <Compile Include="Vocabulary\RantDictionary.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\BlockAttribs.cs" />
-    <Compile Include="HookCollection.cs" />
     <Compile Include="IndefiniteArticle.cs" />
     <Compile Include="IndefiniteArticleRules.cs" />
     <Compile Include="Engine\Interpreter.cs" />

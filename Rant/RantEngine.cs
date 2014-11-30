@@ -14,6 +14,8 @@ namespace Rant
         /// </summary>
         public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
 
+        private static readonly RNG Seeds = new RNG();
+
         /// <summary>
         /// The indefinite article rules to apply when running patterns.
         /// </summary>
@@ -40,15 +42,10 @@ namespace Rant
         internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>(); 
         internal readonly Dictionary<string, List<string>> GlobalLists = new Dictionary<string, List<string>>(); 
 
-        private static readonly RNG Seeds = new RNG();
-
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
-        private readonly HookCollection _hooks = new HookCollection();
         private readonly HashSet<string> _flags = new HashSet<string>();
-
-        private IRantVocabulary _vocabulary;
-        
+        private IRantVocabulary _vocabulary;        
 
         internal VarStore Variables => _vars;
 
@@ -58,11 +55,6 @@ namespace Rant
         /// The currently set flags.
         /// </summary>
         public HashSet<string> Flags => _flags;
-
-        /// <summary>
-        /// The hook collection associated with the engine.
-        /// </summary>
-        public HookCollection Hooks => _hooks;
 
         /// <summary>
         /// The vocabulary associated with this instance.
@@ -124,7 +116,7 @@ namespace Rant
             }
         }
 
-        #region Execution methods
+        #region Do, DoFile
         /// <summary>
         /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
         /// </summary>
@@ -228,6 +220,57 @@ namespace Rant
         public Output Do(RantPattern input, RNG rng, int charLimit = 0)
         {
             return new Interpreter(this, input, rng, charLimit).Run();
+        }
+        #endregion
+
+        #region Hooks
+        private readonly Dictionary<string, Func<string[], string>> _hooks = new Dictionary<string, Func<string[], string>>();
+        private readonly HashSet<Func<string[], string>> _hookFuncs = new HashSet<Func<string[], string>>();
+
+        internal string CallHook(string name, string[] args)
+        {
+            Func<string[], string> func;
+            return !_hooks.TryGetValue(name, out func) ? null : func(args);
+        }
+
+        /// <summary>
+        /// Adds a function to the collection with the specified name. The hook name can only contain letters, decimal digits, and underscores.
+        /// </summary>
+        /// <param name="name">The name of the function hook.</param>
+        /// <param name="func">The function associated with the hook.</param>
+        public void AddHook(string name, Func<string[], string> func)
+        {
+            if (!Util.ValidateName(name)) throw new FormatException("Hook name can only contain letters, decimal digits, and underscores.");
+            _hooks[name] = func;
+            _hookFuncs.Add(func);
+        }
+
+        /// <summary>
+        /// Determines whether the HookCollection object contains a hook with the specified name.
+        /// </summary>
+        /// <param name="name">The name of the hook to search for.</param>
+        /// <returns></returns>
+        public bool HasHook(string name) => _hooks.ContainsKey(name);
+
+        /// <summary>
+        /// Determines whether the HookCollection object contains a hook with the specified function.
+        /// </summary>
+        /// <param name="func">The function to search for.</param>
+        /// <returns></returns>
+        public bool HasHook(Func<string[], string> func) => _hookFuncs.Contains(func);
+
+        /// <summary>
+        /// Removes the hook with the specified name from the collection.
+        /// </summary>
+        /// <param name="name">The name of the hook to remove.</param>
+        public void RemoveHook(string name)
+        {
+            Func<string[], string> func;
+            if (_hooks.TryGetValue(name, out func))
+            {
+                _hookFuncs.Remove(func);
+            }
+            _hooks.Remove(name);
         }
         #endregion
     }

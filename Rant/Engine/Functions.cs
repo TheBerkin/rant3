@@ -344,7 +344,7 @@ namespace Rant
         private static bool Extern(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
             var name = args[0].GetString();
-            var result = interpreter.Engine.Hooks.Call(name, args.Skip(1).Select(arg => arg.GetString()).ToArray());
+            var result = interpreter.Engine.CallHook(name, args.Skip(1).Select(arg => arg.GetString()).ToArray());
             if (result == null)
             {
                 throw Error(source, tagname, "A hook with the name '\{name}' does not exist.");
