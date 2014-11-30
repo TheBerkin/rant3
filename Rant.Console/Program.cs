@@ -24,7 +24,7 @@ namespace RantConsole
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");            
 
             var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
-            rant.Hooks.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
+            rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))
             {
