@@ -162,9 +162,9 @@ namespace Rant
             return defaultValue;
         }
 
-        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, double> weightSelectionFunc, Func<RNG, double, double> rngSelectionFunc, T defaultValue = default(T))
+        public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, double totalWeight, Func<T, double> weightSelectionFunc, T defaultValue = default(T))
         {
-            double selection = rngSelectionFunc(rng, collection.Sum(weightSelectionFunc));
+            double selection = rng.NextDouble(totalWeight);
 
             foreach (T t in collection)
             {

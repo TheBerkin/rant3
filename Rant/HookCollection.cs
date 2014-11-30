@@ -34,20 +34,14 @@ namespace Rant
         /// </summary>
         /// <param name="name">The name of the hook to search for.</param>
         /// <returns></returns>
-        public bool HasHook(string name)
-        {
-            return _hooks.ContainsKey(name);
-        }
+        public bool HasHook(string name) => _hooks.ContainsKey(name);
 
         /// <summary>
         /// Determines whether the HookCollection object contains a hook with the specified function.
         /// </summary>
         /// <param name="func">The function to search for.</param>
         /// <returns></returns>
-        public bool HasHook(Func<string[], string> func)
-        {
-            return _funcs.Contains(func);
-        }
+        public bool HasHook(Func<string[], string> func) => _funcs.Contains(func);
 
         /// <summary>
         /// Removes the hook with the specified name from the collection.

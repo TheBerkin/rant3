@@ -24,41 +24,26 @@ namespace Rant
         /// <summary>
         /// The name of the source code.
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         /// <summary>
         /// Describes the origin of the source.
         /// </summary>
-        public RantPatternSource Type
-        {
-            get { return _type; }
-        }
+        public RantPatternSource Type => _type;
 
         /// <summary>
         /// The code contained in the source.
         /// </summary>
-        public string Code
-        {
-            get { return _code; }
-        }
+        public string Code => _code;
 
         internal void CacheBlock(Token<R> start, Tuple<Block, int> block)
         {
             _blockJumpTable[start] = block;
         }
 
-        internal bool TryGetCachedBlock(Token<R> start, out Tuple<Block, int> block)
-        {
-            return _blockJumpTable.TryGetValue(start, out block);
-        }
+        internal bool TryGetCachedBlock(Token<R> start, out Tuple<Block, int> block) => _blockJumpTable.TryGetValue(start, out block);
 
-        internal IEnumerable<Token<R>> Tokens
-        {
-            get { return _tokens; }
-        }
+        internal IEnumerable<Token<R>> Tokens => _tokens;
 
         internal RantPattern(string name, RantPatternSource type, string code)
         {
@@ -84,7 +69,6 @@ namespace Rant
             _type = derived._type;
             _code = derived._code;
             _blockJumpTable = derived._blockJumpTable;
-
             _tokens = sub;
         }
 

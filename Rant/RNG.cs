@@ -10,12 +10,12 @@ namespace Rant
     /// </summary>
     public class RNG
     {
-        private const int Mask32 = 0x7FFFFFFF;
-        private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
-        private const double MaxDouble = Int64.MaxValue;
-
         [ThreadStatic]
         private static RNGHashState _hashState = new RNGHashState();
+
+        private const int Mask32 = 0x7FFFFFFF;
+        private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
+        private const double MaxDouble = Int64.MaxValue;        
 
         #region Table
         private static readonly ulong[] Table =
@@ -116,8 +116,7 @@ namespace Rant
             get { return _root.Seed; }
             set
             {
-                if (_tree.Count > 1)
-                    throw new InvalidOperationException("Cannot change the seed of a branched RNG.");
+                if (_tree.Count > 1) throw new InvalidOperationException("Cannot change the seed of a branched RNG.");
                 _root.Seed = value;
             }
         }
@@ -344,13 +343,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Next(int min, int max)
-        {
-            if (max == 0) return 0;
-            if (min >= max) throw new ArgumentException("Min must be less than max.");
-
-            return (((int)NextRaw() & Mask32) - min) % (max - min) + min;
-        }
+        public int Next(int min, int max) => max - min > 0 ? (((int)NextRaw() & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between the specified minimum and maximum values for the previous generation, and decreases the current generation by 1.
@@ -359,13 +352,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Prev(int min, int max)
-        {
-            if (max == 0) return 0;
-            if (min >= max) throw new ArgumentException("Min must be less than max.");
-
-            return (((int)PrevRaw() & Mask32) - min) % (max - min) + min;
-        }
+        public int Prev(int min, int max) => max - min > 0 ? (((int)PrevRaw() & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between the specified minimum and maximum values for the current generation.
@@ -374,13 +361,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Peek(int min, int max)
-        {
-            if (max == 0) return 0;
-            if (min >= max) throw new ArgumentException("Min must be less than max.");
-
-            return (((int)GetRaw(Seed, Generation) & Mask32) - min) % (max - min) + min;
-        }
+        public int Peek(int min, int max) => max - min > 0 ? (((int)GetRaw(Seed, Generation) & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
         /// Calculates a 32-bit integer between the specified minimum and maximum values for the specified generation.
@@ -390,12 +371,6 @@ namespace Rant
         /// <param name="generation">The generation whose value to calculate.</param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int PeekAt(int generation, int min, int max)
-        {
-            if (max == 0) return 0;
-            if (min >= max) throw new ArgumentException("Min must be less than max.");
-
-            return (((int)GetRaw(Seed, generation) & Mask32) - min) % (max - min) + min;
-        }
+        public int PeekAt(int generation, int min, int max) => max - min > 0 ? (((int)GetRaw(Seed, generation) & Mask32) - min) % (max - min) + min : 0;
     }
 }

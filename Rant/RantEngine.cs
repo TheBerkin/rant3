@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Rant.Compiler;
 using Rant.Vocabulary;
 
 namespace Rant

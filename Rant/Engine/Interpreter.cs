@@ -55,40 +55,22 @@ namespace Rant
 
         private readonly Limit<int> _charLimit;
 
-        public CarrierSyncState CarrierSyncState
-        {
-            get { return _carrierSyncState; }
-        }
+        public CarrierSyncState CarrierSyncState => _carrierSyncState;
 
-        public Dictionary<string, Query> LocalQueryMacros
-        {
-            get { return _localQueryMacros; }
-        }
+        public Dictionary<string, Query> LocalQueryMacros => _localQueryMacros;
 
-        public Dictionary<string, List<string>> LocalLists
-        {
-            get { return _localLists; }
-        }
+        public Dictionary<string, List<string>> LocalLists => _localLists;
 
         public bool GetList(string name, out List<string> list)
         {
             return _localLists.TryGetValue(name, out list) || _engine.GlobalLists.TryGetValue(name, out list);
         }
 
-        public RantEngine Engine
-        {
-            get { return _engine; }
-        }
+        public RantEngine Engine => _engine;
 
-        public Limit<int> CharLimit
-        {
-            get { return _charLimit; }
-        }
+        public Limit<int> CharLimit => _charLimit;
 
-        public HashSet<State> BaseStates
-        {
-            get { return _baseStates; }
-        }
+        public HashSet<State> BaseStates => _baseStates;
 
         public BlockAttribs NextAttribs
         {
@@ -96,20 +78,11 @@ namespace Rant
             set { _blockAttribs = value; }
         }
 
-        public RNG RNG
-        {
-            get { return _rng; }
-        }
+        public RNG RNG => _rng;
 
-        public Stack<Dictionary<string, Argument>> SubArgStack
-        {
-            get { return _subArgStack; }
-        }
+        public Stack<Dictionary<string, Argument>> SubArgStack => _subArgStack;
 
-        public Stack<Comparison> Comparisons
-        {
-            get { return _comparisons; }
-        }
+        public Stack<Comparison> Comparisons => _comparisons;
 
         public NumberFormat NumberFormat
         {
@@ -118,16 +91,10 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string FormatNumber(double value)
-        {
-            return Numerals.FormatNumber(value, _numfmt);
-        }
+        public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
 
         #region Flag conditionals
-        public void SetElse()
-        {
-            _else = true;
-        }
+        public void SetElse() => _else = true;
 
         public bool UseElse()
         {
@@ -140,30 +107,18 @@ namespace Rant
         #region Repeaters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PushRepeater(Repeater repeater)
-        {
-            _repeaterStack.Push(repeater);
-        }
+        public void PushRepeater(Repeater repeater) => _repeaterStack.Push(repeater);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Repeater PopRepeater()
-        {
-            return _repeaterStack.Pop();
-        }
+        public Repeater PopRepeater() => _repeaterStack.Pop();
 
-        public Repeater CurrentRepeater
-        {
-            get { return _repeaterStack.Any() ? _repeaterStack.Peek() : null; }
-        }
+        public Repeater CurrentRepeater => _repeaterStack.Any() ? _repeaterStack.Peek() : null;
 
         #endregion
 
         #region Chance
 
-        public void SetChance(int chance)
-        {
-            _chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
-        }
+        public void SetChance(int chance) => _chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 
         public bool TakeChance()
         {
@@ -183,15 +138,9 @@ namespace Rant
             return !String.IsNullOrEmpty(@group) ? _matchStack.Peek().Groups[@group].Value : _matchStack.Peek().Value;
         }
 
-        public void PushMatch(Match match)
-        {
-            _matchStack.Push(match);
-        }
+        public void PushMatch(Match match) => _matchStack.Push(match);
 
-        public Match PopMatch()
-        {
-            return _matchStack.Pop();
-        }
+        public Match PopMatch() => _matchStack.Pop();
 
         #endregion
 
@@ -201,18 +150,14 @@ namespace Rant
         public void PushState(State state)
         {
             if (_stateCount >= RantEngine.MaxStackSize)
-            {
-                throw new RantException(_mainSource, null, "Exceeded maximum stack size of " + RantEngine.MaxStackSize + ".");
-            }
+                throw new RantException(_mainSource, null, "Exceeded maximum stack size of \{RantEngine.MaxStackSize}.");
+
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;
             _stateStack.Push(state);
         }
 
-        public State PrevState
-        {
-            get { return _prevState; }
-        }
+        public State PrevState => _prevState;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public State PopState()
@@ -223,13 +168,10 @@ namespace Rant
             return s;
         }
 
-        public State CurrentState
-        {
-            get { return _stateStack.Any() ? _stateStack.Peek() : null; }
-        }
+        public State CurrentState => _stateStack.Any() ? _stateStack.Peek() : null;
 
         #endregion
-        
+
         public Interpreter(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
@@ -241,16 +183,10 @@ namespace Rant
             _mainState = new State(this, input, _output);
         }
 
-        public void Print(object input)
-        {
-            _stateStack.Peek().Print(input?.ToString());
-        }
+        public void Print(object input) => _stateStack.Peek().Print(input?.ToString());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string PopResultString()
-        {
-            return !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
-        }
+        public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
         public Output Run()
         {
@@ -259,8 +195,9 @@ namespace Rant
             // ReSharper disable TooWideLocalVariableScope
 
             State state;                // The current state object being used
-            PatternReader reader;        // The current source reader being used
-            Token<R> token;     // The next token in the stream
+            PatternReader reader;       // The current source reader being used
+            Token<R> token;             // The next token in the stream
+            TokenFunc currentFunc;      // Current parser function
 
             // ReSharper restore TooWideLocalVariableScope
 
@@ -282,14 +219,16 @@ namespace Rant
                     
                     // Error on illegal closure
                     if (Brackets.All.ContainsClosing(token.ID))
-                    {
-                        throw new RantException(reader.Source, token, "Unexpected token '" + RantLexer.Rules.GetSymbolForId(token.ID) + "'");
-                    }
+                        throw new RantException(reader.Source, token, "Unexpected token '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
 
                     // DoElement will return true if the interpreter should skip to the top of the stack
-                    if (DoElement(token, reader, state))
+                    if (TokenFuncs.TryGetValue(token.ID, out currentFunc))
                     {
-                        goto next;
+                        if (currentFunc(this, token, reader, state)) goto next;
+                    }
+                    else
+                    {
+                        Print(token.Value);
                     }
                 }
 
@@ -311,15 +250,6 @@ namespace Rant
             }
 
             return _resultStack.Pop();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool DoElement(Token<R> token, PatternReader reader, State state)
-        {
-            TokenFunc func;
-            if (TokenFuncs.TryGetValue(token.ID, out func)) return func(this, token, reader, state);
-            Print(token.Value);
-            return false;
         }
     }
 }

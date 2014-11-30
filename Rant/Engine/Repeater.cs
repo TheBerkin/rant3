@@ -114,7 +114,9 @@ namespace Rant
 
             // Push next item
             var itemState = Interpreter.State.CreateSub(ii.CurrentState.Reader.Source,                
-                _attribs.Sync != null ? _block.Items[_attribs.Sync.NextItem(_block.Items.Length)].Item2 : _block.Items.PickWeighted(ii.RNG, item => item.Item1).Item2,
+                _attribs.Sync != null 
+                ? _block.Items[_attribs.Sync.NextItem(_block.Items.Length)].Item2 
+                : _block.Items.PickWeighted(ii.RNG, _block.WeightTotal, item => item.Item1).Item2,
                 ii,
                 ii.CurrentState.Output);
 

@@ -11,6 +11,8 @@ namespace Rant
     {
         private readonly Tuple<double, IEnumerable<Token<R>>>[] _items;
 
+        public readonly double WeightTotal;
+
         private Block(IEnumerable<IEnumerable<Token<R>>> items)
         {
             _items = items.Select(item =>
@@ -29,6 +31,8 @@ namespace Rant
                 }
                 return Tuple.Create(weight, item);
             }).ToArray();
+
+            WeightTotal = _items.Sum(t => t.Item1);
         }
 
         public static Block Create(IEnumerable<IEnumerable<Token<R>>> items)
