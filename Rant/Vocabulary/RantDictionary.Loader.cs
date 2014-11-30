@@ -103,7 +103,7 @@ namespace Rant.Vocabulary
                     break;
                     case DicTokenType.Entry:
                     {
-                        if (nsfwFilter == NsfwFilter.Disallow) continue;
+                        if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
                         if (String.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
                         if (String.IsNullOrWhiteSpace(token.Value))
                         {
@@ -116,7 +116,7 @@ namespace Rant.Vocabulary
                     break;
                     case DicTokenType.Property:
                     {
-                        if (nsfwFilter == NsfwFilter.Disallow) continue;
+                        if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
                         var parts = token.Value.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
                         if(!parts.Any()) LoadError(path, token, "Empty property field.");
                         switch (parts[0].ToLower())
