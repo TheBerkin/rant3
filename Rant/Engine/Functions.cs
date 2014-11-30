@@ -79,7 +79,7 @@ namespace Rant
 
             // Formatting
             F["numfmt"] = new FuncSig(NumFmt, ParamFlags.None);
-            F["caps"] = new FuncSig(Caps, ParamFlags.None);
+            F["caps"] = F["case"] = new FuncSig(Caps, ParamFlags.None); // TODO: [caps] is deprecated. Remove it eventually.
             F["capsinfer"] = new FuncSig(CapsInfer, ParamFlags.None);
 
             // Channels
@@ -381,15 +381,15 @@ namespace Rant
             }
             if (uCount == wCount)
             {
-                interpreter.CurrentState.Output.SetCaps(Capitalization.Upper);
+                interpreter.CurrentState.Output.SetCaps(Case.Upper);
             }
             else if (wCount > 1 && fwCount == wCount)
             {
-                interpreter.CurrentState.Output.SetCaps(Capitalization.Word);
+                interpreter.CurrentState.Output.SetCaps(Case.Title);
             }
             else if (firstCharIsUpper)
             {
-                interpreter.CurrentState.Output.SetCaps(Capitalization.First);
+                interpreter.CurrentState.Output.SetCaps(Case.First);
             }
             return false;
         }
@@ -408,13 +408,13 @@ namespace Rant
             {
                 throw Error(source, tagname, "Invalid channel visibility option '\{cv_str}'");
             }
-            interpreter.CurrentState.Output.PushChannel(args[0].GetString(), cv);
+            interpreter.CurrentState.Output.PushChannel(args[0].GetString(), cv, interpreter.FormatStyle);
             return false;
         }
 
         private static bool Caps(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            Capitalization caps;
+            Case caps;
             var caps_str = args[0].GetString();
             if (!Enum.TryParse(NameToCamel(caps_str), out caps))
             {

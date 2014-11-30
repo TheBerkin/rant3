@@ -17,24 +17,6 @@ namespace Rant
         private static readonly RNG Seeds = new RNG();
 
         /// <summary>
-        /// The indefinite article rules to apply when running patterns.
-        /// </summary>
-        internal static IndefiniteArticle CurrentIndefiniteArticleI = IndefiniteArticle.English;
-
-        /// <summary>
-        /// The current indefinite article set being used by the engine.
-        /// </summary>
-        public static IndefiniteArticle CurrentIndefiniteArticle
-        {
-            get { return CurrentIndefiniteArticleI; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("value");
-                CurrentIndefiniteArticleI = value;
-            }
-        }
-
-        /// <summary>
         /// The maximum stack size allowed for a pattern.
         /// </summary>
         public static int MaxStackSize = 64;
@@ -45,7 +27,7 @@ namespace Rant
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HashSet<string> _flags = new HashSet<string>();
-        private IRantVocabulary _vocabulary;        
+        private IRantVocabulary _vocabulary;   
 
         internal VarStore Variables => _vars;
 
@@ -55,6 +37,11 @@ namespace Rant
         /// The currently set flags.
         /// </summary>
         public HashSet<string> Flags => _flags;
+
+        /// <summary>
+        /// The current output formatting style for the engine.
+        /// </summary>
+        public RantFormatStyle FormatStyle { get; set; } = RantFormatStyle.English;
 
         /// <summary>
         /// The vocabulary associated with this instance.

@@ -14,10 +14,10 @@ namespace Rant
         private int _stackSize;
         private int _lastWriteSize, _size;
 
-        public ChannelStack(Limit<int> sizeLimit)
+        public ChannelStack(RantFormatStyle formatStyle, Limit<int> sizeLimit)
         {
             _sizeLimit = sizeLimit;
-            _main = new Channel("main", ChannelVisibility.Public);
+            _main = new Channel("main", ChannelVisibility.Public, formatStyle);
 
             _stack = new List<Channel> { _main };
             _stackSize = 1;
@@ -68,12 +68,12 @@ namespace Rant
             return !_channels.TryGetValue(channelName, out channel) ? "" : channel.Value;
         }
 
-        public void PushChannel(string channelName, ChannelVisibility visibility)
+        public void PushChannel(string channelName, ChannelVisibility visibility, RantFormatStyle formatStyle)
         {   
             Channel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
-                ch = new Channel(channelName, visibility);
+                ch = new Channel(channelName, visibility, formatStyle);
                 _channels[channelName] = ch;
             }
 
@@ -96,7 +96,7 @@ namespace Rant
             _stackSize--;
         }
 
-        public void SetCaps(Capitalization caps)
+        public void SetCaps(Case caps)
         {
             foreach (var ch in GetActive())
             {

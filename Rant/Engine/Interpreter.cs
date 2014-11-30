@@ -31,7 +31,7 @@ namespace Rant
         // The chance value of the next block
         private int _chance = 100;
 
-        // Number format
+        // Formatting
         private NumberFormat _numfmt = NumberFormat.Normal;
         
         // State information
@@ -89,6 +89,8 @@ namespace Rant
             get { return _numfmt; }
             set { _numfmt = value; }
         }
+
+        public RantFormatStyle FormatStyle => _engine.FormatStyle;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
@@ -179,7 +181,7 @@ namespace Rant
             _startingGen = rng.Generation;
             _engine = engine;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
-            _output = new ChannelStack(_charLimit);
+            _output = new ChannelStack(engine.FormatStyle, _charLimit);
             _mainState = new State(this, input, _output);
         }
 
@@ -221,7 +223,7 @@ namespace Rant
                     if (Brackets.All.ContainsClosing(token.ID))
                         throw new RantException(reader.Source, token, "Unexpected token '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
 
-                    // DoElement will return true if the interpreter should skip to the top of the stack
+                    // Token function will return true if the interpreter should skip to the top of the stack
                     if (TokenFuncs.TryGetValue(token.ID, out currentFunc))
                     {
                         if (currentFunc(this, token, reader, state)) goto next;

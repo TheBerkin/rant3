@@ -92,6 +92,7 @@
     <Compile Include="Engine\Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Engine\Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
+    <Compile Include="RantFormatStyle.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Brackets.cs" />
@@ -116,7 +117,7 @@
     <Compile Include="Engine\ParamType.cs" />
     <Compile Include="RantException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
-    <Compile Include="Engine\Capitalization.cs" />
+    <Compile Include="Engine\Case.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Engine\ChannelStack.cs" />

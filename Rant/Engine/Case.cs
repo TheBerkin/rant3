@@ -1,11 +1,11 @@
 ﻿namespace Rant
 {
-    internal enum Capitalization
+    internal enum Case
     {
         None,
         Lower,
         Upper,
-        Word,
+        Title,
         First
     }
 }

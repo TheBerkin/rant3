@@ -73,24 +73,31 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Capitalize(string input, ref Capitalization caps, ref char lastChar)
+        public static string Capitalize(string input, ref Case caps, RantFormatStyle formatStyle, ref char lastChar, bool article = false)
         {
             if (String.IsNullOrEmpty(input)) return input;
             switch (caps)
             {
-                case Capitalization.Lower:
+                case Case.Lower:
                     input = input.ToLower();
                     break;
-                case Capitalization.Upper:
+                case Case.Upper:
                     input = input.ToUpper();
                     break;
-                case Capitalization.First:
+                case Case.First:
                     input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    caps = Capitalization.None;
+                    caps = Case.None;
                     break;
-                case Capitalization.Word:
+                case Case.Title:                
+                    if ((article || formatStyle.Excludes(input)) && Char.IsWhiteSpace(lastChar)) break;
+
                     char lc = lastChar;
-                    input = RegCapsWord.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
+                    input = RegCapsWord.Replace(input, m => (
+                    lc == '\0' 
+                    || Char.IsSeparator(lc) 
+                    || Char.IsWhiteSpace(lc)) 
+                    || Char.IsPunctuation(lc) 
+                    ? m.Value.ToUpper() : m.Value);
                     break;
             }
             lastChar = input[input.Length - 1];
@@ -98,28 +105,10 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Capitalize(string input, Capitalization caps, char lastChar)
+        public static string Capitalize(string input, Case caps, RantFormatStyle formatStyle, char lastChar, bool article = false)
         {
             if (String.IsNullOrEmpty(input)) return input;
-            switch (caps)
-            {
-                case Capitalization.Lower:
-                    input = input.ToLower();
-                    break;
-                case Capitalization.Upper:
-                    input = input.ToUpper();
-                    break;
-                case Capitalization.First:
-                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    caps = Capitalization.None;
-                    break;
-                case Capitalization.Word:
-                    char lc = lastChar;
-                    // TODO: Prevent capitalization of a/an
-                    input = RegCapsWord.Replace(input, m => (m.Index > 0 || Char.IsSeparator(lc) || Char.IsWhiteSpace(lc)) ? m.Value.ToUpper() : m.Value);
-                    break;
-            }
-            return input;
+            return Capitalize(input, ref caps, formatStyle, ref lastChar, article);
         }
 
         public static char SelectFromRanges(string rangeString, RNG rng)
