@@ -17,7 +17,7 @@ namespace Rant
                 _pinQueue.Remove(seed);
             }
 
-            NextAttribs.Sync = sync;
+            NextBlockAttribs.Sync = sync;
         }
 
         public void SyncCreate(string seed, SyncType type)
@@ -37,7 +37,7 @@ namespace Rant
             Synchronizer sync;
             if (_synchronizers.TryGetValue(seed, out sync))
             {
-                NextAttribs.Sync = sync;
+                NextBlockAttribs.Sync = sync;
                 return true;
             }
             return false;
@@ -94,7 +94,7 @@ namespace Rant
 
         public void Desync()
         {
-            NextAttribs.Sync = null;
+            NextBlockAttribs.Sync = null;
         }
     }
 }

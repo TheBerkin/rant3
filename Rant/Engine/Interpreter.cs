@@ -13,9 +13,10 @@ namespace Rant
     internal partial class Interpreter
     {
         // Main fields
-        private readonly RNG _rng;
-        private readonly RantPattern _mainSource;
-        private readonly RantEngine _engine;
+        public readonly RNG RNG;
+        public readonly RantEngine Engine;
+
+        private readonly RantPattern _mainSource;        
         private readonly long _startingGen;
 
         // Queries
@@ -26,7 +27,7 @@ namespace Rant
         private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>(); 
 
         // Next block attribs
-        private BlockAttribs _blockAttribs = new BlockAttribs();
+        public BlockAttribs NextBlockAttribs = new BlockAttribs();
 
         // The chance value of the next block
         private int _chance = 100;
@@ -61,24 +62,11 @@ namespace Rant
 
         public Dictionary<string, List<string>> LocalLists => _localLists;
 
-        public bool GetList(string name, out List<string> list)
-        {
-            return _localLists.TryGetValue(name, out list) || _engine.GlobalLists.TryGetValue(name, out list);
-        }
-
-        public RantEngine Engine => _engine;
+        public bool GetList(string name, out List<string> list) => _localLists.TryGetValue(name, out list) || Engine.GlobalLists.TryGetValue(name, out list);
 
         public Limit<int> CharLimit => _charLimit;
 
         public HashSet<State> BaseStates => _baseStates;
-
-        public BlockAttribs NextAttribs
-        {
-            get { return _blockAttribs; }
-            set { _blockAttribs = value; }
-        }
-
-        public RNG RNG => _rng;
 
         public Stack<Dictionary<string, Argument>> SubArgStack => _subArgStack;
 
@@ -90,7 +78,7 @@ namespace Rant
             set { _numfmt = value; }
         }
 
-        public RantFormatStyle FormatStyle => _engine.FormatStyle;
+        public RantFormatStyle FormatStyle => Engine.FormatStyle;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
@@ -125,7 +113,7 @@ namespace Rant
         public bool TakeChance()
         {
             if (_chance == 100) return true;
-            bool pass = _rng.Next(100) < _chance;
+            bool pass = RNG.Next(100) < _chance;
             _chance = 100;
             return pass;
         }
@@ -177,9 +165,9 @@ namespace Rant
         public Interpreter(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
-            _rng = rng;
+            RNG = rng;
             _startingGen = rng.Generation;
-            _engine = engine;
+            Engine = engine;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
             _output = new ChannelStack(engine.FormatStyle, _charLimit);
             _mainState = new State(this, input, _output);
@@ -240,7 +228,7 @@ namespace Rant
                 // Push a result string if the state's output differs from the one below it
                 if (!state.SharesOutput && state.Finish())
                 {
-                    _resultStack.Push(new Output(_rng.Seed, _startingGen, state.Output.Channels));
+                    _resultStack.Push(new Output(RNG.Seed, _startingGen, state.Output.Channels));
                 }
 
                 // Remove state from stack as long as nothing else was added beforehand

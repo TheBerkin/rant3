@@ -672,8 +672,8 @@ namespace Rant
 
         private static bool DoBlock(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
-            var attribs = interpreter.NextAttribs;
-            interpreter._blockAttribs = new BlockAttribs();
+            var attribs = interpreter.NextBlockAttribs;
+            interpreter.NextBlockAttribs = new BlockAttribs();
 
             if (reader.Take(R.Percent)) // List as block
             {

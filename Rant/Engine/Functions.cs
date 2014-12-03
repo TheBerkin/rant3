@@ -688,13 +688,13 @@ namespace Rant
 
         private static bool After(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
         {
-            interpreter.NextAttribs.After = args[0].GetTokens();
+            interpreter.NextBlockAttribs.After = args[0].GetTokens();
             return false;
         }
 
         private static bool Before(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
         {
-            interpreter.NextAttribs.Before = args[0].GetTokens();
+            interpreter.NextBlockAttribs.Before = args[0].GetTokens();
             return false;
         }
 
@@ -711,7 +711,7 @@ namespace Rant
 
         private static bool Separator(Interpreter interpreter, RantPattern source, Stringe tagName, Argument[] args)
         {
-            interpreter.NextAttribs.Separator = args[0].GetTokens();
+            interpreter.NextBlockAttribs.Separator = args[0].GetTokens();
             return false;
         }
 
@@ -720,7 +720,7 @@ namespace Rant
             var reps = args[0].GetString().Trim();
             if (String.Equals(reps, "each", StringComparison.OrdinalIgnoreCase))
             {
-                interpreter.NextAttribs.Repetitons = Repeater.Each;
+                interpreter.NextBlockAttribs.Repetitons = Repeater.Each;
                 return false;
             }
 
@@ -734,7 +734,7 @@ namespace Rant
                 throw Error(source, tagName, "Repetition value cannot be negative.");
             }
 
-            interpreter.NextAttribs.Repetitons = num;
+            interpreter.NextBlockAttribs.Repetitons = num;
             return false;
         }
 
