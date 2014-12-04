@@ -42,7 +42,7 @@ namespace Rant
         public string Code => _source;
 
         internal RantException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
-            : base((token != null ? ("(\{source.Name}@ Ln \{token.Line}, Col \{token.Column}) - ") : "") + message)
+            : base((token != null ? ("(\{source.Name} @ Ln \{token.Line}, Col \{token.Column}): ") : "") + message)
         {
             _source = source.Code;
             if (token != null)
@@ -61,7 +61,7 @@ namespace Rant
         }
 
         internal RantException(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
-            : base((tokens != null ? ("(\{source.Name} @ Ln \{tokens.First().Line}, Col \{tokens.First().Column}) - ") : "") + message)
+            : base((tokens != null ? ("(\{source.Name} @ Ln \{tokens.First().Line}, Col \{tokens.First().Column}): ") : "") + message)
         {
             _source = source.Code;
             
