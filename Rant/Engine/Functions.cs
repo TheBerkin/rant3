@@ -78,7 +78,9 @@ namespace Rant
             F["arg"] = new FuncSig(Arg, ParamFlags.None);
 
             // Formatting
-            F["numfmt"] = new FuncSig(NumFmt, ParamFlags.None);
+            F["numfmt"] = new FuncDef(
+                new FuncSig(NumFmt, ParamFlags.None),
+                new FuncSig(NumFmtScope, ParamFlags.None, ParamFlags.Code));
             F["caps"] = F["case"] = new FuncSig(Caps, ParamFlags.None); // TODO: [caps] is deprecated. Remove it eventually.
             F["capsinfer"] = new FuncSig(CapsInfer, ParamFlags.None);
 
@@ -434,6 +436,30 @@ namespace Rant
             }
             interpreter.NumberFormat = fmt;
             return false;
+        }
+
+        private static bool NumFmtScope(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            NumberFormat fmt;
+            var fmtstr = args[0].GetString();
+            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
+            {
+                throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
+            }
+            var state = Interpreter.State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output);
+            var oldFormat = interpreter.NumberFormat;
+            state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+            {
+                _.NumberFormat = fmt;
+                return false;
+            }));
+            state.AddPostBlueprint(new DelegateBlueprint(interpreter, _ =>
+            {
+                _.NumberFormat = oldFormat;
+                return false;
+            }));
+            interpreter.PushState(state);
+            return true;
         }
 
         private static bool Arg(Interpreter interpreter, RantPattern source, Stringe tagname, Argument[] args)
