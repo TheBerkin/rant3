@@ -68,6 +68,17 @@ The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mar
 The following word is 7 characters long: "kumquat"
 ```
 
+##Contributing
+If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. You are welcome to help with any of the following:
+* Documentation (wiki/code)
+* Fixing bugs
+* Optimization
+* New functions
+* New language features
+* Improving old language features
+* New API features
+* Formatting support for other languages
+
 ##License
 Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
