@@ -15,19 +15,15 @@ namespace Rant
         /// </summary>
         internal class State
         {
-            private readonly ChannelStack _output;
-            private readonly PatternReader _reader;
+            public readonly ChannelStack Output;
+            public readonly PatternReader Reader;            
+            public readonly bool SharesOutput;
+
             private readonly Interpreter _interpreter;
-            private readonly bool _sharesOutput;
             private bool _finished = false;
 
             private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
             private readonly Stack<Blueprint> _postBlueprints = new Stack<Blueprint>();
-
-            public bool SharesOutput
-            {
-                get { return _sharesOutput; }
-            }
 
             public bool Finish()
             {
@@ -40,28 +36,28 @@ namespace Rant
                 ChannelStack output)
             {
                 _interpreter = ii;
-                _output = output;
-                _reader = new PatternReader(new RantPattern(derivedSource, tokens));
-                _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
+                Output = output;
+                Reader = new PatternReader(new RantPattern(derivedSource, tokens));
+                SharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
             public State(Interpreter ii, RantPattern source, ChannelStack output)
             {
                 _interpreter = ii;
-                _output = output;
-                _reader = new PatternReader(source);
-                _sharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
+                Output = output;
+                Reader = new PatternReader(source);
+                SharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
             /// <summary>
-            /// Sets the current pre-blueprint for this state.
+            /// Adds a pre-blueprint to this state.
             /// </summary>
             /// <param name="bp">The blueprint to set.</param>
             /// <returns></returns>
-            public bool AddPreBlueprint(Blueprint bp)
+            public State Pre(Blueprint bp)
             {
                 _preBlueprints.Push(bp);
-                return true;
+                return this;
             }
 
             /// <summary>
@@ -83,14 +79,14 @@ namespace Rant
             }
 
             /// <summary>
-            /// Sets the current post-blueprint for this state.
+            /// Adds a post-blueprint to this state.
             /// </summary>
             /// <param name="bp">The blueprint to set.</param>
             /// <returns></returns>
-            public bool AddPostBlueprint(Blueprint bp)
+            public State Post(Blueprint bp)
             {
                 _postBlueprints.Push(bp);
-                return true;
+                return this;
             }
 
             /// <summary>
@@ -122,17 +118,7 @@ namespace Rant
 
             public void Print(string value)
             {
-                _output.Write(value);
-            }
-
-            public PatternReader Reader
-            {
-                get { return _reader; }
-            }
-
-            public ChannelStack Output
-            {
-                get { return _output; }
+                Output.Write(value);
             }
         }
     }

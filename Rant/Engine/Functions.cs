@@ -156,7 +156,7 @@ namespace Rant
         {
             interpreter.RNG.Branch(args[0].GetString().Hash());
             var state = Interpreter.State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output);
-            state.AddPostBlueprint(new DelegateBlueprint(interpreter, _ =>
+            state.Post(new DelegateBlueprint(interpreter, _ =>
             {
                 interpreter.RNG.Merge();
                 return false;
@@ -213,7 +213,7 @@ namespace Rant
             interpreter.Comparisons.Push(cmp);
 
             var state = Interpreter.State.CreateSub(source, args[2].GetTokens(), interpreter, interpreter.CurrentState.Output);
-            state.AddPostBlueprint(new DelegateBlueprint(interpreter, I =>
+            state.Post(new DelegateBlueprint(interpreter, I =>
             {
                 I.Comparisons.Pop();
                 return false;
@@ -446,19 +446,18 @@ namespace Rant
             {
                 throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
             }
-            var state = Interpreter.State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output);
             var oldFormat = interpreter.NumberFormat;
-            state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+            interpreter.PushState(Interpreter.State.CreateSub(source, args[1].GetTokens(), interpreter, interpreter.CurrentState.Output)
+            .Pre(new DelegateBlueprint(interpreter, _ =>
             {
                 _.NumberFormat = fmt;
                 return false;
-            }));
-            state.AddPostBlueprint(new DelegateBlueprint(interpreter, _ =>
+            }))
+            .Post(new DelegateBlueprint(interpreter, _ =>
             {
                 _.NumberFormat = oldFormat;
                 return false;
-            }));
-            interpreter.PushState(state);
+            })));
             return true;
         }
 
@@ -500,7 +499,7 @@ namespace Rant
         {
             var testState = Interpreter.State.CreateSub(source, args[0].GetTokens(), interpreter,
                 interpreter.CurrentState.Output);
-            testState.AddPostBlueprint(new AltBlueprint(interpreter, testState, args[1].GetTokens()));
+            testState.Post(new AltBlueprint(interpreter, testState, args[1].GetTokens()));
             interpreter.PushState(testState);
             return true;
         }
@@ -509,7 +508,7 @@ namespace Rant
         {
             var testState = Interpreter.State.CreateSub(source, args[0].GetTokens(), interpreter,
                 interpreter.CurrentState.Output);
-            testState.AddPostBlueprint(new AnyBlueprint(interpreter, testState, args[1].GetTokens()));
+            testState.Post(new AnyBlueprint(interpreter, testState, args[1].GetTokens()));
             interpreter.PushState(testState);
             return true;
         }

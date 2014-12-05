@@ -36,7 +36,7 @@ namespace Rant.Blueprints
                 _inputCollected = true;
 
                 // Queue this blueprint for after the matches are evaluated
-                I.CurrentState.AddPreBlueprint(this);
+                I.CurrentState.Pre(this);
 
                 // Get the matches for the pattern in the input
                 _matches = _regex.Matches(_input);
@@ -49,13 +49,13 @@ namespace Rant.Blueprints
 
                     Match match1 = match;
 
-                    state.AddPreBlueprint(new DelegateBlueprint(I, _ =>
+                    state.Pre(new DelegateBlueprint(I, _ =>
                     {
                         _.PushMatch(match1);
                         return false;
                     }));
 
-                    state.AddPostBlueprint(new DelegateBlueprint(I, _ =>
+                    state.Post(new DelegateBlueprint(I, _ =>
                     {
                         _.PopMatch();
                         return false;

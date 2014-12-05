@@ -34,7 +34,7 @@ namespace Rant
             bool isStatement = reader.Take(R.At);
             var tokens = reader.ReadToScopeClose(R.LeftParen, R.RightParen, Brackets.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
-            state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+            state.Pre(new DelegateBlueprint(interpreter, _ =>
             {
                 var v = Parser.Calculate(_, _.PopResultString());
                 if (!isStatement)
@@ -235,7 +235,7 @@ namespace Rant
                 case R.Percent: // List
                     return DoListAction(interpreter, firstToken, reader, state);
                 case R.Question: // Metapattern
-                    state.AddPreBlueprint(new MetapatternBlueprint(interpreter));
+                    state.Pre(new MetapatternBlueprint(interpreter));
                     interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All), interpreter));
                     return true;
                 case R.Regex: // Replacer
@@ -257,14 +257,14 @@ namespace Rant
 
             if (none)
             {
-                state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name));
+                state.Pre(new FuncTagBlueprint(interpreter, reader.Source, name));
             }
             else
             {
                 var items = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare,
                     R.Semicolon, Brackets.All).ToArray();
 
-                state.AddPreBlueprint(new FuncTagBlueprint(interpreter, reader.Source, name, items));
+                state.Pre(new FuncTagBlueprint(interpreter, reader.Source, name, items));
             }
             return true;
         }
@@ -328,7 +328,7 @@ namespace Rant
                 {
                     var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
-                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    state.Pre(new DelegateBlueprint(interpreter, _ =>
                     {
                         var srcName = _.PopResultString();
                         List<string> src;
@@ -356,7 +356,7 @@ namespace Rant
                     interpreter.PushState(State.CreateSub(reader.Source, item, interpreter));
                 }
 
-                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
                     if (atStart)
                     {
@@ -399,7 +399,7 @@ namespace Rant
                     interpreter.PushState(State.CreateSub(reader.Source, item, interpreter));
                 }
 
-                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -420,7 +420,7 @@ namespace Rant
                     if (args.Length != 2) throw new RantException(args.SelectMany(a => a), reader.Source, "Two arguments are required for this operation.");
                     interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter)); // index
                     interpreter.PushState(State.CreateSub(reader.Source, args[1], interpreter)); // value
-                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    state.Pre(new DelegateBlueprint(interpreter, _ =>
                     {
                         var indexString = _.PopResultString();
                         var valueString = _.PopResultString();
@@ -438,7 +438,7 @@ namespace Rant
 
                 var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
                 interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
-                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
                     List<string> srcList;
                     var srcName = _.PopResultString();
@@ -464,7 +464,7 @@ namespace Rant
                     var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
-                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    state.Pre(new DelegateBlueprint(interpreter, _ =>
                     {
                         var value = _.PopResultString();
 
@@ -527,7 +527,7 @@ namespace Rant
                     var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
-                    state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                    state.Pre(new DelegateBlueprint(interpreter, _ =>
                     {
                         var arg = _.PopResultString();
                         if (isSpecial && special == R.Question) // index of value
@@ -602,7 +602,7 @@ namespace Rant
                     throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and \{args.Length} parameter\{(args.Length != 1 ? "s" : "")}.");
             }
 
-            state.AddPreBlueprint(new SubCallBlueprint(interpreter, reader.Source, sub, args));
+            state.Pre(new SubCallBlueprint(interpreter, reader.Source, sub, args));
 
             return true;
         }
@@ -642,7 +642,7 @@ namespace Rant
             if (meta)
             {
                 interpreter.PushState(State.CreateSub(reader.Source, body, interpreter));
-                state.AddPreBlueprint(new DelegateBlueprint(interpreter, _ =>
+                state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
                     _.Engine.Subroutines.Define(tName.Value, Subroutine.FromString(tName.Value, _.PopResultString(), parameters.ToArray()));
                     return false;
@@ -664,7 +664,7 @@ namespace Rant
             var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Brackets.All).ToArray();
             if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected two arguments, but got \{args.Length}.");
 
-            state.AddPreBlueprint(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
+            state.Pre(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
 
             interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter));
             return true;
@@ -694,7 +694,7 @@ namespace Rant
                 var listRep = new Repeater(Block.Create(listItems), attribs);
                 interpreter.PushRepeater(listRep);
                 interpreter.BaseStates.Add(state);
-                state.AddPreBlueprint(new RepeaterBlueprint(interpreter, listRep));
+                state.Pre(new RepeaterBlueprint(interpreter, listRep));
                 return true;
             }
 
@@ -718,7 +718,7 @@ namespace Rant
             var rep = new Repeater(block.Item1, attribs);
             interpreter.PushRepeater(rep);
             interpreter.BaseStates.Add(state);
-            state.AddPreBlueprint(new RepeaterBlueprint(interpreter, rep));
+            state.Pre(new RepeaterBlueprint(interpreter, rep));
             return true;
         }
     }

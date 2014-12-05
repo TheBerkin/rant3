@@ -74,7 +74,7 @@ namespace Rant
             if (Finished) return false;
 
             // Queue the next iteration on the current state
-            ii.CurrentState.AddPreBlueprint(bp);
+            ii.CurrentState.Pre(bp);
 
             // Push separator if applicable
             if (!IsLast && _attribs.Separator != null && _attribs.Separator.Any())
@@ -86,12 +86,12 @@ namespace Rant
                     ii.CurrentState.Output);
 
                 // Make sure that the repeater is not available to the separator pattern
-                sepState.AddPreBlueprint(new DelegateBlueprint(ii, _ =>
+                sepState.Pre(new DelegateBlueprint(ii, _ =>
                 {
                     _allowStats = false;
                     return false;
                 }));
-                sepState.AddPostBlueprint(new DelegateBlueprint(ii, _ =>
+                sepState.Post(new DelegateBlueprint(ii, _ =>
                 {
                     _allowStats = true;
                     return false;
@@ -121,7 +121,7 @@ namespace Rant
                 ii.CurrentState.Output);
 
             // Apply the Next() call to the last state in the repeater iteration
-            (afterState ?? itemState).AddPostBlueprint(new DelegateBlueprint(ii, _ =>
+            (afterState ?? itemState).Post(new DelegateBlueprint(ii, _ =>
             {
                 Next();
                 return false;

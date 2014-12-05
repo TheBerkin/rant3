@@ -50,14 +50,14 @@ namespace Rant.Blueprints
             var state = new Interpreter.State(I, _subroutine.Source, I.CurrentState.Output);
 
             // Pre-blueprint pushes args
-            state.AddPreBlueprint(new DelegateBlueprint(I, _ =>
+            state.Pre(new DelegateBlueprint(I, _ =>
             {
                 _.SubArgStack.Push(argTable);
                 return false;
             }));
 
             // Post-blueprint pops args
-            state.AddPostBlueprint(new DelegateBlueprint(I, _ =>
+            state.Post(new DelegateBlueprint(I, _ =>
             {
                 _.SubArgStack.Pop();
                 return false;
