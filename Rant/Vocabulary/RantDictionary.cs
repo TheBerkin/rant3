@@ -115,7 +115,7 @@ namespace Rant.Vocabulary
             }
 
 
-            return entry == null ? "[?]" : entry[index];
+            return entry[index] ?? "[?]";
         }
     }
 }

@@ -698,24 +698,24 @@ namespace Rant
                 return true;
             }
 
-            Tuple<Block, int> block;
+            Tuple<Block, int> blockInfo;
 
             // Check if the block is already cached
-            if (!reader.Source.TryGetCachedBlock(firstToken, out block))
+            if (!reader.Source.TryGetCachedBlock(firstToken, out blockInfo))
             {
                 var elements = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Brackets.All).ToArray();
-                block = Tuple.Create(Block.Create(elements), reader.Position);
-                reader.Source.CacheBlock(firstToken, block);
+                blockInfo = Tuple.Create(Block.Create(elements), reader.Position);
+                reader.Source.CacheBlock(firstToken, blockInfo);
             }
             else
             {
                 // If the block is cached, seek to its end
-                reader.Position = block.Item2;
+                reader.Position = blockInfo.Item2;
             }
 
-            if (!block.Item1.Items.Any() || !interpreter.TakeChance()) return false;
+            if (!blockInfo.Item1.Items.Any() || blockInfo.Item1.WeightTotal == 0 || !interpreter.TakeChance()) return false;
 
-            var rep = new Repeater(block.Item1, attribs);
+            var rep = new Repeater(blockInfo.Item1, attribs);
             interpreter.PushRepeater(rep);
             interpreter.BaseStates.Add(state);
             state.Pre(new RepeaterBlueprint(interpreter, rep));
