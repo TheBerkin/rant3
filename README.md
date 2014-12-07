@@ -29,7 +29,7 @@ Some of the highlights of what Rant offers:
 
 **Generate random sentence**
 ```
-<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <time_noun.plural-dayofweek>.
+<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <timenoun.plural-dayofweek>.
 ```
 ```
 Alick likes to mount shuttlecocks with his pet bat on Mondays.
