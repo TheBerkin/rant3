@@ -10,7 +10,7 @@ namespace Rant.Engine
 
         private static readonly Regex RegCapsTitleWord = new Regex(@"\b(?<!['""])[a-z]", FmtRegexOptions);
         private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", FmtRegexOptions);
-        private static readonly Regex RegCapsSentenceA = new Regex(@"(?<=[.?!])\s*\w", FmtRegexOptions); // Handles letters after ending capitalization
+        private static readonly Regex RegCapsSentenceA = new Regex(@"(?<=[.?!])\s+\w", FmtRegexOptions); // Handles letters after ending capitalization
         private static readonly Regex RegCapsSentenceB = new Regex(@"[.?!](?!\w)$", FmtRegexOptions); // Handles end cases (no letter after last ending)
 
         public Case Case;
@@ -58,13 +58,13 @@ namespace Rant.Engine
                         if (!options.HasFlag(FormatterOptions.NoUpdate)) _sentence = false;
                         return m.Value.ToUpper();
                     });
-                    input = RegCapsSentenceA.Replace(input, m => m.Value.ToUpper());
-                    if (RegCapsSentenceB.IsMatch(input) && !options.HasFlag(FormatterOptions.NoUpdate)) _sentence = true;
+                    input = RegCapsSentenceA.Replace(input, m => m.Value.ToUpper());                    
                     break;
                 case Case.Word:
                     input = RegCapsTitleWord.Replace(input, m => m.Value.ToUpper());
                     break;
             }
+            if (RegCapsSentenceB.IsMatch(input) && !options.HasFlag(FormatterOptions.NoUpdate)) _sentence = true;
             if (!options.HasFlag(FormatterOptions.NoUpdate)) _lastChar = input[input.Length - 1];
             return input;
         }
