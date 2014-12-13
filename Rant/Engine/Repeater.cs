@@ -64,7 +64,7 @@ namespace Rant
             get { return _index >= _count; }
         }
 
-        public bool Iterate(Interpreter ii, RepeaterBlueprint bp)
+        public bool Iterate(VM ii, RepeaterBlueprint bp)
         {
             while (ii.CurrentRepeater != null && ii.CurrentRepeater.Finished)
             {
@@ -79,7 +79,7 @@ namespace Rant
             // Push separator if applicable
             if (!IsLast && _attribs.Separator != null && _attribs.Separator.Any())
             {
-                var sepState = Interpreter.State.CreateSub(
+                var sepState = VM.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Separator,
                     ii,
@@ -100,12 +100,12 @@ namespace Rant
                 ii.PushState(sepState);
             }
 
-            Interpreter.State afterState = null;
+            VM.State afterState = null;
 
             // Push postfix if applicable
             if (_attribs.After != null && _attribs.After.Any())
             {
-                ii.PushState(afterState = Interpreter.State.CreateSub(
+                ii.PushState(afterState = VM.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.After,
                     ii,
@@ -113,7 +113,7 @@ namespace Rant
             }
 
             // Push next item
-            var itemState = Interpreter.State.CreateSub(ii.CurrentState.Reader.Source,                
+            var itemState = VM.State.CreateSub(ii.CurrentState.Reader.Source,                
                 _attribs.Sync != null 
                 ? _block.Items[_attribs.Sync.NextItem(_block.Items.Length)].Item2 
                 : _block.Items.PickWeighted(ii.RNG, _block.WeightTotal, item => item.Item1).Item2,
@@ -132,7 +132,7 @@ namespace Rant
             // Push prefix if applicable
             if (_attribs.Before != null && _attribs.Before.Any())
             {
-                ii.PushState(Interpreter.State.CreateSub(
+                ii.PushState(VM.State.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Before,
                     ii,

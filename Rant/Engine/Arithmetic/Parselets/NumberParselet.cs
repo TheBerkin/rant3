@@ -5,7 +5,7 @@ namespace Rant.Arithmetic.Parselets
 {
     internal class NumberParselet : IPrefixParselet
     {
-        public Expression Parse(Parser parser, Token<RMathToken> token)
+        public Expression Parse(MathParser parser, Token<RMathToken> token)
         {
             return new NumberExpression(Double.Parse(token.Value));
         }

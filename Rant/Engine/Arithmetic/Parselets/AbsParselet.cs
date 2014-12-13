@@ -5,7 +5,7 @@ namespace Rant.Arithmetic.Parselets
 {
     internal class AbsParselet : IPrefixParselet
     {
-        public Expression Parse(Parser parser, Token<RMathToken> token)
+        public Expression Parse(MathParser parser, Token<RMathToken> token)
         {
             var e = new AbsExpression(parser.ParseExpression());
             parser.Take(RMathToken.Pipe);

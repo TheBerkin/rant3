@@ -18,7 +18,7 @@ namespace Rant.Arithmetic.Parselets
             get { return _precedence; }
         }
 
-        public Expression Parse(Parser parser, Expression left, Token<RMathToken> token)
+        public Expression Parse(MathParser parser, Expression left, Token<RMathToken> token)
         {
             var right = parser.ParseExpression(Precedence - (_right ? 1 : 0));
             return new BinaryOperatorExpression(left, right, token);

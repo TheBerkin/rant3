@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Rant.Vocabulary
 {
-    public partial class RantDictionary
+    public partial class RantDictionaryTable
     {
         /// <summary>
         /// Saves the contents of the dictionary to a file at the specified path.

@@ -1,121 +1,91 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Stores a Rant dictionary.
+    /// Represents a Rant dictionary. This is the default dictionary type used by Rant.
     /// </summary>
-    public sealed partial class RantDictionary
+    public sealed class RantDictionary : IRantDictionary
     {
         /// <summary>
-        /// The current version number of the dictionary format.
+        /// Determines if the loader should display debug output when parsing files.
         /// </summary>
-        public const string Version = "2";
+        public static bool ShowDebugOutput = true;
 
-        private readonly string _name;
-        private readonly string[] _subtypes;
-        private readonly RantDictionaryEntry[] _words;
+        private readonly Dictionary<string, RantDictionaryTable> _tables;
 
         /// <summary>
-        /// Creates a new WordList from the specified data.
+        /// Creates a new RantDictionary object from the specified dictionary collection.
         /// </summary>
-        /// <param name="name">the name of the list.</param>
-        /// <param name="subtypes">The subtype names.</param>
-        /// <param name="words">The words to add to the list.</param>
-        public RantDictionary(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> words)
+        /// <param name="dics"></param>
+        public RantDictionary(IEnumerable<RantDictionaryTable> dics)
         {
-            if (!Util.ValidateName(name))
+            _tables = new Dictionary<string, RantDictionaryTable>();
+
+            if (dics == null) return;
+
+            foreach (var list in dics)
             {
-                throw new FormatException("Invalid dictionary name: '\{name}'");
+                _tables[list.Name] = list;
             }
-
-            if (!subtypes.All(Util.ValidateName))
-            {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'")));
-            }
-
-            _subtypes = subtypes;
-            _name = name;
-            _words = words.ToArray();
-        }
-        
-        /// <summary>
-        /// The entries stored in the dictionary.
-        /// </summary>
-        public RantDictionaryEntry[] Entries => _words;
-
-        /// <summary>
-        /// The subtypes in the dictionary.
-        /// </summary>
-        public string[] Subtypes => _subtypes;
-
-        /// <summary>
-        /// The name of the dictionary.
-        /// </summary>
-        public string Name => _name;
-
-        private int GetSubtypeIndex(string subtype)
-        {
-            if (String.IsNullOrEmpty(subtype)) return 0;
-            for (int i = 0; i < _subtypes.Length; i++)
-            {
-                if (String.Equals(subtype, _subtypes[i], StringComparison.OrdinalIgnoreCase)) return i;
-            }
-            return -1;
         }
 
-        internal string Query(RNG rng, Query query, CarrierSyncState syncState)
+        /// <summary>
+        /// Adds a new RantDictionaryTable object to the collection.
+        /// </summary>
+        /// <param name="dictionary"></param>
+        public void AddTable(RantDictionaryTable dictionary)
         {
-            var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
-            if (index == -1)
-            {
-                return "[Missing Subtype]";
-            }
+            _tables[dictionary.Name] = dictionary;
+        }
 
-            IEnumerable<RantDictionaryEntry> pool = _words;
+        /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directory and returns a Dictionary object that contains the loaded data.
+        /// </summary>
+        /// <param name="directory">The directory from which to load dictionaries.</param>
+        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <returns></returns>
+        public static RantDictionary FromDirectory(string directory, NsfwFilter filter)
+        {
+            return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(file => RantDictionaryTable.FromFile(file, filter)).ToList());
+        }
 
-            pool = query.Exclusive
-                ? pool.Where(e => e.Classes.Any() && e.Classes.All(
-                    c => query.ClassFilters.Any(
-                        set => set.Any(t => t.Item2 == c))))
-                : pool.Where(e => query.ClassFilters.All(
-                    set => set.Any(
-                        t => t.Item1 == (e.Classes.Contains(t.Item2)))));
+        /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
+        /// </summary>
+        /// <param name="directories">The directories from which to load dictionaries.</param>
+        /// <returns></returns>
+        public static RantDictionary FromMultiDirectory(params string[] directories)
+        {
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file)));
+        }
 
-            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
+        /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
+        /// </summary>
+        /// <param name="directories">The directories from which to load dictionaries.</param>
+        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <returns></returns>
+        public static RantDictionary FromMultiDirectory(string[] directories, NsfwFilter filter)
+        {
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file, filter)));
+        }
 
-            if (!pool.Any())
-            {
-                return "[?]";
-            }
-
-            RantDictionaryEntry entry = null;
-
-            if (query.Carrier != null)
-            {
-                switch (query.Carrier.SyncType)
-                {
-                    case CarrierSyncType.Match:
-                        entry =
-                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.ID.Hash(), n));
-                        break;
-                    case CarrierSyncType.Unique:
-                        entry = syncState.GetUniqueEntry(query.Carrier.ID, pool, rng);
-                        break;
-                    case CarrierSyncType.Rhyme:
-                        entry = syncState.GetRhymingEntry(query.Carrier.ID, index, pool, rng);
-                        break;
-                }
-            }
-            else
-            {
-                entry = pool.PickWeighted(rng, e => e.Weight);
-            }
-
-
-            return entry[index] ?? "[?]";
+        /// <summary>
+        /// Queries the Dictionary according to the specified criteria and returns a random match.
+        /// </summary>
+        /// <param name="rng">The random number generator to randomize the match with.</param>
+        /// <param name="query">The search criteria to use.</param>
+        /// <param name="syncState">The state object to use for carrier synchronization.</param>
+        /// <returns></returns>
+        public string Query(RNG rng, Query query, CarrierSyncState syncState)
+        {
+            RantDictionaryTable wordList;
+            return !_tables.TryGetValue(query.Name, out wordList) 
+                ? "[Missing Dic]" 
+                : wordList.Query(rng, query, syncState);
         }
     }
 }

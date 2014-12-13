@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rant.Formatting;
 
 namespace Rant
 {
     internal class ChannelStack
     {
-        private readonly List<Channel> _stack;
-        private readonly Dictionary<string, Channel> _channels;
-        private readonly Channel _main;
+        private readonly List<RantChannel> _stack;
+        private readonly Dictionary<string, RantChannel> _channels;
+        private readonly RantChannel _main;
         private readonly Limit<int> _sizeLimit;
 
         private int _stackSize;
         private int _lastWriteSize, _size;
 
-        public ChannelStack(RantFormatStyle formatStyle, Limit<int> sizeLimit)
+        public ChannelStack(RantFormat formatStyle, Limit<int> sizeLimit)
         {
             _sizeLimit = sizeLimit;
-            _main = new Channel("main", ChannelVisibility.Public, formatStyle);
+            _main = new RantChannel("main", RantChannelVisibility.Public, formatStyle);
 
-            _stack = new List<Channel> { _main };
+            _stack = new List<RantChannel> { _main };
             _stackSize = 1;
 
-            _channels = new Dictionary<string, Channel>
+            _channels = new Dictionary<string, RantChannel>
             {
                 { "main", _main }
             };
@@ -64,16 +65,16 @@ namespace Rant
 
         public string GetOutputFor(string channelName)
         {
-            Channel channel;
+            RantChannel channel;
             return !_channels.TryGetValue(channelName, out channel) ? "" : channel.Value;
         }
 
-        public void PushChannel(string channelName, ChannelVisibility visibility, RantFormatStyle formatStyle)
+        public void PushChannel(string channelName, RantChannelVisibility visibility, RantFormat formatStyle)
         {   
-            Channel ch;
+            RantChannel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
-                ch = new Channel(channelName, visibility, formatStyle);
+                ch = new RantChannel(channelName, visibility, formatStyle);
                 _channels[channelName] = ch;
             }
 
@@ -90,7 +91,7 @@ namespace Rant
         {
             if (channelName == "main") return;
 
-            Channel ch;
+            RantChannel ch;
             if (!_channels.TryGetValue(channelName, out ch)) return;
             _stack.Remove(ch);
             _stackSize--;
@@ -100,7 +101,7 @@ namespace Rant
         {
             foreach (var ch in GetActive())
             {
-                ch.Capitalization = caps;
+                ch.Formatter.Case = caps;
             }
         }
 
@@ -116,28 +117,28 @@ namespace Rant
             CheckSizeLimit();
         }
 
-        public IEnumerable<Channel> GetActive()
+        public IEnumerable<RantChannel> GetActive()
         {
-            var lastVisibility = ChannelVisibility.Public;
+            var lastVisibility = RantChannelVisibility.Public;
             bool p = false;
 
             for (int i = _stackSize - 1; i >= 0; i--)
             {
                 switch (_stack[i].Visiblity)
                 {
-                    case ChannelVisibility.Public:
-                        if (lastVisibility == ChannelVisibility.Internal)
+                    case RantChannelVisibility.Public:
+                        if (lastVisibility == RantChannelVisibility.Internal)
                         {
                             if (p) yield return _main;
                             yield break;
                         }
                         p = true;
                         break;
-                    case ChannelVisibility.Private:
+                    case RantChannelVisibility.Private:
                         yield return _stack[i];
                         if (p) yield return _main;
                         yield break;
-                    case ChannelVisibility.Internal:
+                    case RantChannelVisibility.Internal:
                         break;
                 }
 
@@ -153,6 +154,6 @@ namespace Rant
             _lastWriteSize = _size - _lastSize;
         }
 
-        public Dictionary<string, Channel> Channels => _channels;
+        public Dictionary<string, RantChannel> Channels => _channels;
     }
 }

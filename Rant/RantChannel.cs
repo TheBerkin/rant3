@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Rant.Engine;
+using Rant.Formatting;
 
 namespace Rant
 {
     /// <summary>
     /// Stores output from a pattern channel.
     /// </summary>
-    public sealed class Channel
+    public sealed class RantChannel
     {
         internal const int InitialBufferSize = 512;
 
-        private RantFormatStyle _formatStyle;
+        private RantFormat _formatStyle;
         private StringBuilder _currentBuffer;
         private readonly List<StringBuilder> _buffers;
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
-        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, Case, char>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, Case, char>>();
+        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>>();
 
-        private int _length = 0;
-        private int _bufferCount = 0;
+        private Formatter _formatter;
 
-        private char _lastChar = '\0';
-        private Case _caps = Case.None;
+        private int _bufferCount;
+        private int _length;
 
         /// <summary>
         /// The name of the channel.
@@ -32,43 +33,39 @@ namespace Rant
         /// <summary>
         /// The visibility of the channel.
         /// </summary>
-        public ChannelVisibility Visiblity { get; internal set; }
+        public RantChannelVisibility Visiblity { get; internal set; }
 
-        internal Case Capitalization
-        {
-            get { return _caps; }
-            set { _caps = value; }
-        }
+        internal Formatter Formatter => _formatter;
 
-        internal RantFormatStyle FormatStyle
+        internal RantFormat FormatStyle
         {
             get { return _formatStyle; }
             set { _formatStyle = value; }
         }
 
-        internal Channel(string name, ChannelVisibility visibility, RantFormatStyle formatStyle)
+        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat formatStyle)
         {
             Name = name;
             Visiblity = visibility;
             _currentBuffer = new StringBuilder(InitialBufferSize);
             _buffers = new List<StringBuilder>{_currentBuffer};
             _formatStyle = formatStyle;
+            _formatter = new Formatter();
         }
 
         internal void Write(string value)
         {
             if (value == null) return;
             _length += value.Length;
-            _currentBuffer.Append(Util.Capitalize(value, ref _caps, _formatStyle, ref _lastChar));
+            _currentBuffer.Append(_formatter.Format(value, _formatStyle));
             UpdateArticle(_currentBuffer);
         }
 
         internal void WriteArticle()
         {
-            char lc = _lastChar;
-            var caps = _caps;
+            char lc = _formatter.LastChar;
             
-            var anBuilder = Tuple.Create(new StringBuilder(Util.Capitalize(_formatStyle.IndefiniteArticle.ConsonantForm, ref _caps, _formatStyle, ref _lastChar, true)), caps, lc);
+            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_formatStyle.IndefiniteArticle.ConsonantForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle)), _formatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -79,19 +76,19 @@ namespace Rant
 
         private void UpdateArticle(StringBuilder target)
         {
-            Tuple<StringBuilder, Case, char> aBuilder;
+            Tuple<StringBuilder, Formatter> aBuilder;
             if (!_articleConverters.TryGetValue(target, out aBuilder)) return;
             int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
-                aBuilder.Item1.Clear().Append(Util.Capitalize(_formatStyle.IndefiniteArticle.ConsonantForm, aBuilder.Item2, _formatStyle, aBuilder.Item3, true));
+                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_formatStyle.IndefiniteArticle.ConsonantForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
 
             // Check for vowel
             if (!_formatStyle.IndefiniteArticle.PrecedesVowel(target)) return;
-            aBuilder.Item1.Clear().Append(Util.Capitalize(_formatStyle.IndefiniteArticle.VowelForm, aBuilder.Item2, _formatStyle, aBuilder.Item3, true));
+            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_formatStyle.IndefiniteArticle.VowelForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
             _length += -l1 + aBuilder.Item1.Length;
         }
 
@@ -111,12 +108,12 @@ namespace Rant
             {
                 sb = _forePrintPoints[name] = new StringBuilder(InitialBufferSize);
                 if (overwrite) sb.Clear();
-                sb.Append(Util.Capitalize(value, ref _caps, _formatStyle, ref _lastChar));
+                sb.Append(_formatter.Format(value, _formatStyle));
             }
             else
             {
                 if (overwrite) sb.Clear();
-                sb.Append(Util.Capitalize(value, ref _caps, _formatStyle, ref _lastChar));
+                sb.Append(_formatter.Format(value, _formatStyle));
                 UpdateArticle(sb);
             }
         }

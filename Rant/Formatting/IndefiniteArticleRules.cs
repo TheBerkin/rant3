@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Rant
+namespace Rant.Formatting
 {
     /// <summary>
     /// Represents a rule set for determining the correct indefinite article to place before a word.

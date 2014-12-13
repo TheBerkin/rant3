@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Globalization;
 using Rant;
 using Rant.Vocabulary;
@@ -74,23 +75,36 @@ namespace RantConsole
             }
         }
 
-        static void PrintOutput(Output output, bool file = false)
+        static void PrintOutput(RantOutput output, bool file = false)
         {
+            bool writeToFile = !String.IsNullOrEmpty(Property("out"));
             foreach (var chan in output)
             {
                 if (chan.Name != "main")
                 {
                     if (Flag("main")) continue;
-                    ForegroundColor = ConsoleColor.Green;
-                    WriteLine("\{chan.Name} (\{chan.Visiblity}):");
-                    ResetColor();
+                    if (!writeToFile)
+                    {
+                        ForegroundColor = ConsoleColor.Green;
+                        WriteLine("\{chan.Name} (\{chan.Visiblity}):");
+                        ResetColor();
+                    }
                 }
                 ForegroundColor = ConsoleColor.White;
                 if (chan.Length > 0)
-                {
-                    WriteLine(chan.Value);
+                {   
+                    if (file && writeToFile)
+                    {
+                        var path = Property("out");
+                        File.WriteAllText(Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)
+                            + (chan.Name != "main" ? ".\{chan.Name}" : "" + "." + Path.GetExtension(path))), chan.Value); 
+                    }
+                    else
+                    {
+                        WriteLine(chan.Value);
+                    }
                 }
-                else
+                else if (!writeToFile)
                 {
                     ForegroundColor = ConsoleColor.DarkGray;
                     if (!file) WriteLine("[Empty]");

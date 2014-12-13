@@ -68,8 +68,7 @@
     <Compile Include="Engine\Arithmetic\Expressions\NumberExpression.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\PostfixOperatorExpression.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\PrefixOperatorExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Lexer.cs" />
-    <Compile Include="Engine\Arithmetic\Lexer.Static.cs" />
+    <Compile Include="Engine\Arithmetic\MathLexer.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\BinaryOperatorParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\AbsParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\IInfixParselet.cs" />
@@ -78,8 +77,8 @@
     <Compile Include="Engine\Arithmetic\Parselets\NumberParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\PostfixOperatorParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\PrefixOperatorParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parser.cs" />
-    <Compile Include="Engine\Arithmetic\Parser.Static.cs" />
+    <Compile Include="Engine\Arithmetic\MathParser.cs" />
+    <Compile Include="Engine\Arithmetic\MathParser.Static.cs" />
     <Compile Include="Engine\Arithmetic\Precedence.cs" />
     <Compile Include="Engine\Arithmetic\RMathToken.cs" />
     <Compile Include="Engine\Block.cs" />
@@ -92,36 +91,37 @@
     <Compile Include="Engine\Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Engine\Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
-    <Compile Include="RantFormatStyle.cs" />
+    <Compile Include="Engine\Formatter.cs" />
+    <Compile Include="Formatting\RantFormat.cs" />
+    <Compile Include="RantOutput.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Brackets.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierSyncState.cs" />
     <Compile Include="Vocabulary\Dic2Lexer.cs" />
-    <Compile Include="Vocabulary\RantDictionary.Exporter.cs">
+    <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Vocabulary\RantDictionary.Loader.cs" />
+    <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\BlockAttribs.cs" />
-    <Compile Include="IndefiniteArticle.cs" />
-    <Compile Include="IndefiniteArticleRules.cs" />
-    <Compile Include="Engine\Interpreter.cs" />
-    <Compile Include="Engine\Interpreter.Markers.cs" />
-    <Compile Include="Engine\Interpreter.Synchronizers.cs" />
+    <Compile Include="Formatting\IndefiniteArticle.cs" />
+    <Compile Include="Formatting\IndefiniteArticleRules.cs" />
+    <Compile Include="Engine\VM.cs" />
+    <Compile Include="Engine\VM.Markers.cs" />
+    <Compile Include="Engine\VM.Synchronizers.cs" />
     <Compile Include="Engine\Functions.cs" />
-    <Compile Include="Engine\Interpreter.Parser.cs" />
-    <Compile Include="Vocabulary\IRantVocabulary.cs" />
+    <Compile Include="Engine\VM.Parser.cs" />
+    <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="Engine\ParamType.cs" />
     <Compile Include="RantException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Case.cs" />
-    <Compile Include="Channel.cs" />
-    <Compile Include="Output.cs" />
+    <Compile Include="RantChannel.cs" />
     <Compile Include="Engine\ChannelStack.cs" />
-    <Compile Include="ChannelVisibility.cs" />
+    <Compile Include="RantChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\NumberFormat.cs" />
     <Compile Include="Engine\Numerals.cs" />
@@ -134,7 +134,7 @@
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternSource.cs" />
     <Compile Include="Engine\PatternReader.cs" />
-    <Compile Include="Engine\Interpreter.State.cs" />
+    <Compile Include="Engine\VM.State.cs" />
     <Compile Include="Engine\Stringes\Chare.cs" />
     <Compile Include="Engine\Stringes\Extensions.cs" />
     <Compile Include="Engine\Stringes\Stringe.cs" />
@@ -150,8 +150,8 @@
     <Compile Include="Engine\VarStore.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Vocabulary\RantVocabulary.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />
+    <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
     <Compile Include="Vocabulary\VocabUtils.cs" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace Rant.Arithmetic
             _left = left;
         }
 
-        public override double Evaluate(Parser parser, Interpreter ii)
+        public override double Evaluate(MathParser parser, VM ii)
         {
             var name = _left as NameExpression;
             if (name == null)

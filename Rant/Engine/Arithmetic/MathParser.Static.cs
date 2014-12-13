@@ -3,12 +3,12 @@ using Rant.Arithmetic.Parselets;
 
 namespace Rant.Arithmetic
 {
-    internal partial class Parser
+    internal partial class MathParser
     {
         private static readonly Dictionary<RMathToken, IInfixParselet> InfixParselets;
         private static readonly Dictionary<RMathToken, IPrefixParselet> PrefixParselets; 
 
-        static Parser()
+        static MathParser()
         {
             InfixParselets = new Dictionary<RMathToken, IInfixParselet>
             {

@@ -4,7 +4,7 @@ namespace Rant.Arithmetic.Parselets
 {
     internal class NameParselet : IPrefixParselet
     {
-        public Expression Parse(Parser parser, Token<RMathToken> token)
+        public Expression Parse(MathParser parser, Token<RMathToken> token)
         {
             return new NameExpression(token);
         }

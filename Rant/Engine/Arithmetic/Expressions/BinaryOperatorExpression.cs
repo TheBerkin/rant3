@@ -17,7 +17,7 @@ namespace Rant.Arithmetic
             _token = token;
         }
 
-        public override double Evaluate(Parser parser, Interpreter ii)
+        public override double Evaluate(MathParser parser, VM ii)
         {
             if (_token.ID == RMathToken.Swap)
             {
@@ -31,7 +31,7 @@ namespace Rant.Arithmetic
                 ii.Engine.Variables.SetVar(right.Name, temp);
                 return b;
             }
-            Func<Parser, Interpreter, NameExpression, Expression, double> assignFunc;
+            Func<MathParser, VM, NameExpression, Expression, double> assignFunc;
             if (AssignOperations.TryGetValue(_token.ID, out assignFunc))
             {
                 var left = _left as NameExpression;
@@ -48,7 +48,7 @@ namespace Rant.Arithmetic
         }
 
         private static readonly Dictionary<RMathToken, Func<double, double, double>> Operations;
-        private static readonly Dictionary<RMathToken, Func<Parser, Interpreter, NameExpression, Expression, double>> AssignOperations; 
+        private static readonly Dictionary<RMathToken, Func<MathParser, VM, NameExpression, Expression, double>> AssignOperations; 
 
         static BinaryOperatorExpression()
         {
@@ -62,7 +62,7 @@ namespace Rant.Arithmetic
                 {RMathToken.Caret, System.Math.Pow}
             };
 
-            AssignOperations = new Dictionary<RMathToken, Func<Parser, Interpreter, NameExpression, Expression, double>>
+            AssignOperations = new Dictionary<RMathToken, Func<MathParser, VM, NameExpression, Expression, double>>
             {
                 {RMathToken.Equals, (s, ii, a, b) =>
                 {

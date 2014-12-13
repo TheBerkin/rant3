@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Rant.Formatting;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -27,7 +28,7 @@ namespace Rant
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HashSet<string> _flags = new HashSet<string>();
-        private IRantVocabulary _vocabulary;   
+        private IRantDictionary _vocabulary;   
 
         internal VarStore Variables => _vars;
 
@@ -41,12 +42,12 @@ namespace Rant
         /// <summary>
         /// The current output formatting style for the engine.
         /// </summary>
-        public RantFormatStyle FormatStyle { get; set; } = RantFormatStyle.English;
+        public RantFormat FormatStyle { get; set; } = RantFormat.English;
 
         /// <summary>
         /// The vocabulary associated with this instance.
         /// </summary>
-        public IRantVocabulary Vocabulary
+        public IRantDictionary Vocabulary
         {
             get { return _vocabulary; }
             set
@@ -87,7 +88,7 @@ namespace Rant
         /// Creates a new Engine object with the specified vocabulary.
         /// </summary>
         /// <param name="vocabulary">The vocabulary to load in this instance.</param>
-        public RantEngine(IRantVocabulary vocabulary)
+        public RantEngine(IRantDictionary vocabulary)
         {
             if (vocabulary == null) throw new ArgumentNullException("vocabulary");
             _vocabulary = vocabulary;
@@ -99,7 +100,7 @@ namespace Rant
 
             if (!String.IsNullOrEmpty(path))
             {
-                _vocabulary = RantVocabulary.FromDirectory(path, filter);
+                _vocabulary = RantDictionary.FromDirectory(path, filter);
             }
         }
 
@@ -110,9 +111,9 @@ namespace Rant
         /// <param name="input">The input string to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(string input, int charLimit = 0)
+        public RantOutput Do(string input, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -121,9 +122,9 @@ namespace Rant
         /// <param name="path">The path to the file to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output DoFile(string path, int charLimit = 0)
+        public RantOutput DoFile(string path, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -133,9 +134,9 @@ namespace Rant
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(string input, long seed, int charLimit = 0)
+        public RantOutput Do(string input, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -145,9 +146,9 @@ namespace Rant
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output DoFile(string path, long seed, int charLimit = 0)
+        public RantOutput DoFile(string path, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -157,9 +158,9 @@ namespace Rant
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(string input, RNG rng, int charLimit = 0)
+        public RantOutput Do(string input, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromString(input), rng, charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -169,9 +170,9 @@ namespace Rant
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output DoFile(string path, RNG rng, int charLimit = 0)
+        public RantOutput DoFile(string path, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, RantPattern.FromFile(path), rng, charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), rng, charLimit).Run();
         }
 
         /// <summary>
@@ -180,9 +181,9 @@ namespace Rant
         /// <param name="input">The pattern to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(RantPattern input, int charLimit = 0)
+        public RantOutput Do(RantPattern input, int charLimit = 0)
         {
-            return new Interpreter(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
         }
 
         /// <summary>
@@ -192,9 +193,9 @@ namespace Rant
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(RantPattern input, long seed, int charLimit = 0)
+        public RantOutput Do(RantPattern input, long seed, int charLimit = 0)
         {
-            return new Interpreter(this, input, new RNG(seed), charLimit).Run();
+            return new VM(this, input, new RNG(seed), charLimit).Run();
         }
 
         /// <summary>
@@ -204,9 +205,9 @@ namespace Rant
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <returns></returns>
-        public Output Do(RantPattern input, RNG rng, int charLimit = 0)
+        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0)
         {
-            return new Interpreter(this, input, rng, charLimit).Run();
+            return new VM(this, input, rng, charLimit).Run();
         }
         #endregion
 

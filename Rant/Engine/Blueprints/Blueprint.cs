@@ -5,9 +5,9 @@
     /// </summary>
     internal abstract class Blueprint
     {
-        protected readonly Interpreter I;
+        protected readonly VM I;
 
-        protected Blueprint(Interpreter interpreter)
+        protected Blueprint(VM interpreter)
         {
             I = interpreter;
         }

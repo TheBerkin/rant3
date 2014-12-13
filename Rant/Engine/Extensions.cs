@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Rant
 {
-    internal static class __
+    internal static class Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static sbyte RotL(this sbyte data, int times)

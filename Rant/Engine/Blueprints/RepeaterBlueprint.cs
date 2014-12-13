@@ -4,7 +4,7 @@
     {
         private readonly Repeater _repeater;
 
-        public RepeaterBlueprint(Interpreter interpreter, Repeater repeater)
+        public RepeaterBlueprint(VM interpreter, Repeater repeater)
             : base(interpreter)
         {
             _repeater = repeater;

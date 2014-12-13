@@ -11,7 +11,7 @@ namespace Rant.Arithmetic.Expressions
             _expr = expression;
         }
 
-        public override double Evaluate(Parser parser, Interpreter ii)
+        public override double Evaluate(MathParser parser, VM ii)
         {
             return Math.Abs(_expr.Evaluate(parser, ii));
         }

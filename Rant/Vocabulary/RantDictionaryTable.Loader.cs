@@ -7,11 +7,11 @@ using Rant.Stringes;
 
 namespace Rant.Vocabulary
 {
-    public sealed partial class RantDictionary
+    public sealed partial class RantDictionaryTable
     {
         private static void Debug(string message, params object[] args)
         {
-            if (RantVocabulary.ShowDebugOutput) Console.WriteLine(message, args);
+            if (RantDictionary.ShowDebugOutput) Console.WriteLine(message, args);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Rant.Vocabulary
         /// <param name="path">The path to the file to load.</param>
         /// <param name="nsfwFilter">Specifies whether to allow or disallow NSFW entries.</param>
         /// <returns></returns>
-        public static RantDictionary FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
+        public static RantDictionaryTable FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             var name = "";
             var version = Version;
@@ -164,7 +164,7 @@ namespace Rant.Vocabulary
                     break;
                 }
             }
-            return new RantDictionary(name, subtypes, entries);
+            return new RantDictionaryTable(name, subtypes, entries);
         }
 
         // This saves memory by reusing references to common class names.

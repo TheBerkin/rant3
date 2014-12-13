@@ -2,6 +2,6 @@
 {
     internal abstract class Expression
     {
-        public abstract double Evaluate(Parser parser, Interpreter ii);
+        public abstract double Evaluate(MathParser parser, VM ii);
     }
 }

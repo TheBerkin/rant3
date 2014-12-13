@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides visibility settings for output channels.
     /// </summary>
-    public enum ChannelVisibility
+    public enum RantChannelVisibility
     {
         /// <summary>
         /// Channel outputs to itself and 'main'.

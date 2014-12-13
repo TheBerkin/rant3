@@ -6,6 +6,6 @@ namespace Rant.Arithmetic.Parselets
     {
         int Precedence { get; }
 
-        Expression Parse(Parser parser, Expression left, Token<RMathToken> token);
+        Expression Parse(MathParser parser, Expression left, Token<RMathToken> token);
     }
 }

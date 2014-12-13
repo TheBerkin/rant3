@@ -6,6 +6,8 @@
         Lower,
         Upper,
         Title,
-        First
+        First,
+        Sentence,
+        Word
     }
 }

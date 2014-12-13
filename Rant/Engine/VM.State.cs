@@ -8,7 +8,7 @@ using Rant.Stringes.Tokens;
 
 namespace Rant
 {
-    internal partial class Interpreter
+    internal partial class VM
     {
         /// <summary>
         /// Maintains state information for a single stream of tokens.
@@ -19,7 +19,7 @@ namespace Rant
             public readonly PatternReader Reader;            
             public readonly bool SharesOutput;
 
-            private readonly Interpreter _interpreter;
+            private readonly VM _interpreter;
             private bool _finished = false;
 
             private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
@@ -32,7 +32,7 @@ namespace Rant
                 return true;
             }
 
-            private State(Interpreter ii, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
+            private State(VM ii, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 ChannelStack output)
             {
                 _interpreter = ii;
@@ -41,7 +41,7 @@ namespace Rant
                 SharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
             }
 
-            public State(Interpreter ii, RantPattern source, ChannelStack output)
+            public State(VM ii, RantPattern source, ChannelStack output)
             {
                 _interpreter = ii;
                 Output = output;
@@ -96,7 +96,7 @@ namespace Rant
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static State Create(RantPattern source, Interpreter interpreter)
+            public static State Create(RantPattern source, VM interpreter)
             {
                 return new State(interpreter, source, interpreter.CurrentState.Output);
             }
@@ -111,7 +111,7 @@ namespace Rant
             /// <returns></returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<R>> tokens,
-                Interpreter interpreter, ChannelStack output = null)
+                VM interpreter, ChannelStack output = null)
             {
                 return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.FormatStyle, interpreter.CharLimit));
             }

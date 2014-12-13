@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -31,9 +30,6 @@ namespace Rant
             {'w', rng => "0123456789abcdefghijklmnopqrstuvwxyz"[rng.Next(36)]},
             {'W', rng => "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rng.Next(36)]}
         };
-
-        private static readonly Regex RegCapsWord = new Regex(@"\b(?<!['""])[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-        private static readonly Regex RegCapsFirst = new Regex(@"(?<![a-z].*?)[a-z]", RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
 
         public static bool ParseInt(string value, out int number)
         {
@@ -70,45 +66,6 @@ namespace Rant
             if (v == "true") return true;
             double d;
             return Double.TryParse(v, out d);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Capitalize(string input, ref Case caps, RantFormatStyle formatStyle, ref char lastChar, bool article = false)
-        {
-            if (String.IsNullOrEmpty(input)) return input;
-            switch (caps)
-            {
-                case Case.Lower:
-                    input = input.ToLower();
-                    break;
-                case Case.Upper:
-                    input = input.ToUpper();
-                    break;
-                case Case.First:
-                    input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    caps = Case.None;
-                    break;
-                case Case.Title:                
-                    if ((article || formatStyle.Excludes(input)) && Char.IsWhiteSpace(lastChar)) break;
-
-                    char lc = lastChar;
-                    input = RegCapsWord.Replace(input, m => (
-                    lc == '\0' 
-                    || Char.IsSeparator(lc) 
-                    || Char.IsWhiteSpace(lc)) 
-                    || Char.IsPunctuation(lc) 
-                    ? m.Value.ToUpper() : m.Value);
-                    break;
-            }
-            lastChar = input[input.Length - 1];
-            return input;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Capitalize(string input, Case caps, RantFormatStyle formatStyle, char lastChar, bool article = false)
-        {
-            if (String.IsNullOrEmpty(input)) return input;
-            return Capitalize(input, ref caps, formatStyle, ref lastChar, article);
         }
 
         public static char SelectFromRanges(string rangeString, RNG rng)
@@ -201,7 +158,7 @@ namespace Rant
             return Regex.Replace(literal, @"""""", @"""");
         }
 
-        public static string Unescape(string sequence, Interpreter ii, RNG rng = null)
+        public static string Unescape(string sequence, VM ii, RNG rng = null)
         {
             var match = RantLexer.EscapeRegex.Match(sequence);
             int count;

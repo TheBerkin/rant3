@@ -7,10 +7,11 @@ using System.Text.RegularExpressions;
 using Rant.Compiler;
 using Rant.Stringes.Tokens;
 using Rant.Vocabulary;
+using Rant.Formatting;
 
 namespace Rant
 {
-    internal partial class Interpreter
+    internal partial class VM
     {
         // Main fields
         public readonly RNG RNG;
@@ -45,7 +46,7 @@ namespace Rant
 
         // Stacks
         private readonly Stack<State> _stateStack = new Stack<State>();
-        private readonly Stack<Output> _resultStack = new Stack<Output>();
+        private readonly Stack<RantOutput> _resultStack = new Stack<RantOutput>();
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
         private readonly Stack<Dictionary<string, Argument>> _subArgStack = new Stack<Dictionary<string, Argument>>();
@@ -78,7 +79,7 @@ namespace Rant
             set { _numfmt = value; }
         }
 
-        public RantFormatStyle FormatStyle => Engine.FormatStyle;
+        public RantFormat FormatStyle => Engine.FormatStyle;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
@@ -162,7 +163,7 @@ namespace Rant
 
         #endregion
 
-        public Interpreter(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
+        public VM(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
         {
             _mainSource = input;
             RNG = rng;
@@ -178,7 +179,7 @@ namespace Rant
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
-        public Output Run()
+        public RantOutput Run()
         {
             PushState(_mainState);
 
@@ -228,7 +229,7 @@ namespace Rant
                 // Push a result string if the state's output differs from the one below it
                 if (!state.SharesOutput && state.Finish())
                 {
-                    _resultStack.Push(new Output(RNG.Seed, _startingGen, state.Output.Channels));
+                    _resultStack.Push(new RantOutput(RNG.Seed, _startingGen, state.Output.Channels));
                 }
 
                 // Remove state from stack as long as nothing else was added beforehand

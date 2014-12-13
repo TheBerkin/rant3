@@ -6,17 +6,17 @@ using Rant.Stringes.Tokens;
 
 namespace Rant.Arithmetic
 {
-    internal partial class Parser
+    internal partial class MathParser
     {
         private int _pos;
         private string _src;
         private readonly Token<RMathToken>[] _tokens;
 
-        public Parser(string expression)
+        public MathParser(string expression)
         {
             _pos = 0;
             _src = expression;
-            _tokens = new Lexer(expression.ToStringe()).ToArray();
+            _tokens = new MathLexer(expression.ToStringe()).ToArray();
         }
 
         public string Source
@@ -24,12 +24,12 @@ namespace Rant.Arithmetic
             get { return _src; }
         }
 
-        public static double Calculate(Interpreter ii, string expression)
+        public static double Calculate(VM ii, string expression)
         {
             double result = 0;
             foreach (var expr in expression.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                var p = new Parser(expr);
+                var p = new MathParser(expr);
                 result = p.ParseExpression().Evaluate(p, ii);
             }
             return result;

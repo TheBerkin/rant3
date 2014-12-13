@@ -12,17 +12,17 @@ namespace Rant.Blueprints
         public RantPattern Source { get; private set; }
         public Stringe Name { get; private set; }
 
-        private readonly FuncSig _tagDef;
+        private readonly RantFunc _tagDef;
 
         private readonly Argument[] _args;
 
-        public FuncTagBlueprint(Interpreter interpreter, RantPattern source, Stringe name, IEnumerable<Token<R>>[] argData = null)
+        public FuncTagBlueprint(VM interpreter, RantPattern source, Stringe name, IEnumerable<Token<R>>[] argData = null)
             : base(interpreter)
         {
             Source = source;
             Name = name.Trim();
 
-            FuncDef defs;
+            RantFuncSigs defs;
 
             if (!RantFuncs.F.TryGetValue(Name.Value, out defs))
             {
@@ -55,7 +55,7 @@ namespace Rant.Blueprints
                 {
                     if ((i >= _tagDef.ParamCount && !lastType.HasFlag(ParamFlags.Code)) || !_tagDef.Parameters[i].HasFlag(ParamFlags.Code))
                     {
-                        interpreter.PushState(Interpreter.State.CreateSub(source, argData[i], interpreter));
+                        interpreter.PushState(VM.State.CreateSub(source, argData[i], interpreter));
                     }
                 }
             }

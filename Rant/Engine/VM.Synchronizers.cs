@@ -2,7 +2,7 @@
 
 namespace Rant
 {
-    internal partial class Interpreter
+    internal partial class VM
     {
         private readonly HashSet<string> _pinQueue = new HashSet<string>(); 
         private readonly Dictionary<string, Synchronizer> _synchronizers = new Dictionary<string, Synchronizer>(4);

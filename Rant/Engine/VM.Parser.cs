@@ -14,9 +14,9 @@ using Rant.Util;
 
 namespace Rant
 {
-    internal delegate bool TokenFunc(Interpreter interpreter, Token<R> firstToken, PatternReader reader, Interpreter.State state);
+    internal delegate bool TokenFunc(VM interpreter, Token<R> firstToken, PatternReader reader, VM.State state);
 
-    internal partial class Interpreter
+    internal partial class VM
     {
         private static readonly Dictionary<R, TokenFunc> TokenFuncs = new Dictionary<R, TokenFunc>
         {
@@ -29,14 +29,14 @@ namespace Rant
             {R.Text, DoText}
         };
 
-        private static bool DoMath(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoMath(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             bool isStatement = reader.Take(R.At);
             var tokens = reader.ReadToScopeClose(R.LeftParen, R.RightParen, Brackets.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.Pre(new DelegateBlueprint(interpreter, _ =>
             {
-                var v = Parser.Calculate(_, _.PopResultString());
+                var v = MathParser.Calculate(_, _.PopResultString());
                 if (!isStatement)
                 {
                     _.Print(_.FormatNumber(v));
@@ -46,7 +46,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoQuery(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoQuery(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             reader.SkipSpace();
 
@@ -208,25 +208,25 @@ namespace Rant
             return false;
         }
 
-        private static bool DoText(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoText(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             interpreter.Print(firstToken.Value);
             return false;
         }
 
-        private static bool DoConstant(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoConstant(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             interpreter.Print(UnescapeConstantLiteral(firstToken.Value));
             return false;
         }
 
-        private static bool DoEscape(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoEscape(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             interpreter.Print(Unescape(firstToken.Value, interpreter, interpreter.RNG));
             return false;
         }
 
-        private static bool DoTag(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoTag(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             var name = reader.ReadToken();
 
@@ -269,7 +269,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoListAction(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoListAction(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             bool create = false;
             bool createGlobal = false;
@@ -570,7 +570,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoSubCall(Token<R> first, Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoSubCall(Token<R> first, VM interpreter, PatternReader reader, State state)
         {
             var name = reader.ReadToken();
             if (!ValidateName(name.Value))
@@ -608,7 +608,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoSubDefinition(Token<R> first, Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoSubDefinition(Token<R> first, VM interpreter, PatternReader reader, State state)
         {
             bool meta = reader.Take(R.Question);
             reader.Read(R.LeftSquare);
@@ -657,7 +657,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool DoReplacer(Token<R> name, Interpreter interpreter, PatternReader reader, State state)
+        private static bool DoReplacer(Token<R> name, VM interpreter, PatternReader reader, State state)
         {
             reader.Read(R.Colon);
 
@@ -670,7 +670,7 @@ namespace Rant
             return true;
         }
 
-        private static bool DoBlock(Interpreter interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoBlock(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
             var attribs = interpreter.NextBlockAttribs;
             interpreter.NextBlockAttribs = new BlockAttribs();

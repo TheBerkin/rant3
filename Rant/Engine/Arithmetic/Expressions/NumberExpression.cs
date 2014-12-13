@@ -14,7 +14,7 @@
             get { return _number; }
         }
 
-        public override double Evaluate(Parser parser, Interpreter ii)
+        public override double Evaluate(MathParser parser, VM ii)
         {
             return _number;
         }

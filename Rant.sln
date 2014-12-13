@@ -8,9 +8,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Console", "Rant.Console\Rant.Console.csproj", "{9D1B18BB-7879-4931-A19B-4F6CE6FD48B1}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Berkin-Release|Any CPU = Berkin-Release|Any CPU
 		Debug|Any CPU = Debug|Any CPU

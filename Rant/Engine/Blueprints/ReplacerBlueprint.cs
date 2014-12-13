@@ -18,7 +18,7 @@ namespace Rant.Blueprints
         private string _input;
         private bool _inputCollected;
 
-        public ReplacerBlueprint(Interpreter interpreter, Regex regex, IEnumerable<Token<R>> evaluator) : base(interpreter)
+        public ReplacerBlueprint(VM interpreter, Regex regex, IEnumerable<Token<R>> evaluator) : base(interpreter)
         {
             _evaluator = evaluator;
             _regex = regex;
@@ -45,7 +45,7 @@ namespace Rant.Blueprints
                 foreach (Match match in _matches)
                 {
                     if (!match.Success) continue;
-                    var state = Interpreter.State.CreateSub(I.CurrentState.Reader.Source, _evaluator, I);
+                    var state = VM.State.CreateSub(I.CurrentState.Reader.Source, _evaluator, I);
 
                     Match match1 = match;
 

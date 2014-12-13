@@ -16,7 +16,7 @@ namespace Rant.Arithmetic
             get { return _name.Value; }
         }
 
-        public override double Evaluate(Parser parser, Interpreter ii)
+        public override double Evaluate(MathParser parser, VM ii)
         {
             var d = ii.Engine.Variables.GetVar(_name.Value);
             if (d == null) throw new RantException(parser.Source, _name, "Tried to access undefined variable '" + _name.Value + "'.");
