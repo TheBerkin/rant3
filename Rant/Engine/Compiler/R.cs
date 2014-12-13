@@ -217,6 +217,14 @@
         /// </summary>
         Weight,
         /// <summary>
+        /// `
+        /// </summary>
+        Apostrophe,
+        /// <summary>
+        /// ``
+        /// </summary>
+        DoubleApostrophe,
+        /// <summary>
         /// End of file.
         /// </summary>
         EOF

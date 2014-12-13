@@ -18,6 +18,7 @@ namespace Rant.Arithmetic
                 {RMathToken.Asterisk, new BinaryOperatorParselet((int)Precedence.Product, false)},
                 {RMathToken.Slash, new BinaryOperatorParselet((int)Precedence.Product, false)},
                 {RMathToken.Caret, new BinaryOperatorParselet((int)Precedence.Exponent, false)},
+                {RMathToken.Root, new BinaryOperatorParselet((int)Precedence.Exponent, false)},
                 {RMathToken.Modulo, new BinaryOperatorParselet((int)Precedence.Product, false)},
                 {RMathToken.Increment, new PostfixOperatorParselet((int)Precedence.Postfix)},
                 {RMathToken.Decrement, new PostfixOperatorParselet((int)Precedence.Postfix)},
@@ -28,6 +29,7 @@ namespace Rant.Arithmetic
                 {RMathToken.DivAssign, new BinaryOperatorParselet((int)Precedence.Assignment, true)},
                 {RMathToken.ModAssign, new BinaryOperatorParselet((int)Precedence.Assignment, true)},
                 {RMathToken.PowAssign, new BinaryOperatorParselet((int)Precedence.Assignment, true)},
+                {RMathToken.RootAssign, new BinaryOperatorParselet((int)Precedence.Assignment, true)},
             };
 
             PrefixParselets = new Dictionary<RMathToken, IPrefixParselet>
@@ -35,9 +37,11 @@ namespace Rant.Arithmetic
                 {RMathToken.Minus, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Increment, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Decrement, new PrefixOperatorParselet((int)Precedence.Prefix)},
+                {RMathToken.Slash, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Number, new NumberParselet()},
                 {RMathToken.Name, new NameParselet()},
-                {RMathToken.Pipe, new AbsParselet()}
+                {RMathToken.Pipe, new AbsParselet()},
+                {RMathToken.LeftParen, new GroupParselet()}
             };
         }
     }

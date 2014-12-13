@@ -40,6 +40,10 @@ namespace Rant.Arithmetic
                     ii.Engine.Variables.SetVar(name.Name, d);
                     return d;
                 }
+                case RMathToken.Slash:
+                {
+                    return 1.0 / _right.Evaluate(parser, ii);
+                }
                 default:
                     throw new RantException(parser.Source, _token, "Invalid prefix operator '" + _token + "'.");
             }

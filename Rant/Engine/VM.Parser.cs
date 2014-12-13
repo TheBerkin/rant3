@@ -22,7 +22,8 @@ namespace Rant
         {
             {R.LeftCurly, DoBlock},
             {R.LeftSquare, DoTag},
-            {R.LeftParen, DoMath},
+            {R.DoubleApostrophe, DoMath},
+            {R.Apostrophe, DoMath},
             {R.LeftAngle, DoQuery},
             {R.EscapeSequence, DoEscape},
             {R.ConstantLiteral, DoConstant},
@@ -31,13 +32,12 @@ namespace Rant
 
         private static bool DoMath(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
-            bool isStatement = reader.Take(R.At);
-            var tokens = reader.ReadToScopeClose(R.LeftParen, R.RightParen, Brackets.All);
+            var tokens = reader.ReadToTokenInParentScope(firstToken.ID, Brackets.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.Pre(new DelegateBlueprint(interpreter, _ =>
             {
                 var v = MathParser.Calculate(_, _.PopResultString());
-                if (!isStatement)
+                if (firstToken.ID == R.Apostrophe)
                 {
                     _.Print(_.FormatNumber(v));
                 }

@@ -34,6 +34,8 @@ namespace Rant.Arithmetic
                 {"/=", RMathToken.DivAssign},
                 {"%=", RMathToken.ModAssign},
                 {"^=", RMathToken.PowAssign},
+                {"^^", RMathToken.Root},
+                {"^^=", RMathToken.RootAssign},
                 {"|", RMathToken.Pipe},
                 {new Regex(@"(\d+(\.\d+)?|\.\d+)"), RMathToken.Number},
                 {new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*"), RMathToken.Name}

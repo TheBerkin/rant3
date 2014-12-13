@@ -16,12 +16,14 @@
         Decrement,
         Modulo,
         Swap,
+        Root,
         AddAssign,
         SubAssign,
         MulAssign,
         DivAssign,
         ModAssign,
         PowAssign,
+        RootAssign,
         Pipe,
         End
     }

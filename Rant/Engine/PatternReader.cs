@@ -342,7 +342,49 @@ namespace Rant
                 }
                 yield return token;
             }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantException(_source, null, "Unexpected end of file; expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<Token<R>> ReadToTokenInParentScope(R tokenType, Brackets bracketPairs)
+        {
+            SkipSpace();
+            _stack.Clear();
+            Token<R> token = null;
+            while (!End)
+            {
+                token = ReadToken();
+                if (token.ID == tokenType && !_stack.Any())
+                {
+                    yield break;
+                }
+                if (bracketPairs.ContainsOpening(token.ID)) // Allows nesting
+                {
+                    _stack.Push(token);
+                }
+                else if (bracketPairs.ContainsClosing(token.ID)) // Allows nesting
+                {
+                    // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
+                    if (!_stack.Any())
+                        throw new RantException(_source, token, "Unexpected token '\{token.Value}'");
+
+                    var lastOpening = _stack.Pop();
+
+                    if (!bracketPairs.Contains(lastOpening.ID, token.ID))
+                    {
+                        throw new RantException(_source, token,
+                            "Invalid closure '"
+                            + lastOpening.Value
+                            + " ... "
+                            + token.Value
+                            + "' - expected '"
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.ID))
+                            + "'");
+                    }
+                }
+                yield return token;
+            }
+            throw new RantException(_source, null, "Unexpected end of file; expected '\{RantLexer.Rules.GetSymbolForId(_stack.Any() ? bracketPairs.GetClosing(_stack.Peek().ID) : tokenType)}'.");
         }
     }
 }

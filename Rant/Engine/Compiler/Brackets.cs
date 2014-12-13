@@ -13,9 +13,9 @@ namespace Rant.Compiler
         /// </summary>
         public static readonly Brackets All = new Brackets
         {
+            //{R.LeftParen, R.RightParen},
             {R.LeftAngle, R.RightAngle},
-            {R.LeftSquare, R.RightSquare},
-            {R.LeftParen, R.RightParen},
+            {R.LeftSquare, R.RightSquare},            
             {R.LeftCurly, R.RightCurly}
         };
 

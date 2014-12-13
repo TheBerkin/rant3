@@ -59,7 +59,8 @@ namespace Rant.Arithmetic
                 {RMathToken.Asterisk, (a, b) => a * b},
                 {RMathToken.Slash, (a, b) => a / b},
                 {RMathToken.Modulo, (a, b) => a % b},
-                {RMathToken.Caret, System.Math.Pow}
+                {RMathToken.Caret, Math.Pow},
+                {RMathToken.Root, (a, b) => Math.Pow(a, 1.0 / b)}
             };
 
             AssignOperations = new Dictionary<RMathToken, Func<MathParser, VM, NameExpression, Expression, double>>
@@ -106,6 +107,12 @@ namespace Rant.Arithmetic
                     ii.Engine.Variables.SetVar(a.Name, d);
                     return d;
                 }},
+                {RMathToken.RootAssign, (s, ii, a, b) =>
+                {
+                    double d = Math.Pow(a.Evaluate(s, ii), 1.0 / b.Evaluate(s, ii));
+                    ii.Engine.Variables.SetVar(a.Name, d);
+                    return d;
+                }}
             };
         }
     }

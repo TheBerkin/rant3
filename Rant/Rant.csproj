@@ -69,6 +69,7 @@
     <Compile Include="Engine\Arithmetic\Expressions\PostfixOperatorExpression.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\PrefixOperatorExpression.cs" />
     <Compile Include="Engine\Arithmetic\MathLexer.cs" />
+    <Compile Include="Engine\Arithmetic\Parselets\GroupParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\BinaryOperatorParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\AbsParselet.cs" />
     <Compile Include="Engine\Arithmetic\Parselets\IInfixParselet.cs" />
