@@ -68,6 +68,12 @@ The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mar
 The following word is 7 characters long: "kumquat"
 ```
 
+##NuGet
+Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/). Punch the following into your package manager console and smash the Enter key enthusiastically to get it:
+```
+PM> Install-Package Rant
+```
+
 ##Contributing
 If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. You are welcome to help with any of the following:
 * Documentation (wiki/code)
