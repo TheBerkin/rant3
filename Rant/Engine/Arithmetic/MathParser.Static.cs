@@ -37,7 +37,6 @@ namespace Rant.Arithmetic
                 {RMathToken.Minus, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Increment, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Decrement, new PrefixOperatorParselet((int)Precedence.Prefix)},
-                {RMathToken.Slash, new PrefixOperatorParselet((int)Precedence.Prefix)},
                 {RMathToken.Number, new NumberParselet()},
                 {RMathToken.Name, new NameParselet()},
                 {RMathToken.Pipe, new AbsParselet()},
