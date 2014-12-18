@@ -37,8 +37,7 @@ namespace Rant.Vocabulary
             return selection;
         }
 
-        internal RantDictionaryEntry GetRhymingEntry(string rhymeId, int subtype,
-            IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
+        internal RantDictionaryEntry GetRhymingEntry(string rhymeId, int subtype, IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
         {
             Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
             if (!_rhymeTable.TryGetValue(rhymeId, out rhymeState))

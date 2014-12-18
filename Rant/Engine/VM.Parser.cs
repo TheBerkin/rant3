@@ -22,7 +22,6 @@ namespace Rant
         {
             {R.LeftCurly, DoBlock},
             {R.LeftSquare, DoTag},
-            {R.DoubleApostrophe, DoMath},
             {R.Apostrophe, DoMath},
             {R.LeftAngle, DoQuery},
             {R.EscapeSequence, DoEscape},
@@ -36,11 +35,9 @@ namespace Rant
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.Pre(new DelegateBlueprint(interpreter, _ =>
             {
-                var v = MathParser.Calculate(_, _.PopResultString());
-                if (firstToken.ID == R.Apostrophe)
-                {
-                    _.Print(_.FormatNumber(v));
-                }
+                var expression = _.PopResultString().Trim();
+                var v = MathParser.Calculate(_, expression);                    
+                if (!expression.EndsWith(";")) _.Print(_.FormatNumber(v));
                 return false;
             }));
             return true;
