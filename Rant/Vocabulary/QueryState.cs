@@ -7,7 +7,7 @@ namespace Rant.Vocabulary
     /// <summary>
     /// Maintains state information necessary for query synchronization (e.g. rhyming, uniqueness, matching).
     /// </summary>
-    public sealed class CarrierSyncState
+    public sealed class QueryState
     {
         /// <summary>
         /// Distinct carrier table.
@@ -31,6 +31,14 @@ namespace Rant.Vocabulary
         /// </summary>
         private readonly Dictionary<string, RantDictionaryEntry> _assocTable = new Dictionary<string, RantDictionaryEntry>();
 
+        internal void DeleteUnique(string name) => _uniqueTable.Remove(name);
+
+        internal void DeleteRhyme(string name) => _rhymeTable.Remove(name);
+
+        internal void DeleteMatch(string name) => _matchTable.Remove(name);
+
+        internal void DeleteAssociation(string name) => _assocTable.Remove(name);
+
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
             if (carrier == null) return pool.PickWeighted(rng, e => e.Weight);
@@ -51,8 +59,10 @@ namespace Rant.Vocabulary
                 ((carrier.AssociateWithMatch && _matchTable.TryGetValue(carrier.Association, out result))
                     || _assocTable.TryGetValue(carrier.Association, out result)))
             {
-                bool resultHasClasses = result.Classes.Any();
-                pool = pool.Where(e => e.Classes.Any() == resultHasClasses && !e.Classes.Except(result.Classes).Any());
+                var viableClasses = result.Classes.Except(result.OptionalClasses);
+                bool resultHasClasses = viableClasses.Any();
+                pool = pool.Where(e => e.Classes.Except(e.OptionalClasses).Except(result.OptionalClasses).Any() == resultHasClasses 
+                && !e.Classes.Except(result.OptionalClasses).Except(result.Classes).Any());
             }
 
             if (bDistinct)

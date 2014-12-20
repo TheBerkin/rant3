@@ -21,7 +21,7 @@ namespace Rant
         private readonly long _startingGen;
 
         // Queries
-        private readonly CarrierSyncState _carrierSyncState = new CarrierSyncState();
+        private readonly QueryState _carrierSyncState = new QueryState();
         private readonly Dictionary<string, Query> _localQueryMacros = new Dictionary<string, Query>(); 
 
         // Lists
@@ -57,7 +57,7 @@ namespace Rant
 
         private readonly Limit<int> _charLimit;
 
-        public CarrierSyncState CarrierSyncState => _carrierSyncState;
+        public QueryState CarrierSyncState => _carrierSyncState;
 
         public Dictionary<string, Query> LocalQueryMacros => _localQueryMacros;
 

@@ -66,7 +66,7 @@ namespace Rant.Vocabulary
             return -1;
         }
 
-        internal string Query(RNG rng, Query query, CarrierSyncState syncState)
+        internal string Query(RNG rng, Query query, QueryState syncState)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Missing Subtype]";

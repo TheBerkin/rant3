@@ -9,7 +9,8 @@ namespace Rant.Vocabulary
     public sealed class RantDictionaryEntry
     {
         private RantDictionaryTerm[] _terms;
-        private HashSet<string> _classes;
+        private readonly HashSet<string> _classes;
+        private readonly HashSet<string> _optionalClasses;
         private int _weight;
         private readonly bool _nsfw;
 
@@ -24,6 +25,7 @@ namespace Rant.Vocabulary
         {
             _terms = terms.Select(s => new RantDictionaryTerm(s)).ToArray();
             _classes = new HashSet<string>(classes);
+            _optionalClasses = new HashSet<string>();
             _weight = weight;
             _nsfw = nsfw;
         }
@@ -38,7 +40,12 @@ namespace Rant.Vocabulary
         public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
         {
             _terms = terms;
-            _classes = new HashSet<string>(classes);
+            _classes = new HashSet<string>();
+            _optionalClasses = new HashSet<string>();
+            foreach(var c in classes)
+            {
+                VocabUtils.SortClass(c, _classes, _optionalClasses);
+            }
             _weight = weight;
             _nsfw = nsfw;
         }
@@ -62,11 +69,12 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The classes associated with the entry.
         /// </summary>
-        public HashSet<string> Classes
-        {
-            get { return _classes; }
-            set { _classes = value ?? new HashSet<string>(); }
-        }
+        public HashSet<string> Classes => _classes;
+
+        /// <summary>
+        /// The optional classes associated with the entry.
+        /// </summary>
+        public HashSet<string> OptionalClasses => _optionalClasses;
 
         /// <summary>
         /// The weight of the entry.

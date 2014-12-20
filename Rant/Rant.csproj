@@ -99,7 +99,7 @@
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
-    <Compile Include="Vocabulary\CarrierSyncState.cs" />
+    <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\Dic2Lexer.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>

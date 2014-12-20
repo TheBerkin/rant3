@@ -12,6 +12,6 @@
         /// <param name="query">The search criteria to use.</param>
         /// <param name="syncState">The state object to use for carrier synchronization.</param>
         /// <returns></returns>
-        string Query(RNG rng, Query query, CarrierSyncState syncState);
+        string Query(RNG rng, Query query, QueryState syncState);
     }
 }

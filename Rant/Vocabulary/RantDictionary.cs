@@ -80,7 +80,7 @@ namespace Rant.Vocabulary
         /// <param name="query">The search criteria to use.</param>
         /// <param name="syncState">The state object to use for carrier synchronization.</param>
         /// <returns></returns>
-        public string Query(RNG rng, Query query, CarrierSyncState syncState)
+        public string Query(RNG rng, Query query, QueryState syncState)
         {
             RantDictionaryTable wordList;
             return !_tables.TryGetValue(query.Name, out wordList) 

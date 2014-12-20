@@ -98,6 +98,33 @@ namespace Rant
                     }
                 }
             }
+            else if (reader.Take(R.DoubleColon)) // Carrier reset
+            {
+                Token<R> token;
+
+                while((token = reader.ReadToken()).ID != R.RightAngle)
+                {
+                    switch(token.ID)
+                    {
+                        case R.At:
+                            interpreter.CarrierSyncState.DeleteAssociation(reader.ReadLoose(R.Text, "associative carrier name").Value);
+                            break;
+                        case R.Exclamation:
+                            interpreter.CarrierSyncState.DeleteUnique(reader.ReadLoose(R.Text, "unique carrier name").Value);
+                            break;
+                        case R.Equal:
+                            interpreter.CarrierSyncState.DeleteMatch(reader.ReadLoose(R.Text, "match carrier name").Value);
+                            break;
+                        case R.Ampersand:
+                            interpreter.CarrierSyncState.DeleteRhyme(reader.ReadLoose(R.Text, "rhyme carrier name").Value);
+                            break;
+                        default:
+                            throw Error(reader.Source, token, "Unrecognized token in carrier reset: '\{token.Value}'");
+                    }
+                    reader.SkipSpace();
+                }
+                return false;
+            }
 
             reader.SkipSpace();
             var namesub = reader.Read(R.Text, "dictionary name").Split(new[] { '.' }, 2).ToArray();
