@@ -10,10 +10,10 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed class Query
     {
-        private readonly string _name;
-        private readonly string _subtype;
-        private readonly Carrier _carrier;
-        private readonly bool _exclusive;
+        private string _name;
+        private string _subtype;
+        private Carrier _carrier;
+        private bool _exclusive;
         private readonly IEnumerable<Tuple<bool, string>[]> _classFilters;
         private readonly IEnumerable<Tuple<bool, Regex>> _regexFilters;
 
@@ -43,6 +43,7 @@ namespace Rant.Vocabulary
         public Carrier Carrier
         {
             get { return _carrier; }
+            set { _carrier = value; }
         }
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace Rant.Vocabulary
         public string Name
         {
             get { return _name; }
+            set { _name = value; }
         }
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace Rant.Vocabulary
         public string Subtype
         {
             get { return _subtype; }
+            set { _subtype = value; }
         }
 
         /// <summary>
@@ -67,6 +70,7 @@ namespace Rant.Vocabulary
         public bool Exclusive
         {
             get { return _exclusive; }
+            set { _exclusive = value; }
         }
 
         /// <summary>

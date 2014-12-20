@@ -57,9 +57,7 @@ namespace Rant
                 reader.SkipSpace();
 
                 var macroNameToken = reader.Read(R.Text, "query macro name");
-                if (!ValidateName(macroNameToken.Value))
-                    throw new RantException(reader.Source, macroNameToken, "Invalid macro name.");
-
+                
                 macroName = macroNameToken.Value;
 
                 reader.SkipSpace();
@@ -70,23 +68,32 @@ namespace Rant
                 {
                     case R.Colon: // Local definition
                     {
+                        if (!ValidateName(macroNameToken.Value))
+                            throw Error(reader.Source, macroNameToken, "Invalid macro name: '\{macroNameToken.Value}'");
                         storeMacro = true;
                     }
                     break;
                     case R.Equal: // Global definition
                     {
+                        if (!ValidateName(macroNameToken.Value))
+                            throw Error(reader.Source, macroNameToken, "Invalid macro name: '\{macroNameToken.Value}'");
                         storeMacro = true;
                         macroIsGlobal = true;
                     }
                     break;
                     case R.RightAngle: // Call
                     {
-                        Query q;
-                        if (!interpreter.LocalQueryMacros.TryGetValue(macroName, out q) && !interpreter.Engine.GlobalQueryMacros.TryGetValue(macroName, out q))
+                        Query q;                        
+                        var mNameSub = macroNameToken.Value.Split(new[] { '.' }, StringSplitOptions.None);
+                        if (!interpreter.LocalQueryMacros.TryGetValue(mNameSub[0], out q) && !interpreter.Engine.GlobalQueryMacros.TryGetValue(mNameSub[0], out q))
                         {
                             throw new RantException(reader.Source, macroNameToken, "Nonexistent query macro '\{macroName}'");
                         }
+                        if (mNameSub.Length > 2) throw Error(reader.Source, firstToken, "Invald subtype accessor on macro call.");
+                        var oldSub = q.Subtype;
+                        if (mNameSub.Length == 2) q.Subtype = mNameSub[1];
                         interpreter.Print(interpreter.Engine.Vocabulary?.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
+                        q.Subtype = oldSub;
                         return false;
                     }
                 }
