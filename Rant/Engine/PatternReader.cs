@@ -317,9 +317,9 @@ namespace Rant
             {
                 token = ReadToken();
                 bool literalCheck = !bracketPairs.Contains(token.ID, token.ID)
-                    || _stack.Any()
+                    || (_stack.Any()
                     ? _stack.Peek().ID == token.ID
-                    : open == token.ID;
+                    : open == token.ID);
 
                 if (literalCheck && (bracketPairs.ContainsClosing(token.ID) || token.ID == close)) // Allows nesting
                 {
