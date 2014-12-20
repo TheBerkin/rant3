@@ -31,7 +31,7 @@ namespace Rant
 
         private static bool DoMath(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
         {
-            var tokens = reader.ReadToTokenInParentScope(firstToken.ID, Brackets.All);
+            var tokens = reader.ReadToTokenInParentScope(firstToken.ID, Delimiters.All);
             interpreter.PushState(State.CreateSub(reader.Source, tokens, interpreter));
             state.Pre(new DelegateBlueprint(interpreter, _ =>
             {
@@ -233,7 +233,7 @@ namespace Rant
                     return DoListAction(interpreter, firstToken, reader, state);
                 case R.Question: // Metapattern
                     state.Pre(new MetapatternBlueprint(interpreter));
-                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All), interpreter));
+                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All), interpreter));
                     return true;
                 case R.Regex: // Replacer
                     return DoReplacer(name, interpreter, reader, state);
@@ -259,7 +259,7 @@ namespace Rant
             else
             {
                 var items = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare,
-                    R.Semicolon, Brackets.All).ToArray();
+                    R.Semicolon, Delimiters.All).ToArray();
 
                 state.Pre(new FuncTagBlueprint(interpreter, reader.Source, name, items));
             }
@@ -323,7 +323,7 @@ namespace Rant
 
                 if (fromList) // add items from other list
                 {
-                    var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
+                    var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All);
                     interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
                     state.Pre(new DelegateBlueprint(interpreter, _ =>
                     {
@@ -345,7 +345,7 @@ namespace Rant
                 }
 
                 var items = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare,
-                    R.Semicolon, Brackets.All).ToArray();
+                    R.Semicolon, Delimiters.All).ToArray();
                 int count = items.Length;
 
                 foreach (var item in items)
@@ -388,7 +388,7 @@ namespace Rant
                 }
 
                 var items = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare,
-                    R.Semicolon, Brackets.All).ToArray();
+                    R.Semicolon, Delimiters.All).ToArray();
                 int count = items.Length;
 
                 foreach (var item in items)
@@ -413,7 +413,7 @@ namespace Rant
             {
                 if (reader.TakeLoose(R.At)) // set item at index to value
                 {
-                    var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Brackets.All).ToArray();
+                    var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Delimiters.All).ToArray();
                     if (args.Length != 2) throw new RantException(args.SelectMany(a => a), reader.Source, "Two arguments are required for this operation.");
                     interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter)); // index
                     interpreter.PushState(State.CreateSub(reader.Source, args[1], interpreter)); // value
@@ -433,7 +433,7 @@ namespace Rant
                     return true;
                 }
 
-                var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
+                var nameTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All);
                 interpreter.PushState(State.CreateSub(reader.Source, nameTokens, interpreter));
                 state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
@@ -458,7 +458,7 @@ namespace Rant
 
                 if (!isSpecial || special == R.At) // remove by value or index
                 {
-                    var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
+                    var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
                     state.Pre(new DelegateBlueprint(interpreter, _ =>
@@ -521,7 +521,7 @@ namespace Rant
 
                 if (!isSpecial || special == R.Question)
                 {
-                    var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All);
+                    var valueTokens = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All);
                     interpreter.PushState(State.CreateSub(reader.Source, valueTokens, interpreter));
 
                     state.Pre(new DelegateBlueprint(interpreter, _ =>
@@ -594,7 +594,7 @@ namespace Rant
             else
             {
                 args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon,
-                    Brackets.All).ToArray();
+                    Delimiters.All).ToArray();
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
                     throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and \{args.Length} parameter\{(args.Length != 1 ? "s" : "")}.");
             }
@@ -634,7 +634,7 @@ namespace Rant
             reader.SkipSpace();
             reader.Read(R.Colon);
 
-            var body = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Brackets.All).ToArray();
+            var body = reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All).ToArray();
 
             if (meta)
             {
@@ -658,7 +658,7 @@ namespace Rant
         {
             reader.Read(R.Colon);
 
-            var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Brackets.All).ToArray();
+            var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Delimiters.All).ToArray();
             if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected two arguments, but got \{args.Length}.");
 
             state.Pre(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
@@ -700,7 +700,7 @@ namespace Rant
             // Check if the block is already cached
             if (!reader.Source.TryGetCachedBlock(firstToken, out blockInfo))
             {
-                var elements = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Brackets.All).ToArray();
+                var elements = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Delimiters.All).ToArray();
                 blockInfo = Tuple.Create(Block.Create(elements), reader.Position);
                 reader.Source.CacheBlock(firstToken, blockInfo);
             }

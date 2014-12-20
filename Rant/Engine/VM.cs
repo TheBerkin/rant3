@@ -208,9 +208,9 @@ namespace Rant
                     // Fetch the next token in the stream without consuming it
                     token = reader.ReadToken();
                     
-                    // Error on illegal closure
-                    if (Brackets.All.ContainsClosing(token.ID))
-                        throw new RantException(reader.Source, token, "Unexpected token '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
+                    // Error on illegal delimiter
+                    if (Delimiters.All.ContainsClosing(token.ID) && !Delimiters.All.Contains(token.ID, token.ID))
+                        throw new RantException(reader.Source, token, "Unexpected delimiter '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
 
                     // Token function will return true if the interpreter should skip to the top of the stack
                     if (TokenFuncs.TryGetValue(token.ID, out currentFunc))

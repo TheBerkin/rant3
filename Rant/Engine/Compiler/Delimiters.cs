@@ -4,16 +4,16 @@ using System.Linq;
 
 namespace Rant.Compiler
 {
-    internal class Brackets : IEnumerable<Tuple<R, R>>
+    internal class Delimiters : IEnumerable<Tuple<R, R>>
     {
         #region Static members
 
         /// <summary>
         /// Used everywhere except for reading constant literals.
         /// </summary>
-        public static readonly Brackets All = new Brackets
+        public static readonly Delimiters All = new Delimiters
         {
-            //{R.LeftParen, R.RightParen},
+            {R.Apostrophe, R.Apostrophe},
             {R.LeftAngle, R.RightAngle},
             {R.LeftSquare, R.RightSquare},            
             {R.LeftCurly, R.RightCurly}
@@ -25,7 +25,7 @@ namespace Rant.Compiler
         private readonly HashSet<R> _openings;
         private readonly HashSet<R> _closings; 
 
-        public Brackets()
+        public Delimiters()
         {
             _pairs = new List<Tuple<R, R>>(5);
             _openings = new HashSet<R>();
@@ -34,8 +34,6 @@ namespace Rant.Compiler
 
         public void Add(R openingToken, R closingToken)
         {
-            if (openingToken == closingToken)
-                throw new ArgumentException("The opening and closing tokens cannot match. Ever. You monster.");
             if (_openings.Contains(closingToken) || _closings.Contains(openingToken))
                 throw new InvalidOperationException("One or both of the specified tokens already exist as a pair with the reverse order.");
             if (!_openings.Add(openingToken))
