@@ -140,34 +140,44 @@ namespace Rant
                 {
                     reader.SkipSpace();
 
-                    CarrierSyncType type;
+                    string 
+                        match = null,
+                        distinct = null,
+                        assoc = null,
+                        rhyme = null;
+
+                    bool
+                        distFromMatch = false,
+                        assocWithMatch = false;
+
                     Token<R> typeToken;
-
-                    switch ((typeToken = reader.ReadToken()).ID)
+                    
+                    while((typeToken = reader.ReadToken()).ID != R.RightAngle)
                     {
-                        case R.Exclamation:
-                            type = CarrierSyncType.Unique;
-                            break;
-                        case R.Equal:
-                            type = CarrierSyncType.Match;
-                            break;
-                        case R.Ampersand:
-                            type = CarrierSyncType.Rhyme;
-                            break;
-                        default:
-                            throw new RantException(reader.Source, typeToken, "Unrecognized token '\{typeToken.Value}' in carrier.");
+                        switch (typeToken.ID)
+                        {
+                            case R.Exclamation: // Distinct
+                                distFromMatch = reader.Take(R.Equal);
+                                distinct = reader.ReadLoose(R.Text, "distinct carrier name").Value;
+                                break;
+                            case R.Equal: // Match
+                                match = reader.ReadLoose(R.Text, "match carrier name").Value;
+                                break;
+                            case R.Ampersand: // Rhyme
+                                rhyme = reader.ReadLoose(R.Text, "rhyme carrier name").Value;
+                                break;
+                            case R.At: // Associative
+                                assocWithMatch = reader.Take(R.Equal);
+                                assoc = reader.ReadLoose(R.Text, "associative carrier name").Value;
+                                break;
+                            default:
+                                throw new RantException(reader.Source, typeToken, "Unrecognized token '\{typeToken.Value}' in carrier.");
+                        }
+                        reader.SkipSpace();
                     }
 
-                    reader.SkipSpace();
+                    carrier = new Carrier(match, distinct, distFromMatch, assoc, assocWithMatch, rhyme);
 
-                    carrier = new Carrier(type, reader.Read(R.Text, "carrier sync ID").Value, 0, 0);
-
-                    reader.SkipSpace();
-
-                    if (!reader.Take(R.RightAngle))
-                    {
-                        throw new RantException(reader.Source, queryToken, "Expected '>' after carrier. (The carrier should be your last query argument!)");
-                    }
                     break;
                 }
                 else if (reader.Take(R.RightAngle))

@@ -10,7 +10,7 @@ namespace Rant.Vocabulary
     public sealed class CarrierSyncState
     {
         /// <summary>
-        /// Unique carrier table.
+        /// Distinct carrier table.
         /// Wherein the KEY is the UNIQUE ID, and the VALUE is the collection of used entries.
         /// </summary>
         private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _uniqueTable = new Dictionary<string, HashSet<RantDictionaryEntry>>();
@@ -19,42 +19,89 @@ namespace Rant.Vocabulary
         /// Rhyme carrier table.
         /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the ROOT TERM and USED TERMS.
         /// </summary>
-        private readonly Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>(); 
-        
+        private readonly Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>();
 
+        /// <summary>
+        /// Match table.
+        /// </summary>
+        private readonly Dictionary<string, RantDictionaryEntry> _matchTable = new Dictionary<string, RantDictionaryEntry>();
 
-        internal RantDictionaryEntry GetUniqueEntry(string uniqueId, IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
+        /// <summary>
+        /// Associative carrier table.
+        /// </summary>
+        private readonly Dictionary<string, RantDictionaryEntry> _assocTable = new Dictionary<string, RantDictionaryEntry>();
+
+        internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
-            HashSet<RantDictionaryEntry> usedSet;
-            if (!_uniqueTable.TryGetValue(uniqueId, out usedSet))
+            if (carrier == null) return pool.PickWeighted(rng, e => e.Weight);
+
+            bool bMatch = !String.IsNullOrEmpty(carrier.Match);
+            bool bDistinct = !String.IsNullOrEmpty(carrier.Distinct);
+            bool bAssociate = !String.IsNullOrEmpty(carrier.Association);
+            bool bRhyme = !String.IsNullOrEmpty(carrier.Rhyme);
+
+            RantDictionaryEntry result = null;
+
+            if (bMatch && _matchTable.TryGetValue(carrier.Match, out result))
             {
-                usedSet = _uniqueTable[uniqueId] = new HashSet<RantDictionaryEntry>();
+                return result;
             }
-            var selection = entryPool.Except(usedSet).PickWeighted(rng, e => e.Weight);
-            
-            if (selection != null) usedSet.Add(selection);
 
-            return selection;
-        }
-
-        internal RantDictionaryEntry GetRhymingEntry(string rhymeId, int subtype, IEnumerable<RantDictionaryEntry> entryPool, RNG rng)
-        {
-            Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
-            if (!_rhymeTable.TryGetValue(rhymeId, out rhymeState))
+            if (bAssociate && 
+                ((carrier.AssociateWithMatch && _matchTable.TryGetValue(carrier.Association, out result))
+                    || _assocTable.TryGetValue(carrier.Association, out result)))
             {
-                var entry = entryPool
-                    .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtype].Pronunciation))
-                    .PickWeighted(rng, e => e.Weight);
-                _rhymeTable[rhymeId] = Tuple.Create(entry.Terms[subtype], new HashSet<RantDictionaryEntry>(new[] { entry }));
-                return entry;
+                bool resultHasClasses = result.Classes.Any();
+                pool = pool.Where(e => e.Classes.Any() == resultHasClasses && !e.Classes.Except(result.Classes).Any());
             }
-            var selection =
-                entryPool.Except(rhymeState.Item2)
-                    .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtype].Pronunciation))
-                            .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1, e.Terms[subtype]));
 
-            if (selection != null) rhymeState.Item2.Add(selection);
-            return selection;
+            if (bDistinct)
+            {
+                HashSet<RantDictionaryEntry> usedSet;
+                if (!_uniqueTable.TryGetValue(carrier.Distinct, out usedSet))
+                {
+                    usedSet = _uniqueTable[carrier.Distinct] = new HashSet<RantDictionaryEntry>();
+                }
+
+                pool = pool.Except(usedSet);
+            }
+
+            result = pool.PickWeighted(rng, e => e.Weight);
+
+            if (bRhyme)
+            {
+                Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
+                if (!_rhymeTable.TryGetValue(carrier.Rhyme, out rhymeState))
+                {
+                    result = pool
+                        .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
+                        .PickWeighted(rng, e => e.Weight);
+                    _rhymeTable[carrier.Rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                }
+                result =
+                    pool.Except(rhymeState.Item2)
+                        .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
+                                .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1, e.Terms[subtypeIndex]));
+
+                if (result != null) rhymeState.Item2.Add(result);
+            }
+
+            if (bAssociate)
+            {
+                _assocTable[carrier.Association] = result;
+            }
+
+            if (bDistinct)
+            {
+                _uniqueTable[carrier.Distinct].Add(result);
+            }
+
+            if (bMatch)
+            {
+                _matchTable[carrier.Match] = result;
+            }
+
+            return result;
         }
     }
 }
