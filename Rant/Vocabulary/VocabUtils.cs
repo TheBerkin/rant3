@@ -17,6 +17,8 @@ namespace Rant.Vocabulary
 
         public static bool AssociatesWith(this RantDictionaryEntry a, RantDictionaryEntry b)
         {
+            if (a == null || b == null) return false;
+
             bool aNoneRequired = !a.GetRequiredClasses().Any();
             bool bNoneRequired = !b.GetRequiredClasses().Any();
 
