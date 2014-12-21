@@ -6,40 +6,13 @@ namespace Rant.Vocabulary
 {
     internal static class VocabUtils
     {
-        public static void SortClass(string className, HashSet<string> classes, HashSet<string> optionals, Dictionary<string, string> classTable)
-        {
-            if (className.EndsWith("?"))
-            {
-                optionals.Add(GetClass(classTable, className.TrimEnd('?')));
-            }
-            else
-            {
-                classes.Add(GetClass(classTable, className));
-            }
-        }
+        private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
 
-        public static void SortClass(string className, HashSet<string> classes, HashSet<string> optionals)
+        public static string GetString(string str)
         {
-            if (className.EndsWith("?"))
-            {
-                optionals.Add(className.TrimEnd('?'));
-            }
-            else
-            {
-                classes.Add(className);
-            }
-        }
-
-        // This saves memory by reusing references to common class names.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetClass(Dictionary<string, string> classTable, string className)
-        {
-            string c;
-            if (!classTable.TryGetValue(className, out c))
-            {
-                classTable[className] = c = className;
-            }
-            return c;
+            string cstr;
+            if (!StringCache.TryGetValue(str, out cstr)) cstr = StringCache[str] = str;
+            return cstr;
         }
 
         public static int RhymeIndex(RantDictionaryTerm baseValue, RantDictionaryTerm testValue)

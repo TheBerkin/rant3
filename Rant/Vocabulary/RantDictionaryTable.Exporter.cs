@@ -43,8 +43,8 @@ namespace Rant.Vocabulary
                 if (!String.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
                     writer.WriteLine("  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
-                if (entry.Classes.Any())
-                    writer.WriteLine("  | class {0}", entry.Classes.Aggregate((c, n) => c + " " + n));
+                if (entry.GetClasses().Any())
+                    writer.WriteLine("  | class {0}", entry.GetClasses().Aggregate((c, n) => c + " " + n));
 
                 if (entry.Weight != 1)
                     writer.WriteLine("  | weight {0}", entry.Weight);

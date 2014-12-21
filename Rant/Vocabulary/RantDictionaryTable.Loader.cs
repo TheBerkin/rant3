@@ -26,7 +26,7 @@ namespace Rant.Vocabulary
             var version = Version;
             string[] subtypes = {"default"};
 
-            var classTable = new Dictionary<string, string>();
+            //var classTable = new Dictionary<string, string>();
 
             bool header = true;
 
@@ -86,7 +86,7 @@ namespace Rant.Vocabulary
                                         case "add":
                                             foreach (var cl in parts.Skip(2))
                                             {
-                                                scopedClassSet.Add(VocabUtils.GetClass(classTable, cl.ToLower()));
+                                                scopedClassSet.Add(cl.ToLower());
                                             }
                                             break;
                                         case "remove":
@@ -126,7 +126,8 @@ namespace Rant.Vocabulary
                                 if (parts.Length < 2) continue;
                                 foreach (var cl in parts[1].Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    VocabUtils.SortClass(cl.ToLower(), entry.Classes, entry.OptionalClasses, classTable);
+                                    bool opt = cl.EndsWith("?");                                    
+                                    entry.AddClass(VocabUtils.GetString(opt ? cl.Substring(0, cl.Length - 1) : cl), opt);
                                 }
                             }
                             break;

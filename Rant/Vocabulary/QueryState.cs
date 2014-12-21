@@ -59,10 +59,13 @@ namespace Rant.Vocabulary
                 ((carrier.AssociateWithMatch && _matchTable.TryGetValue(carrier.Association, out result))
                     || _assocTable.TryGetValue(carrier.Association, out result)))
             {
-                var viableClasses = result.Classes.Except(result.OptionalClasses);
-                bool resultHasClasses = viableClasses.Any();
-                pool = pool.Where(e => e.Classes.Except(e.OptionalClasses).Except(result.OptionalClasses).Any() == resultHasClasses 
-                && !e.Classes.Except(result.OptionalClasses).Except(result.Classes).Any());
+                var required = result.GetRequiredClasses();
+                var hasAnyClasses = required.Any();
+                pool = pool.Where(e => 
+                        !e.GetRequiredClasses().Except(required).Any()      // Must have exactly the same required classes.                                                                            
+                        && (!required.Except(e.GetOptionalClasses()).Any()  // If the optional classes of the current entry don't match the required classes of the match,  
+                        || e.GetRequiredClasses().Any() == hasAnyClasses)); // both class sets should either be empty or filled. 
+
             }
 
             if (bDistinct)

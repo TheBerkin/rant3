@@ -15,23 +15,19 @@ namespace Rant.Vocabulary
         private readonly bool _nsfw;
 
         /// <summary>
-        /// Creates a new Word object from the specified data.
+        /// Creates a new RantDictionaryEntry object from the specified data.
         /// </summary>
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
         /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
         public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
+            : this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, nsfw, weight)
         {
-            _terms = terms.Select(s => new RantDictionaryTerm(s)).ToArray();
-            _classes = new HashSet<string>(classes);
-            _optionalClasses = new HashSet<string>();
-            _weight = weight;
-            _nsfw = nsfw;
         }
 
         /// <summary>
-        /// Creates a new Word object from the specified data.
+        /// Creates a new RantDictionaryEntry object from the specified data.
         /// </summary>
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
@@ -44,7 +40,16 @@ namespace Rant.Vocabulary
             _optionalClasses = new HashSet<string>();
             foreach(var c in classes)
             {
-                VocabUtils.SortClass(c, _classes, _optionalClasses);
+                if (c.EndsWith("?"))
+                {
+                    var trimmed = VocabUtils.GetString(c.Substring(0, c.Length - 1));
+                    _optionalClasses.Add(trimmed);
+                    _classes.Add(trimmed);
+                }
+                else
+                {
+                    _classes.Add(VocabUtils.GetString(c));
+                }
             }
             _weight = weight;
             _nsfw = nsfw;
@@ -66,15 +71,37 @@ namespace Rant.Vocabulary
             set { _terms = value ?? new RantDictionaryTerm[0]; }
         }
 
-        /// <summary>
-        /// The classes associated with the entry.
-        /// </summary>
-        public HashSet<string> Classes => _classes;
+        public IEnumerable<string> GetClasses()
+        {
+            foreach (var className in _classes) yield return className;
+        }
 
-        /// <summary>
-        /// The optional classes associated with the entry.
-        /// </summary>
-        public HashSet<string> OptionalClasses => _optionalClasses;
+        public IEnumerable<string> GetOptionalClasses()
+        {
+            foreach (var className in _optionalClasses) yield return className;
+        }
+
+        public void AddClass(string className, bool optional = false)
+        {
+            _classes.Add(className);
+            if (optional) _optionalClasses.Add(className);
+        }
+
+        public void RemoveClass(string className)
+        {
+            _classes.Remove(className);
+            _optionalClasses.Remove(className);
+        }
+
+        public bool ContainsClass(string className) => _classes.Contains(className);
+
+        public IEnumerable<string> GetRequiredClasses()
+        {
+            foreach(var c in _classes.Except(_optionalClasses))
+            {
+                yield return c;
+            }
+        }
 
         /// <summary>
         /// The weight of the entry.
