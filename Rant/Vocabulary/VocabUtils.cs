@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace Rant.Vocabulary
 {
@@ -13,6 +13,24 @@ namespace Rant.Vocabulary
             string cstr;
             if (!StringCache.TryGetValue(str, out cstr)) cstr = StringCache[str] = str;
             return cstr;
+        }
+
+        public static bool AssociatesWith(this RantDictionaryEntry a, RantDictionaryEntry b)
+        {
+            bool aNoneRequired = !a.GetRequiredClasses().Any();
+            bool bNoneRequired = !b.GetRequiredClasses().Any();
+
+            if (aNoneRequired && bNoneRequired) return true; // If both have no required classes, pass.
+
+            // One or both have required classes.
+
+            // Remove B optionals from A required.
+            var aRequired = a.GetRequiredClasses().Except(b.GetOptionalClasses());
+            // Remove A optionals from B required.
+            var bRequired = b.GetRequiredClasses().Except(a.GetOptionalClasses());
+
+            // Both should be either empty, or have exactly the same classes.
+            return !aRequired.Except(bRequired).Any() && aRequired.Any() == bRequired.Any();
         }
 
         public static int RhymeIndex(RantDictionaryTerm baseValue, RantDictionaryTerm testValue)
