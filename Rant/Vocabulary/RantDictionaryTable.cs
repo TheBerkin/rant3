@@ -73,10 +73,12 @@ namespace Rant.Vocabulary
 
             IEnumerable<RantDictionaryEntry> pool = 
                 query.Exclusive
-                    ? _words.Where(e => e.GetClasses().Any() && e.GetClasses().All(
-                        c => query.ClassFilters.Any(
-                            set => set.Any(
-                                t => t.Item2 == c))))
+                    ? _words.Where(
+                        e => e.GetClasses().Any() == query.ClassFilters.Any()
+                        && e.GetClasses().All(
+                            c => query.ClassFilters.Any(
+                                set => set.Any(
+                                    t => t.Item2 == c))))
                     : _words.Where(
                         e => query.ClassFilters.All(
                             set => set.Any(
@@ -84,10 +86,7 @@ namespace Rant.Vocabulary
 
             pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
-            if (!pool.Any())
-            {
-                return "[?]";
-            }
+            if (!pool.Any()) return "[?]";
 
             return syncState.GetEntry(query.Carrier, index, pool, rng)?[index] ?? "[?]";
         }
