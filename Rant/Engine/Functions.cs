@@ -591,7 +591,7 @@ namespace Rant
 
         private static bool NotMiddle(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
-            if (vm.CurrentRepeater == null || vm.CurrentRepeater.IsFirst || vm.CurrentRepeater.IsLast) return false;
+            if (vm.CurrentRepeater == null || !(vm.CurrentRepeater.IsFirst || vm.CurrentRepeater.IsLast)) return false;
             vm.PushState(VM.State.CreateSub(source, args[0].GetTokens(), vm, vm.CurrentState.Output));
             return true;
         }
