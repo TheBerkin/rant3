@@ -1,5 +1,5 @@
 <p align="center">
-<img src="http://i.imgur.com/cDFy2w7.png" alt="Rant logo"></img>
+<img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
 
 ##What is Rant?
