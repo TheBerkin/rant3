@@ -66,56 +66,29 @@ namespace Rant.Vocabulary
             return -1;
         }
 
-        internal string Query(RNG rng, Query query, CarrierSyncState syncState)
+        internal string Query(RNG rng, Query query, QueryState syncState)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
-            if (index == -1)
-            {
-                return "[Missing Subtype]";
-            }
+            if (index == -1) return "[Missing Subtype]";
 
-            IEnumerable<RantDictionaryEntry> pool = _words;
-
-            pool = query.Exclusive
-                ? pool.Where(e => e.Classes.Any() && e.Classes.All(
-                    c => query.ClassFilters.Any(
-                        set => set.Any(t => t.Item2 == c))))
-                : pool.Where(e => query.ClassFilters.All(
-                    set => set.Any(
-                        t => t.Item1 == (e.Classes.Contains(t.Item2)))));
+            IEnumerable<RantDictionaryEntry> pool = 
+                query.Exclusive
+                    ? _words.Where(
+                        e => e.GetClasses().Any() == query.ClassFilters.Any()
+                        && e.GetClasses().All(
+                            c => query.ClassFilters.Any(
+                                set => set.Any(
+                                    t => t.Item2 == c))))
+                    : _words.Where(
+                        e => query.ClassFilters.All(
+                            set => set.Any(
+                                t => t.Item1 == e.ContainsClass(t.Item2))));
 
             pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
-            if (!pool.Any())
-            {
-                return "[?]";
-            }
+            if (!pool.Any()) return "[?]";
 
-            RantDictionaryEntry entry = null;
-
-            if (query.Carrier != null)
-            {
-                switch (query.Carrier.SyncType)
-                {
-                    case CarrierSyncType.Match:
-                        entry =
-                            pool.PickWeighted(rng, e => e.Weight, (r, n) => r.PeekAt(query.Carrier.ID.Hash(), n));
-                        break;
-                    case CarrierSyncType.Unique:
-                        entry = syncState.GetUniqueEntry(query.Carrier.ID, pool, rng);
-                        break;
-                    case CarrierSyncType.Rhyme:
-                        entry = syncState.GetRhymingEntry(query.Carrier.ID, index, pool, rng);
-                        break;
-                }
-            }
-            else
-            {
-                entry = pool.PickWeighted(rng, e => e.Weight);
-            }
-
-
-            return entry?[index] ?? "[?]";
+            return syncState.GetEntry(query.Carrier, index, pool, rng)?[index] ?? "[?]";
         }
     }
 }

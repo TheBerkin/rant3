@@ -227,7 +227,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Brackets bracketPairs)
+        public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Delimiters bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
@@ -243,27 +243,23 @@ namespace Rant
                 // Peek but don't consume - this saves some calculations later on.
                 token = PeekToken();
 
-                // Opening bracket
-                if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Previous bracket allows nesting
-                {
-                    _stack.Push(token);
-                }
+                bool literalCheck = !bracketPairs.Contains(token.ID, token.ID) || _stack.Peek().ID == token.ID;
 
                 // Closing bracket
-                else if (bracketPairs.ContainsClosing(token.ID) || close == token.ID) // Previous bracket allows nesting
+                if (literalCheck && (bracketPairs.ContainsClosing(token.ID) || close == token.ID)) // Previous bracket allows nesting
                 {
                     var lastOpening = _stack.Pop();
 
                     // Handle invalid closures
                     if (!bracketPairs.Contains(lastOpening.ID, token.ID)) // Not in main pair
                     {
-                        throw new RantException(_source, token, 
+                        throw new RantException(_source, token,
                             "Invalid closure '"
                             + lastOpening.Value
-                            + " ... " 
-                            + token.Value 
-                            + "' - expected '" 
-                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.ID)) 
+                            + " ... "
+                            + token.Value
+                            + "' - expected '"
+                            + RantLexer.Rules.GetSymbolForId(bracketPairs.GetClosing(lastOpening.ID))
                             + "'");
                     }
 
@@ -281,6 +277,12 @@ namespace Rant
                         _pos++;
                         yield break;
                     }
+                }
+
+                // Opening bracket
+                else if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Previous bracket allows nesting
+                {
+                    _stack.Push(token);
                 }
 
                 // Separator
@@ -306,7 +308,7 @@ namespace Rant
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<Token<R>> ReadToScopeClose(R open, R close, Brackets bracketPairs)
+        public IEnumerable<Token<R>> ReadToScopeClose(R open, R close, Delimiters bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
@@ -314,11 +316,12 @@ namespace Rant
             while (!End)
             {
                 token = ReadToken();
-                if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Allows nesting
-                {
-                    _stack.Push(token);
-                }
-                else if (bracketPairs.ContainsClosing(token.ID) || token.ID == close) // Allows nesting
+                bool literalCheck = !bracketPairs.Contains(token.ID, token.ID)
+                    || (_stack.Any()
+                    ? _stack.Peek().ID == token.ID
+                    : open == token.ID);
+
+                if (literalCheck && (bracketPairs.ContainsClosing(token.ID) || token.ID == close)) // Allows nesting
                 {
                     // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
                     if (!_stack.Any() && token.ID == close)
@@ -340,13 +343,17 @@ namespace Rant
                             + "'");
                     }
                 }
+                else if (bracketPairs.ContainsOpening(token.ID) || open == token.ID) // Allows nesting
+                {
+                    _stack.Push(token);
+                }
                 yield return token;
             }
             throw new RantException(_source, null, "Unexpected end of file; expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<Token<R>> ReadToTokenInParentScope(R tokenType, Brackets bracketPairs)
+        public IEnumerable<Token<R>> ReadToTokenInParentScope(R tokenType, Delimiters bracketPairs)
         {
             SkipSpace();
             _stack.Clear();

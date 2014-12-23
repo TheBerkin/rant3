@@ -5,62 +5,39 @@
     /// </summary>
     public sealed class Carrier
     {
-        /// <summary>
-        /// The type of synchronization to perform with the carrier.
-        /// </summary>
-        public CarrierSyncType SyncType { get; set; }
+        private string _match, _distinct, _assoc, _rhyme;
+
+        public string Match => _match ?? "";
+        public string Distinct => _distinct ?? "";
+        public bool DistinctFromMatch { get; set; }
+        public string Association => _assoc ?? "";
+        public bool AssociateWithMatch { get; set; }
+        public string Rhyme => _rhyme ?? "";
 
         /// <summary>
-        /// The ID assigned to the carrier.
+        /// Creates an empty carrier.
         /// </summary>
-        public string ID { get; set; }
-
-        /// <summary>
-        /// (Unused) The minimum number of syllables the selected term should have.
-        /// </summary>
-        public int SyllablesMin { get; set; }
-
-        /// <summary>
-        /// (Unused) The maximum number of syllables the selected term should have.
-        /// </summary>
-        public int SyllablesMax { get; set; }
-
-        /// <summary>
-        /// Creates a new Carrier instance with the specified parameters.
-        /// </summary>
-        /// <param name="syncType">The type of synchronization to perform with the carrier.</param>
-        /// <param name="id">The ID assigned to the carrier.</param>
-        /// <param name="syllablesMin">The minimum number of syllables the selected term should have.</param>
-        /// <param name="syllablesMax">The maximum number of syllables the selected term should have.</param>
-        public Carrier(CarrierSyncType syncType, string id, int syllablesMin, int syllablesMax)
+        public Carrier()
         {
-            SyncType = syncType;
-            ID = id ?? "";
-            SyllablesMin = syllablesMin;
-            SyllablesMax = syllablesMax;
         }
-    }
 
-    /// <summary>
-    /// Defines synchronization types for query carriers.
-    /// </summary>
-    public enum CarrierSyncType
-    {
         /// <summary>
-        /// Perform no synchronization.
+        /// Creates a carrier with the specified arguments.
         /// </summary>
-        None,
-        /// <summary>
-        /// Match with other carriers using the same ID.
-        /// </summary>
-        Match,
-        /// <summary>
-        /// Be unique from other carriers using the same ID.
-        /// </summary>
-        Unique,
-        /// <summary>
-        /// Rhyme with previous carrier selections using the same ID.
-        /// </summary>
-        Rhyme
+        /// <param name="match">The match name.</param>
+        /// <param name="distinct">The distinction name.</param>
+        /// <param name="distinctFromMatch">Determines whether the distinction is made from a previously cached entry.</param>
+        /// <param name="association">The association name.</param>
+        /// <param name="associateWithMatch">Determines whether the association should be made with a previously cached entry.</param>
+        /// <param name="rhyme">The rhyme name.</param>
+        public Carrier(string match, string distinct, bool distinctFromMatch, string association, bool associateWithMatch, string rhyme)
+        {
+            _match = match;
+            _distinct = distinct;
+            DistinctFromMatch = distinctFromMatch;
+            _assoc = association;
+            AssociateWithMatch = associateWithMatch;
+            _rhyme = rhyme;
+        }
     }
 }
