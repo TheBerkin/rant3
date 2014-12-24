@@ -22,7 +22,7 @@ namespace Rant
         {
             {R.LeftCurly, DoBlock},
             {R.LeftSquare, DoTag},
-            {R.Apostrophe, DoMath},
+            {R.Backtick, DoMath},
             {R.LeftAngle, DoQuery},
             {R.EscapeSequence, DoEscape},
             {R.ConstantLiteral, DoConstant},
@@ -135,8 +135,14 @@ namespace Rant
             List<Tuple<bool, string>[]> classFilterList = null;
             List<Tuple<bool, Regex>> regList = null;
             Carrier carrier = null;
+            SyllablePredicateFunc syllableRange = null;
 
             Token<R> queryToken = null;
+
+            if (reader.IsNext(R.RangeLiteral))
+            {
+                syllableRange = SyllablePredicate.Create(reader.ReadToken());
+            }
 
             // Read query arguments
             while (true)
@@ -234,7 +240,8 @@ namespace Rant
             var query = new Query(
                 namesub[0].Value.Trim(),
                 namesub.Length == 2 ? namesub[1].Value : "",
-                carrier, exclusive, classFilterList, regList);
+                carrier, exclusive, classFilterList, regList,
+                syllableRange);
 
             if (storeMacro)
             {

@@ -13,7 +13,7 @@ namespace Rant.Compiler
         /// </summary>
         public static readonly Delimiters All = new Delimiters
         {
-            {R.Apostrophe, R.Apostrophe},
+            {R.Backtick, R.Backtick},
             {R.LeftAngle, R.RightAngle},
             {R.LeftSquare, R.RightSquare},            
             {R.LeftCurly, R.RightCurly}

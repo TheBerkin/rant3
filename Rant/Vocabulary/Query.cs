@@ -13,6 +13,7 @@ namespace Rant.Vocabulary
         private string _name;
         private string _subtype;
         private Carrier _carrier;
+        private SyllablePredicateFunc _syllableRange;
         private bool _exclusive;
         private readonly IEnumerable<Tuple<bool, string>[]> _classFilters;
         private readonly IEnumerable<Tuple<bool, Regex>> _regexFilters;
@@ -26,8 +27,9 @@ namespace Rant.Vocabulary
         /// <param name="exclusive">Specifies exclusivity of class filters.</param>
         /// <param name="classFilters">The class filters to search by.</param>
         /// <param name="regexFilters">The regex filters to search by.</param>
+        /// <param name="syllableRange">The syllable range to constrain results to.</param>
         public Query(string name, string subtype, Carrier carrier, bool exclusive, IEnumerable<Tuple<bool, string>[]> classFilters,
-            IEnumerable<Tuple<bool, Regex>> regexFilters)
+            IEnumerable<Tuple<bool, Regex>> regexFilters, SyllablePredicateFunc syllableRange)
         {
             _name = name;
             _subtype = subtype;
@@ -35,6 +37,7 @@ namespace Rant.Vocabulary
             _carrier = carrier;
             _classFilters = (classFilters ?? Enumerable.Empty<Tuple<bool, string>[]>()).AsEnumerable();
             _regexFilters = (regexFilters ?? Enumerable.Empty<Tuple<bool, Regex>>()).AsEnumerable();
+            _syllableRange = syllableRange;
         }
 
         /// <summary>
@@ -71,6 +74,15 @@ namespace Rant.Vocabulary
         {
             get { return _exclusive; }
             set { _exclusive = value; }
+        }
+
+        /// <summary>
+        /// The syllable range predicate. Set to null for no syllable count filtering.
+        /// </summary>
+        public SyllablePredicateFunc SyllablePredicate
+        {
+            get { return _syllableRange; }
+            set { _syllableRange = value; }
         }
 
         /// <summary>

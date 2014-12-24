@@ -219,7 +219,11 @@
         /// <summary>
         /// `
         /// </summary>
-        Apostrophe,
+        Backtick,
+        /// <summary>
+        /// (a - b)
+        /// </summary>
+        RangeLiteral,
         /// <summary>
         /// End of file.
         /// </summary>

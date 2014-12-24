@@ -105,6 +105,9 @@ namespace Rant.Vocabulary
 
             pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
+            if (query.SyllablePredicate != null)
+                pool = pool.Where(e => query.SyllablePredicate(e.Terms[index].SyllableCount));
+
             if (!pool.Any()) return MissingTerm;
 
             return syncState.GetEntry(query.Carrier, index, pool, rng)?[index] ?? MissingTerm;
