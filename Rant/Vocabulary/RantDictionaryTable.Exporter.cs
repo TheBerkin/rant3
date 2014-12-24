@@ -20,8 +20,8 @@ namespace Rant.Vocabulary
                 writer.WriteLine("#subs {0}", Subtypes.Aggregate((c, n) => c + " " + n));
                 writer.WriteLine();
 
-                var entriesClean = Entries.Where(entry => !entry.NSFW);
-                var entriesDirty = Entries.Where(entry => entry.NSFW);
+                var entriesClean = GetEntries().Where(entry => !entry.NSFW);
+                var entriesDirty = GetEntries().Where(entry => entry.NSFW);
 
                 WriteEntries(writer, entriesClean);
                 if (entriesDirty.Any())

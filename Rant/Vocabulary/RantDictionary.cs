@@ -9,11 +9,6 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed class RantDictionary : IRantDictionary
     {
-        /// <summary>
-        /// Determines if the loader should display debug output when parsing files.
-        /// </summary>
-        public static bool ShowDebugOutput = true;
-
         private readonly Dictionary<string, RantDictionaryTable> _tables;
 
         /// <summary>
@@ -26,9 +21,17 @@ namespace Rant.Vocabulary
 
             if (dics == null) return;
 
+            RantDictionaryTable table;
             foreach (var list in dics)
             {
-                _tables[list.Name] = list;
+                if (_tables.TryGetValue(list.Name, out table))
+                {
+                    table.Merge(list);
+                }
+                else
+                {
+                    _tables[list.Name] = list;
+                }
             }
         }
 
@@ -82,10 +85,10 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public string Query(RNG rng, Query query, QueryState syncState)
         {
-            RantDictionaryTable wordList;
-            return !_tables.TryGetValue(query.Name, out wordList) 
-                ? "[Missing Dic]" 
-                : wordList.Query(rng, query, syncState);
+            RantDictionaryTable table;
+            return !_tables.TryGetValue(query.Name, out table) 
+                ? "[Missing Table]" 
+                : table.Query(rng, query, syncState);
         }
     }
 }
