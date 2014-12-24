@@ -99,6 +99,7 @@
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
+    <Compile Include="Vocabulary\CarrierComponent.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">

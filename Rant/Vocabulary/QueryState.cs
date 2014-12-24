@@ -27,7 +27,7 @@ namespace Rant.Vocabulary
         private readonly Dictionary<string, RantDictionaryEntry> _matchTable = new Dictionary<string, RantDictionaryEntry>();
 
         /// <summary>
-        /// Associative carrier table.
+        /// Associative/Disassociative/Relational/Divergent carrier table.
         /// </summary>
         private readonly Dictionary<string, RantDictionaryEntry> _assocTable = new Dictionary<string, RantDictionaryEntry>();
 
@@ -42,48 +42,102 @@ namespace Rant.Vocabulary
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
             if (carrier == null) return pool.PickWeighted(rng, e => e.Weight);
-
-            bool bMatch = !String.IsNullOrEmpty(carrier.Match);
-            bool bDistinct = !String.IsNullOrEmpty(carrier.Distinct);
-            bool bAssociate = !String.IsNullOrEmpty(carrier.Association);
-            bool bRhyme = !String.IsNullOrEmpty(carrier.Rhyme);
-
+            
             RantDictionaryEntry result = null;
 
-            if (bMatch && _matchTable.TryGetValue(carrier.Match, out result))
+            // Handle match carriers
+            foreach(var match in carrier.GetCarriers(CarrierComponent.Match))
+                if (_matchTable.TryGetValue(match, out result)) return result;
+
+            // Handle associative carriers
+            foreach(var assoc in carrier.GetCarriers(CarrierComponent.Associative))
             {
-                return result;
+                if (_assocTable.TryGetValue(assoc, out result))
+                    pool = pool.Where(e => e.AssociatesWith(result));
+                break;
             }
 
-            if (bAssociate && 
-                ((carrier.AssociateWithMatch && _matchTable.TryGetValue(carrier.Association, out result))
-                    || _assocTable.TryGetValue(carrier.Association, out result)))
+            // Handle match-associative carriers
+            foreach(var massoc in carrier.GetCarriers(CarrierComponent.MatchAssociative))
             {
-                pool = pool.Where(e => e.AssociatesWith(result));
+                if (_matchTable.TryGetValue(massoc, out result))
+                    pool = pool.Where(e => e.AssociatesWith(result));
+                break;
             }
 
-            if (bDistinct)
+            // Handle unique carriers
+            foreach(var unique in carrier.GetCarriers(CarrierComponent.Unique))
             {
                 HashSet<RantDictionaryEntry> usedSet;
-                if (!_uniqueTable.TryGetValue(carrier.Distinct, out usedSet))
+                if (!_uniqueTable.TryGetValue(unique, out usedSet))
                 {
-                    usedSet = _uniqueTable[carrier.Distinct] = new HashSet<RantDictionaryEntry>();
+                    usedSet = _uniqueTable[unique] = new HashSet<RantDictionaryEntry>();
                 }
 
                 pool = pool.Except(usedSet);
             }
 
+            // Handle match-unique carriers
+            foreach (var munique in carrier.GetCarriers(CarrierComponent.Unique))
+            {
+                if (_matchTable.TryGetValue(munique, out result))
+                    pool = pool.Where(e => e != result);
+            }
+
+            // Handle relational carriers
+            foreach(var relate in carrier.GetCarriers(CarrierComponent.Relational))
+            {
+                if (_assocTable.TryGetValue(relate, out result))
+                    pool = pool.Where(e => e.RelatesWith(result));
+            }
+
+            // Handle match-relational carriers
+            foreach (var relate in carrier.GetCarriers(CarrierComponent.MatchRelational))
+            {
+                if (_matchTable.TryGetValue(relate, out result))
+                    pool = pool.Where(e => e.RelatesWith(result));
+            }
+
+            // Handle dissociative carriers
+            foreach (var relate in carrier.GetCarriers(CarrierComponent.Dissociative))
+            {
+                if (_assocTable.TryGetValue(relate, out result))
+                    pool = pool.Where(e => !e.RelatesWith(result));
+            }
+
+            // Handle match-dissociative carriers
+            foreach (var relate in carrier.GetCarriers(CarrierComponent.MatchDissociative))
+            {
+                if (_matchTable.TryGetValue(relate, out result))
+                    pool = pool.Where(e => !e.RelatesWith(result));
+            }
+
+            // Handle divergent carriers
+            foreach (var diverge in carrier.GetCarriers(CarrierComponent.Divergent))
+            {
+                if (_assocTable.TryGetValue(diverge, out result))
+                    pool = pool.Where(e => e.DivergesFrom(result));
+            }
+
+            // Handle match-divergent carriers
+            foreach (var diverge in carrier.GetCarriers(CarrierComponent.MatchDivergent))
+            {
+                if (_matchTable.TryGetValue(diverge, out result))
+                    pool = pool.Where(e => e.DivergesFrom(result));
+            }
+
             result = pool.PickWeighted(rng, e => e.Weight);
 
-            if (bRhyme)
+            // Handle rhyme carrier
+            foreach(var rhyme in carrier.GetCarriers(CarrierComponent.Rhyme))
             {
                 Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
-                if (!_rhymeTable.TryGetValue(carrier.Rhyme, out rhymeState))
+                if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
                 {
                     result = pool
                         .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                         .PickWeighted(rng, e => e.Weight);
-                    _rhymeTable[carrier.Rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                    _rhymeTable[rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                 }
                 result =
                     pool.Except(rhymeState.Item2)
@@ -91,21 +145,31 @@ namespace Rant.Vocabulary
                                 .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1, e.Terms[subtypeIndex]));
 
                 if (result != null) rhymeState.Item2.Add(result);
+                break; // Ignore any extra rhyme carriers
             }
 
-            if (bAssociate)
+            if (result != null)
             {
-                _assocTable[carrier.Association] = result;
-            }
+                foreach (var a in carrier.GetCarriers(CarrierComponent.Associative))
+                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-            if (bDistinct)
-            {
-                _uniqueTable[carrier.Distinct].Add(result);
-            }
+                foreach (var a in carrier.GetCarriers(CarrierComponent.Dissociative))
+                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-            if (bMatch)
-            {
-                _matchTable[carrier.Match] = result;
+                foreach (var a in carrier.GetCarriers(CarrierComponent.Divergent))
+                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+                foreach (var a in carrier.GetCarriers(CarrierComponent.Relational))
+                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+                foreach (var unique in carrier.GetCarriers(CarrierComponent.Unique))
+                    _uniqueTable[unique].Add(result);
+
+                foreach (var match in carrier.GetCarriers(CarrierComponent.Match))
+                {
+                    _matchTable[match] = result;
+                    break;
+                }
             }
 
             return result;

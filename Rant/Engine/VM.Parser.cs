@@ -174,43 +174,49 @@ namespace Rant
                 {
                     reader.SkipSpace();
 
-                    string 
-                        match = null,
-                        distinct = null,
-                        assoc = null,
-                        rhyme = null;
-
-                    bool
-                        distFromMatch = false,
-                        assocWithMatch = false;
-
+                    carrier = new Carrier();
                     Token<R> typeToken;
+                    CarrierComponent comp = CarrierComponent.Match;
                     
                     while((typeToken = reader.ReadToken()).ID != R.RightAngle)
                     {
                         switch (typeToken.ID)
                         {
-                            case R.Exclamation: // Distinct
-                                distFromMatch = reader.Take(R.Equal);
-                                distinct = reader.ReadLoose(R.Text, "distinct carrier name").Value;
+                            case R.Exclamation: // Unique
+                                comp = reader.Take(R.Equal) ? CarrierComponent.MatchUnique : CarrierComponent.Unique;
                                 break;
                             case R.Equal: // Match
-                                match = reader.ReadLoose(R.Text, "match carrier name").Value;
+                                comp = CarrierComponent.Match;
                                 break;
                             case R.Ampersand: // Rhyme
-                                rhyme = reader.ReadLoose(R.Text, "rhyme carrier name").Value;
+                                comp = CarrierComponent.Rhyme;
                                 break;
-                            case R.At: // Associative
-                                assocWithMatch = reader.Take(R.Equal);
-                                assoc = reader.ReadLoose(R.Text, "associative carrier name").Value;
+                            case R.At: // Associative/Relational/Dissociative/Divergent
+                                {
+                                    if (reader.Take(R.Question))
+                                    {
+                                        comp = reader.Take(R.Equal) ? CarrierComponent.MatchRelational : CarrierComponent.Relational;
+                                    }
+                                    else if (reader.Take(R.Exclamation))
+                                    {
+                                        comp = reader.Take(R.Equal) ? CarrierComponent.MatchDissociative : CarrierComponent.Dissociative;
+                                    }
+                                    else if (reader.Take(R.Plus))
+                                    {
+                                        comp = reader.Take(R.Equal) ? CarrierComponent.MatchDivergent : CarrierComponent.Divergent;
+                                    }
+                                    else
+                                    {
+                                        comp = reader.Take(R.Equal) ? CarrierComponent.MatchAssociative : CarrierComponent.Associative;
+                                    }
+                                }                                
                                 break;
                             default:
                                 throw new RantException(reader.Source, typeToken, "Unrecognized token '\{typeToken.Value}' in carrier.");
                         }
+                        carrier.AddComponent(comp, reader.ReadLoose(R.Text, "carrier component name").Value);
                         reader.SkipSpace();
                     }
-
-                    carrier = new Carrier(match, distinct, distFromMatch, assoc, assocWithMatch, rhyme);
 
                     break;
                 }

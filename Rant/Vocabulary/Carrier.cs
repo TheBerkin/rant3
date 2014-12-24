@@ -1,43 +1,64 @@
-﻿namespace Rant.Vocabulary
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Rant.Vocabulary
 {
     /// <summary>
     /// Represents information that can be used to synchronize query selections based on certain criteria.
     /// </summary>
     public sealed class Carrier
     {
-        private string _match, _distinct, _assoc, _rhyme;
-
-        public string Match => _match ?? "";
-        public string Distinct => _distinct ?? "";
-        public bool DistinctFromMatch { get; set; }
-        public string Association => _assoc ?? "";
-        public bool AssociateWithMatch { get; set; }
-        public string Rhyme => _rhyme ?? "";
+        private readonly Dictionary<CarrierComponent, HashSet<string>> _components;
 
         /// <summary>
         /// Creates an empty carrier.
         /// </summary>
         public Carrier()
         {
+            _components = new Dictionary<CarrierComponent, HashSet<string>>();
         }
 
         /// <summary>
-        /// Creates a carrier with the specified arguments.
+        /// Returns how many of a certain carrier component type are assigned to the current instance.
         /// </summary>
-        /// <param name="match">The match name.</param>
-        /// <param name="distinct">The distinction name.</param>
-        /// <param name="distinctFromMatch">Determines whether the distinction is made from a previously cached entry.</param>
-        /// <param name="association">The association name.</param>
-        /// <param name="associateWithMatch">Determines whether the association should be made with a previously cached entry.</param>
-        /// <param name="rhyme">The rhyme name.</param>
-        public Carrier(string match, string distinct, bool distinctFromMatch, string association, bool associateWithMatch, string rhyme)
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int GetTypeCount(CarrierComponent type)
         {
-            _match = match;
-            _distinct = distinct;
-            DistinctFromMatch = distinctFromMatch;
-            _assoc = association;
-            AssociateWithMatch = associateWithMatch;
-            _rhyme = rhyme;
+            HashSet<string> set;
+            if (!_components.TryGetValue(type, out set)) return 0;
+            return set.Count;
+        }
+
+        /// <summary>
+        /// Adds a component of the specified type and name to the current instance.
+        /// </summary>
+        /// <param name="type">The type of carrier to add.</param>
+        /// <param name="values">The names to assign to the component type.</param>
+        public void AddComponent(CarrierComponent type, params string[] values)
+        {
+            HashSet<string> set;
+            if (!_components.TryGetValue(type, out set))
+            {
+                _components[type] = new HashSet<string>(values);
+                return;
+            }
+            foreach (var value in values) set.Add(value);
+        }
+
+        /// <summary>
+        /// Iterates through the current instances's carriers of the specified type.
+        /// </summary>
+        /// <param name="type">The type of component to iterate through.</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetCarriers(CarrierComponent type)
+        {
+            HashSet<string> set;
+            if (!_components.TryGetValue(type, out set)) yield break;
+            foreach(var value in set)
+            {
+                yield return value;
+            }
         }
     }
 }
