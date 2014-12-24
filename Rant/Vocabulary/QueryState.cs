@@ -137,7 +137,8 @@ namespace Rant.Vocabulary
                     result = pool
                         .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                         .PickWeighted(rng, e => e.Weight);
-                    _rhymeTable[rhyme] = rhymeState = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                    _rhymeTable[rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                    break;
                 }
                 result =
                     pool.Except(rhymeState.Item2)
