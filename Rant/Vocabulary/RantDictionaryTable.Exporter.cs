@@ -42,11 +42,11 @@ namespace Rant.Vocabulary
 			CreateNestedClassDirectives(root, classes);
 			
 			// now that we have a tree of class directives, let's populate it
-			entries.ToList().ForEach(entry =>
+            foreach(var entry in entries)
 			{
 				if(!entry.GetClasses().Any()) return;
 			    root.FindDirectiveForClasses(entry.GetClasses().ToArray())?.Entries.Add(entry);
-			});
+			};
 
 			root.Render(writer);
         }
@@ -59,12 +59,12 @@ namespace Rant.Vocabulary
             {
                 var classCounts = new Dictionary<string, int>();
 
-                entries.ForEach(x =>
+                foreach(var x in entries)
                 {
                     int count;
                     for (int i = 0; i < x.Length; i++)
                         classCounts[x[i]] = classCounts.TryGetValue(x[i], out count) ? count + 1 : 1;
-                });
+                };
 
                 // do this again with children of this class
                 string bestClass = classCounts.OrderByDescending(x => x.Value).First().Key;
@@ -76,13 +76,12 @@ namespace Rant.Vocabulary
                     // remove bestClass from array
                     return x.Where(y => y != bestClass).ToArray();
                 }).ToList();
-                if (childEntries.Any())
-                    CreateNestedClassDirectives(bestDirective, childEntries);
+                if (childEntries.Any()) CreateNestedClassDirectives(bestDirective, childEntries);
                 parent.Children[bestClass] = bestDirective;
 
                 // for things that aren't children of this class
                 var otherEntries = entries.Where(x => !x.Contains(bestClass) && x.Length > 0).ToList();
-                if (otherEntries.Count > 0)
+                if (otherEntries.Any())
                 {
                     entries = otherEntries;
                     continue;
