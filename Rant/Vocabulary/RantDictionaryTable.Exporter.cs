@@ -53,43 +53,45 @@ namespace Rant.Vocabulary
 
 		// thank you stack exchange
 		// http://programmers.stackexchange.com/q/267495/161632
-		private static void CreateNestedClassDirectives(RantDictionaryTableClassDirective parent, List<string[]> entries)
-		{
-			Dictionary<string, int> classCounts = new Dictionary<string, int>();
+        private static void CreateNestedClassDirectives(RantDictionaryTableClassDirective parent, List<string[]> entries)
+        {
+            while (true)
+            {
+                var classCounts = new Dictionary<string, int>();
 
-			entries.ForEach(x =>
-			{
-				int count;
-				for(int i = 0; i < x.Length; i++)
-					classCounts[x[i]] = classCounts.TryGetValue(x[i], out count) ? count + 1 : 1;
-			});
+                entries.ForEach(x =>
+                {
+                    int count;
+                    for (int i = 0; i < x.Length; i++)
+                        classCounts[x[i]] = classCounts.TryGetValue(x[i], out count) ? count + 1 : 1;
+                });
 
-			// do this again with children of this class
-			string bestClass = classCounts.OrderByDescending(x => x.Value).First().Key;
-			if(classCounts[bestClass] <= 3) return;
-			var bestDirective = new RantDictionaryTableClassDirective(bestClass);
-			bestDirective.Parent = parent;
-			var childEntries = entries
-				.Where(x => x.Contains(bestClass) && x.Length > 1)
-				.Select(x =>
-				{
-					// remove bestClass from array
-					return x.Where(y => y != bestClass).ToArray();
-				})
-				.ToList();
-			if(childEntries.Any())
-				CreateNestedClassDirectives(bestDirective, childEntries);
-			parent.Children[bestClass] = bestDirective;
+                // do this again with children of this class
+                string bestClass = classCounts.OrderByDescending(x => x.Value).First().Key;
+                if (classCounts[bestClass] <= 3) return;
+                var bestDirective = new RantDictionaryTableClassDirective(bestClass);
+                bestDirective.Parent = parent;
+                var childEntries = entries.Where(x => x.Contains(bestClass) && x.Length > 1).Select(x =>
+                {
+                    // remove bestClass from array
+                    return x.Where(y => y != bestClass).ToArray();
+                }).ToList();
+                if (childEntries.Any())
+                    CreateNestedClassDirectives(bestDirective, childEntries);
+                parent.Children[bestClass] = bestDirective;
 
-			// for things that aren't children of this class
-			var otherEntries = entries
-				.Where(x => !x.Contains(bestClass) && x.Length > 0)
-				.ToList();
-			if(otherEntries.Count > 0)
-				CreateNestedClassDirectives(parent, otherEntries);
-		}
+                // for things that aren't children of this class
+                var otherEntries = entries.Where(x => !x.Contains(bestClass) && x.Length > 0).ToList();
+                if (otherEntries.Count > 0)
+                {
+                    entries = otherEntries;
+                    continue;
+                }
+                break;
+            }
+        }
 
-		private class RantDictionaryTableClassDirective
+        private class RantDictionaryTableClassDirective
 		{
 			public string Name;
 			public Dictionary<string, RantDictionaryTableClassDirective> Children;
