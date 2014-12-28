@@ -38,19 +38,14 @@ namespace Rant.Vocabulary
         {
 			var root = new RantDictionaryTableClassDirective("root");
 			// we create the tree of class directives first - then we fill it
-			List<string[]> classes = entries.Select(x =>
-			{
-				return x.GetClasses().ToArray();
-			}).ToList();
+			var classes = entries.Select(x => x.GetClasses().ToArray()).ToList();
 			CreateNestedClassDirectives(root, classes);
 			
 			// now that we have a tree of class directives, let's populate it
 			entries.ToList().ForEach(entry =>
 			{
-				if(entry.GetClasses().Count() == 0) return;
-				var directive = root.FindDirectiveForClasses(entry.GetClasses().ToArray());
-				if(directive != null)
-					directive.Entries.Add(entry);
+				if(!entry.GetClasses().Any()) return;
+			    root.FindDirectiveForClasses(entry.GetClasses().ToArray())?.Entries.Add(entry);
 			});
 
 			root.Render(writer);
@@ -82,7 +77,7 @@ namespace Rant.Vocabulary
 					return x.Where(y => y != bestClass).ToArray();
 				})
 				.ToList();
-			if(childEntries.Count > 0)
+			if(childEntries.Any())
 				CreateNestedClassDirectives(bestDirective, childEntries);
 			parent.Children[bestClass] = bestDirective;
 
@@ -105,7 +100,7 @@ namespace Rant.Vocabulary
 			{
 				get
 				{
-					if(Parent == null) return new string[] { };
+					if(Parent == null) return new string[0];
 					var classes = new List<string>() { this.Name };
 					classes.AddRange(Parent.Classes);
 					return classes.ToArray();
@@ -121,19 +116,16 @@ namespace Rant.Vocabulary
 
 			public RantDictionaryTableClassDirective FindDirectiveForClasses(string[] classes)
 			{
-				foreach(var c in classes)
-				{
-					if(Children.ContainsKey(c))
-					{
-						if(classes.Length == 1) return Children[c];
-						var tree = Children[c].FindDirectiveForClasses(classes.Where(x => x != c).ToArray());
-						if(tree != null) return tree;
-					}
-				}
-				return null;
+			    foreach (var c in classes.Where(c => Children.ContainsKey(c)))
+			    {
+			        if(classes.Length == 1) return Children[c];
+			        var tree = Children[c].FindDirectiveForClasses(classes.Where(x => x != c).ToArray());
+			        if(tree != null) return tree;
+			    }
+			    return null;
 			}
 
-			public void Render(StreamWriter writer, int level = -1)
+		    public void Render(StreamWriter writer, int level = -1)
 			{
 				string leadingWhitespace = "";
 				string leadingWhitespacer = (Parent != null ? "  " : "");
