@@ -81,7 +81,9 @@ namespace Rant
             F["numfmt"] = new RantFuncSigs(
                 new RantFunc(NumFmt, ParamFlags.None),
                 new RantFunc(NumFmtScope, ParamFlags.None, ParamFlags.Code));
-            F["caps"] = F["case"] = new RantFunc(Caps, ParamFlags.None); // TODO: [caps] is deprecated. Remove it eventually.
+            F["caps"] = F["case"] = new RantFuncSigs(
+                new RantFunc(Case, ParamFlags.None),
+                new RantFunc(CaseScope, ParamFlags.None, ParamFlags.Code));
             F["capsinfer"] = new RantFunc(CapsInfer, ParamFlags.None);
 
             // Channels
@@ -98,6 +100,7 @@ namespace Rant
             F["send"] = new RantFunc(Send, ParamFlags.None, ParamFlags.None);
             F["osend"] = new RantFunc(SendOverwrite, ParamFlags.None, ParamFlags.None);
             F["clrt"] = new RantFunc(ClearTarget, ParamFlags.None);
+            F["copy"] = new RantFunc(Copy, ParamFlags.None, ParamFlags.None);
 
             // String generation, manipulation, and analysis
             F["len"] = new RantFunc(Length, ParamFlags.None);
@@ -120,6 +123,12 @@ namespace Rant
             
             // Misc
             F["src"] = new RantFunc(Src);
+        }
+
+        private static bool Copy(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            vm.Print(vm.CopyMarkerRegion(args[0].GetString(), args[1].GetString()));
+            return false;
         }
 
         private static bool NumberDec(VM vm, RantPattern source, Stringe tagName, Argument[] args)
@@ -383,15 +392,15 @@ namespace Rant
             }
             if (uCount == wCount)
             {
-                vm.CurrentState.Output.SetCaps(Case.Upper);
+                vm.CurrentState.Output.SetCase(Rant.Case.Upper);
             }
             else if (wCount > 1 && fwCount == wCount)
             {
-                vm.CurrentState.Output.SetCaps(Case.Title);
+                vm.CurrentState.Output.SetCase(Rant.Case.Title);
             }
             else if (firstCharIsUpper)
             {
-                vm.CurrentState.Output.SetCaps(Case.First);
+                vm.CurrentState.Output.SetCase(Rant.Case.First);
             }
             return false;
         }
@@ -414,16 +423,39 @@ namespace Rant
             return false;
         }
 
-        private static bool Caps(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool Case(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             Case caps;
             var caps_str = args[0].GetString();
             if (!Enum.TryParse(NameToCamel(caps_str), out caps))
             {
-                throw Error(source, tagname, "Invalid capitalization format '\{caps_str}'");
+                throw Error(source, tagname, "Invalid case format '\{caps_str}'");
             }
-            vm.CurrentState.Output.SetCaps(caps);
+            vm.CurrentState.Output.SetCase(caps);
             return false;
+        }
+
+        private static bool CaseScope(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            Case caps;
+            var caps_str = args[0].GetString();
+            if (!Enum.TryParse(NameToCamel(caps_str), out caps))
+            {
+                throw Error(source, tagname, "Invalid case format '\{caps_str}'");
+            }
+            var cases = vm.CurrentState.Output.GetCurrentCases();
+            vm.CurrentState.Output.SetCase(caps);
+            vm.PushState(VM.State.CreateSub(source, args[1].GetTokens(), vm, vm.CurrentState.Output)
+                .Post(new DelegateBlueprint(vm,
+                _ =>
+                {
+                    foreach (var pair in cases)
+                    {
+                        pair.Key.Formatter.Case = pair.Value;
+                    }
+                    return false;
+                })));
+            return true;
         }
 
         private static bool NumFmt(VM vm, RantPattern source, Stringe tagname, Argument[] args)

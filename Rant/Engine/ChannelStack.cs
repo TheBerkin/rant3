@@ -97,13 +97,23 @@ namespace Rant
             _stackSize--;
         }
 
-        public void SetCaps(Case caps)
+        public void SetCase(Case caps)
         {
             foreach (var ch in GetActive())
             {
                 ch.Formatter.Case = caps;
             }
         }
+
+        public Dictionary<RantChannel, Case> GetCurrentCases()
+        {
+            var table = new Dictionary<RantChannel, Case>();
+            foreach (var ch in GetActive())
+            {
+                table[ch] = ch.Formatter.Case;
+            }
+            return table;
+        } 
 
         public void Write(string input)
         {

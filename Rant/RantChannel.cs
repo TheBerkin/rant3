@@ -20,7 +20,7 @@ namespace Rant
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>>();
 
-        private Formatter _formatter;
+        private readonly Formatter _formatter;
 
         private int _bufferCount;
         private int _length;
@@ -150,6 +150,30 @@ namespace Rant
                 len += _buffers[i].Length;
             }
             return len - bufCharA;
+        }
+
+        internal string CopyRegion(int bufIndexA, int bufIndexB, int bufCharA, int bufCharB)
+        {
+            int ia = Math.Min(bufIndexA, bufIndexB);
+            int ib = Math.Max(bufIndexA, bufIndexB);
+            if (ia == ib) return _buffers[ia].ToString().Substring(bufCharA, bufCharB - bufCharA);
+            var sb = new StringBuilder();
+            for (int i = ia; i <= ib; i++)
+            {
+                if (i == ia)
+                {
+                    sb.Append(_buffers[i].ToString().Substring(bufCharA));
+                }
+                else if (i == ib)
+                {
+                    sb.Append(_buffers[i].ToString().Substring(0, bufCharB));
+                }
+                else
+                {
+                    sb.Append(_buffers[i]);
+                }
+            }
+            return sb.ToString();
         }
 
         internal int CurrentBufferIndex => _bufferCount;

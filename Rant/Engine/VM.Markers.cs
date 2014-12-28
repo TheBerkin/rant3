@@ -23,5 +23,12 @@ namespace Rant
             if (!_markers.TryGetValue(a, out ma) || !_markers.TryGetValue(b, out mb) || ma.Item3 != mb.Item3) return 0;
             return ma.Item3.MeasureDistance(ma.Item1, mb.Item1, ma.Item2, mb.Item2);
         }
+
+        public string CopyMarkerRegion(string a, string b)
+        {
+            Tuple<int, int, RantChannel> ma, mb;
+            if (!_markers.TryGetValue(a, out ma) || !_markers.TryGetValue(b, out mb) || ma.Item3 != mb.Item3) return String.Empty;
+            return ma.Item3.CopyRegion(ma.Item1, mb.Item1, ma.Item2, mb.Item2);
+        }
     }
 }

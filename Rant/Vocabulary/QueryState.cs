@@ -149,28 +149,27 @@ namespace Rant.Vocabulary
                 break; // Ignore any extra rhyme carriers
             }
 
-            if (result != null)
+            if (result == null) return result;
+
+            foreach (var a in carrier.GetCarriers(CarrierComponent.Associative))
+                if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+            foreach (var a in carrier.GetCarriers(CarrierComponent.Dissociative))
+                if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+            foreach (var a in carrier.GetCarriers(CarrierComponent.Divergent))
+                if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+            foreach (var a in carrier.GetCarriers(CarrierComponent.Relational))
+                if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
+
+            foreach (var unique in carrier.GetCarriers(CarrierComponent.Unique))
+                _uniqueTable[unique].Add(result);
+
+            foreach (var match in carrier.GetCarriers(CarrierComponent.Match))
             {
-                foreach (var a in carrier.GetCarriers(CarrierComponent.Associative))
-                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
-
-                foreach (var a in carrier.GetCarriers(CarrierComponent.Dissociative))
-                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
-
-                foreach (var a in carrier.GetCarriers(CarrierComponent.Divergent))
-                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
-
-                foreach (var a in carrier.GetCarriers(CarrierComponent.Relational))
-                    if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
-
-                foreach (var unique in carrier.GetCarriers(CarrierComponent.Unique))
-                    _uniqueTable[unique].Add(result);
-
-                foreach (var match in carrier.GetCarriers(CarrierComponent.Match))
-                {
-                    _matchTable[match] = result;
-                    break;
-                }
+                _matchTable[match] = result;
+                break;
             }
 
             return result;
