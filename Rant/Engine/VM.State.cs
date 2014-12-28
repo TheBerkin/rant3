@@ -113,7 +113,7 @@ namespace Rant
             public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 VM interpreter, ChannelStack output = null)
             {
-                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.FormatStyle, interpreter.CharLimit));
+                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.Format, interpreter.CharLimit));
             }
 
             public void Print(string value)

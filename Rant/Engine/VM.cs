@@ -80,21 +80,23 @@ namespace Rant
             set { _numfmt = value; }
         }
 
-        public void IncreaseQuoteLevel() => _quoteLevel++;
+        public void OpenQuote()
+        {
+            _quoteLevel++;
+            Print(_quoteLevel == 1
+                ? Engine.Format.OpeningPrimaryQuote
+                : Engine.Format.OpeningSecondaryQuote);
+        }
 
-        public void DecreaseQuoteLevel() => _quoteLevel--;
+        public void CloseQuote()
+        {
+            Print(_quoteLevel == 1
+                ? Engine.Format.ClosingPrimaryQuote
+                : Engine.Format.ClosingSecondaryQuote);
+            _quoteLevel--;
+        }
 
-        public void PrintOpeningQuote() =>
-                Print(_quoteLevel == 1
-                    ? Engine.Format.OpeningPrimaryQuote
-                    : Engine.Format.OpeningSecondaryQuote);
-
-        public void PrintClosingQuote() =>
-                Print(_quoteLevel == 1
-                    ? Engine.Format.ClosingPrimaryQuote
-                    : Engine.Format.ClosingSecondaryQuote);
-
-        public RantFormat FormatStyle => Engine.Format;
+        public RantFormat Format => Engine.Format;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);

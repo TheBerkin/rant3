@@ -131,14 +131,12 @@ namespace Rant
             vm.PushState(VM.State.CreateSub(source, args[0].GetTokens(), vm, vm.CurrentState.Output)
                 .Pre(new DelegateBlueprint(vm, _ =>
                 {
-                    vm.IncreaseQuoteLevel();
-                    vm.PrintOpeningQuote();
+                    vm.OpenQuote();
                     return false;
                 }))
                 .Post(new DelegateBlueprint(vm, _ =>
                 {
-                    vm.PrintClosingQuote();
-                    vm.DecreaseQuoteLevel();
+                    vm.CloseQuote();
                     return false;
                 })));
             return true;
@@ -438,7 +436,7 @@ namespace Rant
             {
                 throw Error(source, tagname, "Invalid channel visibility option '\{cv_str}'");
             }
-            vm.CurrentState.Output.PushChannel(args[0].GetString(), cv, vm.FormatStyle);
+            vm.CurrentState.Output.PushChannel(args[0].GetString(), cv, vm.Format);
             return false;
         }
 
