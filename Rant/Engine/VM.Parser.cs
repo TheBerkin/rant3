@@ -92,7 +92,7 @@ namespace Rant
                         if (mNameSub.Length > 2) throw Error(reader.Source, firstToken, "Invald subtype accessor on macro call.");
                         var oldSub = q.Subtype;
                         if (mNameSub.Length == 2) q.Subtype = mNameSub[1];
-                        interpreter.Print(interpreter.Engine.Vocabulary?.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
+                        interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
                         q.Subtype = oldSub;
                         return false;
                     }
@@ -257,7 +257,7 @@ namespace Rant
             }
 
             // Query dictionary and print result
-            interpreter.Print(interpreter.Engine.Vocabulary?.Query(interpreter.RNG, query, interpreter.CarrierSyncState));
+            interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, query, interpreter.CarrierSyncState));
 
             return false;
         }

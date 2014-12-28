@@ -85,6 +85,7 @@ namespace Rant
                 new RantFunc(Case, ParamFlags.None),
                 new RantFunc(CaseScope, ParamFlags.None, ParamFlags.Code));
             F["capsinfer"] = new RantFunc(CapsInfer, ParamFlags.None);
+            F["quot"] = F["q"] = new RantFunc(Quote, ParamFlags.Code);
 
             // Channels
             F["out"] = new RantFunc(Out, ParamFlags.None, ParamFlags.None);
@@ -123,6 +124,24 @@ namespace Rant
             
             // Misc
             F["src"] = new RantFunc(Src);
+        }
+
+        private static bool Quote(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            vm.PushState(VM.State.CreateSub(source, args[0].GetTokens(), vm, vm.CurrentState.Output)
+                .Pre(new DelegateBlueprint(vm, _ =>
+                {
+                    vm.IncreaseQuoteLevel();
+                    vm.PrintOpeningQuote();
+                    return false;
+                }))
+                .Post(new DelegateBlueprint(vm, _ =>
+                {
+                    vm.PrintClosingQuote();
+                    vm.DecreaseQuoteLevel();
+                    return false;
+                })));
+            return true;
         }
 
         private static bool Copy(VM vm, RantPattern source, Stringe tagname, Argument[] args)

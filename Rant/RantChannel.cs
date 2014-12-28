@@ -13,7 +13,7 @@ namespace Rant
     {
         internal const int InitialBufferSize = 512;
 
-        private RantFormat _formatStyle;
+        private RantFormat _format;
         private StringBuilder _currentBuffer;
         private readonly List<StringBuilder> _buffers;
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
@@ -37,19 +37,19 @@ namespace Rant
 
         internal Formatter Formatter => _formatter;
 
-        internal RantFormat FormatStyle
+        internal RantFormat Format
         {
-            get { return _formatStyle; }
-            set { _formatStyle = value; }
+            get { return _format; }
+            set { _format = value; }
         }
 
-        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat formatStyle)
+        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat format)
         {
             Name = name;
             Visiblity = visibility;
             _currentBuffer = new StringBuilder(InitialBufferSize);
             _buffers = new List<StringBuilder>{_currentBuffer};
-            _formatStyle = formatStyle;
+            _format = format;
             _formatter = new Formatter();
         }
 
@@ -57,7 +57,7 @@ namespace Rant
         {
             if (value == null) return;
             _length += value.Length;
-            _currentBuffer.Append(_formatter.Format(value, _formatStyle));
+            _currentBuffer.Append(_formatter.Format(value, _format));
             UpdateArticle(_currentBuffer);
         }
 
@@ -65,7 +65,7 @@ namespace Rant
         {
             char lc = _formatter.LastChar;
             
-            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_formatStyle.IndefiniteArticle.ConsonantForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle)), _formatter.Clone());
+            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle)), _formatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -81,14 +81,14 @@ namespace Rant
             int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
-                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_formatStyle.IndefiniteArticle.ConsonantForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
+                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.ConsonantForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
 
             // Check for vowel
-            if (!_formatStyle.IndefiniteArticle.PrecedesVowel(target)) return;
-            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_formatStyle.IndefiniteArticle.VowelForm, _formatStyle, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
+            if (!_format.IndefiniteArticles.PrecedesVowel(target)) return;
+            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.VowelForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
             _length += -l1 + aBuilder.Item1.Length;
         }
 
@@ -108,12 +108,12 @@ namespace Rant
             {
                 sb = _forePrintPoints[name] = new StringBuilder(InitialBufferSize);
                 if (overwrite) sb.Clear();
-                sb.Append(_formatter.Format(value, _formatStyle));
+                sb.Append(_formatter.Format(value, _format));
             }
             else
             {
                 if (overwrite) sb.Clear();
-                sb.Append(_formatter.Format(value, _formatStyle));
+                sb.Append(_formatter.Format(value, _format));
                 UpdateArticle(sb);
             }
         }

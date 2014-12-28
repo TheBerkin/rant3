@@ -35,6 +35,7 @@ namespace Rant
 
         // Formatting
         private NumberFormat _numfmt = NumberFormat.Normal;
+        private int _quoteLevel = 0;
         
         // State information
         private int _stateCount = 0;
@@ -79,7 +80,21 @@ namespace Rant
             set { _numfmt = value; }
         }
 
-        public RantFormat FormatStyle => Engine.FormatStyle;
+        public void IncreaseQuoteLevel() => _quoteLevel++;
+
+        public void DecreaseQuoteLevel() => _quoteLevel--;
+
+        public void PrintOpeningQuote() =>
+                Print(_quoteLevel == 1
+                    ? Engine.Format.OpeningPrimaryQuote
+                    : Engine.Format.OpeningSecondaryQuote);
+
+        public void PrintClosingQuote() =>
+                Print(_quoteLevel == 1
+                    ? Engine.Format.ClosingPrimaryQuote
+                    : Engine.Format.ClosingSecondaryQuote);
+
+        public RantFormat FormatStyle => Engine.Format;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
@@ -170,7 +185,7 @@ namespace Rant
             _startingGen = rng.Generation;
             Engine = engine;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
-            _output = new ChannelStack(engine.FormatStyle, _charLimit);
+            _output = new ChannelStack(engine.Format, _charLimit);
             _mainState = new State(this, input, _output);
         }
 

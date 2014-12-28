@@ -1,43 +1,69 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rant.Formatting
 {
     /// <summary>
     /// Describes language-specific formatting instructions for localizing interpreter output.
     /// </summary>
-    public sealed class RantFormat
+    public abstract class RantFormat
     {
         /// <summary>
-        /// US English formatting.
+        /// English formatting.
         /// </summary>
-        public static readonly RantFormat English = new RantFormat(
-            IndefiniteArticle.English,
-            new[] { "a", "an", "the", "that", "where", "when", "for", "any", "or", "and", "of", "in", "at", "as", "into", "if", "are", "you", "why", "from" });
+        public static RantFormat English;
 
-        private readonly HashSet<string> _titleCaseExclusions;
-
-        /// <summary>
-        /// The indefinite article to use in the format.
-        /// </summary>
-        public IndefiniteArticle IndefiniteArticle { get; private set; } = IndefiniteArticle.English;
-
-        /// <summary>
-        /// The words to exclude from Title Case capitalization.
-        /// </summary>
-        public IEnumerable<string> TitleCaseExclusions => _titleCaseExclusions.AsEnumerable();
-
-        /// <summary>
-        /// Creates a new RantFormatStyle instance with the specified arguments.
-        /// </summary>
-        /// <param name="indefiniteArticle">The indefinite article to use in the format.</param>
-        /// <param name="titleCaseExclusions">The words to exclude from Title Case capitalization.</param>
-        public RantFormat(IndefiniteArticle indefiniteArticle, string[] titleCaseExclusions)
+        static RantFormat()
         {
-            IndefiniteArticle = indefiniteArticle;
-            _titleCaseExclusions = new HashSet<string>(titleCaseExclusions);
+            English = new RantSystemFormat
+            {
+                IndefiniteArticles = IndefiniteArticles.English
+            };
+            English.InternalAddTitleCaseExclusions(
+                "a", "an", "the", "that", "where", "when", "for", "any", "or", "and", "of", "in", "at", "as", "into", "if",
+                "are", "you", "why", "from");
         }
 
-        internal bool Excludes(string word) => _titleCaseExclusions.Contains(word);
+        private readonly HashSet<string> _titleCaseExcludedWords = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase); 
+
+        #region Quotation marks
+
+        /// <summary>
+        /// The opening primary quotation mark.
+        /// </summary>
+        public char OpeningPrimaryQuote { get; protected set; } = '\u201c';
+        /// <summary>
+        /// The closing primary quotation mark.
+        /// </summary>
+        public char ClosingPrimaryQuote { get; protected set; } = '\u201d';
+
+        /// <summary>
+        /// The opening secondary quotation mark.
+        /// </summary>
+        public char OpeningSecondaryQuote { get; protected set; } = '\u2018';
+        /// <summary>
+        /// The closing secondary quotation mark.
+        /// </summary>
+        public char ClosingSecondaryQuote { get; protected set; } = '\u2019';
+
+        #endregion
+
+        /// <summary>
+        /// The vowel-sensitive indefinite articles used by the \a escape sequence.
+        /// </summary>
+        public IndefiniteArticles IndefiniteArticles { get; protected set; } = IndefiniteArticles.English;
+
+        protected void InternalAddTitleCaseExclusions(params string[] words)
+        {
+            foreach (var word in words) _titleCaseExcludedWords.Add(word);
+        }
+
+        /// <summary>
+        /// Adds the specified strings to the title case exclusion list for the current format.
+        /// </summary>
+        /// <param name="words">The words to exclude from title case capitalization.</param>
+        public virtual void AddTitleCaseExclusions(params string[] words) => InternalAddTitleCaseExclusions(words);
+
+        internal bool Excludes(string word) => _titleCaseExcludedWords.Contains(word);
     }
 }

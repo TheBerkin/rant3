@@ -28,7 +28,7 @@ namespace Rant
         private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HashSet<string> _flags = new HashSet<string>();
-        private IRantDictionary _vocabulary;   
+        private IRantDictionary _dictionary;   
 
         internal VarStore Variables => _vars;
 
@@ -40,20 +40,20 @@ namespace Rant
         public HashSet<string> Flags => _flags;
 
         /// <summary>
-        /// The current output formatting style for the engine.
+        /// The current formatting settings for the engine.
         /// </summary>
-        public RantFormat FormatStyle { get; set; } = RantFormat.English;
+        public RantFormat Format { get; set; } = RantFormat.English;
 
         /// <summary>
         /// The vocabulary associated with this instance.
         /// </summary>
-        public IRantDictionary Vocabulary
+        public IRantDictionary Dictionary
         {
-            get { return _vocabulary; }
+            get { return _dictionary; }
             set
             {
                 if (value == null) throw new ArgumentNullException("value");
-                _vocabulary = value;
+                _dictionary = value;
             }
         }
 
@@ -87,20 +87,20 @@ namespace Rant
         /// <summary>
         /// Creates a new Engine object with the specified vocabulary.
         /// </summary>
-        /// <param name="vocabulary">The vocabulary to load in this instance.</param>
-        public RantEngine(IRantDictionary vocabulary)
+        /// <param name="dictionary">The vocabulary to load in this instance.</param>
+        public RantEngine(IRantDictionary dictionary)
         {
-            if (vocabulary == null) throw new ArgumentNullException("vocabulary");
-            _vocabulary = vocabulary;
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            _dictionary = dictionary;
         }
 
         private void LoadVocab(string path, NsfwFilter filter)
         {
-            if (_vocabulary != null) return;
+            if (_dictionary != null) return;
 
             if (!String.IsNullOrEmpty(path))
             {
-                _vocabulary = RantDictionary.FromDirectory(path, filter);
+                _dictionary = RantDictionary.FromDirectory(path, filter);
             }
         }
 

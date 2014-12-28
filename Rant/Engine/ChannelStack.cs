@@ -53,15 +53,9 @@ namespace Rant
             }
         }
 
-        public long LastWriteSize
-        {
-            get { return _lastWriteSize; }
-        }
+        public long LastWriteSize => _lastWriteSize;
 
-        public long Size
-        {
-            get { return _size; }
-        }
+        public long Size => _size;
 
         public string GetOutputFor(string channelName)
         {

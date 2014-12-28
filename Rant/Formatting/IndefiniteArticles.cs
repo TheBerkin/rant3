@@ -6,12 +6,12 @@ namespace Rant.Formatting
     /// <summary>
     /// Defines indefinite article (\a) formatting to use when executing Rant patterns.
     /// </summary>
-    public sealed class IndefiniteArticle
+    public sealed class IndefiniteArticles
     {
         /// <summary>
         /// Indefinite articles for English.
         /// </summary>
-        public static readonly IndefiniteArticle English = new IndefiniteArticle("a", "an", IndefiniteArticleRules.English);
+        public static readonly IndefiniteArticles English = new IndefiniteArticles("a", "an", IndefiniteArticleRules.English);
 
         private readonly string _consonantForm;
         private readonly string _vowelForm;
@@ -33,7 +33,7 @@ namespace Rant.Formatting
         /// <param name="consonantForm">The consonant form of the article.</param>
         /// <param name="vowelForm">The vowel form of the article.</param>
         /// <param name="rules"></param>
-        public IndefiniteArticle(string consonantForm, string vowelForm, IndefiniteArticleRules rules)
+        public IndefiniteArticles(string consonantForm, string vowelForm, IndefiniteArticleRules rules)
         {
             _rules = rules;
             _consonantForm = consonantForm ?? "";

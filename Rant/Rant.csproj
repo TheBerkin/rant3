@@ -94,6 +94,8 @@
     <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
     <Compile Include="Engine\Formatter.cs" />
     <Compile Include="Formatting\RantFormat.cs" />
+    <Compile Include="Formatting\RantSystemFormat.cs" />
+    <Compile Include="Formatting\RantUserFormat.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Comparison.cs" />
@@ -109,7 +111,7 @@
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\BlockAttribs.cs" />
-    <Compile Include="Formatting\IndefiniteArticle.cs" />
+    <Compile Include="Formatting\IndefiniteArticles.cs" />
     <Compile Include="Formatting\IndefiniteArticleRules.cs" />
     <Compile Include="Engine\VM.cs" />
     <Compile Include="Engine\VM.Markers.cs" />
