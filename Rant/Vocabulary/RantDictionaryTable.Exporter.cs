@@ -38,13 +38,18 @@ namespace Rant.Vocabulary
         {
             var root = new RantDictionaryTableClassDirective("root");
             // we create the tree of class directives first - then we fill it
-            var classes = entries.Select(x => x.GetClasses().ToArray()).ToList();
-            CreateNestedClassDirectives(root, classes);
+            var classes = entries.Where(x => x.GetClasses().Any()).Select(x => x.GetClasses().ToArray()).ToList();
+            if (classes.Any())
+                CreateNestedClassDirectives(root, classes);
 
             // now that we have a tree of class directives, let's populate it
             foreach (var entry in entries)
             {
-                if (!entry.GetClasses().Any()) return;
+                if (!entry.GetClasses().Any())
+                {
+                    root.Entries.Add(entry);
+                    continue;
+                }
                 root.FindDirectiveForClasses(entry.GetClasses().ToArray())?.Entries.Add(entry);
             }
 
