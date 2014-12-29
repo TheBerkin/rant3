@@ -123,7 +123,7 @@ namespace Rant.Vocabulary
 
             public bool ShouldPrune
             {
-                get { return this.Entries.Count <= 3; }
+                get { return this.Parent != null && this.Entries.Count <= 3 && !this.Children.Any(); }
             }
 
             public RantDictionaryTableClassDirective(string name)
@@ -149,13 +149,14 @@ namespace Rant.Vocabulary
 
             public void Prune()
             {
-                if(this.ShouldPrune)
+                if (this.ShouldPrune)
                 {
+                    if (Parent == null) return;
                     Parent.Entries.AddRange(this.Entries);
                     Parent.Children.Remove(this.Name);
                 }
                 var children = Children.Values.ToList();
-                foreach(var child in children)
+                foreach (var child in children)
                     child.Prune();
             }
 
