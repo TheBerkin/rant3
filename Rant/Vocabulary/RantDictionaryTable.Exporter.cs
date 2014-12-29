@@ -173,17 +173,17 @@ namespace Rant.Vocabulary
                 if (Parent != null)
                     writer.WriteLine(leadingWhitespace + "#class add " + this.Name);
 
-                foreach (string key in this.Children.Keys)
+                foreach (string key in this.Children.Keys.OrderBy(x => x))
                     this.Children[key].Render(writer, level + 1);
 
-                foreach (RantDictionaryEntry entry in Entries)
+                foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x.Terms[0].Value))
                 {
                     writer.WriteLine(leadingWhitespacer + "> {0}", entry.Terms.Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
 
                     if (!String.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
                         writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
-                    string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).ToArray();
+                    string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).OrderBy(x => x).ToArray();
                     if (uniqueClasses.Length > 0)
                         writer.WriteLine(leadingWhitespacer + "  | class {0}", uniqueClasses.Aggregate((c, n) => c + " " + n));
 
