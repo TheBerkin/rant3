@@ -38,20 +38,22 @@ namespace Rant.Vocabulary
         {
             var root = new RantDictionaryTableClassDirective("root");
             // we create the tree of class directives first - then we fill it
-            var classes = entries.Where(x => x.GetClasses().Any()).Select(x => x.GetClasses().ToArray()).ToList();
+            var classes = entries.Where(x => GetClassesForExport(x).Any()).Select(x => GetClassesForExport(x).ToArray()).ToList();
             if (classes.Any())
                 CreateNestedClassDirectives(root, classes);
 
             // now that we have a tree of class directives, let's populate it
             foreach (var entry in entries)
             {
-                if (!entry.GetClasses().Any())
+                if (!GetClassesForExport(entry).Any())
                 {
                     root.Entries.Add(entry);
                     continue;
                 }
-                root.FindDirectiveForClasses(entry.GetClasses().ToArray())?.Entries.Add(entry);
+                root.FindDirectiveForClasses(GetClassesForExport(entry).ToArray())?.Entries.Add(entry);
             }
+
+            root.Prune();
 
             root.Render(writer);
         }
@@ -95,6 +97,12 @@ namespace Rant.Vocabulary
             }
         }
 
+        // Returns the classes of an object, but optional classes are postfixed with ?
+        public static IEnumerable<string> GetClassesForExport(RantDictionaryEntry entry)
+        {
+            return entry.GetRequiredClasses().Concat(entry.GetOptionalClasses().Select(x => x + "?"));
+        }
+
         private class RantDictionaryTableClassDirective
         {
             public string Name;
@@ -113,6 +121,11 @@ namespace Rant.Vocabulary
                 }
             }
 
+            public bool ShouldPrune
+            {
+                get { return this.Entries.Count <= 3; }
+            }
+
             public RantDictionaryTableClassDirective(string name)
             {
                 this.Name = name;
@@ -129,8 +142,21 @@ namespace Rant.Vocabulary
                     if (tree != null)
                         return tree;
                 }
+                if (!Children.Any()) return this;
                 // all children were null, we're the best we've got I guess
-                return this;
+                return null;
+            }
+
+            public void Prune()
+            {
+                if(this.ShouldPrune)
+                {
+                    Parent.Entries.AddRange(this.Entries);
+                    Parent.Children.Remove(this.Name);
+                }
+                var children = Children.Values.ToList();
+                foreach(var child in children)
+                    child.Prune();
             }
 
             public void Render(StreamWriter writer, int level = -1)
@@ -156,7 +182,7 @@ namespace Rant.Vocabulary
                     if (!String.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
                         writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
-                    string[] uniqueClasses = entry.GetClasses().Where(x => !Classes.Contains(x)).ToArray();
+                    string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).ToArray();
                     if (uniqueClasses.Length > 0)
                         writer.WriteLine(leadingWhitespacer + "  | class {0}", uniqueClasses.Aggregate((c, n) => c + " " + n));
 
