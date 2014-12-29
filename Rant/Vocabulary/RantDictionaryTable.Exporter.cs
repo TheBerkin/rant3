@@ -126,9 +126,11 @@ namespace Rant.Vocabulary
                 {
                     if (classes.Length == 1) return Children[c];
                     var tree = Children[c].FindDirectiveForClasses(classes.Where(x => x != c).ToArray());
-                    if (tree != null) return tree;
+                    if (tree != null)
+                        return tree;
                 }
-                return null;
+                // all children were null, we're the best we've got I guess
+                return this;
             }
 
             public void Render(StreamWriter writer, int level = -1)
