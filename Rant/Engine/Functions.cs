@@ -888,7 +888,7 @@ namespace Rant.Engine
                 }
                 allowedRhymes.Add(rhyme);
             }
-            Vocabulary.VocabUtils.Rhymer.AllowedRhymes = allowedRhymes.ToArray();
+            vm.QueryState.Rhymer.AllowedRhymes = allowedRhymes.ToArray();
             return false;
         }
     }

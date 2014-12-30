@@ -33,6 +33,8 @@ namespace Rant.Vocabulary
         /// </summary>
         private readonly Dictionary<string, RantDictionaryEntry> _assocTable = new Dictionary<string, RantDictionaryEntry>();
 
+        private readonly Rhymer _rhymer = new Rhymer();
+
         internal void DeleteUnique(string name) => _uniqueTable.Remove(name);
 
         internal void DeleteRhyme(string name) => _rhymeTable.Remove(name);
@@ -40,6 +42,11 @@ namespace Rant.Vocabulary
         internal void DeleteMatch(string name) => _matchTable.Remove(name);
 
         internal void DeleteAssociation(string name) => _assocTable.Remove(name);
+
+        internal Rhymer Rhymer
+        {
+            get { return _rhymer; }
+        }
 
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
@@ -145,7 +152,7 @@ namespace Rant.Vocabulary
                 result =
                     pool.Except(rhymeState.Item2)
                         .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
-                                .PickWeighted(rng, e => e.Weight * VocabUtils.RhymeIndex(rhymeState.Item1, e.Terms[subtypeIndex]));
+                                .PickWeighted(rng, e => e.Weight * (_rhymer.Rhyme(rhymeState.Item1, e.Terms[subtypeIndex]) ? rhymeState.Item1.SyllableCount : 0));
 
                 if (result != null) rhymeState.Item2.Add(result);
                 break; // Ignore any extra rhyme carriers
