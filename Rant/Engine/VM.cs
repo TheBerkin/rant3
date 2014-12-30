@@ -22,8 +22,8 @@ namespace Rant.Engine
         private readonly long _startingGen;
 
         // Queries
-        private readonly QueryState _carrierSyncState = new QueryState();
-        private readonly Dictionary<string, Query> _localQueryMacros = new Dictionary<string, Query>(); 
+        public readonly QueryState QueryState = new QueryState();
+        public readonly Dictionary<string, Query> LocalQueryMacros = new Dictionary<string, Query>(); 
 
         // Lists
         private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>(); 
@@ -58,10 +58,6 @@ namespace Rant.Engine
         private readonly HashSet<State> _baseStates = new HashSet<State>(); 
 
         private readonly Limit<int> _charLimit;
-
-        public QueryState CarrierSyncState => _carrierSyncState;
-
-        public Dictionary<string, Query> LocalQueryMacros => _localQueryMacros;
 
         public Dictionary<string, List<string>> LocalLists => _localLists;
 

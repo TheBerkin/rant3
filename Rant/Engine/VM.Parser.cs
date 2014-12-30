@@ -91,7 +91,7 @@ namespace Rant.Engine
                         if (mNameSub.Length > 2) throw Error(reader.Source, firstToken, "Invald subtype accessor on macro call.");
                         var oldSub = q.Subtype;
                         if (mNameSub.Length == 2) q.Subtype = mNameSub[1];
-                        interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, q, interpreter.CarrierSyncState));
+                        interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, q, interpreter.QueryState));
                         q.Subtype = oldSub;
                         return false;
                     }
@@ -106,16 +106,16 @@ namespace Rant.Engine
                     switch(token.ID)
                     {
                         case R.At:
-                            interpreter.CarrierSyncState.DeleteAssociation(reader.ReadLoose(R.Text, "associative carrier name").Value);
+                            interpreter.QueryState.DeleteAssociation(reader.ReadLoose(R.Text, "associative carrier name").Value);
                             break;
                         case R.Exclamation:
-                            interpreter.CarrierSyncState.DeleteUnique(reader.ReadLoose(R.Text, "unique carrier name").Value);
+                            interpreter.QueryState.DeleteUnique(reader.ReadLoose(R.Text, "unique carrier name").Value);
                             break;
                         case R.Equal:
-                            interpreter.CarrierSyncState.DeleteMatch(reader.ReadLoose(R.Text, "match carrier name").Value);
+                            interpreter.QueryState.DeleteMatch(reader.ReadLoose(R.Text, "match carrier name").Value);
                             break;
                         case R.Ampersand:
-                            interpreter.CarrierSyncState.DeleteRhyme(reader.ReadLoose(R.Text, "rhyme carrier name").Value);
+                            interpreter.QueryState.DeleteRhyme(reader.ReadLoose(R.Text, "rhyme carrier name").Value);
                             break;
                         default:
                             throw Error(reader.Source, token, "Unrecognized token in carrier reset: '\{token.Value}'");
@@ -256,7 +256,7 @@ namespace Rant.Engine
             }
 
             // Query dictionary and print result
-            interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, query, interpreter.CarrierSyncState));
+            interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, query, interpreter.QueryState));
 
             return false;
         }
