@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rant.Vocabulary
 {
-    class Rhymer
+    internal class Rhymer
     {
         private List<RhymeType> _allowedRhymes;
         private char[] _vowels;
@@ -174,7 +174,7 @@ namespace Rant.Vocabulary
         }
     }
 
-    public enum RhymeType
+    internal enum RhymeType
     {
         Perfect,
         Weak,

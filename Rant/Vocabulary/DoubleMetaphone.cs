@@ -38,7 +38,7 @@ namespace Rant.Vocabulary
     ///		http://www.ddj.com/cpp/184401251?pgno=1
     /// </remarks>
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Metaphone")]
-    public static class DoubleMetaphoneStringExtension
+    internal static class DoubleMetaphoneStringExtension
     {
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Metaphone")]
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
@@ -936,7 +936,7 @@ namespace Rant.Vocabulary
         }
 
 
-        class MetaphoneData
+        internal class MetaphoneData
         {
             readonly StringBuilder _primary = new StringBuilder(5);
             readonly StringBuilder _secondary = new StringBuilder(5);
