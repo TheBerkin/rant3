@@ -7,6 +7,17 @@ namespace Rant.Vocabulary
     internal static class VocabUtils
     {
         private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
+        private static Rhymer rhymer;
+
+        public static Rhymer Rhymer
+        {
+            get
+            {
+                if (rhymer == null)
+                    rhymer = new Rhymer();
+                return rhymer;
+            }
+        }
 
         public static string GetString(string str)
         {
@@ -77,23 +88,7 @@ namespace Rant.Vocabulary
 
         public static int RhymeIndex(RantDictionaryTerm baseValue, RantDictionaryTerm testValue)
         {
-            if (baseValue == null || testValue == null) return 0;
-            var baseParts = baseValue.PronunciationParts;
-            var testParts = testValue.PronunciationParts;
-            int index = 0;
-            int len = Math.Min(baseParts.Length, testParts.Length);
-            for (int i = 0; i < len; i++)
-            {
-                if (baseParts[baseParts.Length - (i + 1)] == testParts[testParts.Length - (i + 1)])
-                {
-                    index++;
-                }
-                else
-                {
-                    return index;
-                }
-            }
-            return index;
+            return Rhymer.Rhyme(baseValue, testValue) ? baseValue.SyllableCount : 0;
         }
     }
 }
