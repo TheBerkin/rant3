@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes.Tokens;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal class Argument
     {
@@ -12,20 +12,17 @@ namespace Rant
         private readonly IEnumerable<Token<R>> _tokens;
         private readonly ParamFlags _flags;
 
-        public ParamFlags Flags
-        {
-            get { return _flags; }
-        }
+        public ParamFlags Flags => _flags;
 
-        public string GetString()
+        public string AsString()
         {
-            if (_str == null) throw new InvalidOperationException("Tried to use a 'tokens' argument as a 'string' argument.");
+            if (_str == null) throw new InvalidOperationException("Tried to use a 'pattern' argument as a 'string' argument.");
             return _str;
         }
 
-        public IEnumerable<Token<R>> GetTokens()
+        public IEnumerable<Token<R>> AsPattern()
         {
-            if(_tokens == null) throw new InvalidOperationException("Tried to use a 'string' argument as a 'tokens' argument.");
+            if(_tokens == null) throw new InvalidOperationException("Tried to use a 'string' argument as a 'pattern' argument.");
             return _tokens;
         }
 
@@ -55,7 +52,7 @@ namespace Rant
 
         public static implicit operator string(Argument arg)
         {
-            return arg.GetString();
+            return arg.AsString();
         }
     }
 }

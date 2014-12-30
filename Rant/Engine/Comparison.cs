@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal class Comparison
     {

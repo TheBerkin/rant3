@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Rant.Engine;
-using Rant.Formatting;
+using Rant.Engine.Formatters;
+using Rant.Formats;
 
 namespace Rant
 {
@@ -18,9 +19,9 @@ namespace Rant
         private readonly List<StringBuilder> _buffers;
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
-        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, Formatter>>();
+        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, OutputFormatter>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, OutputFormatter>>();
 
-        private readonly Formatter _formatter;
+        private readonly OutputFormatter _formatter;
 
         private int _bufferCount;
         private int _length;
@@ -35,7 +36,7 @@ namespace Rant
         /// </summary>
         public RantChannelVisibility Visiblity { get; internal set; }
 
-        internal Formatter Formatter => _formatter;
+        internal OutputFormatter Formatter => _formatter;
 
         internal RantFormat Format
         {
@@ -50,7 +51,7 @@ namespace Rant
             _currentBuffer = new StringBuilder(InitialBufferSize);
             _buffers = new List<StringBuilder>{_currentBuffer};
             _format = format;
-            _formatter = new Formatter();
+            _formatter = new OutputFormatter();
         }
 
         internal void Write(string value)
@@ -65,7 +66,7 @@ namespace Rant
         {
             char lc = _formatter.LastChar;
             
-            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle)), _formatter.Clone());
+            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _formatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -76,19 +77,19 @@ namespace Rant
 
         private void UpdateArticle(StringBuilder target)
         {
-            Tuple<StringBuilder, Formatter> aBuilder;
+            Tuple<StringBuilder, OutputFormatter> aBuilder;
             if (!_articleConverters.TryGetValue(target, out aBuilder)) return;
             int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
-                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.ConsonantForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
+                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
 
             // Check for vowel
             if (!_format.IndefiniteArticles.PrecedesVowel(target)) return;
-            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.VowelForm, _format, FormatterOptions.NoUpdate | FormatterOptions.IsArticle));
+            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.VowelForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
             _length += -l1 + aBuilder.Item1.Length;
         }
 

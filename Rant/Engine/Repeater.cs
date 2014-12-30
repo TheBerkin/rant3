@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 
-using Rant.Blueprints;
+using Rant.Engine.Blueprints;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal class Repeater
     {

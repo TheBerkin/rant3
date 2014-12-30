@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rant.Stringes.Tokens;
 
-namespace Rant.Arithmetic
+using Rant.Engine.Stringes.Tokens;
+
+namespace Rant.Engine.Arithmetic.Expressions
 {
     internal class BinaryOperatorExpression : Expression
     {

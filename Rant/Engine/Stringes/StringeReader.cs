@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Rant.Stringes.Tokens;
 
-namespace Rant.Stringes
+using Rant.Engine.Stringes.Tokens;
+
+namespace Rant.Engine.Stringes
 {
     /// <summary>
     /// Represents a reader that can read data from a stringe.

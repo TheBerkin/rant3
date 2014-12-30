@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rant.Formatting;
 
-namespace Rant
+using Rant.Engine.Formatters;
+using Rant.Formats;
+
+namespace Rant.Engine
 {
     internal class ChannelStack
     {

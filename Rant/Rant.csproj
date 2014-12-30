@@ -92,16 +92,20 @@
     <Compile Include="Engine\Blueprints\ReplacerBlueprint.cs" />
     <Compile Include="Engine\Blueprints\SubCallBlueprint.cs" />
     <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
-    <Compile Include="Engine\Formatter.cs" />
-    <Compile Include="Formatting\RantFormat.cs" />
-    <Compile Include="Formatting\RantSystemFormat.cs" />
-    <Compile Include="Formatting\RantUserFormat.cs" />
+    <Compile Include="Engine\Formatters\Endianness.cs" />
+    <Compile Include="Engine\Formatters\HexFormat.cs" />
+    <Compile Include="Engine\Formatters\OutputFormatter.cs" />
+    <Compile Include="Engine\Formatters\NumberFormatter.cs" />
+    <Compile Include="Formats\RantFormat.cs" />
+    <Compile Include="Formats\RantSystemFormat.cs" />
+    <Compile Include="Formats\RantUserFormat.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\DoubleMetaphone.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
     <Compile Include="Vocabulary\RangePredicate.cs" />
@@ -111,8 +115,8 @@
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\BlockAttribs.cs" />
-    <Compile Include="Formatting\IndefiniteArticles.cs" />
-    <Compile Include="Formatting\IndefiniteArticleRules.cs" />
+    <Compile Include="Formats\IndefiniteArticles.cs" />
+    <Compile Include="Formats\IndefiniteArticleRules.cs" />
     <Compile Include="Engine\VM.cs" />
     <Compile Include="Engine\VM.Markers.cs" />
     <Compile Include="Engine\VM.Synchronizers.cs" />
@@ -123,13 +127,13 @@
     <Compile Include="Engine\ParamType.cs" />
     <Compile Include="RantException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
-    <Compile Include="Engine\Case.cs" />
+    <Compile Include="Engine\Formatters\Case.cs" />
     <Compile Include="RantChannel.cs" />
     <Compile Include="Engine\ChannelStack.cs" />
     <Compile Include="RantChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
-    <Compile Include="Engine\NumberFormat.cs" />
-    <Compile Include="Engine\Numerals.cs" />
+    <Compile Include="Engine\Formatters\NumberFormat.cs" />
+    <Compile Include="Engine\Formatters\Numerals.cs" />
     <Compile Include="Vocabulary\Query.cs" />
     <Compile Include="Engine\Repeater.cs" />
     <Compile Include="RNG.cs" />
@@ -158,6 +162,7 @@
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
+    <Compile Include="Vocabulary\Rhymer.cs" />
     <Compile Include="Vocabulary\VocabUtils.cs" />
   </ItemGroup>
   <ItemGroup>

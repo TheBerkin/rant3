@@ -2,10 +2,10 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes.Tokens;
 
-namespace Rant.Blueprints
+namespace Rant.Engine.Blueprints
 {
     /// <summary>
     /// To be used on the replacer tag state as a pre-blueprint.

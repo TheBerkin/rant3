@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes.Tokens;
 
-namespace Rant.Blueprints
+namespace Rant.Engine.Blueprints
 {
     internal class AltBlueprint : Blueprint
     {

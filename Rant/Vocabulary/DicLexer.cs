@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Rant.Stringes;
-using Rant.Stringes.Tokens;
+
+using Rant.Engine.Stringes;
+using Rant.Engine.Stringes.Tokens;
 
 namespace Rant.Vocabulary
 {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Rant.Formatting;
 
-namespace Rant.Engine
+using Rant.Formats;
+
+namespace Rant.Engine.Formatters
 {
-    internal class Formatter
+    internal class OutputFormatter
     {
         private const RegexOptions FmtRegexOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
 
@@ -19,16 +20,16 @@ namespace Rant.Engine
         private char _lastChar;
         private bool _sentence;
 
-        public Formatter()
+        public OutputFormatter()
         {
             Case = Case.None;
             _lastChar = '\0';
             _sentence = true;
         }
 
-        public Formatter Clone() => new Formatter() { Case = this.Case, _lastChar = this._lastChar, _sentence = this._sentence };
+        public OutputFormatter Clone() => new OutputFormatter() { Case = this.Case, _lastChar = this._lastChar, _sentence = this._sentence };
 
-        public string Format(string input, RantFormat formatStyle, FormatterOptions options = FormatterOptions.None)
+        public string Format(string input, RantFormat formatStyle, OutputFormatterOptions options = OutputFormatterOptions.None)
         {
             if (String.IsNullOrEmpty(input)) return input;
             switch (Case)
@@ -44,19 +45,19 @@ namespace Rant.Engine
                     Case = Case.None;
                     break;
                 case Case.Title:
-                    if ((options.HasFlag(FormatterOptions.IsArticle) || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
+                    if ((options.HasFlag(OutputFormatterOptions.IsArticle) || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
 
                     input = RegCapsTitleWord.Replace(input, m => (
-                    _lastChar == '\0'
-                    || Char.IsSeparator(_lastChar)
-                    || Char.IsWhiteSpace(_lastChar))
-                    || Char.IsPunctuation(_lastChar)
-                    ? m.Value.ToUpper() : m.Value);
+                        _lastChar == '\0'
+                        || Char.IsSeparator(_lastChar)
+                        || Char.IsWhiteSpace(_lastChar))
+                                                                 || Char.IsPunctuation(_lastChar)
+                        ? m.Value.ToUpper() : m.Value);
                     break;
                 case Case.Sentence:
                     if (_sentence) input = Regex.Replace(input, @"^.*?\w", m => {
-                        if (!options.HasFlag(FormatterOptions.NoUpdate)) _sentence = false;
-                        return m.Value.ToUpper();
+                                                                                    if (!options.HasFlag(OutputFormatterOptions.NoUpdate)) _sentence = false;
+                                                                                    return m.Value.ToUpper();
                     });
                     input = RegCapsSentenceA.Replace(input, m => m.Value.ToUpper());                    
                     break;
@@ -64,14 +65,14 @@ namespace Rant.Engine
                     input = RegCapsTitleWord.Replace(input, m => m.Value.ToUpper());
                     break;
             }
-            if (RegCapsSentenceB.IsMatch(input) && !options.HasFlag(FormatterOptions.NoUpdate)) _sentence = true;
-            if (!options.HasFlag(FormatterOptions.NoUpdate)) _lastChar = input[input.Length - 1];
+            if (RegCapsSentenceB.IsMatch(input) && !options.HasFlag(OutputFormatterOptions.NoUpdate)) _sentence = true;
+            if (!options.HasFlag(OutputFormatterOptions.NoUpdate)) _lastChar = input[input.Length - 1];
             return input;
         }
     }
 
     [Flags]
-    internal enum FormatterOptions
+    internal enum OutputFormatterOptions
     {
         None =          0x00,
         NoUpdate =      0x01,

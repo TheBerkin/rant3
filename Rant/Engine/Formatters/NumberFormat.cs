@@ -1,4 +1,4 @@
-﻿namespace Rant
+﻿namespace Rant.Engine.Formatters
 {
     internal enum NumberFormat
     {
@@ -9,6 +9,10 @@
         Roman,
         RomanUpper,
         RomanLower,
-        VerbalEn
+        VerbalEn,
+        Hex,
+        HexUpper,
+        HexLower,
+        Binary
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Rant
+﻿namespace Rant.Engine
 {
     internal enum SyncType
     {

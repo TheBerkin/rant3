@@ -1,4 +1,4 @@
-﻿namespace Rant.Formatting
+﻿namespace Rant.Formats
 {
     /// <summary>
     /// Represents a user-specified Rant format.

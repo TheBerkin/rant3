@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
-namespace Rant.Arithmetic
+using Rant.Engine.Stringes;
+using Rant.Engine.Stringes.Tokens;
+
+namespace Rant.Engine.Arithmetic
 {
     internal sealed partial class MathLexer : IEnumerable<Token<RMathToken>>
     {

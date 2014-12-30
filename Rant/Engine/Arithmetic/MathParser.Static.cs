@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Rant.Arithmetic.Parselets;
 
-namespace Rant.Arithmetic
+using Rant.Engine.Arithmetic.Parselets;
+
+namespace Rant.Engine.Arithmetic
 {
     internal partial class MathParser
     {

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Rant.Stringes;
+
+using Rant.Engine;
+using Rant.Engine.Stringes;
 
 namespace Rant.Vocabulary
 {

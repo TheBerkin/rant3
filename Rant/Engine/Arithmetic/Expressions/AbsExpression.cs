@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Arithmetic.Expressions
+namespace Rant.Engine.Arithmetic.Expressions
 {
     internal class AbsExpression : Expression
     {

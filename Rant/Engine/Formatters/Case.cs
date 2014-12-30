@@ -1,4 +1,4 @@
-﻿namespace Rant
+﻿namespace Rant.Engine.Formatters
 {
     internal enum Case
     {

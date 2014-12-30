@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
-using Rant.Arithmetic.Parselets;
-using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
-namespace Rant.Arithmetic
+using Rant.Engine.Arithmetic.Expressions;
+using Rant.Engine.Arithmetic.Parselets;
+using Rant.Engine.Stringes;
+using Rant.Engine.Stringes.Tokens;
+
+namespace Rant.Engine.Arithmetic
 {
     internal partial class MathParser
     {

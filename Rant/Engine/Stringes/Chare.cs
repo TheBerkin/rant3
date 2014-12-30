@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Rant.Stringes
+namespace Rant.Engine.Stringes
 {
     /// <summary>
     /// Provides information about a character in a stringe.

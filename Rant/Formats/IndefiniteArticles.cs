@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Rant.Formatting
+namespace Rant.Formats
 {
     /// <summary>
     /// Defines indefinite article (\a) formatting to use when executing Rant patterns.

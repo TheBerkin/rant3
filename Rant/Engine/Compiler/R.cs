@@ -1,4 +1,4 @@
-﻿namespace Rant.Compiler
+﻿namespace Rant.Engine.Compiler
 {
     /// <summary>
     /// Contains all the token identifiers for the Rant lexer.

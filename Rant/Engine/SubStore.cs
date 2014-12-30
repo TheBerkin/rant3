@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal class SubStore
     {

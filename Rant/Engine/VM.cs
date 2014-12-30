@@ -4,12 +4,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Engine.Compiler;
+using Rant.Engine.Formatters;
+using Rant.Engine.Stringes.Tokens;
+using Rant.Formats;
 using Rant.Vocabulary;
-using Rant.Formatting;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal partial class VM
     {
@@ -34,7 +35,7 @@ namespace Rant
         private int _chance = 100;
 
         // Formatting
-        private NumberFormat _numfmt = NumberFormat.Normal;
+        private NumberFormatter _numFormatter = new NumberFormatter();
         private int _quoteLevel = 0;
         
         // State information
@@ -74,11 +75,7 @@ namespace Rant
 
         public Stack<Comparison> Comparisons => _comparisons;
 
-        public NumberFormat NumberFormat
-        {
-            get { return _numfmt; }
-            set { _numfmt = value; }
-        }
+        public NumberFormatter NumberFormatter => _numFormatter;
 
         public void OpenQuote()
         {
@@ -99,7 +96,7 @@ namespace Rant
         public RantFormat Format => Engine.Format;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string FormatNumber(double value) => Numerals.FormatNumber(value, _numfmt);
+        public string FormatNumber(double value) => _numFormatter.FormatNumber(value);
 
         #region Flag conditionals
         public void SetElse() => _else = true;

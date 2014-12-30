@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Engine;
+
 namespace Rant.Vocabulary
 {
     /// <summary>

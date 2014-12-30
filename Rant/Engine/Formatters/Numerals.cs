@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Rant
+namespace Rant.Engine.Formatters
 {
     internal static class Numerals
     {
@@ -16,12 +16,12 @@ namespace Rant
             new [] {"", "M", "MM", "MMM"}
         };
 
-        private const int MaxRomanValue = 3999;
+        public const int MaxRomanValue = 3999;
 
         private static readonly List<Tuple<long, string>> Powers;
         private static readonly List<Tuple<long, string>> Hundreds; 
         private static readonly List<Tuple<int, string>> TenUnits;
-        private static readonly List<Tuple<int, string>> Tens; 
+        private static readonly List<Tuple<int, string>> Tens;
 
         static Numerals()
         {
@@ -85,7 +85,19 @@ namespace Rant
             }.OrderByDescending(tuple => tuple.Item1).ToList();
         }
 
-        public static string ToVerbal(this long number)
+        public static string ToRoman(double number, bool lowerCase = false)
+        {
+            if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
+            var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
+            var sb = new StringBuilder();
+            for (int i = intArr.Length; i-- > 0;)
+            {
+                sb.Append(RomanNumerals[i][intArr[i]]);
+            }
+            return lowerCase ? sb.ToString().ToLower() : sb.ToString();
+        }
+
+        public static string ToVerbal(long number)
         {
             if (number == 0) return "zero";
 
@@ -163,63 +175,6 @@ namespace Rant
                 }
             }
             return numBuilder.ToString();
-        }
-
-        private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo()
-        {
-            NumberGroupSizes = new []{3},
-            NumberGroupSeparator = ",",
-            NumberDecimalSeparator = "."
-        };
-
-        private static readonly NumberFormatInfo DotGroupFormat = new NumberFormatInfo()
-        {
-            NumberGroupSizes = new[] { 3 },
-            NumberGroupSeparator = ".",
-            NumberDecimalSeparator = ","
-        };
-
-        public static string FormatNumber(double number, NumberFormat format)
-        {
-            switch (format)
-            {
-                case NumberFormat.Normal:
-                    return number.ToString(CultureInfo.InvariantCulture);
-                case NumberFormat.Group:
-                    return String.Format("{0:n0}", number);
-                case NumberFormat.GroupCommas:
-                    return number.ToString("n0", CommaGroupFormat);
-                case NumberFormat.GroupDots:
-                    return number.ToString("n0", DotGroupFormat);
-                case NumberFormat.Roman:
-                case NumberFormat.RomanUpper:
-                    {
-                        if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
-                        var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
-                        var sb = new StringBuilder();
-                        for (int i = intArr.Length; i-- > 0; )
-                        {
-                            sb.Append(RomanNumerals[i][intArr[i]]);
-                        }
-                        return sb.ToString();
-                    }
-                case NumberFormat.RomanLower:
-                    {
-                        if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
-                        var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
-                        var sb = new StringBuilder();
-                        for (int i = intArr.Length; i-- > 0; )
-                        {
-                            sb.Append(RomanNumerals[i][intArr[i]]);
-                        }
-                        return sb.ToString().ToLower();
-                    }
-                case NumberFormat.VerbalEn:
-                {
-                    return  number % 1 > 0 ? "?" : ToVerbal((long)number);
-                }
-            }
-            return number.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

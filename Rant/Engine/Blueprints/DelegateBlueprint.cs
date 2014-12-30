@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Blueprints
+namespace Rant.Engine.Blueprints
 {
     internal class DelegateBlueprint : Blueprint
     {

@@ -4,15 +4,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-using Rant.Arithmetic;
-using Rant.Blueprints;
-using Rant.Compiler;
+using Rant.Engine.Arithmetic;
+using Rant.Engine.Blueprints;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes.Tokens;
+using Rant.Engine.Util;
 using Rant.Vocabulary;
-using Rant.Stringes.Tokens;
 
-using Rant.Util;
-
-namespace Rant
+namespace Rant.Engine
 {
     internal delegate bool TokenFunc(VM interpreter, Token<R> firstToken, PatternReader reader, VM.State state);
 

@@ -1,4 +1,4 @@
-﻿namespace Rant.Arithmetic
+﻿namespace Rant.Engine.Arithmetic
 {
     internal enum RMathToken
     {

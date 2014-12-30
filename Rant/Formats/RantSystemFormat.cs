@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Formatting
+namespace Rant.Formats
 {
     /// <summary>
     /// Represents a system-specified Rant format that cannot be modified.

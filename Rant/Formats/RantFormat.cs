@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Rant.Formatting
+namespace Rant.Formats
 {
     /// <summary>
     /// Describes language-specific formatting instructions for localizing interpreter output.

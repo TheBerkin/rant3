@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rant.Compiler
+namespace Rant.Engine.Compiler
 {
     internal class Delimiters : IEnumerable<Tuple<R, R>>
     {

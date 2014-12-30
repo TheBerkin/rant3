@@ -1,6 +1,6 @@
-﻿using Rant.Stringes.Tokens;
+﻿using Rant.Engine.Stringes.Tokens;
 
-namespace Rant.Arithmetic
+namespace Rant.Engine.Arithmetic.Expressions
 {
     internal class NameExpression : Expression
     {

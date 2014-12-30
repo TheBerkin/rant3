@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Rant.Compiler;
-using Rant.Stringes;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal static class Util
     {

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-using Rant.Blueprints;
-using Rant.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Engine.Blueprints;
+using Rant.Engine.Compiler;
+using Rant.Engine.Stringes.Tokens;
 
-namespace Rant
+namespace Rant.Engine
 {
     internal partial class VM
     {

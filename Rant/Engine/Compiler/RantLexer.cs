@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
-namespace Rant.Compiler
+using Rant.Engine.Stringes;
+using Rant.Engine.Stringes.Tokens;
+
+namespace Rant.Engine.Compiler
 {
     internal static class RantLexer
     {
