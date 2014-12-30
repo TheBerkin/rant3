@@ -52,7 +52,7 @@ namespace Rant.Formatting
         /// <summary>
         /// The vowel characters that the rules should test for.
         /// </summary>
-        public char[] Vowels { get; set; } = new[] { 'a', 'e', 'i', 'o', 'u' };
+        public char[] Vowels { get; set; } = new[] { 'a', 'e', 'i', 'o', 'u', 'é' };
 
         /// <summary>
         /// The word prefixes that are to be excluded from vowel tests.
