@@ -124,6 +124,7 @@ namespace Rant
             
             // Misc
             F["src"] = new RantFunc(Src);
+            F["rhymemode"] = new RantFunc(RhymeMode, ParamFlags.None);
         }
 
         private static bool Quote(VM vm, RantPattern source, Stringe tagname, Argument[] args)
@@ -812,7 +813,22 @@ namespace Rant
             return false;
         }
 
-        
+        private static bool RhymeMode(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        {
+            Vocabulary.RhymeType rhyme;
+            List<Vocabulary.RhymeType> allowedRhymes = new List<Vocabulary.RhymeType>();
+            string[] rhymeModes = args[0].GetString().ToLower().Split(' ');
+            foreach (string rhymeMode in rhymeModes)
+            {
+                if (!Enum.TryParse(NameToCamel(rhymeMode), out rhyme))
+                {
+                    throw Error(source, tagname, "Invalid rhyme mode '\{rhymeMode}'");
+                }
+                allowedRhymes.Add(rhyme);
+            }
+            Vocabulary.VocabUtils.Rhymer.AllowedRhymes = allowedRhymes.ToArray();
+            return false;
+        }
     }
 
     /// <summary>
