@@ -82,9 +82,9 @@ namespace Rant.Engine
             F["numfmt"] = new RantFuncSigs(
                 new RantFunc(NumFmt, ParamFlags.None),
                 new RantFunc(NumFmtScope, ParamFlags.None, ParamFlags.Code));
-            F["binfmt"] = new RantFuncSigs(
-                new RantFunc(BinFmt, ParamFlags.None),
-                new RantFunc(BinFmtScope, ParamFlags.None, ParamFlags.Code));
+            F["digits"] = new RantFuncSigs(
+                new RantFunc(Digits, ParamFlags.None),
+                new RantFunc(DigitsScope, ParamFlags.None, ParamFlags.Code));
             F["endian"] = new RantFunc(Endian, ParamFlags.None);
             F["caps"] = F["case"] = new RantFuncSigs(
                 new RantFunc(Case, ParamFlags.None),
@@ -516,7 +516,7 @@ namespace Rant.Engine
             return true;
         }
 
-        private static bool BinFmt(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool Digits(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             BinaryFormat fmtType;
             var fmtParts = args[0].AsString().Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
@@ -525,7 +525,7 @@ namespace Rant.Engine
             bool hasDigitCount = fmtParts.Length == 2;
             if (!Enum.TryParse(NameToCamel(fmtParts[0]), out fmtType))
             {
-                throw Error(source, tagname, "Invalid binary format '\{fmtParts[0]}'");
+                throw Error(source, tagname, "Invalid digit format '\{fmtParts[0]}'");
             }
             vm.NumberFormatter.BinaryFormat = fmtType;
             if (hasDigitCount)
@@ -538,13 +538,13 @@ namespace Rant.Engine
             return false;
         }
 
-        private static bool BinFmtScope(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool DigitsScope(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             BinaryFormat fmt;
             var fmtstr = args[0].AsString();
             if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
             {
-                throw Error(source, tagname, "Invalid binary format '\{fmtstr}'");
+                throw Error(source, tagname, "Invalid digit format '\{fmtstr}'");
             }
             var oldfmt = vm.NumberFormatter.BinaryFormat;
             vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
