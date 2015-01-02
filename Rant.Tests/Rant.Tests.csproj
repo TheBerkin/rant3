@@ -46,6 +46,7 @@
     <Compile Include="Arithmetic.cs" />
     <Compile Include="BasicInput.cs" />
     <Compile Include="Capitalization.cs" />
+    <Compile Include="Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repeaters.cs" />
     <Compile Include="Targets.cs" />
