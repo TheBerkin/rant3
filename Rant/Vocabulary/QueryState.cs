@@ -43,10 +43,7 @@ namespace Rant.Vocabulary
 
         internal void DeleteAssociation(string name) => _assocTable.Remove(name);
 
-        internal Rhymer Rhymer
-        {
-            get { return _rhymer; }
-        }
+        internal Rhymer Rhymer => _rhymer;
 
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
