@@ -15,8 +15,8 @@ namespace Rant.Engine.Stringes.Tokens
         private const int DefaultPriority = 1;
 
         private readonly HashSet<char> _punctuation;
-        private List<Tuple<string, T>> _listNormal;
-        private List<Tuple<string, T>> _listHigh;
+        private List<Tuple<string, T, StringComparison>> _listNormal;
+        private List<Tuple<string, T, StringComparison>> _listHigh;
         private Tuple<string, T> _endToken;
         private Tuple<Func<Stringe, Stringe>, T> _undefToken;
         private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
@@ -31,8 +31,8 @@ namespace Rant.Engine.Stringes.Tokens
             _endToken = null;
             _undefToken = null;
             _punctuation = new HashSet<char>();
-            _listNormal = new List<Tuple<string, T>>(8);
-            _listHigh = new List<Tuple<string, T>>(8);
+            _listNormal = new List<Tuple<string, T, StringComparison>>(8);
+            _listHigh = new List<Tuple<string, T, StringComparison>>(8);
             _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>, int>>(8);
             _ignore = new HashSet<T>();
             _sorted = false;
@@ -41,10 +41,7 @@ namespace Rant.Engine.Stringes.Tokens
         /// <summary>
         /// A list of token identifiers that should be ignored.
         /// </summary>
-        public HashSet<T> IgnoreRules
-        {
-            get { return _ignore; }
-        }
+        public HashSet<T> IgnoreRules => _ignore;
 
         /// <summary>
         /// Returns the symbol that represents the specified identifier. If the identifier cannot be found, the method will return an empty string.
@@ -86,15 +83,9 @@ namespace Rant.Engine.Stringes.Tokens
             _undefToken = Tuple.Create(evalFunc, tokenId);
         }
 
-        internal Tuple<Func<Stringe, Stringe>, T> UndefinedCaptureRule
-        {
-            get { return _undefToken; }
-        }
+        internal Tuple<Func<Stringe, Stringe>, T> UndefinedCaptureRule => _undefToken;
 
-        internal Tuple<string, T> EndToken
-        {
-            get { return _endToken; }
-        }
+        internal Tuple<string, T> EndToken => _endToken;
 
         /// <summary>
         /// Adds a constant rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
@@ -107,7 +98,7 @@ namespace Rant.Engine.Stringes.Tokens
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
             if (!Available(symbol)) throw new InvalidOperationException("A rule with the symbol '" + symbol + "' already exists.");
-            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value));
+            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value, StringComparison.InvariantCulture));
             _punctuation.Add(symbol[0]);
         }
 
@@ -126,7 +117,44 @@ namespace Rant.Engine.Stringes.Tokens
             {
                 if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
                 if (!Available(s)) throw new InvalidOperationException("A rule with the symbol '" + s + "' already exists.");
-                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value));
+                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value, StringComparison.InvariantCulture));
+                _punctuation.Add(s[0]);
+            }
+        }
+
+        /// <summary>
+        /// Adds a constant rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
+        /// </summary>
+        /// <param name="symbol">The symbol to test for.</param>
+        /// <param name="value">The token identifier to associate with the symbol.</param>
+        /// <param name="ignoreCase">Specifies whether the rule should ignore capitalization.</param>
+        /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
+        public void Add(string symbol, T value, bool ignoreCase, SymbolPriority priority = SymbolPriority.Last)
+        {
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
+            if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
+            if (!Available(symbol)) throw new InvalidOperationException("A rule with the symbol '" + symbol + "' already exists.");
+            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
+            _punctuation.Add(symbol[0]);
+        }
+
+        /// <summary>
+        /// Adds a constant rule to the context that affects all symbols in the specified array. This will throw an InvalidOperationException if called after the context is used to create tokens.
+        /// </summary>
+        /// <param name="symbols">The symbols to test for.</param>
+        /// <param name="value">The token identifier to associate with the symbols.</param>
+        /// <param name="ignoreCase">Specifies whether the rule should ignore capitalization.</param>
+        /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
+        public void Add(string[] symbols, T value, bool ignoreCase, SymbolPriority priority = SymbolPriority.Last)
+        {
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
+            if (symbols == null) throw new ArgumentNullException("symbols");
+            if (symbols.Length == 0) throw new ArgumentException("Tried to use an empty symbol array.");
+            foreach (var s in symbols)
+            {
+                if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
+                if (!Available(s)) throw new InvalidOperationException("A rule with the symbol '" + s + "' already exists.");
+                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
                 _punctuation.Add(s[0]);
             }
         }
@@ -166,10 +194,7 @@ namespace Rant.Engine.Stringes.Tokens
             return _punctuation.Contains(c);
         }
 
-        internal List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> RegexList
-        {
-            get { return _regexes; }
-        }
+        internal List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> RegexList => _regexes;
 
         private void Sort()
         {
@@ -180,7 +205,7 @@ namespace Rant.Engine.Stringes.Tokens
             _sorted = true;
         }
 
-        internal List<Tuple<string, T>> NormalSymbols
+        internal List<Tuple<string, T, StringComparison>> NormalSymbols
         {
             get
             {
@@ -189,7 +214,7 @@ namespace Rant.Engine.Stringes.Tokens
             }
         }
 
-        internal List<Tuple<string, T>> HighSymbols
+        internal List<Tuple<string, T, StringComparison>> HighSymbols
         {
             get
             {

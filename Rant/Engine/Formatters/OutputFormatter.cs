@@ -36,16 +36,20 @@ namespace Rant.Engine.Formatters
             // Check for special symbols
             switch (input.ToLowerInvariant())
             {
-                case Symbols.EnDash:
-                    return "\u2013";
-                case Symbols.EmDash:
-                    return "\u2014";
-                case Symbols.Copyright:
-                    return "\u00a9";
-                case Symbols.RegisteredTM:
-                    return "\u00ae";
-                case Symbols.Trademark:
-                    return "\u2122";
+                case SymbolCodes.EnDash:
+                    return Symbols.EnDash;
+                case SymbolCodes.EmDash:
+                    return Symbols.EmDash;
+                case SymbolCodes.Copyright:
+                    return Symbols.Copyright;
+                case SymbolCodes.RegisteredTM:
+                    return Symbols.RegisteredTM;
+                case SymbolCodes.Trademark:
+                    return Symbols.Trademark;
+                case SymbolCodes.Bullet:
+                    return Symbols.Bullet;
+                case SymbolCodes.Eszett:
+                    return Symbols.Eszett;
             }
 
             switch (Case)

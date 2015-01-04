@@ -144,10 +144,10 @@ namespace Rant.Engine.Stringes
         /// </summary>
         /// <param name="value">The string to test for.</param>
         /// <returns></returns>
-        public bool IsNext(string value)
+        public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
         {
             if (String.IsNullOrEmpty(value)) return false;
-            return _stringe.IndexOf(value, _pos) == _pos;
+            return _stringe.IndexOf(value, _pos, strcmp) == _pos;
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace Rant.Engine.Stringes
                 }
 
                 // Check high priority symbol rules
-                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1)))
+                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                 {
                     // Return undefined token if present
                     if (captureUndef && u < _pos)
@@ -288,7 +288,7 @@ namespace Rant.Engine.Stringes
                 }
 
                 // Check normal priority symbol rules
-                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1)))
+                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                 {
                     // Return undefined token if present
                     if (captureUndef && u < _pos)

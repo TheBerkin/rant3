@@ -19,7 +19,6 @@ namespace Rant.Engine
             public readonly PatternReader Reader;            
             public readonly bool SharesOutput;
 
-            private readonly VM _interpreter;
             private bool _finished = false;
 
             private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
@@ -32,21 +31,19 @@ namespace Rant.Engine
                 return true;
             }
 
-            private State(VM ii, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
+            private State(VM vm, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 ChannelStack output)
             {
-                _interpreter = ii;
                 Output = output;
                 Reader = new PatternReader(new RantPattern(derivedSource, tokens));
-                SharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
+                SharesOutput = (output == vm._output && vm.PrevState != null) || (vm._stateStack.Any() && output == vm._stateStack.Peek().Output);
             }
 
-            public State(VM ii, RantPattern source, ChannelStack output)
+            public State(VM vm, RantPattern source, ChannelStack output)
             {
-                _interpreter = ii;
                 Output = output;
                 Reader = new PatternReader(source);
-                SharesOutput = (output == _interpreter._output && _interpreter.PrevState != null) || (_interpreter._stateStack.Any() && output == _interpreter._stateStack.Peek().Output);
+                SharesOutput = (output == vm._output && vm.PrevState != null) || (vm._stateStack.Any() && output == vm._stateStack.Peek().Output);
             }
 
             /// <summary>
