@@ -32,6 +32,22 @@ namespace Rant.Engine.Formatters
         public string Format(string input, RantFormat formatStyle, OutputFormatterOptions options = OutputFormatterOptions.None)
         {
             if (String.IsNullOrEmpty(input)) return input;
+
+            // Check for special symbols
+            switch (input.ToLowerInvariant())
+            {
+                case Symbols.EnDash:
+                    return "\u2013";
+                case Symbols.EmDash:
+                    return "\u2014";
+                case Symbols.Copyright:
+                    return "\u00a9";
+                case Symbols.RegisteredTM:
+                    return "\u00ae";
+                case Symbols.Trademark:
+                    return "\u2122";
+            }
+
             switch (Case)
             {
                 case Case.Lower:

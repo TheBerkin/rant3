@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Rant.Engine.Formatters;
 using Rant.Engine.Stringes;
 using Rant.Engine.Stringes.Tokens;
 
@@ -46,6 +47,11 @@ namespace Rant.Engine.Compiler
                 {"::", R.DoubleColon},
                 {"?!", R.Without},
                 {"-", R.Hyphen},
+                {Symbols.EnDash, R.Text},
+                {Symbols.EmDash, R.Text},
+                {new [] { "(c)", "(C)" }, R.Text},
+                {new [] { "(r)", "(R)" }, R.Text},
+                {new [] { "(tm)", "(TM)" }, R.Text},
                 {"!", R.Exclamation},
                 {"$", R.Dollar},
                 {"=", R.Equal},
