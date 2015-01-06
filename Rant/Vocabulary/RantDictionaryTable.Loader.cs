@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 using Rant.Engine;
-using Rant.Engine.Stringes;
+using Rant.Stringes;
 
 namespace Rant.Vocabulary
 {

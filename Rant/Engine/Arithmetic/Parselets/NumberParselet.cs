@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Rant.Engine.Arithmetic.Expressions;
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Engine.Arithmetic.Parselets
 {

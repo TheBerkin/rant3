@@ -3,8 +3,8 @@ using System.Linq;
 
 using Rant.Engine.Arithmetic.Expressions;
 using Rant.Engine.Arithmetic.Parselets;
-using Rant.Engine.Stringes;
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes.Tokens;
+using Rant.Stringes;
 
 namespace Rant.Engine.Arithmetic
 {

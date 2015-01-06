@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Rant.Engine.Stringes
+namespace Rant.Stringes
 {
     /// <summary>
     /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.

@@ -3,9 +3,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes;
+using Rant.Stringes.Tokens;
 
-namespace Rant.Engine.Stringes
+namespace Rant.Stringes
 {
     /// <summary>
     /// Represents a reader that can read data from a stringe.

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine.Compiler;
 using Rant.Engine.Formatters;
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes.Tokens;
 using Rant.Formats;
 using Rant.Vocabulary;
 

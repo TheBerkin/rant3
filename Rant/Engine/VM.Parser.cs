@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using Rant.Engine.Arithmetic;
 using Rant.Engine.Blueprints;
 using Rant.Engine.Compiler;
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes.Tokens;
 using Rant.Engine.Util;
 using Rant.Vocabulary;
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Rant.Engine.Stringes
+using Rant.Stringes;
+
+namespace Rant.Stringes
 {
     internal static class Extensions
     {

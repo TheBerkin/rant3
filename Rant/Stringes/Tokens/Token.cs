@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Engine.Stringes.Tokens
+namespace Rant.Stringes.Tokens
 {
     /// <summary>
     /// Represents a token that contains a custom identifier.

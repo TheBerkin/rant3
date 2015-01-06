@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.Compiler;
-using Rant.Engine.Stringes;
+using Rant.Stringes;
 
 namespace Rant.Engine
 {

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 using Rant.Engine.Blueprints;
 using Rant.Engine.Compiler;
-using Rant.Engine.Stringes.Tokens;
+using Rant.Stringes.Tokens;
 
 namespace Rant.Engine
 {

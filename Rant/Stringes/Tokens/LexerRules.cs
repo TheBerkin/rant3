@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Rant.Engine.Stringes.Tokens
+namespace Rant.Stringes.Tokens
 {
     /// <summary>
     /// Represents a set of rules for creating tokens from a stringe.
