@@ -612,8 +612,6 @@ namespace Rant.Engine
                         break;
                 }
 
-                reader.Read(R.RightSquare);
-
                 return false;
             }
             #endregion

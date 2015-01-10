@@ -92,7 +92,7 @@ namespace Rant.Vocabulary
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Bad Subtype]";
 
-            IEnumerable<RantDictionaryEntry> pool = 
+            var pool = 
                 query.Exclusive
                     ? _entries.Where(
                         e => e.GetClasses().Any() == query.ClassFilters.Any()
