@@ -14,7 +14,7 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The current version number of the dictionary format.
         /// </summary>
-        public const string Version = "2";
+        public const int Version = 3;
 
         internal const string MissingTerm = "[?]";
 

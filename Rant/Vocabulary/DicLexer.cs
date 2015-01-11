@@ -16,9 +16,10 @@ namespace Rant.Vocabulary
         {
             Rules = new LexerRules<DicTokenType>
             {
-                {new Regex(@"\#\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|\@|$)", DicRegexOptions), DicTokenType.Directive, 2},
-                {new Regex(@"\|\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|\@|$)", DicRegexOptions), DicTokenType.Property, 2},
-                {new Regex(@"\>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>|\@|$)", DicRegexOptions), DicTokenType.Entry, 2},
+                {new Regex(@"\#\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Directive, 2},
+                {new Regex(@"\|\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Property, 2},
+                {new Regex(@"\>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Entry, 2},
+                {new Regex(@">>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.DiffEntry, 2},
                 {new Regex(@"\@.*?$", DicRegexOptions | RegexOptions.Multiline), DicTokenType.Ignore, 2},
                 {new Regex(@"\s+"), DicTokenType.Ignore}
             };
@@ -41,6 +42,7 @@ namespace Rant.Vocabulary
     {
         Directive,
         Entry,
+        DiffEntry,
         Property,
         Ignore,
         EOF
