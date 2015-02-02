@@ -60,37 +60,27 @@ namespace Rant.Engine.Formatters
 
         private string GetHex(long number, bool uppercase)
         {
-            bool needsReverse = Endianness != Endianness.Default && (BitConverter.IsLittleEndian != (Endianness == Endianness.Little));
-            var hexString = Convert.ToString((long)number, 16);
-            hexString = uppercase ? hexString.ToUpper() : hexString.ToLower();
-            if (needsReverse && hexString.Length % 2 != 0) hexString = "0\{hexString}";
-
-            int origLength = hexString.Length;
-            int finalLength =
-                BinaryFormat == BinaryFormat.Pad
-                ? (origLength < BinaryFormatDigits ? BinaryFormatDigits : origLength)
-                : BinaryFormat == BinaryFormat.Truncate
-                    ? (origLength < BinaryFormatDigits ? origLength : BinaryFormatDigits)
-                    : origLength;
-
-            var chars = new char[finalLength];
-            for (int i = 0; i < finalLength; i++) chars[i] = '0';
-
-            if (needsReverse)
+            string hexString = Convert.ToString(number, 16);
+            int targetLength = (BinaryFormat == BinaryFormat.Pad && hexString.Length < BinaryFormatDigits ? BinaryFormatDigits : hexString.Length);
+            int numBytes = targetLength % 2 != 0 ? (int)Math.Ceiling((double)targetLength / 2) : targetLength / 2;
+            string[] bytes = new string[numBytes];
+            if (BinaryFormat == BinaryFormat.Pad && hexString.Length < BinaryFormatDigits)
             {
-                for (int i = 0; i < origLength; i += 2)
-                {
-                    chars[finalLength - i - 2] = hexString[i];
-                    chars[finalLength - i - 1] = hexString[i + 1];
-                }
+                for (int i = hexString.Length; i < BinaryFormatDigits; i++)
+                    hexString = '0' + hexString;
             }
-            else
-            {
-                int truncatedOrigin = origLength > finalLength ? origLength - finalLength : 0;
-                int truncatedLength = origLength > finalLength ? finalLength : origLength;
-                hexString.CopyTo(truncatedOrigin, chars, finalLength - truncatedLength, truncatedLength);
-            }
-            return new string(chars);
+            if (hexString.Length % 2 != 0)
+                hexString = "0" + hexString;
+
+            for (int i = 0; i < bytes.Length; i++)
+                bytes[i] = hexString[i*2].ToString() + hexString[i*2 + 1].ToString();
+
+            if (Endianness != Endianness.Default && (BitConverter.IsLittleEndian != (Endianness == Endianness.Little)))
+                bytes = bytes.Reverse().ToArray();
+
+            string finalString = string.Join("", bytes);
+
+            return uppercase ? finalString.ToUpper() : finalString;
         }
 
         private string GetBinary(long number)
