@@ -41,15 +41,8 @@ namespace Rant.Engine.Blueprints
                 // Get the matches for the pattern in the input
                 _matches = _regex.Matches(_input);
 
-                Stack<Match> _matchStack = new Stack<Match>();
-                foreach (Match match in _matches)
-                {
-                    if (!match.Success) continue;
-                    _matchStack.Push(match);
-                }
-
                 RantPattern source = I.CurrentState.Reader.Source;
-                var state = CreateMatchEvaluatorState(source, I, _matchStack);
+                var state = CreateMatchEvaluatorState(source, I, _matches, _matches.Count - 1);
 
                 I.PushState(state);
 
@@ -78,24 +71,25 @@ namespace Rant.Engine.Blueprints
             return false;
         }
 
-        private VM.State CreateMatchEvaluatorState(RantPattern source, VM I, Stack<Match> matchStack)
+        private VM.State CreateMatchEvaluatorState(RantPattern source, VM I, MatchCollection matches, int matchPosition)
         {
             var state = VM.State.CreateSub(source, _evaluator, I);
-            state.CurrentMatches = matchStack;
+            state.CurrentMatches = matches;
+            state.MatchPosition = matchPosition;
 
             state.Pre(new DelegateBlueprint(I, _ =>
             {
-                _.PushMatch(state.CurrentMatches.Pop());
+                _.PushMatch(state.CurrentMatches[state.MatchPosition]);
                 return false;
             }));
 
             state.Post(new DelegateBlueprint(I, _ =>
             {
                 _.PopMatch();
-                if (state.CurrentMatches.Count > 0)
+                if (state.MatchPosition > 0)
                 {
                     I.PopState();
-                    I.PushState(CreateMatchEvaluatorState(source, I, state.CurrentMatches));
+                    I.PushState(CreateMatchEvaluatorState(source, I, state.CurrentMatches, --state.MatchPosition));
                 }
                 return false;
             }));

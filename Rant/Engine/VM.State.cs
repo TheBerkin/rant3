@@ -25,7 +25,8 @@ namespace Rant.Engine
             private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
             private readonly Stack<Blueprint> _postBlueprints = new Stack<Blueprint>();
 
-            public Stack<Match> CurrentMatches = new Stack<Match>();
+            public MatchCollection CurrentMatches;
+            public int MatchPosition = 0;
 
             public bool Finish()
             {
