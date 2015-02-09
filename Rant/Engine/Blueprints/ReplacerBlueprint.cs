@@ -40,29 +40,18 @@ namespace Rant.Engine.Blueprints
 
                 // Get the matches for the pattern in the input
                 _matches = _regex.Matches(_input);
-                
-                // Queue a copy of the match evaluator for each match
+
+                Stack<Match> _matchStack = new Stack<Match>();
                 foreach (Match match in _matches)
                 {
                     if (!match.Success) continue;
-                    var state = VM.State.CreateSub(I.CurrentState.Reader.Source, _evaluator, I);
-
-                    Match match1 = match;
-
-                    state.Pre(new DelegateBlueprint(I, _ =>
-                    {
-                        _.PushMatch(match1);
-                        return false;
-                    }));
-
-                    state.Post(new DelegateBlueprint(I, _ =>
-                    {
-                        _.PopMatch();
-                        return false;
-                    }));
-
-                    I.PushState(state);
+                    _matchStack.Push(match);
                 }
+
+                RantPattern source = I.CurrentState.Reader.Source;
+                var state = CreateMatchEvaluatorState(source, I, _matchStack);
+
+                I.PushState(state);
 
                 return true;
             }
@@ -87,6 +76,31 @@ namespace Rant.Engine.Blueprints
             }
 
             return false;
+        }
+
+        private VM.State CreateMatchEvaluatorState(RantPattern source, VM I, Stack<Match> matchStack)
+        {
+            var state = VM.State.CreateSub(source, _evaluator, I);
+            state.CurrentMatches = matchStack;
+
+            state.Pre(new DelegateBlueprint(I, _ =>
+            {
+                _.PushMatch(state.CurrentMatches.Pop());
+                return false;
+            }));
+
+            state.Post(new DelegateBlueprint(I, _ =>
+            {
+                _.PopMatch();
+                if (state.CurrentMatches.Count > 0)
+                {
+                    I.PopState();
+                    I.PushState(CreateMatchEvaluatorState(source, I, state.CurrentMatches));
+                }
+                return false;
+            }));
+
+            return state;
         }
     }
 }

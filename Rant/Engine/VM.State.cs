@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 
 using Rant.Engine.Blueprints;
@@ -23,6 +24,8 @@ namespace Rant.Engine
 
             private readonly Stack<Blueprint> _preBlueprints = new Stack<Blueprint>();
             private readonly Stack<Blueprint> _postBlueprints = new Stack<Blueprint>();
+
+            public Stack<Match> CurrentMatches = new Stack<Match>();
 
             public bool Finish()
             {
