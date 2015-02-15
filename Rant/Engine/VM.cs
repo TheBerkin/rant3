@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -189,7 +190,7 @@ namespace Rant.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
-        public RantOutput Run()
+        public RantOutput Run(double timeout = -1)
         {
             PushState(_mainState);
 
@@ -202,9 +203,15 @@ namespace Rant.Engine
 
             // ReSharper restore TooWideLocalVariableScope
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             next:
             while (_stateCount > 0)
             {
+                if (timeout != -1 && timeout * 1000 - stopwatch.ElapsedMilliseconds < 0)
+                    throw new RantException(_mainSource, null, "The pattern has timed out.");
+
                 // Because blueprints can sometimes queue more blueprints, loop until the topmost state does not have one.
                 do
                 {

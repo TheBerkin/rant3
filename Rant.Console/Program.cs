@@ -12,6 +12,7 @@ namespace RantConsole
 {
     class Program
     {
+        public const double PATTERN_TIMEOUT = 10.0;
         static void Main(string[] args)
         {
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;            
@@ -52,11 +53,11 @@ namespace RantConsole
 
                 var input = ReadLine();
 #if DEBUG
-                PrintOutput(rant.Do(input));
+                PrintOutput(rant.Do(input, 0, PATTERN_TIMEOUT));
 #else
                 try
                 {
-                    PrintOutput(rant.Do(input));
+                    PrintOutput(rant.Do(input, 0, PATTERN_TIMEOUT));
                 }
                 catch (Exception e)
                 {

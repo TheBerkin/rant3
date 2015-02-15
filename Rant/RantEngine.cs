@@ -112,10 +112,11 @@ namespace Rant
         /// </summary>
         /// <param name="input">The input string to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, int charLimit = 0)
+        public RantOutput Do(string input, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -123,10 +124,11 @@ namespace Rant
         /// </summary>
         /// <param name="path">The path to the file to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, int charLimit = 0)
+        public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -135,10 +137,11 @@ namespace Rant
         /// <param name="input">The input string to execute.</param>
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, long seed, int charLimit = 0)
+        public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -147,10 +150,11 @@ namespace Rant
         /// <param name="path">The path to the file to execute.</param>
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, long seed, int charLimit = 0)
+        public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -159,10 +163,11 @@ namespace Rant
         /// <param name="input">The input string to execute.</param>
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, RNG rng, int charLimit = 0)
+        public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), rng, charLimit).Run();
+            return new VM(this, RantPattern.FromString(input), rng, charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -171,10 +176,11 @@ namespace Rant
         /// <param name="path">The path to the file to execute.</param>
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, RNG rng, int charLimit = 0)
+        public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), rng, charLimit).Run();
+            return new VM(this, RantPattern.FromFile(path), rng, charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -182,10 +188,11 @@ namespace Rant
         /// </summary>
         /// <param name="input">The pattern to execute.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, int charLimit = 0)
+        public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, new RNG(Seeds.NextRaw()), charLimit).Run();
+            return new VM(this, input, new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -194,10 +201,11 @@ namespace Rant
         /// <param name="input">The pattern to execute.</param>
         /// <param name="seed">The seed to generate output with.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, long seed, int charLimit = 0)
+        public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, new RNG(seed), charLimit).Run();
+            return new VM(this, input, new RNG(seed), charLimit).Run(timeout);
         }
 
         /// <summary>
@@ -206,10 +214,11 @@ namespace Rant
         /// <param name="input">The pattern to execute.</param>
         /// <param name="rng">The random number generator to use when generating output.</param>
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0)
+        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, rng, charLimit).Run();
+            return new VM(this, input, rng, charLimit).Run(timeout);
         }
         #endregion
 
