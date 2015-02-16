@@ -89,7 +89,10 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
 ##Documentation
-See the [wiki](http://github.com/TheBerkin/Rant/wiki) for full documentation of the API and Rant language, as well as additional example code.
+See [rantlang.github.io](http://rantlang.github.io) for full documentation of the API and Rant language, as well as additional example code.
 
 ##Try Rant
-[RantBox - Online Rant Interpreter](http://berkin.me/rantbox)
+Want to try Rant before you download anything? Check out [RantBox](http://berkin.me/rantbox), an online pattern interpreter I made.
+
+##Donate
+Rant is free to use; however, developing it takes a lot of time and dedication, and things like hosting and software cost money. If you feel so inclined, you may support the project by donating through **[Gratipay](https://gratipay.com/TheBerkin/)**. Any amount is appreciated :)
