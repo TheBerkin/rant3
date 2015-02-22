@@ -74,7 +74,10 @@ Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/
 PM> Install-Package Rant
 ```
 
-##Contributing
+##License
+Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
+
+##Improve Rant
 If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. You are welcome to help with any of the following:
 * Documentation (wiki/code)
 * Fixing bugs
@@ -85,14 +88,11 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 * New API features
 * Formatting support for other languages
 
-##License
-Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
-
-##Documentation
+##Learn Rant
 See [rantlang.github.io](http://rantlang.github.io) for full documentation of the API and Rant language, as well as additional example code.
 
 ##Try Rant
-Want to try Rant before you download anything? Check out [RantBox](http://berkin.me/rantbox), an online pattern interpreter I made.
+Want to try Rant before you download anything? Check out [RantBox](http://rant.berkin.me/), an online pattern interpreter I made.
 
-##Donate
+##Support Rant
 Rant is free to use; however, developing it takes a lot of time and dedication, and things like hosting and software cost money. If you feel so inclined, you may support the project by donating through **[Gratipay](https://gratipay.com/TheBerkin/)**. Any amount is appreciated :)
