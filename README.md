@@ -88,6 +88,8 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 * New API features
 * Formatting support for other languages
 
+We have a [Trello board](https://trello.com/b/NnvgqGha/rant) where we also track progress on new features and bugfixes.
+
 ##Learn Rant
 See [rantlang.github.io](http://rantlang.github.io) for full documentation of the API and Rant language, as well as additional example code.
 
