@@ -81,7 +81,7 @@ namespace Rant.Vocabulary
         /// <returns>True if merge succeeded; otherwise, False.</returns>
         public bool Merge(RantDictionaryTable other)
         {
-            if (other._name != _name) return false;
+            if (other._name != _name || other == this) return false;
             if (!other._subtypes.SequenceEqual(_subtypes)) return false;
             _entries.AddRange(other._entries);
             return true;
