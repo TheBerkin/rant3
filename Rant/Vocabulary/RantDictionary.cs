@@ -38,11 +38,28 @@ namespace Rant.Vocabulary
         /// <summary>
         /// Adds a new RantDictionaryTable object to the collection.
         /// </summary>
-        /// <param name="dictionary"></param>
-        public void AddTable(RantDictionaryTable dictionary)
+        /// <param name="table"></param>
+        public void AddTable(RantDictionaryTable table)
         {
-            _tables[dictionary.Name] = dictionary;
+            RantDictionaryTable oldTable;
+            if (_tables.TryGetValue(table.Name, out oldTable))
+            {
+                oldTable.Merge(table);
+            }
+            else
+            {
+                _tables[table.Name] = table;
+            }
         }
+
+        /// <summary>
+        /// Enumerates the tables contained in the current RantDictionary instance.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RantDictionaryTable> GetTables()
+        {
+            foreach (var pair in _tables) yield return pair.Value;
+        } 
 
         /// <summary>
         /// Loads all dictionary (.dic) files from the specified directory and returns a Dictionary object that contains the loaded data.
