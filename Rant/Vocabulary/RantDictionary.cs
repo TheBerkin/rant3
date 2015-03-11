@@ -14,19 +14,20 @@ namespace Rant.Vocabulary
         /// <summary>
         /// Creates a new RantDictionary object from the specified dictionary collection.
         /// </summary>
-        /// <param name="dics"></param>
-        public RantDictionary(IEnumerable<RantDictionaryTable> dics)
+        /// <param name="tables">The tables to store in the dictionary.</param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
+        public RantDictionary(IEnumerable<RantDictionaryTable> tables, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             _tables = new Dictionary<string, RantDictionaryTable>();
 
-            if (dics == null) return;
+            if (tables == null) return;
 
             RantDictionaryTable table;
-            foreach (var list in dics)
+            foreach (var list in tables)
             {
                 if (_tables.TryGetValue(list.Name, out table))
                 {
-                    table.Merge(list);
+                    table.Merge(list, mergeBehavior);
                 }
                 else
                 {
@@ -39,12 +40,13 @@ namespace Rant.Vocabulary
         /// Adds a new RantDictionaryTable object to the collection.
         /// </summary>
         /// <param name="table"></param>
-        public void AddTable(RantDictionaryTable table)
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
+        public void AddTable(RantDictionaryTable table, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             RantDictionaryTable oldTable;
             if (_tables.TryGetValue(table.Name, out oldTable))
             {
-                oldTable.Merge(table);
+                oldTable.Merge(table, mergeBehavior);
             }
             else
             {
@@ -59,17 +61,18 @@ namespace Rant.Vocabulary
         public IEnumerable<RantDictionaryTable> GetTables()
         {
             foreach (var pair in _tables) yield return pair.Value;
-        } 
+        }
 
         /// <summary>
         /// Loads all dictionary (.dic) files from the specified directory and returns a Dictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directory">The directory from which to load dictionaries.</param>
         /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
         /// <returns></returns>
-        public static RantDictionary FromDirectory(string directory, NsfwFilter filter)
+        public static RantDictionary FromDirectory(string directory, NsfwFilter filter, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
-            return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(file => RantDictionaryTable.FromFile(file, filter)).ToList());
+            return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(file => RantDictionaryTable.FromFile(file, filter)).ToList(), mergeBehavior);
         }
 
         /// <summary>
@@ -86,11 +89,23 @@ namespace Rant.Vocabulary
         /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directories">The directories from which to load dictionaries.</param>
-        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
         /// <returns></returns>
-        public static RantDictionary FromMultiDirectory(string[] directories, NsfwFilter filter)
+        public static RantDictionary FromMultiDirectory(string[] directories, TableMergeBehavior mergeBehavior)
         {
-            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file, filter)));
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file)), mergeBehavior);
+        }
+
+        /// <summary>
+        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
+        /// </summary>
+        /// <param name="directories">The directories from which to load dictionaries.</param>
+        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
+        /// <returns></returns>
+        public static RantDictionary FromMultiDirectory(string[] directories, NsfwFilter filter, TableMergeBehavior mergeBehavior)
+        {
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file, filter)), mergeBehavior);
         }
 
         /// <summary>

@@ -165,6 +165,7 @@
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
     <Compile Include="Vocabulary\Rhymer.cs" />
+    <Compile Include="Vocabulary\TableMergeBehavior.cs" />
     <Compile Include="Vocabulary\VocabUtils.cs" />
   </ItemGroup>
   <ItemGroup>

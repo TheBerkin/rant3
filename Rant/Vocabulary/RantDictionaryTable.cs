@@ -78,12 +78,25 @@ namespace Rant.Vocabulary
         /// Adds another table's entries to the current table, given that they share the same name and subtypes.
         /// </summary>
         /// <param name="other">The table whose entries will be added to the current instance.</param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
         /// <returns>True if merge succeeded; otherwise, False.</returns>
-        public bool Merge(RantDictionaryTable other)
+        public bool Merge(RantDictionaryTable other, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             if (other._name != _name || other == this) return false;
             if (!other._subtypes.SequenceEqual(_subtypes)) return false;
-            _entries.AddRange(other._entries);
+            switch (mergeBehavior)
+            {
+                case TableMergeBehavior.Naive:
+                    _entries.AddRange(other._entries);
+                    break;
+                case TableMergeBehavior.RemoveEntryDuplicates: // TODO: Make this NOT O(n^2*subtypes) -- speed up with HashSet?
+                    _entries.AddRange(other._entries.Where(e => !_entries.Any(ee => ee.Terms.SequenceEqual(e.Terms))));
+                    break;
+                case TableMergeBehavior.RemoveFirstTermDuplicates: // TODO: Make this NOT O(n^2)
+                    _entries.AddRange(other._entries.Where(e => _entries.All(ee => ee.Terms[0] != e.Terms[0])));
+                    break;
+            }
+            
             return true;
         }
 
