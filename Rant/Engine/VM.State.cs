@@ -96,7 +96,7 @@ namespace Rant.Engine
             /// <param name="source">The source from which to read tokens.</param>
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            
             public static State Create(RantPattern source, VM interpreter)
             {
                 return new State(interpreter, source, interpreter.CurrentState.Output);
@@ -110,7 +110,7 @@ namespace Rant.Engine
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
             /// <returns></returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            
             public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<R>> tokens,
                 VM interpreter, ChannelStack output = null)
             {

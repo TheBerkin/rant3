@@ -620,7 +620,7 @@ namespace Rant.Engine
             throw new RantException(reader.Source, nameToken, "Expected operator after list name.");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         private static bool DoSubCall(Token<R> first, VM interpreter, PatternReader reader, State state)
         {
             var name = reader.ReadToken();
@@ -658,7 +658,7 @@ namespace Rant.Engine
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         private static bool DoSubDefinition(Token<R> first, VM interpreter, PatternReader reader, State state)
         {
             bool meta = reader.Take(R.Question);
@@ -707,7 +707,7 @@ namespace Rant.Engine
             return meta;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         private static bool DoReplacer(Token<R> name, VM interpreter, PatternReader reader, State state)
         {
             reader.Read(R.Colon);

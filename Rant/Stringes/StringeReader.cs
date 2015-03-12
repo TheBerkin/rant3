@@ -144,6 +144,7 @@ namespace Rant.Stringes
         /// Indicates whether the specified string occurs at the reader's current position.
         /// </summary>
         /// <param name="value">The string to test for.</param>
+        /// <param name="strcmp">The string comparison type to use in the test.</param>
         /// <returns></returns>
         public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
         {
@@ -182,7 +183,7 @@ namespace Rant.Stringes
         /// <summary>
         /// Advances the reader position past any immediate white space characters.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public void SkipWhiteSpace()
         {
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
@@ -197,7 +198,7 @@ namespace Rant.Stringes
         /// <typeparam name="T">The token identifier type to use.</typeparam>
         /// <param name="rules">The lexer rules to use.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public Token<T> ReadToken<T>(LexerRules<T> rules) where T : struct
         {
             readStart:

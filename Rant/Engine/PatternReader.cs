@@ -43,14 +43,14 @@ namespace Rant.Engine
             get { return _pos == 0 ? null : _tokens[_pos - 1]; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public Token<R> ReadToken()
         {
             if (End) throw new RantException(_source, null, "Unexpected end of file.");
             return _tokens[_pos++];
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public Token<R> PeekToken()
         {
             if (End) throw new RantException(_source, null, "Unexpected end of file.");
@@ -173,7 +173,7 @@ namespace Rant.Engine
             return _tokens[_pos++];
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public Token<R> ReadLoose(R type, string expectedTokenName = null)
         {
             if (End)
@@ -188,7 +188,7 @@ namespace Rant.Engine
             return t;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public bool TakeAllUntil(R takeType, R untilType, bool allowEof = true)
         {
             if (End)
@@ -220,13 +220,13 @@ namespace Rant.Engine
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public bool SkipSpace()
         {
             return TakeAll(R.Whitespace);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Delimiters bracketPairs)
         {
             SkipSpace();
@@ -307,7 +307,7 @@ namespace Rant.Engine
             throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public IEnumerable<Token<R>> ReadToScopeClose(R open, R close, Delimiters bracketPairs)
         {
             SkipSpace();
@@ -352,7 +352,7 @@ namespace Rant.Engine
             throw new RantException(_source, null, "Unexpected end of file; expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public IEnumerable<Token<R>> ReadToTokenInParentScope(R tokenType, Delimiters bracketPairs)
         {
             SkipSpace();

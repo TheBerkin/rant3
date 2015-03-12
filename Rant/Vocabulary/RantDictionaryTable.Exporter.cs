@@ -98,7 +98,7 @@ namespace Rant.Vocabulary
         }
 
         // Returns the classes of an object, but optional classes are postfixed with ?
-        public static IEnumerable<string> GetClassesForExport(RantDictionaryEntry entry)
+        private static IEnumerable<string> GetClassesForExport(RantDictionaryEntry entry)
         {
             return entry.GetRequiredClasses().Concat(entry.GetOptionalClasses().Select(x => x + "?"));
         }

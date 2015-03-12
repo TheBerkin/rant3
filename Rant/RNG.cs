@@ -177,7 +177,7 @@ namespace Rant
         /// <param name="s">The seed.</param>
         /// <param name="g">The generation.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public static long GetRaw(long s, long g)
         {
             unchecked
@@ -206,14 +206,14 @@ namespace Rant
         /// Calculates the raw 64-bit value for the next generation, and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public long NextRaw() => GetRaw(Seed, Generation++);
 
         /// <summary>
         /// Calculates the raw 64-bit value for the previous generation, and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public long PrevRaw() => GetRaw(Seed, --Generation);
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace Rant
         /// <summary>
         /// Removes the topmost branch and resumes generation on the next one down.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public RNG Merge()
         {
             if (_tree.Count > 1) _tree.RemoveAt(_tree.Count - 1);
@@ -261,7 +261,7 @@ namespace Rant
         /// Calculates a 32-bit, non-negative integer for the current generation.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Peek() => (int)GetRaw(Seed, Generation) & Mask32;
 
         /// <summary>
@@ -269,14 +269,14 @@ namespace Rant
         /// </summary>
         /// <param name="generation">The generation to peek at.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int PeekAt(long generation) => (int)GetRaw(Seed, generation) & Mask32;
 
         /// <summary>
         /// Returns a double-precision floating point number between 0 and 1, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public double NextDouble() => (NextRaw() & Mask64) / MaxDouble;
 
         /// <summary>
@@ -295,14 +295,14 @@ namespace Rant
         /// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Next() => (int)NextRaw() & Mask32;
 
         /// <summary>
         /// Calculates a 32-bit, non-negative integer from the previous generation and decreases the current generation by 1.
         /// </summary>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Prev() => (int)PrevRaw() & Mask32;
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Rant
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Next(int max) => max != 0 ? (int)(NextRaw() & Mask32) % max : 0;
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Rant
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Prev(int max) => max != 0 ? (int)(PrevRaw() & Mask32) % max : 0;
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace Rant
         /// </summary>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Peek(int max) => max != 0 ? ((int)GetRaw(Seed, Generation) & Mask32) % max : 0;
 
         /// <summary>
@@ -335,7 +335,7 @@ namespace Rant
         /// <param name="generation">The generation whose value to calculate.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int PeekAt(long generation, int max) => max != 0 ? ((int)GetRaw(Seed, generation) & Mask32) % max : 0;
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Rant
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Next(int min, int max) => max - min > 0 ? (((int)NextRaw() & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace Rant
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Prev(int min, int max) => max - min > 0 ? (((int)PrevRaw() & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace Rant
         /// <param name="min">The inclusive minimum value.</param>
         /// <param name="max">The exclusive maximum value.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int Peek(int min, int max) => max - min > 0 ? (((int)GetRaw(Seed, Generation) & Mask32) - min) % (max - min) + min : 0;
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace Rant
         /// <param name="max">The exclusive maximum value.</param>
         /// <param name="generation">The generation whose value to calculate.</param>
         /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public int PeekAt(int generation, int min, int max) => max - min > 0 ? (((int)GetRaw(Seed, generation) & Mask32) - min) % (max - min) + min : 0;
     }
 }

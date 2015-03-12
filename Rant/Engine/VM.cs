@@ -92,7 +92,7 @@ namespace Rant.Engine
 
         public RantFormat Format => Engine.Format;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public string FormatNumber(double value) => _numFormatter.FormatNumber(value);
 
         #region Flag conditionals
@@ -108,10 +108,10 @@ namespace Rant.Engine
 
         #region Repeaters
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public void PushRepeater(Repeater repeater) => _repeaterStack.Push(repeater);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public Repeater PopRepeater() => _repeaterStack.Pop();
 
         public Repeater CurrentRepeater => _repeaterStack.Any() ? _repeaterStack.Peek() : null;
@@ -148,7 +148,7 @@ namespace Rant.Engine
 
         #region States
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public void PushState(State state)
         {
             if (_stateCount >= RantEngine.MaxStackSize)
@@ -161,7 +161,7 @@ namespace Rant.Engine
 
         public State PrevState => _prevState;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public State PopState()
         {
             _stateCount--;
@@ -187,7 +187,7 @@ namespace Rant.Engine
 
         public void Print(object input) => _stateStack.Peek().Print(input?.ToString());
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
         public RantOutput Run(double timeout = -1)
