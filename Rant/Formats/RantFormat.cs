@@ -49,6 +49,15 @@ namespace Rant.Formats
         #endregion
 
         /// <summary>
+        /// The letter set used by escape sequences like \c and \w.
+        /// </summary>
+        public char[] Letters { get; protected set; } = new []
+        {
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+        };
+
+        /// <summary>
         /// The vowel-sensitive indefinite articles used by the \a escape sequence.
         /// </summary>
         public IndefiniteArticles IndefiniteArticles { get; protected set; } = IndefiniteArticles.English;

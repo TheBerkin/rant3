@@ -11,24 +11,40 @@ namespace Rant.Engine
 {
     internal static class Util
     {
-        private static readonly Dictionary<char, Func<RNG, char>> EscapeChars = new Dictionary<char, Func<RNG, char>>
+        private static readonly Dictionary<char, Func<VM, char>> EscapeTable = new Dictionary<char, Func<VM, char>>
         {
-            {'n', rng => '\n'},
-            {'r', rng => '\r'},
-            {'t', rng => '\t'},
-            {'b', rng => '\b'},
-            {'f', rng => '\f'},
-            {'v', rng => '\v'},
-            {'0', rng => '\0'},
-            {'s', rng => ' '},
-            {'d', rng => Convert.ToChar(rng.Next(48, 58))},
-            {'D', rng => Convert.ToChar(rng.Next(49, 58))},
-            {'c', rng => Convert.ToChar(rng.Next(97, 123))},
-            {'C', rng => Convert.ToChar(rng.Next(65, 91))},
-            {'x', rng => "0123456789abcdef"[rng.Next(16)]},
-            {'X', rng => "0123456789ABCDEF"[rng.Next(16)]},
-            {'w', rng => "0123456789abcdefghijklmnopqrstuvwxyz"[rng.Next(36)]},
-            {'W', rng => "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rng.Next(36)]}
+            {'n', vm => '\n'},
+            {'r', vm => '\r'},
+            {'t', vm => '\t'},
+            {'b', vm => '\b'},
+            {'f', vm => '\f'},
+            {'v', vm => '\v'},
+            {'0', vm => '\0'},
+            {'s', vm => ' '},
+            {'d', vm => Convert.ToChar(vm.RNG.Next(48, 58))},
+            {'D', vm => Convert.ToChar(vm.RNG.Next(49, 58))},
+            {'c', vm => Char.ToLowerInvariant(vm.Format.Letters[vm.RNG.Next(vm.Format.Letters.Length)])},
+            {'C', vm => Char.ToUpperInvariant(vm.Format.Letters[vm.RNG.Next(vm.Format.Letters.Length)])},
+            {'x', vm => "0123456789abcdef"[vm.RNG.Next(16)]},
+            {'X', vm => "0123456789ABCDEF"[vm.RNG.Next(16)]},
+            {'w', vm =>
+            {
+                int i = vm.RNG.Next(vm.Format.Letters.Length + 10);
+                if (i >= 10)
+                {
+                    return Char.ToLowerInvariant(vm.Format.Letters[i - 10]);
+                }
+                return Convert.ToChar(i + 48);
+            } },
+            {'W', vm =>
+            {   
+                int i = vm.RNG.Next(vm.Format.Letters.Length + 10);
+                if (i >= 10)
+                {
+                    return Char.ToUpperInvariant(vm.Format.Letters[i - 10]);
+                }
+                return Convert.ToChar(i + 48);
+            } }
         };
 
         public static bool ParseInt(string value, out int number)
@@ -158,7 +174,7 @@ namespace Rant.Engine
             return Regex.Replace(literal, @"""""", @"""");
         }
 
-        public static string Unescape(string sequence, VM ii, RNG rng = null)
+        public static string Unescape(string sequence, VM vm, RNG rng = null)
         {
             var match = RantLexer.EscapeRegex.Match(sequence);
             int count;
@@ -177,18 +193,18 @@ namespace Rant.Engine
             }
             else
             {
-                Func<RNG, char> func;
+                Func<VM, char> func;
                 if (code[0] == 'a')
                 {
-                    foreach (var ch in ii.CurrentState.Output.GetActive())
+                    foreach (var ch in vm.CurrentState.Output.GetActive())
                     {
                         for (int i = 0; i < count; i++) ch.WriteArticle();
                     }
                 }
-                else if (EscapeChars.TryGetValue(code[0], out func))
+                else if (EscapeTable.TryGetValue(code[0], out func))
                 {
                     for (int i = 0; i < count; i++)
-                        sb.Append(func(rng));
+                        sb.Append(func(vm));
                 }
                 else
                 {

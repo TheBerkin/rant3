@@ -28,6 +28,11 @@
         #endregion
 
         /// <summary>
+        /// The letter set used by escape sequences like \c and \w.
+        /// </summary>
+        public new char[] Letters { get; set; }
+
+        /// <summary>
         /// The vowel-sensitive indefinite articles used by the \a escape sequence.
         /// </summary>
         public new IndefiniteArticles IndefiniteArticles { get; set; } = IndefiniteArticles.English;
