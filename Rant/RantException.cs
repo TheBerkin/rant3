@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Engine.Compiler;
 using Rant.Stringes;
 
 namespace Rant
@@ -61,7 +62,7 @@ namespace Rant
             }
         }
 
-        internal RantException(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
+        internal RantException(IEnumerable<Stringes.Tokens.Token<R>> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
             : base((tokens != null ? ("(\{source.Name} @ Ln \{tokens.First().Line}, Col \{tokens.First().Column}): ") : "") + message)
         {
             _source = source.Code;

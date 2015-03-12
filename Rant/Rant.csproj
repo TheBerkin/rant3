@@ -102,6 +102,7 @@
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
+    <Compile Include="Engine\Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />

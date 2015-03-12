@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Rant.Engine;
+
 namespace Rant.Vocabulary
 {
     public partial class RantDictionaryTable
@@ -180,7 +182,7 @@ namespace Rant.Vocabulary
                 {
                     writer.WriteLine(leadingWhitespacer + "> {0}", entry.Terms.Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
 
-                    if (!String.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
+                    if (!Util.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
                         writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
                     string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).OrderBy(x => x).ToArray();

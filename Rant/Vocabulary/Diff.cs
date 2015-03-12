@@ -240,7 +240,7 @@ namespace Rant.Vocabulary
                 if (text.Length > 0)
                 {
                     yield return new Token(DM.Text, text.ToString().Trim());
-                    text.Clear();
+                    text.Length = 0;
                 }
                 yield return nextToken;
                 nextToken = null;

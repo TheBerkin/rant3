@@ -65,7 +65,7 @@ namespace Rant.Engine.Formatters
                     Case = Case.None;
                     break;
                 case Case.Title:
-                    if ((options.HasFlag(OutputFormatterOptions.IsArticle) || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
+                    if (((options & OutputFormatterOptions.IsArticle) == OutputFormatterOptions.IsArticle || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
 
                     input = RegCapsTitleWord.Replace(input, m => (
                         _lastChar == '\0'
@@ -76,8 +76,8 @@ namespace Rant.Engine.Formatters
                     break;
                 case Case.Sentence:
                     if (_sentence) input = Regex.Replace(input, @"^.*?\w", m => {
-                                                                                    if (!options.HasFlag(OutputFormatterOptions.NoUpdate)) _sentence = false;
-                                                                                    return m.Value.ToUpper();
+                        if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) _sentence = false;
+                        return m.Value.ToUpper();
                     });
                     input = RegCapsSentenceA.Replace(input, m => m.Value.ToUpper());                    
                     break;
@@ -85,8 +85,8 @@ namespace Rant.Engine.Formatters
                     input = RegCapsTitleWord.Replace(input, m => m.Value.ToUpper());
                     break;
             }
-            if (RegCapsSentenceB.IsMatch(input) && !options.HasFlag(OutputFormatterOptions.NoUpdate)) _sentence = true;
-            if (!options.HasFlag(OutputFormatterOptions.NoUpdate)) _lastChar = input[input.Length - 1];
+            if (RegCapsSentenceB.IsMatch(input) && (options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) _sentence = true;
+            if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) _lastChar = input[input.Length - 1];
             return input;
         }
     }

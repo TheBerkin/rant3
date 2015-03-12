@@ -37,7 +37,7 @@ namespace Rant.Vocabulary
 
             if (!subtypes.All(Util.ValidateName))
             {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'")));
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'").ToArray()));
             }
 
             _subtypes = subtypes;

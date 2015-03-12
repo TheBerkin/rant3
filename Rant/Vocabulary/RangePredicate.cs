@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 
+using Rant.Engine;
 using Rant.Engine.Compiler;
 using Rant.Stringes.Tokens;
 
@@ -25,12 +26,12 @@ namespace Rant.Vocabulary
                 int num = Int32.Parse(range[0]);
                 return x => x == num;
             }
-            else if (String.IsNullOrWhiteSpace(range[0])) // Max
+            else if (Util.IsNullOrWhiteSpace(range[0])) // Max
             {
                 int num = Int32.Parse(range[1]);
                 return x => x <= num;
             }
-            else if (String.IsNullOrWhiteSpace(range[1])) // Min
+            else if (Util.IsNullOrWhiteSpace(range[1])) // Min
             {
                 int num = Int32.Parse(range[0]);
                 return x => x >= num;

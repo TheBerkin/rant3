@@ -47,15 +47,40 @@ namespace Rant.Engine
             } }
         };
 
+        public static bool TryParseMode<TEnum>(string modeString, out TEnum value)
+        {
+            value = default(TEnum);
+            if (!typeof(TEnum).IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");
+            try
+            {
+                value = (TEnum)Enum.Parse(typeof(TEnum), NameToCamel(modeString), true);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool IsNullOrWhiteSpace(string value)
+        {
+            return value == null || value.Trim().Length == 0;
+        }
+
+        public static int HashOf(params object[] objects)
+        {
+            return unchecked(objects.Select(o => o.GetHashCode()).Aggregate(17, (hash, next) => hash * 31 + next));
+        }
+
         public static bool ParseInt(string value, out int number)
         {
             if (Int32.TryParse(value, out number)) return true;
-            if (String.IsNullOrWhiteSpace(value)) return false;
+            if (IsNullOrWhiteSpace(value)) return false;
             value = value.Trim();
             if (!Char.IsLetter(value[value.Length - 1])) return false;
             char power = value[value.Length - 1];
             value = value.Substring(0, value.Length - 1);
-            if (String.IsNullOrWhiteSpace(value)) return false;
+            if (IsNullOrWhiteSpace(value)) return false;
             double n;
             if (!Double.TryParse(value, out n)) return false;
             switch (power)
@@ -76,7 +101,7 @@ namespace Rant.Engine
 
         public static bool BooleanRep(string input)
         {
-            if (String.IsNullOrWhiteSpace(input)) return false;
+            if (IsNullOrWhiteSpace(input)) return false;
             var v = input.ToLower().Trim();
             if (v == "false" || v == "0") return false;
             if (v == "true") return true;
@@ -230,7 +255,7 @@ namespace Rant.Engine
             return new RantException(source, token, message);
         }
 
-        internal static RantException Error(IEnumerable<Stringe> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
+        internal static RantException Error(IEnumerable<Stringes.Tokens.Token<R>> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
         {
             return new RantException(tokens, source, message);
         }

@@ -82,14 +82,16 @@ namespace Rant
             int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty
             {
-                aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
+                aBuilder.Item1.Length = 0;
+                aBuilder.Item1.Append(aBuilder.Item2.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
                 _length += -l1 + aBuilder.Item1.Length;
                 return;
             }
 
             // Check for vowel
             if (!_format.IndefiniteArticles.PrecedesVowel(target)) return;
-            aBuilder.Item1.Clear().Append(aBuilder.Item2.Format(_format.IndefiniteArticles.VowelForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
+            aBuilder.Item1.Length = 0;
+            aBuilder.Item1.Append(aBuilder.Item2.Format(_format.IndefiniteArticles.VowelForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle));
             _length += -l1 + aBuilder.Item1.Length;
         }
 
@@ -98,7 +100,7 @@ namespace Rant
             StringBuilder sb;
             if (_backPrintPoints.TryGetValue(name, out sb) || _forePrintPoints.TryGetValue(name, out sb))
             {
-                sb.Clear();
+                sb.Length = 0;
             }
         }
 
@@ -108,12 +110,12 @@ namespace Rant
             if (!_backPrintPoints.TryGetValue(name, out sb))
             {
                 sb = _forePrintPoints[name] = new StringBuilder(InitialBufferSize);
-                if (overwrite) sb.Clear();
+                if (overwrite) sb.Length = 0;
                 sb.Append(_formatter.Format(value, _format));
             }
             else
             {
-                if (overwrite) sb.Clear();
+                if (overwrite) sb.Length = 0;
                 sb.Append(_formatter.Format(value, _format));
                 UpdateArticle(sb);
             }

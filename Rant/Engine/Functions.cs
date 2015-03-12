@@ -230,8 +230,8 @@ namespace Rant.Engine
             ComparisonResult e;
             foreach (var conString in conStrings)
             {
-                if (!Enum.TryParse(NameToCamel(conString), true, out e)) continue;
-                if (!cmp.Result.HasFlag(e)) continue;
+                if (!Util.TryParseMode(conString, out e)) continue;
+                if ((cmp.Result & e) != e) continue;
                 vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
                 return true;
             }
@@ -438,7 +438,7 @@ namespace Rant.Engine
         {
             RantChannelVisibility cv;
             var cv_str = args[1].AsString();
-            if (!Enum.TryParse(NameToCamel(cv_str), out cv))
+            if (!Util.TryParseMode(cv_str, out cv))
             {
                 throw Error(source, tagname, "Invalid channel visibility option '\{cv_str}'");
             }
@@ -450,7 +450,7 @@ namespace Rant.Engine
         {
             Case caps;
             var caps_str = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(caps_str), out caps))
+            if (!Util.TryParseMode(caps_str, out caps))
             {
                 throw Error(source, tagname, "Invalid case format '\{caps_str}'");
             }
@@ -462,7 +462,7 @@ namespace Rant.Engine
         {
             Case caps;
             var caps_str = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(caps_str), out caps))
+            if (!Util.TryParseMode(caps_str, out caps))
             {
                 throw Error(source, tagname, "Invalid case format '\{caps_str}'");
             }
@@ -485,7 +485,7 @@ namespace Rant.Engine
         {
             NumberFormat fmt;
             var fmtstr = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
+            if (!Util.TryParseMode(fmtstr, out fmt))
             {
                 throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
             }
@@ -497,7 +497,7 @@ namespace Rant.Engine
         {
             NumberFormat fmt;
             var fmtstr = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
+            if (!Util.TryParseMode(fmtstr, out fmt))
             {
                 throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
             }
@@ -523,7 +523,7 @@ namespace Rant.Engine
             if (fmtParts.Length == 0) throw Error(source, tagname, "Expected format string.");
             if (fmtParts.Length > 2) throw Error(source, tagname, "Unrecognized format string.");
             bool hasDigitCount = fmtParts.Length == 2;
-            if (!Enum.TryParse(NameToCamel(fmtParts[0]), out fmtType))
+            if (!Util.TryParseMode(fmtParts[0], out fmtType))
             {
                 throw Error(source, tagname, "Invalid digit format '\{fmtParts[0]}'");
             }
@@ -542,7 +542,7 @@ namespace Rant.Engine
         {
             BinaryFormat fmt;
             var fmtstr = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
+            if (!Util.TryParseMode(fmtstr, out fmt))
             {
                 throw Error(source, tagname, "Invalid digit format '\{fmtstr}'");
             }
@@ -565,7 +565,7 @@ namespace Rant.Engine
         {
             Endianness fmt;
             var fmtstr = args[0].AsString();
-            if (!Enum.TryParse(NameToCamel(fmtstr), out fmt))
+            if (!Util.TryParseMode(fmtstr, out fmt))
             {
                 throw Error(source, tagname, "Invalid endianness '\{fmtstr}'");
             }
@@ -771,7 +771,7 @@ namespace Rant.Engine
         {
             var typeStr = args[1].AsString();
             SyncType type;
-            if (!Enum.TryParse(typeStr, true, out type))
+            if (!Util.TryParseMode(typeStr, out type))
             {
                 throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
             }
@@ -783,7 +783,7 @@ namespace Rant.Engine
         {
             var typeStr = args[1].AsString();
             SyncType type;
-            if (!Enum.TryParse(typeStr, true, out type))
+            if (!Util.TryParseMode(typeStr, out type))
             {
                 throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
             }
@@ -882,7 +882,7 @@ namespace Rant.Engine
             string[] rhymeModes = args[0].AsString().ToLower().Split(' ');
             foreach (string rhymeMode in rhymeModes)
             {
-                if (!Enum.TryParse(NameToCamel(rhymeMode), out rhyme))
+                if (!Util.TryParseMode(rhymeMode, out rhyme))
                 {
                     throw Error(source, tagname, "Invalid rhyme mode '\{rhymeMode}'");
                 }
@@ -937,11 +937,11 @@ namespace Rant.Engine
 
         public RantFunc(RantFuncDelegate func, params ParamFlags[] parameters)
         {
-            if (parameters.Where((t, i) => i < parameters.Length - 1 && t.HasFlag(ParamFlags.Multi)).Any())
+            if (parameters.Where((t, i) => i < parameters.Length - 1 && (t & ParamFlags.Multi) == ParamFlags.Multi).Any())
                 throw new ArgumentException("The flag 'ParamType.Multi' is only valid on the last parameter.");
 
             _parameters = parameters;
-            _hasMultiFlag = parameters.Any() && parameters.Last().HasFlag(ParamFlags.Multi);
+            _hasMultiFlag = parameters.Any() && (parameters.Last() & ParamFlags.Multi) == ParamFlags.Multi;
             _paramCount = parameters.Length;
             _minArgCount = _hasMultiFlag ? _paramCount - 1 : _paramCount;
             _func = func;

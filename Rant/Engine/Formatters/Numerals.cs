@@ -144,7 +144,7 @@ namespace Rant.Engine.Formatters
                     }
                 }
 
-                buffer.Clear();
+                buffer.Length = 0;
 
                 foreach (var hundred in Hundreds)
                 {

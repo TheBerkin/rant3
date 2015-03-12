@@ -100,8 +100,8 @@ namespace Rant.Vocabulary
                     case DicTokenType.Entry:
                         {
                             if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
-                            if (String.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
-                            if (String.IsNullOrWhiteSpace(token.Value))
+                            if (Util.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
+                            if (Util.IsNullOrWhiteSpace(token.Value))
                             {
                                 LoadError(path, token, "Encountered empty dictionary entry.");
                             }
@@ -113,8 +113,8 @@ namespace Rant.Vocabulary
                     case DicTokenType.DiffEntry:
                         {
                             if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
-                            if (String.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
-                            if (String.IsNullOrWhiteSpace(token.Value))
+                            if (Util.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
+                            if (Util.IsNullOrWhiteSpace(token.Value))
                             {
                                 LoadError(path, token, "Encountered empty dictionary entry.");
                             }

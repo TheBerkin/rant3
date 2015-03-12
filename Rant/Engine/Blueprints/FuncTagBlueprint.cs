@@ -45,15 +45,16 @@ namespace Rant.Engine.Blueprints
                 // Insert token arguments into the array, set string args to null.
                 _args = argData.Select((a, i) => 
                     (i >= _tagDef.ParamCount 
-                    ? lastType.HasFlag(ParamFlags.Code) // Covers multi params
-                    : _tagDef.Parameters[i].HasFlag(ParamFlags.Code))
+                    ? (lastType & ParamFlags.Code) == ParamFlags.Code // Covers multi params
+                    : (_tagDef.Parameters[i] & ParamFlags.Code) == ParamFlags.Code)
                         ? Argument.FromTokens(a) 
                         : null).ToArray();
 
                 // Queue string arguments on the stack.
                 for (int i = 0; i < argData.Length; i++)
                 {
-                    if ((i >= _tagDef.ParamCount && !lastType.HasFlag(ParamFlags.Code)) || !_tagDef.Parameters[i].HasFlag(ParamFlags.Code))
+                    if ((i >= _tagDef.ParamCount && (lastType & ParamFlags.Code) != ParamFlags.Code) 
+                        || (_tagDef.Parameters[i] & ParamFlags.Code) != ParamFlags.Code)
                     {
                         interpreter.PushState(VM.State.CreateSub(source, argData[i], interpreter));
                     }

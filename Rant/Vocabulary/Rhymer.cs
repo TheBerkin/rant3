@@ -81,8 +81,8 @@ namespace Rant.Vocabulary
             if (_allowedRhymes.Contains(RhymeType.SlantRhyme))
             {
                 // WE ARE REVERSING THESE STRINGS OK
-                string word1 = string.Join("", term1.Value.Reverse());
-                string word2 = string.Join("", term2.Value.Reverse());
+                string word1 = new string(term1.Value.Reverse().ToArray());
+                string word2 = new string(term2.Value.Reverse().ToArray());
                 if (GetFirstConsonants(word1) == GetFirstConsonants(word2))
                     return true;
             }

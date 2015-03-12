@@ -141,14 +141,14 @@ namespace Rant.Vocabulary
                 if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
                 {
                     result = pool
-                        .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
+                        .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                         .PickWeighted(rng, e => e.Weight);
                     _rhymeTable[rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
                 }
                 result =
                     pool.Except(rhymeState.Item2)
-                        .Where(e => !String.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
+                        .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                                 .PickWeighted(rng, e => e.Weight * (_rhymer.Rhyme(rhymeState.Item1, e.Terms[subtypeIndex]) ? rhymeState.Item1.SyllableCount : 0));
 
                 if (result != null) rhymeState.Item2.Add(result);
