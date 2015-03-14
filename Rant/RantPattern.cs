@@ -21,7 +21,7 @@ namespace Rant
         // This is used to cache item locations within blocks, which eliminates unnecessary multiple traversals of the blocks' tokens.
         // Item1 = Block items
         // Item2 = End position of block
-        private readonly Dictionary<Token<R>, Tuple<Block, int>> _blockJumpTable = new Dictionary<Token<R>, Tuple<Block, int>>();
+        private readonly Dictionary<Token<R>, _<Block, int>> _blockJumpTable = new Dictionary<Token<R>, _<Block, int>>();
 
         /// <summary>
         /// The name of the source code.
@@ -38,9 +38,9 @@ namespace Rant
         /// </summary>
         public string Code => _code;
 
-        internal void CacheBlock(Token<R> start, Tuple<Block, int> block) => _blockJumpTable[start] = block;
+        internal void CacheBlock(Token<R> start, _<Block, int> block) => _blockJumpTable[start] = block;
 
-        internal bool TryGetCachedBlock(Token<R> start, out Tuple<Block, int> block) => _blockJumpTable.TryGetValue(start, out block);
+        internal bool TryGetCachedBlock(Token<R> start, out _<Block, int> block) => _blockJumpTable.TryGetValue(start, out block);
 
         internal IEnumerable<Token<R>> Tokens => _tokens;
 

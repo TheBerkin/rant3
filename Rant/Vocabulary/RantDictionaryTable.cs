@@ -20,7 +20,7 @@ namespace Rant.Vocabulary
 
         private readonly string _name;
         private readonly string[] _subtypes;
-        private readonly List<RantDictionaryEntry> _entries;
+        private RantDictionaryEntry[] _entries;
 
         /// <summary>
         /// Creates a new WordList from the specified data.
@@ -42,9 +42,9 @@ namespace Rant.Vocabulary
 
             _subtypes = subtypes;
             _name = name;
-            _entries = entries.ToList();
+            _entries = entries.ToArray();
         }
-        
+
         /// <summary>
         /// Gets the entries stored in the table.
         /// </summary>
@@ -87,16 +87,27 @@ namespace Rant.Vocabulary
             switch (mergeBehavior)
             {
                 case TableMergeBehavior.Naive:
-                    _entries.AddRange(other._entries);
+                    Array.Resize(ref _entries, _entries.Length + other._entries.Length);
+                    Array.Copy(other._entries, 0, _entries, other._entries.Length, other._entries.Length);
                     break;
                 case TableMergeBehavior.RemoveEntryDuplicates: // TODO: Make this NOT O(n^2*subtypes) -- speed up with HashSet?
-                    _entries.AddRange(other._entries.Where(e => !_entries.Any(ee => ee.Terms.SequenceEqual(e.Terms))));
-                    break;
+                    {
+                        var otherEntries =
+                            other._entries.Where(e => !_entries.Any(ee => ee.Terms.SequenceEqual(e.Terms))).ToArray();
+                        Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
+                        Array.Copy(otherEntries, 0, _entries, otherEntries.Length, otherEntries.Length);
+                        break;
+                    }
                 case TableMergeBehavior.RemoveFirstTermDuplicates: // TODO: Make this NOT O(n^2)
-                    _entries.AddRange(other._entries.Where(e => _entries.All(ee => ee.Terms[0] != e.Terms[0])));
-                    break;
+                    {
+                        var otherEntries =
+                            other._entries.Where(e => _entries.All(ee => ee.Terms[0] != e.Terms[0])).ToArray();
+                        Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
+                        Array.Copy(otherEntries, 0, _entries, otherEntries.Length, otherEntries.Length);
+                        break;
+                    }
             }
-            
+
             return true;
         }
 
@@ -105,7 +116,7 @@ namespace Rant.Vocabulary
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Bad Subtype]";
 
-            var pool = 
+            var pool =
                 query.Exclusive
                     ? _entries.Where(
                         e => e.GetClasses().Any() == query.ClassFilters.Any()

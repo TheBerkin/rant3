@@ -19,7 +19,7 @@ namespace Rant
         private readonly List<StringBuilder> _buffers;
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
-        private readonly Dictionary<StringBuilder, Tuple<StringBuilder, OutputFormatter>> _articleConverters = new Dictionary<StringBuilder, Tuple<StringBuilder, OutputFormatter>>();
+        private readonly Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>> _articleConverters = new Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>>();
 
         private readonly OutputFormatter _formatter;
 
@@ -66,7 +66,7 @@ namespace Rant
         {
             char lc = _formatter.LastChar;
             
-            var anBuilder = Tuple.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _formatter.Clone());
+            var anBuilder = _.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _formatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -77,7 +77,7 @@ namespace Rant
 
         private void UpdateArticle(StringBuilder target)
         {
-            Tuple<StringBuilder, OutputFormatter> aBuilder;
+            _<StringBuilder, OutputFormatter> aBuilder;
             if (!_articleConverters.TryGetValue(target, out aBuilder)) return;
             int l1 = aBuilder.Item1.Length;
             if (target.Length == 0) // Clear to "a" if the after-buffer is empty

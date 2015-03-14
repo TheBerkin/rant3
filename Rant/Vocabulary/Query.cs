@@ -17,8 +17,8 @@ namespace Rant.Vocabulary
         private Carrier _carrier;
         private SyllablePredicateFunc _syllableRange;
         private bool _exclusive;
-        private readonly IEnumerable<Tuple<bool, string>[]> _classFilters;
-        private readonly IEnumerable<Tuple<bool, Regex>> _regexFilters;
+        private readonly IEnumerable<_<bool, string>[]> _classFilters;
+        private readonly IEnumerable<_<bool, Regex>> _regexFilters;
 
         /// <summary>
         /// Creates a new Query object with the specified arguments.
@@ -30,15 +30,15 @@ namespace Rant.Vocabulary
         /// <param name="classFilters">The class filters to search by.</param>
         /// <param name="regexFilters">The regex filters to search by.</param>
         /// <param name="syllableRange">The syllable range to constrain results to.</param>
-        public Query(string name, string subtype, Carrier carrier, bool exclusive, IEnumerable<Tuple<bool, string>[]> classFilters,
-            IEnumerable<Tuple<bool, Regex>> regexFilters, SyllablePredicateFunc syllableRange)
+        public Query(string name, string subtype, Carrier carrier, bool exclusive, IEnumerable<_<bool, string>[]> classFilters,
+            IEnumerable<_<bool, Regex>> regexFilters, SyllablePredicateFunc syllableRange)
         {
             _name = name;
             _subtype = subtype;
             _exclusive = exclusive;
             _carrier = carrier;
-            _classFilters = (classFilters ?? Enumerable.Empty<Tuple<bool, string>[]>()).AsEnumerable();
-            _regexFilters = (regexFilters ?? Enumerable.Empty<Tuple<bool, Regex>>()).AsEnumerable();
+            _classFilters = (classFilters ?? Enumerable.Empty<_<bool, string>[]>()).AsEnumerable();
+            _regexFilters = (regexFilters ?? Enumerable.Empty<_<bool, Regex>>()).AsEnumerable();
             _syllableRange = syllableRange;
         }
 
@@ -90,7 +90,7 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The class filters to search by.
         /// </summary>
-        public IEnumerable<Tuple<bool, string>[]> ClassFilters
+        public IEnumerable<_<bool, string>[]> ClassFilters
         {
             get { return _classFilters; }
         }
@@ -98,7 +98,7 @@ namespace Rant.Vocabulary
         /// <summary>
         /// The regex filters to search by.
         /// </summary>
-        public IEnumerable<Tuple<bool, Regex>> RegexFilters
+        public IEnumerable<_<bool, Regex>> RegexFilters
         {
             get { return _regexFilters; }
         }

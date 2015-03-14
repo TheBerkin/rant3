@@ -130,9 +130,9 @@ namespace Rant.Engine
             reader.SkipSpace();
 
             bool exclusive = reader.Take(R.Dollar);
-            List<Tuple<bool, string>> cfList = null;
-            List<Tuple<bool, string>[]> classFilterList = null;
-            List<Tuple<bool, Regex>> regList = null;
+            List<_<bool, string>> cfList = null;
+            List<_<bool, string>[]> classFilterList = null;
+            List<_<bool, Regex>> regList = null;
             Carrier carrier = null;
             SyllablePredicateFunc syllableRange = null;
 
@@ -151,29 +151,29 @@ namespace Rant.Engine
                 {
                     reader.SkipSpace();
                     // Initialize the filter list.
-                    (cfList ?? (cfList = new List<Tuple<bool, string>>())).Clear();
+                    (cfList ?? (cfList = new List<_<bool, string>>())).Clear();
                     do
                     {
                         bool notin = reader.Take(R.Exclamation);
                         reader.SkipSpace();
                         if (notin && exclusive)
                             throw new RantException(reader.Source, reader.PrevToken, "Cannot use the '!' modifier on exclusive class filters.");
-                        cfList.Add(Tuple.Create(!notin, reader.Read(R.Text, "class identifier").Value.Trim()));
+                        cfList.Add(_.Create(!notin, reader.Read(R.Text, "class identifier").Value.Trim()));
                         reader.SkipSpace();
                     } while (reader.Take(R.Pipe));
-                    (classFilterList ?? (classFilterList = new List<Tuple<bool, string>[]>())).Add(cfList.ToArray());
+                    (classFilterList ?? (classFilterList = new List<_<bool, string>[]>())).Add(cfList.ToArray());
                 }
                 else if (reader.Take(R.Question))
                 {
                     reader.SkipSpace();
                     queryToken = reader.Read(R.Regex, "regex");
-                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(true, ParseRegex(queryToken.Value)));
+                    (regList ?? (regList = new List<_<bool, Regex>>())).Add(_.Create(true, ParseRegex(queryToken.Value)));
                 }
                 else if (reader.Take(R.Without))
                 {
                     reader.SkipSpace();
                     queryToken = reader.Read(R.Regex, "regex");
-                    (regList ?? (regList = new List<Tuple<bool, Regex>>())).Add(Tuple.Create(false, ParseRegex(queryToken.Value)));
+                    (regList ?? (regList = new List<_<bool, Regex>>())).Add(_.Create(false, ParseRegex(queryToken.Value)));
                 }
                 else if (reader.Take(R.DoubleColon)) // Start of carrier
                 {
@@ -664,7 +664,7 @@ namespace Rant.Engine
             bool meta = reader.Take(R.Question);
             reader.Read(R.LeftSquare);
 
-            var parameters = new List<Tuple<string, ParamFlags>>();
+            var parameters = new List<_<string, ParamFlags>>();
             var tName = reader.Read(R.Text, "subroutine name");
 
             if (!ValidateName(tName.Value))
@@ -679,7 +679,7 @@ namespace Rant.Engine
                 while (true)
                 {
                     bool isTokens = reader.Take(R.At);
-                    parameters.Add(Tuple.Create(reader.Read(R.Text, "parameter name").Value, isTokens ? ParamFlags.Code : ParamFlags.None));
+                    parameters.Add(_.Create(reader.Read(R.Text, "parameter name").Value, isTokens ? ParamFlags.Code : ParamFlags.None));
                     if (reader.Take(R.RightSquare, false)) break;
                     reader.Read(R.Semicolon);
                 }
@@ -749,13 +749,13 @@ namespace Rant.Engine
                 return true;
             }
 
-            Tuple<Block, int> blockInfo;
+            _<Block, int> blockInfo;
 
             // Check if the block is already cached
             if (!reader.Source.TryGetCachedBlock(firstToken, out blockInfo))
             {
                 var elements = reader.ReadMultiItemScope(R.LeftCurly, R.RightCurly, R.Pipe, Delimiters.All).ToArray();
-                blockInfo = Tuple.Create(Block.Create(elements), reader.Position);
+                blockInfo = _.Create(Block.Create(elements), reader.Position);
                 reader.Source.CacheBlock(firstToken, blockInfo);
             }
             else

@@ -9,7 +9,7 @@ namespace Rant.Engine
 {
     internal class Block
     {
-        private readonly Tuple<double, IEnumerable<Token<R>>>[] _items;
+        private readonly _<double, IEnumerable<Token<R>>>[] _items;
 
         public readonly double WeightTotal;
 
@@ -24,12 +24,12 @@ namespace Rant.Engine
                     if (first.ID == R.Weight)
                     {
                         weight = Double.Parse(first.Value);
-                        return Tuple.Create(weight, item.Skip(1).SkipWhile(token => token.ID == R.Whitespace));
+                        return _.Create(weight, item.Skip(1).SkipWhile(token => token.ID == R.Whitespace));
                     }
 
-                    return Tuple.Create(weight, item.SkipWhile(token => token.ID == R.Whitespace));
+                    return _.Create(weight, item.SkipWhile(token => token.ID == R.Whitespace));
                 }
-                return Tuple.Create(weight, item);
+                return _.Create(weight, item);
             }).ToArray();
 
             WeightTotal = _items.Sum(t => t.Item1);
@@ -40,6 +40,6 @@ namespace Rant.Engine
             return new Block(items);
         }
 
-        public Tuple<double, IEnumerable<Token<R>>>[] Items => _items;
+        public _<double, IEnumerable<Token<R>>>[] Items => _items;
     }
 }

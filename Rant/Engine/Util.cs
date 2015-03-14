@@ -112,7 +112,7 @@ namespace Rant.Engine
         public static char SelectFromRanges(string rangeString, RNG rng)
         {
             if (String.IsNullOrEmpty(rangeString)) return '?';
-            var list = new List<Tuple<char, char, int>>(); // <min, max, weight>
+            var list = new List<_<char, char, int>>(); // <min, max, weight>
             var chars = rangeString.GetEnumerator();
             char a, b;
             bool stall = false;
@@ -124,7 +124,7 @@ namespace Rant.Engine
                 
                 if (!chars.MoveNext())
                 {
-                    list.Add(Tuple.Create(a, a, 1));
+                    list.Add(_.Create(a, a, 1));
                     break;
                 }
 
@@ -133,11 +133,11 @@ namespace Rant.Engine
                     if (!chars.MoveNext()) return '?';
                     if (!Char.IsLetterOrDigit(b = chars.Current)) return '?';
                     if (Char.IsLetter(a) != Char.IsLetter(b) || Char.IsUpper(a) != Char.IsUpper(b)) return '?';
-                    list.Add(Tuple.Create(a < b ? a : b, a > b ? a : b, Math.Abs(b - a) + 1));
+                    list.Add(_.Create(a < b ? a : b, a > b ? a : b, Math.Abs(b - a) + 1));
                     continue;
                 }
 
-                list.Add(Tuple.Create(a, a, 1));
+                list.Add(_.Create(a, a, 1));
 
                 stall = true;
             }

@@ -21,7 +21,7 @@ namespace Rant.Vocabulary
         /// Rhyme carrier table.
         /// Wherein the KEY is the RHYME ID and SUBTYPE, and the VALUE is the ROOT TERM and USED TERMS.
         /// </summary>
-        private readonly Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>();
+        private readonly Dictionary<string, _<RantDictionaryTerm, HashSet<RantDictionaryEntry>>> _rhymeTable = new Dictionary<string, _<RantDictionaryTerm, HashSet<RantDictionaryEntry>>>();
 
         /// <summary>
         /// Match table.
@@ -137,13 +137,13 @@ namespace Rant.Vocabulary
             // Handle rhyme carrier
             foreach(var rhyme in carrier.GetCarriers(CarrierComponent.Rhyme))
             {
-                Tuple<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
+                _<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
                 if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
                 {
                     result = pool
                         .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                         .PickWeighted(rng, e => e.Weight);
-                    _rhymeTable[rhyme] = Tuple.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                    _rhymeTable[rhyme] = _.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
                 }
                 result =

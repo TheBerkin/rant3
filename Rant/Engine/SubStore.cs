@@ -6,11 +6,11 @@ namespace Rant.Engine
 {
     internal class SubStore
     {
-        private readonly Dictionary<Tuple<string, int>, Subroutine> _table;
+        private readonly Dictionary<_<string, int>, Subroutine> _table;
 
         public SubStore()
         {
-            _table = new Dictionary<Tuple<string, int>, Subroutine>();
+            _table = new Dictionary<_<string, int>, Subroutine>();
         }
 
         internal void Remove(Subroutine sub)
@@ -20,13 +20,13 @@ namespace Rant.Engine
 
         public void Define(string name, Subroutine sub)
         {
-            _table[Tuple.Create(name.ToLower().Trim(), sub.ParamCount)] = sub;
+            _table[_.Create(name.ToLower().Trim(), sub.ParamCount)] = sub;
         }
 
         public Subroutine Get(string name, int argc)
         {
             Subroutine sub;
-            return !_table.TryGetValue(Tuple.Create(name.ToLower().Trim(), argc), out sub) ? null : sub;
+            return !_table.TryGetValue(_.Create(name.ToLower().Trim(), argc), out sub) ? null : sub;
         }
     }
 }

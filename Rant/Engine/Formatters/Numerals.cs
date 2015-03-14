@@ -18,70 +18,70 @@ namespace Rant.Engine.Formatters
 
         public const int MaxRomanValue = 3999;
 
-        private static readonly List<Tuple<long, string>> Powers;
-        private static readonly List<Tuple<long, string>> Hundreds; 
-        private static readonly List<Tuple<int, string>> TenUnits;
-        private static readonly List<Tuple<int, string>> Tens;
+        private static readonly List<_<long, string>> Powers;
+        private static readonly List<_<long, string>> Hundreds; 
+        private static readonly List<_<int, string>> TenUnits;
+        private static readonly List<_<int, string>> Tens;
 
         static Numerals()
         {
-            Powers = new List<Tuple<long, string>>
+            Powers = new List<_<long, string>>
             {
-                Tuple.Create(100L, "hundred"),
-                Tuple.Create(1000L, "thousand"),
-                Tuple.Create(1000000L, "million"),
-                Tuple.Create(1000000000L, "billion"),
-                Tuple.Create(1000000000000L, "trillion"),
-                Tuple.Create(1000000000000000L, "quadrillion"),
-                Tuple.Create(1000000000000000000L, "quintillion")
+                _.Create(100L, "hundred"),
+                _.Create(1000L, "thousand"),
+                _.Create(1000000L, "million"),
+                _.Create(1000000000L, "billion"),
+                _.Create(1000000000000L, "trillion"),
+                _.Create(1000000000000000L, "quadrillion"),
+                _.Create(1000000000000000000L, "quintillion")
             }.OrderByDescending(tuple => tuple.Item1).ToList();
 
-            Hundreds = new List<Tuple<long, string>>
+            Hundreds = new List<_<long, string>>
             {
-                Tuple.Create(100L, "one hundred"),
-                Tuple.Create(200L, "two hundred"),
-                Tuple.Create(300L, "three hundred"),
-                Tuple.Create(400L, "four hundred"),
-                Tuple.Create(500L, "five hundred"),
-                Tuple.Create(600L, "six hundred"),
-                Tuple.Create(700L, "seven hundred"),
-                Tuple.Create(800L, "eight hundred"),
-                Tuple.Create(900L, "nine hundred"),
+                _.Create(100L, "one hundred"),
+                _.Create(200L, "two hundred"),
+                _.Create(300L, "three hundred"),
+                _.Create(400L, "four hundred"),
+                _.Create(500L, "five hundred"),
+                _.Create(600L, "six hundred"),
+                _.Create(700L, "seven hundred"),
+                _.Create(800L, "eight hundred"),
+                _.Create(900L, "nine hundred"),
             }.OrderByDescending(tuple => tuple.Item1).ToList();
 
-            TenUnits = new List<Tuple<int, string>>
+            TenUnits = new List<_<int, string>>
             {
-                Tuple.Create(90, "ninety"),
-                Tuple.Create(80, "eighty"),
-                Tuple.Create(70, "seventy"),
-                Tuple.Create(60, "sixty"),
-                Tuple.Create(50, "fifty"),
-                Tuple.Create(40, "forty"),
-                Tuple.Create(30, "thirty"),
-                Tuple.Create(20, "twenty")
+                _.Create(90, "ninety"),
+                _.Create(80, "eighty"),
+                _.Create(70, "seventy"),
+                _.Create(60, "sixty"),
+                _.Create(50, "fifty"),
+                _.Create(40, "forty"),
+                _.Create(30, "thirty"),
+                _.Create(20, "twenty")
             }.OrderByDescending(tuple => tuple.Item1).ToList();
 
-            Tens = new List<Tuple<int, string>>
+            Tens = new List<_<int, string>>
             {
-                Tuple.Create(19, "nineteen"),
-                Tuple.Create(18, "eighteen"),
-                Tuple.Create(17, "seventeen"),
-                Tuple.Create(16, "sixteen"),
-                Tuple.Create(15, "fifteen"),
-                Tuple.Create(14, "fourteen"),
-                Tuple.Create(13, "thirteen"),
-                Tuple.Create(12, "twelve"),
-                Tuple.Create(11, "eleven"),
-                Tuple.Create(10, "ten"),
-                Tuple.Create(9, "nine"),
-                Tuple.Create(8, "eight"),
-                Tuple.Create(7, "seven"),
-                Tuple.Create(6, "six"),
-                Tuple.Create(5, "five"),
-                Tuple.Create(4, "four"),
-                Tuple.Create(3, "three"),
-                Tuple.Create(2, "two"),
-                Tuple.Create(1, "one")
+                _.Create(19, "nineteen"),
+                _.Create(18, "eighteen"),
+                _.Create(17, "seventeen"),
+                _.Create(16, "sixteen"),
+                _.Create(15, "fifteen"),
+                _.Create(14, "fourteen"),
+                _.Create(13, "thirteen"),
+                _.Create(12, "twelve"),
+                _.Create(11, "eleven"),
+                _.Create(10, "ten"),
+                _.Create(9, "nine"),
+                _.Create(8, "eight"),
+                _.Create(7, "seven"),
+                _.Create(6, "six"),
+                _.Create(5, "five"),
+                _.Create(4, "four"),
+                _.Create(3, "three"),
+                _.Create(2, "two"),
+                _.Create(1, "one")
             }.OrderByDescending(tuple => tuple.Item1).ToList();
         }
 
@@ -110,7 +110,7 @@ namespace Rant.Engine.Formatters
             }
 
             // The input stack contains number units for the loop to translate
-            var input = new Queue<Tuple<long, string>>();
+            var input = new Queue<_<long, string>>();
 
             long unit = 0;
 
@@ -119,10 +119,10 @@ namespace Rant.Engine.Formatters
                 if (number < power.Item1) continue;
                 unit = number / power.Item1; // Count of current unit (1-999)
                 number -= unit * power.Item1; // Strip the units from the number
-                input.Enqueue(Tuple.Create(unit, power.Item2));
+                input.Enqueue(_.Create(unit, power.Item2));
             }
             
-            input.Enqueue(Tuple.Create(number, ""));
+            input.Enqueue(_.Create(number, ""));
 
             var buffer = new StringBuilder();
 

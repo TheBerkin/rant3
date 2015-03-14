@@ -17,11 +17,11 @@ namespace Rant.Stringes.Tokens
         private const int DefaultPriority = 1;
 
         private readonly HashSet<char> _punctuation;
-        private List<Tuple<string, T, StringComparison>> _listNormal;
-        private List<Tuple<string, T, StringComparison>> _listHigh;
-        private Tuple<string, T> _endToken;
-        private Tuple<Func<Stringe, Stringe>, T> _undefToken;
-        private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
+        private List<_<string, T, StringComparison>> _listNormal;
+        private List<_<string, T, StringComparison>> _listHigh;
+        private _<string, T> _endToken;
+        private _<Func<Stringe, Stringe>, T> _undefToken;
+        private List<_<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
         private readonly HashSet<T> _ignore; 
         private bool _sorted;
 
@@ -33,9 +33,9 @@ namespace Rant.Stringes.Tokens
             _endToken = null;
             _undefToken = null;
             _punctuation = new HashSet<char>();
-            _listNormal = new List<Tuple<string, T, StringComparison>>(8);
-            _listHigh = new List<Tuple<string, T, StringComparison>>(8);
-            _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>, int>>(8);
+            _listNormal = new List<_<string, T, StringComparison>>(8);
+            _listHigh = new List<_<string, T, StringComparison>>(8);
+            _regexes = new List<_<Regex, RuleMatchValueGenerator<T>, int>>(8);
             _ignore = new HashSet<T>();
             _sorted = false;
         }
@@ -71,7 +71,7 @@ namespace Rant.Stringes.Tokens
         public void AddEndToken(T endTokenId)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            _endToken = Tuple.Create("EOF", endTokenId);
+            _endToken = _.Create("EOF", endTokenId);
         }
 
         /// <summary>
@@ -82,12 +82,12 @@ namespace Rant.Stringes.Tokens
         public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            _undefToken = Tuple.Create(evalFunc, tokenId);
+            _undefToken = _.Create(evalFunc, tokenId);
         }
 
-        internal Tuple<Func<Stringe, Stringe>, T> UndefinedCaptureRule => _undefToken;
+        internal _<Func<Stringe, Stringe>, T> UndefinedCaptureRule => _undefToken;
 
-        internal Tuple<string, T> EndToken => _endToken;
+        internal _<string, T> EndToken => _endToken;
 
         /// <summary>
         /// Adds a constant rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
@@ -100,7 +100,7 @@ namespace Rant.Stringes.Tokens
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
             if (!Available(symbol)) throw new InvalidOperationException("A rule with the symbol '" + symbol + "' already exists.");
-            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value, StringComparison.InvariantCulture));
+            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(_.Create(symbol, value, StringComparison.InvariantCulture));
             _punctuation.Add(symbol[0]);
         }
 
@@ -119,7 +119,7 @@ namespace Rant.Stringes.Tokens
             {
                 if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
                 if (!Available(s)) throw new InvalidOperationException("A rule with the symbol '" + s + "' already exists.");
-                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value, StringComparison.InvariantCulture));
+                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(_.Create(s, value, StringComparison.InvariantCulture));
                 _punctuation.Add(s[0]);
             }
         }
@@ -136,7 +136,7 @@ namespace Rant.Stringes.Tokens
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
             if (!Available(symbol)) throw new InvalidOperationException("A rule with the symbol '" + symbol + "' already exists.");
-            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
+            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(_.Create(symbol, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
             _punctuation.Add(symbol[0]);
         }
 
@@ -156,7 +156,7 @@ namespace Rant.Stringes.Tokens
             {
                 if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
                 if (!Available(s)) throw new InvalidOperationException("A rule with the symbol '" + s + "' already exists.");
-                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
+                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(_.Create(s, value, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
                 _punctuation.Add(s[0]);
             }
         }
@@ -173,7 +173,7 @@ namespace Rant.Stringes.Tokens
             if (regex == null) throw new ArgumentNullException("regex");
             if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists.");
             
-            _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
+            _regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Rant.Stringes.Tokens
             if (regex == null) throw new ArgumentNullException("regex");
             if (generator == null) throw new ArgumentNullException("generator");
             if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists."); 
-            _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
+            _regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
         }
 
         internal bool HasPunctuation(char c)
@@ -196,7 +196,7 @@ namespace Rant.Stringes.Tokens
             return _punctuation.Contains(c);
         }
 
-        internal List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> RegexList => _regexes;
+        internal List<_<Regex, RuleMatchValueGenerator<T>, int>> RegexList => _regexes;
 
         private void Sort()
         {
@@ -207,7 +207,7 @@ namespace Rant.Stringes.Tokens
             _sorted = true;
         }
 
-        internal List<Tuple<string, T, StringComparison>> NormalSymbols
+        internal List<_<string, T, StringComparison>> NormalSymbols
         {
             get
             {
@@ -216,7 +216,7 @@ namespace Rant.Stringes.Tokens
             }
         }
 
-        internal List<Tuple<string, T, StringComparison>> HighSymbols
+        internal List<_<string, T, StringComparison>> HighSymbols
         {
             get
             {
