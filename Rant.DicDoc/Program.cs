@@ -12,8 +12,6 @@ namespace DicDoc
     {
         static void Main(string[] args)
         {
-            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
             if (args.Length > 1 || args.Length == 1 && args[0] == "?")
             {
                 Console.WriteLine("USAGE\n");
