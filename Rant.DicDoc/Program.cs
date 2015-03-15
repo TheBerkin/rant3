@@ -40,7 +40,6 @@ namespace DicDoc
                 Console.WriteLine("Something horrible happened while generating:\n\n\{ex}");
                 Console.ResetColor();
             }
-            Console.ReadKey();
         }
 
         static void GenerateDictionary(string dicDir)
