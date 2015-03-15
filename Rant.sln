@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Tests", "Rant.Tests\Ra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.DicDoc", "Rant.DicDoc\Rant.DicDoc.csproj", "{746F1E12-7A38-4DFF-A234-0D6BC9F1954B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.DicSort", "Rant.DicSort\Rant.DicSort.csproj", "{6995183B-4537-457B-8F73-56A73678C961}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Berkin-Release|Any CPU = Berkin-Release|Any CPU
@@ -42,6 +44,12 @@ Global
 		{746F1E12-7A38-4DFF-A234-0D6BC9F1954B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{746F1E12-7A38-4DFF-A234-0D6BC9F1954B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{746F1E12-7A38-4DFF-A234-0D6BC9F1954B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Berkin-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Berkin-Release|Any CPU.Build.0 = Release|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6995183B-4537-457B-8F73-56A73678C961}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("dicdoc")]
-[assembly: AssemblyDescription("Rant dictionary documentation generator")]
+[assembly: AssemblyTitle("dicsort")]
+[assembly: AssemblyDescription("DIC entry formatting utility")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("dicdoc")]
+[assembly: AssemblyProduct("dicsort")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("746f1e12-7a38-4dff-a234-0d6bc9f1954b")]
+[assembly: Guid("6995183b-4537-457b-8f73-56a73678c961")]
 
 // Version information for an assembly consists of the following four values:
 //
