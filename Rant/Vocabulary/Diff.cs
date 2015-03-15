@@ -24,8 +24,8 @@ namespace Rant.Vocabulary
         /// <param name="patternString">The pattern string.</param>
         public Diff(string patternString)
         {
-            if (String.IsNullOrEmpty(patternString))
-                throw new ArgumentException("Pattern string cannot be null nor empty.");
+            if (patternString == null)
+                throw new ArgumentException("Pattern string cannot be null.");
 
             _patternString = patternString;
             _rules = Lexer.Lex(patternString).Select(tokens => Rule.Parse(tokens.ToArray())).ToArray();
