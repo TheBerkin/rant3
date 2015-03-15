@@ -67,7 +67,7 @@ namespace DicDoc
             Mkdir(entriesDir);
 
 
-            File.Copy("res/dicdoc.css", rootDir + "/dicdoc.css");
+            File.Copy(Path.Combine(Util.BaseDir, "res/dicdoc.css"), rootDir + "/dicdoc.css");
 
             var text = new StringWriter();
 
