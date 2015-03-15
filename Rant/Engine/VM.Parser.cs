@@ -256,7 +256,7 @@ namespace Rant.Engine
             }
 
             // Query dictionary and print result
-            interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, query, interpreter.QueryState));
+            interpreter.Print(interpreter.Engine.Dictionary?.Query(interpreter.RNG, query, interpreter.QueryState) ?? RantDictionaryTable.MissingTerm);
 
             return false;
         }
