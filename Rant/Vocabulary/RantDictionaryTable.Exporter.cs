@@ -179,8 +179,15 @@ namespace Rant.Vocabulary
                     this.Children[key].Render(writer, level + 1);
 
                 foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x.Terms[0].Value))
-                {
-                    writer.WriteLine(leadingWhitespacer + "> {0}", entry.Terms.Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
+                {   
+                    if (entry.Terms.Length > 1)
+                    {
+                        writer.WriteLine(leadingWhitespacer + ">> {0}", entry.Terms.Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry.Terms[0].Value, t.Value)).Aggregate((c, n) => c + "/" + n));
+                    }
+                    else
+                    {
+                        writer.WriteLine(leadingWhitespacer + "> {0}", entry.Terms.Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
+                    }
 
                     if (!Util.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
                         writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));

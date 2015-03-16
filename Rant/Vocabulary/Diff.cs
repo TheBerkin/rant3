@@ -103,7 +103,6 @@ namespace Rant.Vocabulary
 
                     currentWordIndex++;
                 }
-
             }
             else
             {
@@ -128,6 +127,198 @@ namespace Rant.Vocabulary
                 }
             }
             return String.Concat(baseString.Substring(0, a), replacement, baseString.Substring(b));
+        }
+
+        /// <summary>
+        /// Derives a Diffmark pattern that can transform the specified 'before' string to the specified 'after' string.
+        /// </summary>
+        /// <param name="before">The string before it is transformed.</param>
+        /// <param name="after">The string after it is transformed.</param>
+        /// <returns></returns>
+        public static string Derive(string before, string after)
+        {
+            if (before == null || after == null)
+                throw new ArgumentException("Input strings can't be null.");
+            if (before == after) return "";
+            if (after.Length == 0) return new string('-', before.Length);
+            if (before.Length == 0) return after;
+
+            var sb = new StringBuilder();
+            bool isCut = after.Length < before.Length;
+
+            int lm = LongestLeftMatch(before, after);
+            int rm = LongestRightMatch(before, after);
+
+            int lcsStartBefore = 0;
+            int lcsStartAfter = 0;
+            int lcsLength = 0;
+
+            if (isCut)
+            {
+                if (lm > 0) // Something was appended
+                {
+                    sb.Append(new string('-', before.Length - lm))
+                        .Append(after.Substring(lm, after.Length - lm));
+                }
+                else if (rm > 0) // Something was prepended
+                {
+                    sb.Append(after.Substring(0, after.Length - rm))
+                        .Append(after.Length - rm == 0 && before.Length - rm > 0 ? "|" : "")
+                        .Append(new string('-', before.Length - rm));
+                }
+                else
+                {
+                    if (LongestCommonSubstring(before, after, out lcsStartBefore, out lcsStartAfter, out lcsLength))
+                    {
+                        var beforeLeft = before.Substring(0, lcsStartBefore);
+                        var afterLeft = after.Substring(0, lcsStartAfter);
+                        lm = LongestLeftMatch(beforeLeft, afterLeft);
+
+                        sb.Append(afterLeft.Substring(0, afterLeft.Length - lm))
+                            .Append(lm < beforeLeft.Length
+                                ? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") + new string('-', beforeLeft.Length - lm)
+                                : "+")
+                            .Append(';');
+
+                        var beforeRight = before.Substring(lcsStartBefore + lcsLength);
+                        var afterRight = after.Substring(lcsStartAfter + lcsLength);
+                        rm = LongestRightMatch(beforeRight, afterRight);
+
+                        sb.Append(new string('-', beforeRight.Length - rm))
+                            .Append(afterRight.Substring(0, afterRight.Length - rm));
+                    }
+                    else if (before.Contains(" "))
+                    {
+                        sb.Append(new string('-', before.Length))
+                            .Append(after);
+                    }
+                    else
+                    {
+                        sb.Append('*').Append(after);
+                    }
+                }
+            }
+            else
+            {
+                if (lm > 0) // Something was appended
+                {
+                    sb.Append(new string('-', before.Length - lm))
+                        .Append(after.Substring(lm, after.Length - lm));
+                }
+                else if (rm > 0) // Something was prepended
+                {
+                    sb.Append(after.Substring(0, after.Length - rm))
+                        .Append(rm < before.Length
+                            ? (after.Length - rm == 0 && before.Length - rm > 0 ? "|" : "") + new string('-', before.Length - rm)
+                            : "+");
+                }
+                else
+                {
+                    if (LongestCommonSubstring(before, after, out lcsStartBefore, out lcsStartAfter, out lcsLength))
+                    {
+                        var beforeLeft = before.Substring(0, lcsStartBefore);
+                        var afterLeft = after.Substring(0, lcsStartAfter);
+                        lm = LongestLeftMatch(beforeLeft, afterLeft);
+                        sb.Append(afterLeft.Substring(0, afterLeft.Length - lm))
+                            .Append(lm < beforeLeft.Length
+                                ? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") + new string('-', beforeLeft.Length - lm)
+                                : "+")
+                            .Append(';');
+
+                        var beforeRight = lcsStartBefore + lcsLength >= before.Length ? "" : before.Substring(lcsStartBefore + lcsLength);
+                        var afterRight = lcsStartAfter + lcsLength >= after.Length ? "" : after.Substring(lcsStartAfter + lcsLength);
+                        rm = LongestRightMatch(beforeRight, afterRight);
+
+                        sb.Append(new string('-', beforeRight.Length - rm))
+                            .Append(afterRight.Substring(0, afterRight.Length - rm));
+                    }
+                    else if (before.Contains(" "))
+                    {
+                        sb.Append(new string('-', before.Length))
+                            .Append(after);
+                    }
+                    else
+                    {
+                        sb.Append('*').Append(after);
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        internal static bool LongestCommonSubstring(string a, string b,
+        out int start_a, out int start_b, out int length)
+        {
+            start_a = start_b = length = 0;
+
+            if (a == null || b == null) return false;
+            if (a.Length * b.Length == 0) return false;
+
+            string minor, major;
+            int minorStart = 0;
+            int majorStart = 0;
+            if (a.Length >= b.Length)
+            {
+                minor = a;
+                major = b;
+            }
+            else
+            {
+                major = a;
+                minor = b;
+            }
+
+            int matchIndex = 0;
+            for (int i = 0; i < minor.Length; i++)
+            {
+                for (int j = i + 1; j <= minor.Length; j++)
+                {
+                    if (j - i > length
+                    && (matchIndex = major.IndexOf(minor.Substring(i, j - i))) > -1)
+                    {
+                        majorStart = matchIndex;
+                        minorStart = i;
+                        length = j - i;
+                    }
+                }
+            }
+
+            if (a.Length >= b.Length)
+            {
+                start_a = minorStart;
+                start_b = majorStart;
+            }
+            else
+            {
+                start_a = majorStart;
+                start_b = minorStart;
+            }
+
+            return length > 0;
+        }
+
+        private static int LongestLeftMatch(string a, string b)
+        {
+            if (a.Length * b.Length == 0) return 0;
+            int l = Math.Min(a.Length, b.Length);
+
+            for (int i = 0; i < l; i++)
+            {
+                if (a[i] != b[i]) return i;
+            }
+            return l;
+        }
+
+        private static int LongestRightMatch(string a, string b)
+        {
+            if (a.Length * b.Length == 0) return 0;
+            int l = Math.Min(a.Length, b.Length);
+            for (int i = 0; i < l; i++)
+            {
+                if (a[(a.Length - 1) - i] != b[(b.Length - 1) - i]) return i;
+            }
+            return l;
         }
     }
 
@@ -216,7 +407,10 @@ namespace Rant.Vocabulary
                 switch (patternString[i])
                 {
                     case '\\':
-                        nextToken = new Token(DM.Escape, Escape(patternString[++i]).ToString());
+                        nextToken = new Token(DM.Special, Escape(patternString[++i]));
+                        break;
+                    case '|':
+                        nextToken = new Token(DM.Special, "");
                         break;
                     case '+':
                         nextToken = new Token(DM.Add, "+");
@@ -270,20 +464,20 @@ namespace Rant.Vocabulary
             if (list.Any()) yield return list.ToArray();
         }
 
-        internal static char Escape(char escapeChar)
+        internal static string Escape(char escapeChar)
         {
             switch (escapeChar)
             {
                 case 'n':
-                    return '\n';
+                    return "\n";
                 case 's':
-                    return ' ';
+                    return " ";
                 case 'r':
-                    return '\r';
+                    return "\r";
                 case 't':
-                    return '\t';
+                    return "\t";
                 default:
-                    return escapeChar;
+                    return escapeChar.ToString();
             }
         }
     }
@@ -305,7 +499,7 @@ namespace Rant.Vocabulary
         Add,
         Subtract,
         ReplaceWord,
-        Escape,
+        Special,
         Text,
         Delimiter
     }
