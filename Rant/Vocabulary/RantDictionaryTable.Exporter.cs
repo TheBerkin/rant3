@@ -146,7 +146,7 @@ namespace Rant.Vocabulary
                 }
                 if (!Children.Any()) return this;
                 // all children were null, we're the best we've got I guess
-                return null;
+                return this;
             }
 
             public void Prune()
