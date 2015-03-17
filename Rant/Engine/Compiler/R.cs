@@ -3,7 +3,11 @@
     /// <summary>
     /// Contains all the token identifiers for the Rant lexer.
     /// </summary>
+#if EDITOR
+    public enum R
+#else
     internal enum R
+#endif
     {
         /// <summary>
         /// Regular text with no special function.

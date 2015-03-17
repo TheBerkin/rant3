@@ -8,7 +8,11 @@ namespace Rant.Stringes
     /// <summary>
     /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
     /// </summary>
+#if EDITOR
+    public class Stringe : IEnumerable<Chare>
+#else
     internal class Stringe : IEnumerable<Chare>
+#endif
     {
         private readonly Stref _stref;
         private readonly int _offset;

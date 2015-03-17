@@ -7,12 +7,20 @@ using Rant.Stringes.Tokens;
 
 namespace Rant.Engine.Compiler
 {
+#if EDITOR
+    /// <summary>
+    /// Generates tokens from Rant patterns.
+    /// </summary>
+    public static class RantLexer
+#else
     internal static class RantLexer
+#endif
+
     {
         private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
-        public static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
-        public static readonly Regex RegexRegex = new Regex(@"//(.*?[^\\])?//i?", DefaultOptions);
+        internal static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
+        internal static readonly Regex RegexRegex = new Regex(@"//(.*?[^\\])?//i?", DefaultOptions);
 
         private static readonly Regex WeightRegex = new Regex(@"\*[ ]*(?<value>\d+(\.\d+)?)[ ]*\*", DefaultOptions);
         private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
@@ -73,6 +81,11 @@ namespace Rant.Engine.Compiler
             Rules.IgnoreRules.Add(R.Ignore);
         }
 
+        /// <summary>
+        /// Generates beautiful tokens.
+        /// </summary>
+        /// <param name="input">The input string to tokenize.</param>
+        /// <returns></returns>
         public static IEnumerable<Token<R>> GenerateTokens(string input)
         {
             var reader = new StringeReader(input);

@@ -5,7 +5,11 @@ namespace Rant.Stringes
     /// <summary>
     /// Provides information about a character in a stringe.
     /// </summary>
+#if EDITOR
+    public sealed class Chare
+#else
     internal sealed class Chare
+#endif
     {
         private readonly Stringe _src;
         private readonly char _character;

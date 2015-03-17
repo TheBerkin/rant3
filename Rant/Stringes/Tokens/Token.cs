@@ -6,7 +6,11 @@ namespace Rant.Stringes.Tokens
     /// Represents a token that contains a custom identifier.
     /// </summary>
     /// <typeparam name="T">The identifier type.</typeparam>
+#if EDITOR
+    public sealed class Token<T> : Stringe where T : struct
+#else
     internal sealed class Token<T> : Stringe where T : struct
+#endif
     {
         private readonly T _id;
 
