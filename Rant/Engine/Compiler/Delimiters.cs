@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rant.Engine.Compiler
 {
-    internal class Delimiters : IEnumerable<Tuple<R, R>>
+    internal class Delimiters : IEnumerable<_<R, R>>
     {
         #region Static members
 
@@ -21,13 +21,13 @@ namespace Rant.Engine.Compiler
 
         #endregion
 
-        private readonly List<Tuple<R, R>> _pairs;
+        private readonly List<_<R, R>> _pairs;
         private readonly HashSet<R> _openings;
         private readonly HashSet<R> _closings; 
 
         public Delimiters()
         {
-            _pairs = new List<Tuple<R, R>>(5);
+            _pairs = new List<_<R, R>>(5);
             _openings = new HashSet<R>();
             _closings = new HashSet<R>();
         }
@@ -41,7 +41,7 @@ namespace Rant.Engine.Compiler
             if (!_closings.Add(closingToken))
                 throw new InvalidOperationException("The specified closing token is already defined in another pair in this set.");
             
-            _pairs.Add(Tuple.Create(openingToken, closingToken));
+            _pairs.Add(_.Create(openingToken, closingToken));
         }
 
         public bool Contains(R opening, R closing)
@@ -77,7 +77,7 @@ namespace Rant.Engine.Compiler
             throw new KeyNotFoundException("Cannot find the specified opening token type in this set.");
         }
 
-        public IEnumerator<Tuple<R, R>> GetEnumerator()
+        public IEnumerator<_<R, R>> GetEnumerator()
         {
             return _pairs.GetEnumerator();
         }
