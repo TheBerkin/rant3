@@ -84,18 +84,19 @@ namespace Rant.Vocabulary
         {
             if (other._name != _name || other == this) return false;
             if (!other._subtypes.SequenceEqual(_subtypes)) return false;
+            int oldLength = _entries.Length;
             switch (mergeBehavior)
             {
                 case TableMergeBehavior.Naive:
                     Array.Resize(ref _entries, _entries.Length + other._entries.Length);
-                    Array.Copy(other._entries, 0, _entries, other._entries.Length, other._entries.Length);
+                    Array.Copy(other._entries, 0, _entries, oldLength, other._entries.Length);
                     break;
                 case TableMergeBehavior.RemoveEntryDuplicates: // TODO: Make this NOT O(n^2*subtypes) -- speed up with HashSet?
                     {
                         var otherEntries =
                             other._entries.Where(e => !_entries.Any(ee => ee.Terms.SequenceEqual(e.Terms))).ToArray();
                         Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
-                        Array.Copy(otherEntries, 0, _entries, otherEntries.Length, otherEntries.Length);
+                        Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
                         break;
                     }
                 case TableMergeBehavior.RemoveFirstTermDuplicates: // TODO: Make this NOT O(n^2)
@@ -103,7 +104,7 @@ namespace Rant.Vocabulary
                         var otherEntries =
                             other._entries.Where(e => _entries.All(ee => ee.Terms[0] != e.Terms[0])).ToArray();
                         Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
-                        Array.Copy(otherEntries, 0, _entries, otherEntries.Length, otherEntries.Length);
+                        Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
                         break;
                     }
             }
