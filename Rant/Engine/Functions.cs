@@ -13,9 +13,24 @@ namespace Rant.Engine
     // The return value is returned by the blueprint that executes the tag. If it's true, the vm will skip to the top of the state stack.
     internal delegate bool RantFuncDelegate(VM vm, RantPattern source, Stringe tagName, Argument[] args);
 
+#if EDITOR
+    /// <summary>
+    /// Contains and manages the built-in functions of the Rant language.
+    /// </summary>
+    public static class RantFuncs
+#else
     internal static class RantFuncs
+#endif
+
     {
         internal static readonly Dictionary<string, RantFuncSigs> F;
+
+        /// <summary>
+        /// Determines if the specified string is a valid Rant function name.
+        /// </summary>
+        /// <param name="functionName">The function name to check.</param>
+        /// <returns></returns>
+        public static bool IsValidFunctionName(string functionName) => F.ContainsKey(functionName);
 
         static RantFuncs()
         {
