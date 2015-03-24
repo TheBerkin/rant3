@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Rant.Engine.Compiler;
 using Rant.Stringes.Tokens;
@@ -187,7 +186,6 @@ namespace Rant.Engine
             SkipSpace();
             return t;
         }
-
         
         public bool TakeAllUntil(R takeType, R untilType, bool allowEof = true)
         {

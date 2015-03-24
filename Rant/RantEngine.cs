@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Rant.Debugger;
 using Rant.Engine;
 using Rant.Formats;
 using Rant.Vocabulary;
@@ -12,6 +13,13 @@ namespace Rant
     /// </summary>
     public sealed class RantEngine
     {
+#if EDITOR
+        /// <summary>
+        /// Fired when the interpreter encounters an instruction on a new line.
+        /// </summary>
+        public event EventHandler<LineEventArgs> ActiveLineChanged;
+#endif
+
         /// <summary>
         /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
         /// </summary>
@@ -106,6 +114,28 @@ namespace Rant
             }
         }
 
+        private RantOutput RunVM(VM vm, double timeout)
+        {
+#if EDITOR
+            EventHandler<LineEventArgs> lineEvent = (sender, e) =>
+            {
+                ActiveLineChanged?.Invoke(this, e);
+            };
+            vm.ActiveLineChanged += lineEvent;
+
+            try
+            {
+                return vm.Run(timeout);
+            }
+            finally
+            {
+                vm.ActiveLineChanged -= lineEvent;
+            }
+#else
+            return vm.Run(timeout);
+#endif
+        }
+
         #region Do, DoFile
         /// <summary>
         /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
@@ -116,7 +146,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -128,7 +158,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -141,7 +171,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -154,7 +184,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -167,7 +197,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromString(input), rng, charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromString(input), rng, charLimit), timeout);
         }
 
         /// <summary>
@@ -180,7 +210,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, RantPattern.FromFile(path), rng, charLimit).Run(timeout);
+            return RunVM(new VM(this, RantPattern.FromFile(path), rng, charLimit), timeout);
         }
 
         /// <summary>
@@ -192,7 +222,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, new RNG(Seeds.NextRaw()), charLimit).Run(timeout);
+            return RunVM(new VM(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -205,7 +235,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, new RNG(seed), charLimit).Run(timeout);
+            return RunVM(new VM(this, input, new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -218,7 +248,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return new VM(this, input, rng, charLimit).Run(timeout);
+            return RunVM(new VM(this, input, rng, charLimit), timeout);
         }
         #endregion
 

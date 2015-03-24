@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 
+using Rant.Debugger;
 using Rant.Engine.Compiler;
 using Rant.Engine.Formatters;
 using Rant.Stringes.Tokens;
@@ -15,6 +17,11 @@ namespace Rant.Engine
 {
     internal partial class VM
     {
+#if EDITOR
+        // Events
+        public event EventHandler<LineEventArgs> ActiveLineChanged;
+#endif
+
         // Main fields
         public readonly RNG RNG;
         public readonly RantEngine Engine;
@@ -36,13 +43,14 @@ namespace Rant.Engine
         private int _chance = 100;
 
         // Formatting
-        private NumberFormatter _numFormatter = new NumberFormatter();
+        private readonly NumberFormatter _numFormatter = new NumberFormatter();
         private int _quoteLevel = 0;
         
         // State information
         private int _stateCount = 0;
         private State _prevState = null;
         private readonly State _mainState;
+        private int _lastActiveLine = 1;
 
         // Flag conditional fields
         private bool _else = false;
@@ -224,7 +232,14 @@ namespace Rant.Engine
                 {
                     // Fetch the next token in the stream without consuming it
                     token = reader.ReadToken();
-                    
+
+#if EDITOR
+                    if (state == _mainState && token.Line != _lastActiveLine)
+                    {
+                        ActiveLineChanged?.Invoke(this, new LineEventArgs(_mainSource, token));
+                    }
+#endif
+
                     // Error on illegal delimiter
                     if (Delimiters.All.ContainsClosing(token.ID) && !Delimiters.All.Contains(token.ID, token.ID))
                         throw new RantException(reader.Source, token, "Unexpected delimiter '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");

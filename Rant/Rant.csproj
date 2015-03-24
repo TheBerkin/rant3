@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Debugger\LineEventArgs.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\AbsExpression.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Engine\Arithmetic\Expressions\Expression.cs" />
