@@ -86,7 +86,7 @@ namespace Rant.Engine.Compiler
         /// </summary>
         /// <param name="input">The input string to tokenize.</param>
         /// <returns></returns>
-        public static IEnumerable<Token<R>> GenerateTokens(string input)
+        public static IEnumerable<Token<R>> GenerateTokens(Stringe input)
         {
             var reader = new StringeReader(input);
             while (!reader.EndOfStringe)

@@ -4,6 +4,7 @@ using System.IO;
 
 using Rant.Engine;
 using Rant.Engine.Compiler;
+using Rant.Stringes;
 using Rant.Stringes.Tokens;
 
 namespace Rant
@@ -17,6 +18,7 @@ namespace Rant
         private readonly IEnumerable<Token<R>> _tokens;
         private readonly RantPatternSource _type;
         private readonly string _name;
+        private readonly Stringe _stringe;
 
         // This is used to cache item locations within blocks, which eliminates unnecessary multiple traversals of the blocks' tokens.
         // Item1 = Block items
@@ -44,12 +46,15 @@ namespace Rant
 
         internal IEnumerable<Token<R>> Tokens => _tokens;
 
+        internal Stringe SourceStringe => _stringe;
+
         internal RantPattern(string name, RantPatternSource type, string code)
         {
             _name = name;
             _type = type;
             _code = code;
-            _tokens = RantLexer.GenerateTokens(code);
+            _stringe = code.ToStringe();
+            _tokens = RantLexer.GenerateTokens(_stringe);
         }
 
         internal RantPattern(RantPattern derived, IEnumerable<Token<R>> sub)
@@ -57,6 +62,7 @@ namespace Rant
             _name = derived._name;
             _type = derived._type;
             _code = derived._code;
+            _stringe = derived._stringe;
             _blockJumpTable = derived._blockJumpTable;
             _tokens = sub;
         }
@@ -66,6 +72,7 @@ namespace Rant
             _name = name;
             _type = derived._type;
             _code = derived._code;
+            _stringe = derived._stringe;
             _blockJumpTable = derived._blockJumpTable;
             _tokens = sub;
         }

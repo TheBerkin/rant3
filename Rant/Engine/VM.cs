@@ -20,21 +20,24 @@ namespace Rant.Engine
 #if EDITOR
         // Events
         public event EventHandler<LineEventArgs> ActiveLineChanged;
+
+        // Fields
+        private int _lastActiveLine = 0;
 #endif
 
         // Main fields
         public readonly RNG RNG;
         public readonly RantEngine Engine;
 
-        private readonly RantPattern _mainSource;        
+        private readonly RantPattern _mainSource;
         private readonly long _startingGen;
 
         // Queries
         public readonly QueryState QueryState = new QueryState();
-        public readonly Dictionary<string, Query> LocalQueryMacros = new Dictionary<string, Query>(); 
+        public readonly Dictionary<string, Query> LocalQueryMacros = new Dictionary<string, Query>();
 
         // Lists
-        private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>(); 
+        private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>();
 
         // Next block attribs
         public BlockAttribs NextBlockAttribs = new BlockAttribs();
@@ -45,12 +48,11 @@ namespace Rant.Engine
         // Formatting
         private readonly NumberFormatter _numFormatter = new NumberFormatter();
         private int _quoteLevel = 0;
-        
+
         // State information
         private int _stateCount = 0;
         private State _prevState = null;
         private readonly State _mainState;
-        private int _lastActiveLine = 1;
 
         // Flag conditional fields
         private bool _else = false;
@@ -61,10 +63,10 @@ namespace Rant.Engine
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
         private readonly Stack<Dictionary<string, Argument>> _subArgStack = new Stack<Dictionary<string, Argument>>();
-        private readonly Stack<Comparison> _comparisons = new Stack<Comparison>(); 
+        private readonly Stack<Comparison> _comparisons = new Stack<Comparison>();
         private readonly ChannelStack _output;
 
-        private readonly HashSet<State> _baseStates = new HashSet<State>(); 
+        private readonly HashSet<State> _baseStates = new HashSet<State>();
 
         private readonly Limit<int> _charLimit;
 
@@ -100,7 +102,7 @@ namespace Rant.Engine
 
         public RantFormat Format => Engine.Format;
 
-        
+
         public string FormatNumber(double value) => _numFormatter.FormatNumber(value);
 
         #region Flag conditionals
@@ -116,10 +118,10 @@ namespace Rant.Engine
 
         #region Repeaters
 
-        
+
         public void PushRepeater(Repeater repeater) => _repeaterStack.Push(repeater);
 
-        
+
         public Repeater PopRepeater() => _repeaterStack.Pop();
 
         public Repeater CurrentRepeater => _repeaterStack.Any() ? _repeaterStack.Peek() : null;
@@ -156,7 +158,7 @@ namespace Rant.Engine
 
         #region States
 
-        
+
         public void PushState(State state)
         {
             if (_stateCount >= RantEngine.MaxStackSize)
@@ -169,7 +171,7 @@ namespace Rant.Engine
 
         public State PrevState => _prevState;
 
-        
+
         public State PopState()
         {
             _stateCount--;
@@ -195,7 +197,7 @@ namespace Rant.Engine
 
         public void Print(object input) => _stateStack.Peek().Print(input?.ToString());
 
-        
+
         public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
         public RantOutput Run(double timeout = -1)
@@ -225,7 +227,7 @@ namespace Rant.Engine
                 {
                     state = CurrentState;
                 } while (state.UsePreBlueprint());
-                
+
                 reader = state.Reader;
 
                 while (!reader.End)
@@ -233,16 +235,20 @@ namespace Rant.Engine
                     // Fetch the next token in the stream without consuming it
                     token = reader.ReadToken();
 
-#if EDITOR
-                    if (state == _mainState && token.Line != _lastActiveLine)
-                    {
-                        ActiveLineChanged?.Invoke(this, new LineEventArgs(_mainSource, token));
-                    }
-#endif
-
                     // Error on illegal delimiter
                     if (Delimiters.All.ContainsClosing(token.ID) && !Delimiters.All.Contains(token.ID, token.ID))
                         throw new RantException(reader.Source, token, "Unexpected delimiter '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
+
+#if EDITOR
+                    if (state.Reader.Source.SourceStringe == _mainSource.SourceStringe)
+                    {
+                        if (token.Line != _lastActiveLine)
+                            ActiveLineChanged?.Invoke(this, new LineEventArgs(_mainSource, token));
+
+                        _lastActiveLine = token.Line;
+                    }
+
+#endif
 
                     // Token function will return true if the interpreter should skip to the top of the stack
                     if (TokenFuncs.TryGetValue(token.ID, out currentFunc))
