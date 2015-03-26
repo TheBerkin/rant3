@@ -3,7 +3,7 @@ using System.Linq;
 
 using Rant.Engine;
 using Rant.Engine.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Stringes;
 
 namespace Rant.Vocabulary
 {

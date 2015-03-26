@@ -9,8 +9,8 @@ using System.Threading;
 using Rant.Debugger;
 using Rant.Engine.Compiler;
 using Rant.Engine.Formatters;
-using Rant.Stringes.Tokens;
 using Rant.Formats;
+using Rant.Stringes;
 using Rant.Vocabulary;
 
 namespace Rant.Engine
@@ -69,10 +69,6 @@ namespace Rant.Engine
         private readonly HashSet<State> _baseStates = new HashSet<State>();
 
         private readonly Limit<int> _charLimit;
-
-        public Dictionary<string, List<string>> LocalLists => _localLists;
-
-        public bool GetList(string name, out List<string> list) => _localLists.TryGetValue(name, out list) || Engine.GlobalLists.TryGetValue(name, out list);
 
         public Limit<int> CharLimit => _charLimit;
 

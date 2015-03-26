@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
 namespace Rant.Stringes
 {

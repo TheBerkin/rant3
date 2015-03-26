@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine;
 
-namespace Rant.Stringes.Tokens
+namespace Rant.Stringes
 {
     /// <summary>
     /// Represents a set of rules for creating tokens from a stringe.

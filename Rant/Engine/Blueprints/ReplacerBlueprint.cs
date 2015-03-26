@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Stringes;
 
 namespace Rant.Engine.Blueprints
 {

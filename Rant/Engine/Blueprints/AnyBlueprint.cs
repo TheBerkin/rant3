@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Engine.Compiler;
-using Rant.Stringes.Tokens;
+using Rant.Stringes;
 
 namespace Rant.Engine.Blueprints
 {

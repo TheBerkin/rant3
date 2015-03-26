@@ -33,14 +33,10 @@ namespace Rant
         public static int MaxStackSize = 64;
 
         internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>(); 
-        internal readonly Dictionary<string, List<string>> GlobalLists = new Dictionary<string, List<string>>(); 
 
-        private readonly VarStore _vars = new VarStore();
         private readonly SubStore _subs = new SubStore();
         private readonly HashSet<string> _flags = new HashSet<string>();
         private IRantDictionary _dictionary;   
-
-        internal VarStore Variables => _vars;
 
         internal SubStore Subroutines => _subs;
 
