@@ -24,11 +24,8 @@ namespace Rant.Engine.ObjectModel
                 if (!Util.ValidateName(name)) return null;
 
                 RantObject obj;
-
-                if (_level == 0)
-                {
-                    return _table.Globals.TryGetValue(name, out obj) ? obj : null;
-                }
+                
+                if (_table.Globals.TryGetValue(name, out obj)) return obj;
                 return _locals.TryGetValue(name, out obj) ? obj : null;
             }
             set
