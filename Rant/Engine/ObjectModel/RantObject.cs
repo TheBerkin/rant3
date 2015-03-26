@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rant.Engine.ObjectModel
 {
+    /// <summary>
+    /// Represents a Rant variable.
+    /// </summary>
     public class RantObject
     {
         /// <summary>
@@ -21,6 +24,29 @@ namespace Rant.Engine.ObjectModel
         /// The type of the object.
         /// </summary>
         public RantObjectType Type { get; private set; } = RantObjectType.No;
+
+        public object Value
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case RantObjectType.No:
+                        return null;
+                    case RantObjectType.Boolean:
+                        return _boolean;
+                    case RantObjectType.Number:
+                        return _number;
+                    case RantObjectType.Pattern:
+                        return _pattern;
+                    case RantObjectType.String:
+                        return _string;
+                    case RantObjectType.List:
+                        return _list;
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// Creates a No object.
