@@ -179,7 +179,6 @@ namespace Rant.Engine
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;
             _stateStack.Push(state);
-            Locals.EnterScope();
         }
 
         public State PrevState => _prevState;
@@ -190,7 +189,6 @@ namespace Rant.Engine
             _stateCount--;
             var s = _stateStack.Pop();
             _prevState = _stateCount > 0 ? _stateStack.Peek() : null;
-            Locals.ExitScope();
             return s;
         }
 

@@ -12,7 +12,9 @@
 
         public override bool Use()
         {
-            return _repeater.Iterate(I, this);
+            bool status = _repeater.Iterate(I, this);
+            if (!status) I.Locals.ExitScope();
+            return status;
         }
     }
 }
