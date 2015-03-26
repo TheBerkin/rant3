@@ -13,7 +13,7 @@
         public override bool Use()
         {
             bool status = _repeater.Iterate(I, this);
-            if (!status) I.Locals.ExitScope();
+            if (!status) I.Objects.ExitScope();
             return status;
         }
     }

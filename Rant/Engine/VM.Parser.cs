@@ -427,7 +427,7 @@ namespace Rant.Engine
             if (!blockInfo.Item1.Items.Any() || blockInfo.Item1.WeightTotal == 0 || !interpreter.TakeChance()) return false;
 
             var rep = new Repeater(blockInfo.Item1, attribs);
-            interpreter.Locals.EnterScope();
+            interpreter.Objects.EnterScope();
             interpreter.PushRepeater(rep);
             interpreter.BaseStates.Add(state);
             state.Pre(new RepeaterBlueprint(interpreter, rep));

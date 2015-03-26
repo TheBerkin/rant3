@@ -8,20 +8,11 @@ namespace Rant.Engine
         private readonly string _a;
         private readonly string _b;
 
-        public ComparisonResult Result
-        {
-            get { return _result; }
-        }
+        public ComparisonResult Result => _result;
 
-        public string A
-        {
-            get { return _a; }
-        }
+        public string A => _a;
 
-        public string B
-        {
-            get { return _b; }
-        }
+        public string B => _b;
 
         public Comparison(string a, string b)
         {

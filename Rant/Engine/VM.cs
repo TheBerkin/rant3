@@ -29,7 +29,7 @@ namespace Rant.Engine
         // Main fields
         public readonly RNG RNG;
         public readonly RantEngine Engine;
-        public readonly ObjectStack Locals;
+        public readonly ObjectStack Objects;
 
         private readonly RantPattern _mainSource;
         private readonly long _startingGen;
@@ -83,7 +83,7 @@ namespace Rant.Engine
         {
             Engine = engine;
             RNG = rng;
-            Locals = engine.Objects.CreateLocalStack();
+            Objects = engine.Objects.CreateLocalStack();
 
             _mainSource = input;
             _startingGen = rng.Generation;

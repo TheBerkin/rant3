@@ -18,6 +18,7 @@ namespace Rant.Engine
             public readonly ChannelStack Output;
             public readonly PatternReader Reader;            
             public readonly bool SharesOutput;
+            public readonly ParseMode ParseMode;
 
             private bool _finished = false;
 
@@ -35,18 +36,20 @@ namespace Rant.Engine
             }
 
             private State(VM vm, RantPattern derivedSource, IEnumerable<Token<R>> tokens,
-                ChannelStack output)
+                ChannelStack output, ParseMode parseMode = ParseMode.Pattern)
             {
                 Output = output;
                 Reader = new PatternReader(new RantPattern(derivedSource, tokens));
                 SharesOutput = (output == vm._output && vm.PrevState != null) || (vm._stateStack.Any() && output == vm._stateStack.Peek().Output);
+                ParseMode = parseMode;
             }
 
-            public State(VM vm, RantPattern source, ChannelStack output)
+            public State(VM vm, RantPattern source, ChannelStack output, ParseMode parseMode = ParseMode.Pattern)
             {
                 Output = output;
                 Reader = new PatternReader(source);
                 SharesOutput = (output == vm._output && vm.PrevState != null) || (vm._stateStack.Any() && output == vm._stateStack.Peek().Output);
+                ParseMode = parseMode;
             }
 
             /// <summary>
@@ -94,11 +97,11 @@ namespace Rant.Engine
             /// </summary>
             /// <param name="source">The source from which to read tokens.</param>
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
+            /// <param name="parseMode">The parsing mode that the state will operate under.</param>
             /// <returns></returns>
-            
-            public static State Create(RantPattern source, VM interpreter)
+            public static State Create(RantPattern source, VM interpreter, ParseMode parseMode = ParseMode.Pattern)
             {
-                return new State(interpreter, source, interpreter.CurrentState.Output);
+                return new State(interpreter, source, interpreter.CurrentState.Output, parseMode);
             }
 
             /// <summary>
@@ -108,12 +111,12 @@ namespace Rant.Engine
             /// <param name="tokens">The tokens to read.</param>
             /// <param name="interpreter">The interpreter that will read the tokens.</param>
             /// <param name="output">The output of the state. Excluding this will create a new output.</param>
+            /// <param name="parseMode">The parsing mode that the state will operate under.</param>
             /// <returns></returns>
-            
             public static State CreateSub(RantPattern derivedSource, IEnumerable<Token<R>> tokens,
-                VM interpreter, ChannelStack output = null)
+                VM interpreter, ChannelStack output = null, ParseMode parseMode = ParseMode.Pattern)
             {
-                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.Format, interpreter.CharLimit));
+                return new State(interpreter, derivedSource, tokens, output ?? new ChannelStack(interpreter.Format, interpreter.CharLimit), parseMode);
             }
 
             public void Print(string value)
