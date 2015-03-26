@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Rant.Debugger;
 using Rant.Engine;
+using Rant.Engine.ObjectModel;
 using Rant.Formats;
 using Rant.Vocabulary;
 
@@ -21,34 +22,44 @@ namespace Rant
 #endif
 
         /// <summary>
-        /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
-        /// </summary>
-        public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
-
-        private static readonly RNG Seeds = new RNG();
-
-        /// <summary>
         /// The maximum stack size allowed for a pattern.
         /// </summary>
         public static int MaxStackSize = 64;
 
-        internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>(); 
+        /// <summary>
+        /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
+        /// </summary>
+        public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
+        
+        private static readonly RNG Seeds = new RNG();
 
-        private readonly SubStore _subs = new SubStore();
-        private readonly HashSet<string> _flags = new HashSet<string>();
-        private IRantDictionary _dictionary;   
 
-        internal SubStore Subroutines => _subs;
+        internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>();
+        internal readonly SubStore Subroutines = new SubStore();
+        internal readonly ObjectTable Objects = new ObjectTable();
+
+        /// <summary>
+        /// Accesses global variables.
+        /// </summary>
+        /// <param name="name">The name of the variable to access.</param>
+        /// <returns></returns>
+        public RantObject this[string name]
+        {
+            get { return Objects[name]; }
+            set { Objects[name] = value; }
+        }
 
         /// <summary>
         /// The currently set flags.
         /// </summary>
-        public HashSet<string> Flags => _flags;
+        public readonly HashSet<string> Flags = new HashSet<string>();
 
         /// <summary>
         /// The current formatting settings for the engine.
         /// </summary>
-        public RantFormat Format { get; set; } = RantFormat.English;
+        public RantFormat Format = RantFormat.English;
+
+        private IRantDictionary _dictionary;
 
         /// <summary>
         /// The vocabulary associated with this instance.

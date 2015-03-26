@@ -25,6 +25,9 @@ namespace Rant.Engine.ObjectModel
         /// </summary>
         public RantObjectType Type { get; private set; } = RantObjectType.No;
 
+        /// <summary>
+        /// The value of the object.
+        /// </summary>
         public object Value
         {
             get

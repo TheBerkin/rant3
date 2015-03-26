@@ -92,7 +92,9 @@
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
+    <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
+    <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
     <Compile Include="Engine\Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />

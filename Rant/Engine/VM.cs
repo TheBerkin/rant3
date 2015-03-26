@@ -9,6 +9,7 @@ using System.Threading;
 using Rant.Debugger;
 using Rant.Engine.Compiler;
 using Rant.Engine.Formatters;
+using Rant.Engine.ObjectModel;
 using Rant.Formats;
 using Rant.Stringes;
 using Rant.Vocabulary;
@@ -28,6 +29,7 @@ namespace Rant.Engine
         // Main fields
         public readonly RNG RNG;
         public readonly RantEngine Engine;
+        public readonly ObjectStack Locals;
 
         private readonly RantPattern _mainSource;
         private readonly long _startingGen;
@@ -35,9 +37,6 @@ namespace Rant.Engine
         // Queries
         public readonly QueryState QueryState = new QueryState();
         public readonly Dictionary<string, Query> LocalQueryMacros = new Dictionary<string, Query>();
-
-        // Lists
-        private readonly Dictionary<string, List<string>> _localLists = new Dictionary<string, List<string>>();
 
         // Next block attribs
         public BlockAttribs NextBlockAttribs = new BlockAttribs();
@@ -80,6 +79,21 @@ namespace Rant.Engine
 
         public NumberFormatter NumberFormatter => _numFormatter;
 
+        public VM(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
+        {
+            Engine = engine;
+            RNG = rng;
+            Locals = engine.Objects.CreateLocalStack();
+
+            _mainSource = input;
+            _startingGen = rng.Generation;
+            _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
+            _output = new ChannelStack(engine.Format, _charLimit);
+            _mainState = new State(this, input, _output);
+        }
+
+        #region Formatting
+
         public void OpenQuote()
         {
             _quoteLevel++;
@@ -100,6 +114,8 @@ namespace Rant.Engine
 
 
         public string FormatNumber(double value) => _numFormatter.FormatNumber(value);
+
+        #endregion
 
         #region Flag conditionals
         public void SetElse() => _else = true;
@@ -163,6 +179,7 @@ namespace Rant.Engine
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;
             _stateStack.Push(state);
+            Locals.EnterScope();
         }
 
         public State PrevState => _prevState;
@@ -173,6 +190,7 @@ namespace Rant.Engine
             _stateCount--;
             var s = _stateStack.Pop();
             _prevState = _stateCount > 0 ? _stateStack.Peek() : null;
+            Locals.ExitScope();
             return s;
         }
 
@@ -180,19 +198,7 @@ namespace Rant.Engine
 
         #endregion
 
-        public VM(RantEngine engine, RantPattern input, RNG rng, int limitChars = 0)
-        {
-            _mainSource = input;
-            RNG = rng;
-            _startingGen = rng.Generation;
-            Engine = engine;
-            _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
-            _output = new ChannelStack(engine.Format, _charLimit);
-            _mainState = new State(this, input, _output);
-        }
-
         public void Print(object input) => _stateStack.Peek().Print(input?.ToString());
-
 
         public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
