@@ -13,19 +13,33 @@ namespace RantConsole
     class Program
     {
         public const double PATTERN_TIMEOUT = 10.0;
+
         static void Main(string[] args)
         {
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;            
 
             var file = Property("file");
-            var dicPath = Property("dicpath");
+            var dicPath = Property("dict");
+            var pkgPath = Property("package");
 
             long seed = 0;
             bool useCustomSeed = Int64.TryParse(Property("seed"), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out seed);
 
-            Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");            
+            Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
-            var rant = new RantEngine(String.IsNullOrEmpty(dicPath) ? "dictionary" : dicPath, Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow);
+            RantEngine.DefaultNsfwFilter = Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow;
+            var rant = new RantEngine();
+
+            try
+            {
+                if (!String.IsNullOrEmpty(dicPath)) rant.Dictionary = RantDictionary.FromDirectory(dicPath, RantEngine.DefaultNsfwFilter);
+                if (!String.IsNullOrEmpty(pkgPath)) rant.LoadPackage(pkgPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load content: \{ex}");
+            }
+
             rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 
             if (!String.IsNullOrEmpty(file))

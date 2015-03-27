@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Rant.Debugger;
@@ -137,13 +138,57 @@ namespace Rant
         }
 
         /// <summary>
-        /// Loads the specified package's contents into the engine.
+        /// Loads the specified package into the engine.
         /// </summary>
         /// <param name="package">The package to load.</param>
         /// <param name="mergeBehavior">The table merging strategy to employ.</param>
         public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             if (package == null) throw new ArgumentNullException("package");
+
+            var patterns = package.GetPatterns();
+            var tables = package.GetTables();
+
+            if (patterns.Any())
+            {
+                PackagePatterns = PackagePatterns ?? new Dictionary<string, RantPattern>();
+
+                foreach (var pattern in patterns)
+                    PackagePatterns[pattern.Name] = pattern;
+            }
+
+            if (tables.Any())
+            {
+                if (_dictionary == null)
+                {
+                    _dictionary = new RantDictionary(tables, mergeBehavior);
+                }
+                else
+                {
+                    foreach (var table in tables)
+                    {
+                        _dictionary.AddTable(table, mergeBehavior);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads the package at the specified file path into the engine.
+        /// </summary>
+        /// <param name="path">The path to the package to load.</param>
+        /// <param name="mergeBehavior">The table merging strategy to employ.</param>
+        public void LoadPackage(string path, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+        {
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException("Path cannot be null nor empty.");
+
+            if (String.IsNullOrEmpty(Path.GetExtension(path)))
+            {
+                path += ".rantpkg";
+            }
+
+            var package = RantPackage.Load(path);
 
             var patterns = package.GetPatterns();
             var tables = package.GetTables();

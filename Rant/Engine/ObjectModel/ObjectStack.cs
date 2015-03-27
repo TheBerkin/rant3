@@ -59,7 +59,7 @@ namespace Rant.Engine.ObjectModel
 
         public void EnterScope()
         {
-            if (++_level > _scopes.Count)
+            if (++_level >= _scopes.Count)
             {
                 _scopes.Add(new HashSet<string>());
             }
@@ -68,7 +68,7 @@ namespace Rant.Engine.ObjectModel
         public void ExitScope()
         {
             if (_level == 0) return;
-            var garbage = _scopes[_level--];
+            var garbage = _scopes[--_level];
             foreach (var name in garbage)
             {
                 _locals.Remove(name);

@@ -11,15 +11,27 @@ namespace RantConsole
 
         static CmdLine()
         {
-            foreach (var argKeyVal in Environment.GetCommandLineArgs().Where(arg => arg.StartsWith("-")).Select(arg => arg.TrimStart('-').Split(new[] { '=' }, 2)))
+            var args = Environment.GetCommandLineArgs();
+            int argc = args.Length;
+            if (argc == 0) return;
+
+            bool isProperty = false;
+
+            for (int i = 0; i < args.Length; i++)
             {
-                if (argKeyVal.Length == 2)
+                if (isProperty)
                 {
-                    Arguments[argKeyVal[0].ToLower().Trim()] = argKeyVal[1];
+                    if (i == argc - 1) break;
+                    Arguments[args[i - 1].TrimStart('-')] = args[i];
+                    isProperty = false;
                 }
-                else
+                else if (args[i].StartsWith("--"))
                 {
-                    Flags.Add(argKeyVal[0]);
+                    Flags.Add(args[i].TrimStart('-'));
+                }
+                else if (args[i].StartsWith("-"))
+                {
+                    isProperty = true;
                 }
             }
         }
@@ -32,6 +44,12 @@ namespace RantConsole
                 arg = "";
             }
             return arg;
+        }
+
+        public static string Property(string name, string defaultValue)
+        {
+            string arg;
+            return !Arguments.TryGetValue(name.ToLower(), out arg) ? defaultValue : arg;
         }
 
         public static bool Flag(string name) => Flags.Contains(name);
