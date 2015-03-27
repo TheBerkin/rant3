@@ -6,28 +6,24 @@
 
 Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
 
-###Features
-Some of the highlights of what Rant offers:
+##Rant Features
 
-* Recursive, branching choices with various selection strategies (random, ordered, locked...)
-* Access to external dictionaries using queries
-* Word rhyming using pronunciation metadata
-* Synchronize sections of random output
-* Automatic capitalization
+* Recursive, branching choices supporting various selection strategies (random, ordered, locked...)
+* Queryable dictionaries (you can fetch random words!)
+* Modes for auto-rhyming, auto-capitalization
 * Indefinite article (a/an) automation
-* Multiple outputs (channels)
+* Synchronize sections of random output
+* Multiple output channels
 * Probability modifiers
-* Overwriting (targets)
-* Looping (repeaters)
-* Conditionals
-* List objects
-* Subroutines
-* Arithmetic
+* Overwriting previous output
+* Loops, flow control, and subroutines
+* Dynamically typed object model with local/global scopes
+* Package importing/exporting for patterns and dictionaries
 * *And much, much more...*
 
 ##Examples
 
-**Generate random sentence**
+**Fill in the blanks**
 ```
 <name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <timenoun.plural-dayofweek>.
 ```
@@ -73,6 +69,8 @@ Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/
 ```
 PM> Install-Package Rant
 ```
+
+But remember, the latest version will always be available on the repository first.
 
 ##License
 Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
