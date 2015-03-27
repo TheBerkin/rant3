@@ -64,6 +64,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -105,7 +106,15 @@
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />
+    <Compile Include="IO\BitField.cs" />
+    <Compile Include="IO\EasyReader.cs" />
+    <Compile Include="IO\EasyWriter.cs" />
+    <Compile Include="IO\Endian.cs" />
+    <Compile Include="IO\EndiannessAttribute.cs" />
+    <Compile Include="IO\IOExtensions.cs" />
+    <Compile Include="IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
+    <Compile Include="RantPackage.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Comparison.cs" />
     <Compile Include="Engine\Compiler\Delimiters.cs" />

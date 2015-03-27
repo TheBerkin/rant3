@@ -13,6 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.DicDoc", "Rant.DicDoc\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.DicSort", "Rant.DicSort\Rant.DicSort.csproj", "{6995183B-4537-457B-8F73-56A73678C961}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E034FE1D-9CD4-4534-B49C-3CA4EEDCD014}"
+	ProjectSection(SolutionItems) = preProject
+		Rebracer.xml = Rebracer.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Package", "Rant.Package\Rant.Package.csproj", "{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Berkin-Release|Any CPU = Berkin-Release|Any CPU
@@ -61,6 +68,14 @@ Global
 		{6995183B-4537-457B-8F73-56A73678C961}.Editor|Any CPU.Build.0 = Debug|Any CPU
 		{6995183B-4537-457B-8F73-56A73678C961}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6995183B-4537-457B-8F73-56A73678C961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Berkin-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Berkin-Release|Any CPU.Build.0 = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Editor|Any CPU.ActiveCfg = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Editor|Any CPU.Build.0 = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

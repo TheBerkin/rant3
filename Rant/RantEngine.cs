@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Rant.Debugger;
 using Rant.Engine;
@@ -38,6 +39,9 @@ namespace Rant
         internal readonly SubStore Subroutines = new SubStore();
         internal readonly ObjectTable Objects = new ObjectTable();
 
+        private readonly NsfwFilter _filter = DefaultNsfwFilter;
+        private Dictionary<string, RantPattern> PackagePatterns; 
+
         /// <summary>
         /// Accesses global variables.
         /// </summary>
@@ -75,34 +79,34 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new Engine object with no vocabulary.
+        /// Creates a new RantEngine object with no vocabulary.
         /// </summary>
         public RantEngine()
         {
-            LoadVocab("", DefaultNsfwFilter);
         }
 
         /// <summary>
-        /// Creates a new Engine object that loads vocabulary from the specified path.
+        /// Creates a new RantEngine object that loads vocabulary from the specified path.
         /// </summary>
         /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
         public RantEngine(string vocabularyPath)
         {
-            LoadVocab(vocabularyPath, DefaultNsfwFilter);
+            LoadVocab(vocabularyPath);
         }
 
         /// <summary>
-        /// Creates a new Engine object that loads vocabulary from a path according to the specified filtering option.
+        /// Creates a new RantEngine object that loads vocabulary from a path according to the specified filtering option.
         /// </summary>
         /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
         /// <param name="filter">The filtering option to apply when loading the files.</param>
         public RantEngine(string vocabularyPath, NsfwFilter filter)
         {
-            LoadVocab(vocabularyPath, filter);
+            _filter = filter;
+            LoadVocab(vocabularyPath);
         }
 
         /// <summary>
-        /// Creates a new Engine object with the specified vocabulary.
+        /// Creates a new RantEngine object with the specified vocabulary.
         /// </summary>
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
         public RantEngine(IRantDictionary dictionary)
@@ -111,13 +115,60 @@ namespace Rant
             _dictionary = dictionary;
         }
 
-        private void LoadVocab(string path, NsfwFilter filter)
+        private void LoadVocab(string path)
         {
             if (_dictionary != null) return;
 
             if (!String.IsNullOrEmpty(path))
             {
-                _dictionary = RantDictionary.FromDirectory(path, filter);
+                _dictionary = RantDictionary.FromDirectory(path, _filter);
+            }
+        }
+
+        /// <summary>
+        /// Returns a boolean value indicating whether a pattern by the specified name has been loaded from a package.
+        /// </summary>
+        /// <param name="patternName">The name of the pattern to check.</param>
+        /// <returns></returns>
+        public bool PatternExists(string patternName)
+        {
+            if (PackagePatterns == null) return false;
+            return PackagePatterns.ContainsKey(patternName);
+        }
+
+        /// <summary>
+        /// Loads the specified package's contents into the engine.
+        /// </summary>
+        /// <param name="package">The package to load.</param>
+        /// <param name="mergeBehavior">The table merging strategy to employ.</param>
+        public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+        {
+            if (package == null) throw new ArgumentNullException("package");
+
+            var patterns = package.GetPatterns();
+            var tables = package.GetTables();
+
+            if (patterns.Any())
+            {
+                PackagePatterns = PackagePatterns ?? new Dictionary<string, RantPattern>();
+
+                foreach (var pattern in patterns)
+                    PackagePatterns[pattern.Name] = pattern;
+            }
+
+            if (tables.Any())
+            {
+                if (_dictionary == null)
+                {
+                    _dictionary = new RantDictionary(tables, mergeBehavior);
+                }
+                else
+                {
+                    foreach (var table in tables)
+                    {
+                        _dictionary.AddTable(table, mergeBehavior);
+                    }
+                }
             }
         }
 
@@ -256,6 +307,53 @@ namespace Rant
         public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1)
         {
             return RunVM(new VM(this, input, rng, charLimit), timeout);
+        }
+
+        /// <summary>
+        /// Executes a pattern that has been loaded from a package and returns the resulting output.
+        /// </summary>
+        /// <param name="patternName">The name of the pattern to execute.</param>
+        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+        /// <returns></returns>
+        public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1)
+        {
+            if (!PatternExists(patternName))
+                throw new ArgumentException("Pattern doesn't exist.");
+
+            return RunVM(new VM(this, PackagePatterns[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
+        }
+
+        /// <summary>
+        /// Executes a pattern that has been loaded from a package and returns the resulting output.
+        /// </summary>
+        /// <param name="patternName">The name of the pattern to execute.</param>
+        /// <param name="seed">The seed to generate output with.</param>
+        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+        /// <returns></returns>
+        public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1)
+        {
+            if (!PatternExists(patternName))
+                throw new ArgumentException("Pattern doesn't exist.");
+
+            return RunVM(new VM(this, PackagePatterns[patternName], new RNG(seed), charLimit), timeout);
+        }
+
+        /// <summary>
+        /// Executes a pattern that has been loaded from a package using a custom random number generator and returns the resulting output.
+        /// </summary>
+        /// <param name="patternName">The name of the pattern to execute.</param>
+        /// <param name="rng">The random number generator to use when generating output.</param>
+        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+        /// <returns></returns>
+        public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1)
+        {
+            if (!PatternExists(patternName))
+                throw new ArgumentException("Pattern doesn't exist.");
+
+            return RunVM(new VM(this, PackagePatterns[patternName], rng, charLimit), timeout);
         }
         #endregion
 

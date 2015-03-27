@@ -7,12 +7,12 @@ using Rant.Engine;
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Stores a Rant dictionary.
+    /// Represents a named collection of dictionary entries.
     /// </summary>
     public sealed partial class RantDictionaryTable
     {
         /// <summary>
-        /// The current version number of the dictionary format.
+        /// The current version number of the table format.
         /// </summary>
         public const int Version = 3;
 
@@ -23,16 +23,16 @@ namespace Rant.Vocabulary
         private RantDictionaryEntry[] _entries;
 
         /// <summary>
-        /// Creates a new WordList from the specified data.
+        /// Creates a new RantDictionaryTable with the specified entries.
         /// </summary>
-        /// <param name="name">the name of the list.</param>
+        /// <param name="name">the name of the table.</param>
         /// <param name="subtypes">The subtype names.</param>
-        /// <param name="entries">The words to add to the list.</param>
+        /// <param name="entries">The entries to add to the table.</param>
         public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries)
         {
             if (!Util.ValidateName(name))
             {
-                throw new FormatException("Invalid dictionary name: '\{name}'");
+                throw new FormatException("Invalid table name: '\{name}'");
             }
 
             if (!subtypes.All(Util.ValidateName))
@@ -43,6 +43,29 @@ namespace Rant.Vocabulary
             _subtypes = subtypes;
             _name = name;
             _entries = entries.ToArray();
+        }
+
+        /// <summary>
+        /// Creates a new RantDictionaryTable with the specified entries.
+        /// </summary>
+        /// <param name="name">the name of the table.</param>
+        /// <param name="subtypes">The subtype names.</param>
+        /// <param name="entries">The entries to add to the table.</param>
+        public RantDictionaryTable(string name, string[] subtypes, RantDictionaryEntry[] entries)
+        {
+            if (!Util.ValidateName(name))
+            {
+                throw new FormatException("Invalid table name: '\{name}'");
+            }
+
+            if (!subtypes.All(Util.ValidateName))
+            {
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'").ToArray()));
+            }
+
+            _subtypes = subtypes;
+            _name = name;
+            _entries = entries;
         }
 
         /// <summary>
@@ -63,6 +86,11 @@ namespace Rant.Vocabulary
         /// The name of the table.
         /// </summary>
         public string Name => _name;
+
+        /// <summary>
+        /// The number of entries stored in the table.
+        /// </summary>
+        public int EntryCount => _entries.Length;
 
         private int GetSubtypeIndex(string subtype)
         {

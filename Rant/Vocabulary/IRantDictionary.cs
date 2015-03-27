@@ -13,5 +13,12 @@
         /// <param name="syncState">The state object to use for carrier synchronization.</param>
         /// <returns></returns>
         string Query(RNG rng, Query query, QueryState syncState);
+
+        /// <summary>
+        /// Adds a new RantDictionaryTable object to the collection.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="mergeBehavior">The merging strategy to employ.</param>
+        void AddTable(RantDictionaryTable table, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive);
     }
 }
