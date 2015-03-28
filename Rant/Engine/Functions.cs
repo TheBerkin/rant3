@@ -108,7 +108,7 @@ namespace Rant.Engine
             F["quot"] = F["q"] = new RantFunc(Quote, ParamFlags.Code);
 
             // Channels
-            F["out"] = new RantFunc(Out, ParamFlags.None, ParamFlags.None);
+            F["open"] = new RantFunc(Open, ParamFlags.None, ParamFlags.None);
             F["close"] = new RantFunc(Close, ParamFlags.None);
 
             // External interaction
@@ -228,6 +228,7 @@ namespace Rant.Engine
         {
             if (vm.CurrentRepeater == null) return false;
             vm.CurrentRepeater.Finish();
+            vm.Objects.ExitScope();
             VM.State state = null;
             while (!vm.BaseStates.Contains(state = vm.CurrentState))
             {
@@ -449,7 +450,7 @@ namespace Rant.Engine
             return false;
         }
 
-        private static bool Out(VM vm, RantPattern source, Stringe tagname, Argument[] args)
+        private static bool Open(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             RantChannelVisibility cv;
             var cv_str = args[1].AsString();
