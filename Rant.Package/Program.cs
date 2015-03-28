@@ -17,60 +17,68 @@ namespace Rant.Package
             }
 
             var pkg = new RantPackage();
-
-            if (args.Length == 0)
+            var paths = GetPaths();
+            var outputPath = Property("out", Path.Combine(
+                Directory.GetParent(Environment.CurrentDirectory).FullName,
+                Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
+            try
             {
-                Console.WriteLine("Loading content...\n");
-                try
+                Console.WriteLine("Packing...");
+
+                if (paths.Length == 0)
                 {
-                    foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.rant", SearchOption.AllDirectories))
-                    {
-                        Console.WriteLine("+ " + path);
-                        
-                        var pattern = RantPattern.FromFile(path);
-                        pkg.AddPattern(pattern);
-                    }
-
-                    foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
-                    {
-                        Console.WriteLine("+ " + path);
-                        var table = RantDictionaryTable.FromFile(path, NsfwFilter.Allow);
-                        pkg.AddTable(table);
-                    }
-
-                    var outputPath = Path.Combine(
-                        Directory.GetParent(Environment.CurrentDirectory).FullName,
-                        Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg");
-
-                    Console.WriteLine("Packing...");
-
-                    pkg.Save(outputPath);
-
-                    Console.WriteLine("\nPackage saved to " + outputPath);
+                    Pack(pkg, Environment.CurrentDirectory);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Something went wrong while generating your package:\n" + ex);
+                    foreach (var path in paths)
+                    {
+                        Pack(pkg, path);
+                    }
                 }
+
+                pkg.Save(outputPath);
+
+                Console.WriteLine("\nPackage saved to " + outputPath);
             }
-            else
+            catch (Exception ex)
             {
-                ShowHelp();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Something went wrong while generating your package:\n" + ex);
             }
 
             Console.ResetColor();
         }
 
+        private static void Pack(RantPackage package, string contentPath)
+        {
+            foreach (var path in Directory.GetFiles(contentPath, "*.rant", SearchOption.AllDirectories))
+            {
+                Console.WriteLine("+ " + path);
+
+                var pattern = RantPattern.FromFile(path);
+                package.AddPattern(pattern);
+            }
+
+            foreach (var path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
+            {
+                Console.WriteLine("+ " + path);
+                var table = RantDictionaryTable.FromFile(path, NsfwFilter.Allow);
+                package.AddTable(table);
+            }
+        }
+
         private static void ShowHelp()
         {
             Console.WriteLine("Rant Package Utility\n");
-            Console.WriteLine("Usage:\n");
+            Console.WriteLine("USAGE\n");
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("    rantpkg");
-            Console.ResetColor();
-            Console.WriteLine("    Creates a package from the current directory.\n");
+            Console.WriteLine("  rantpkg [-out package-path]");
+            Console.WriteLine("    - Creates a package from the current directory.");
+            Console.WriteLine("      -out: Specifies the output path for the package.");
+            Console.WriteLine("  rantpkg [content-paths...] [-out package-path]");
+            Console.WriteLine("    - Creates a package from the specified directories.");
+            Console.WriteLine("      -out: Specifies the output path for the package.");
         }
     }
 }

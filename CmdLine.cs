@@ -33,7 +33,6 @@ namespace Rant.Common
             {
                 if (isProperty)
                 {
-                    if (i == argc - 1) break;
                     Arguments[args[i - 1].TrimStart('-')] = args[i];
                     isProperty = false;
                 }
