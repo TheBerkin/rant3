@@ -41,10 +41,9 @@ namespace Rant.Engine.Blueprints
                 // Get the matches for the pattern in the input
                 _matches = _regex.Matches(_input);
 
-                RantPattern source = I.CurrentState.Reader.Source;
-                var state = CreateMatchEvaluatorState(source, I, _matches, _matches.Count - 1);
+                if (_matches.Count == 0) return true; // If there are no matches, don't push any evaulator states.
 
-                I.PushState(state);
+                I.PushState(CreateMatchEvaluatorState(I.CurrentState.Reader.Source, I, _matches, _matches.Count - 1));
 
                 return true;
             }

@@ -21,6 +21,13 @@ namespace Rant.Tests
         }
 
         [Test]
+        public void ReplacerNoMatches()
+        {
+            string result = rant.Do(@"[//\s//:TestString;]");
+            Assert.AreEqual(result, "TestString");
+        }
+
+        [Test]
         public void VowelReplacer()
         {
             string result = rant.Do("[//[aeiou]//i: The quick brown fox jumps over the lazy dog.; {a|e|i|o|u}]");
