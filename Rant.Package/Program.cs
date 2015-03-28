@@ -2,6 +2,7 @@
 using System.IO;
 
 using Rant.Vocabulary;
+using Rant.Common.CmdLine;
 
 namespace Rant.Package
 {
@@ -9,7 +10,7 @@ namespace Rant.Package
     {
         static void Main(string[] args)
         {
-            if (args.Length == 1 && args[0] == "?")
+            if (Help)
             {
                 ShowHelp();
                 return;

@@ -13,7 +13,8 @@ namespace Rant.Vocabulary
         /// Saves the contents of the dictionary to a file at the specified path.
         /// </summary>
         /// <param name="path">The path to the file to save.</param>
-        public void Save(string path)
+        /// <param name="useDiffmark">Specifies whether to generate Diffmarked entries.</param>
+        public void Save(string path, bool useDiffmark = false)
         {
             using (var writer = new StreamWriter(path))
             {
@@ -25,18 +26,18 @@ namespace Rant.Vocabulary
                 var entriesClean = GetEntries().Where(entry => !entry.NSFW);
                 var entriesDirty = GetEntries().Where(entry => entry.NSFW);
 
-                WriteEntries(writer, entriesClean);
+                WriteEntries(writer, entriesClean, useDiffmark);
                 if (entriesDirty.Any())
                 {
                     writer.WriteLine();
                     writer.WriteLine("#nsfw");
                     writer.WriteLine();
-                    WriteEntries(writer, entriesDirty);
+                    WriteEntries(writer, entriesDirty, useDiffmark);
                 }
             }
         }
 
-        private static void WriteEntries(StreamWriter writer, IEnumerable<RantDictionaryEntry> entries)
+        private static void WriteEntries(StreamWriter writer, IEnumerable<RantDictionaryEntry> entries, bool diffmark = false)
         {
             var root = new RantDictionaryTableClassDirective("root");
             // we create the tree of class directives first - then we fill it
@@ -57,7 +58,7 @@ namespace Rant.Vocabulary
 
             root.Prune();
 
-            root.Render(writer);
+            root.Render(writer, -1, diffmark);
         }
 
         // thank you stack exchange
@@ -162,7 +163,7 @@ namespace Rant.Vocabulary
                     child.Prune();
             }
 
-            public void Render(StreamWriter writer, int level = -1)
+            public void Render(StreamWriter writer, int level = -1, bool diffmark = false)
             {
                 string leadingWhitespace = "";
                 string leadingWhitespacer = (Parent != null ? "  " : "");
@@ -176,11 +177,11 @@ namespace Rant.Vocabulary
                     writer.WriteLine(leadingWhitespace + "#class add " + this.Name);
 
                 foreach (string key in this.Children.Keys.OrderBy(x => x))
-                    this.Children[key].Render(writer, level + 1);
+                    this.Children[key].Render(writer, level + 1, diffmark);
 
                 foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x.Terms[0].Value))
                 {   
-                    if (entry.Terms.Length > 1)
+                    if (entry.Terms.Length > 1 && diffmark)
                     {
                         writer.WriteLine(leadingWhitespacer + ">> {0}", entry.Terms.Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry.Terms[0].Value, t.Value)).Aggregate((c, n) => c + "/" + n));
                     }

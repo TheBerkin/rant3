@@ -2,18 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RantConsole
+namespace Rant.Common
 {
-    static class CmdLine
+    internal static class CmdLine
     {
         private static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
         private static readonly HashSet<string> Flags = new HashSet<string>();
+        private static readonly List<string> Paths = new List<String>();
+
+        /// <summary>
+        /// Determines whether the user specified a question mark as the argument.
+        /// </summary>
+        public static readonly bool Help;
 
         static CmdLine()
         {
-            var args = Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
             int argc = args.Length;
             if (argc == 0) return;
+
+            if (argc == 1 && args[0] == "?")
+            {
+                Help = true;
+                return;
+            }
 
             bool isProperty = false;
 
@@ -33,8 +45,14 @@ namespace RantConsole
                 {
                     isProperty = true;
                 }
+                else
+                {
+                    Paths.Add(args[i]);
+                }
             }
         }
+
+        public static string[] GetPaths() => Paths.ToArray();
 
         public static string Property(string name)
         {

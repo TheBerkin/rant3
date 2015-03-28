@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI;
 
 using Rant.Vocabulary;
+using Rant.Common.CmdLine;
 
 namespace DicDoc
 {
@@ -12,7 +13,7 @@ namespace DicDoc
     {
         static void Main(string[] args)
         {
-            if (args.Length > 1 || args.Length == 1 && args[0] == "?")
+            if (Help)
             {
                 Console.WriteLine("USAGE\n");
                 Console.WriteLine("dicdoc");

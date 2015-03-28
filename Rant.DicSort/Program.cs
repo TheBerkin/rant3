@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+using Rant.Common.CmdLine;
 using Rant.Vocabulary;
 
 namespace Rant.DicSort
@@ -13,6 +10,15 @@ namespace Rant.DicSort
     {
         static void Main(string[] args)
         {
+            if (Help)
+            {
+                Console.WriteLine("USAGE\n");
+                Console.WriteLine("dicsort [paths...] [--diff]");
+                Console.WriteLine("  - Sorts tables in the current directory.");
+                Console.WriteLine("    --diff: Specifies that entries should be diffmarked.");
+                return;
+            }
+
             try
             {
                 if (args.Length == 0)
@@ -55,7 +61,7 @@ namespace Rant.DicSort
         static void ProcessDicFile(string path)
         {
             var table = RantDictionaryTable.FromFile(path, NsfwFilter.Allow);
-            table.Save(path);
+            table.Save(path, Flag("diff"));
         }
     }
 }

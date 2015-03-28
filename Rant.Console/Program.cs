@@ -6,7 +6,7 @@ using Rant.Vocabulary;
 
 using System.Console;
 
-using RantConsole.CmdLine;
+using Rant.Common.CmdLine;
 
 namespace RantConsole
 {

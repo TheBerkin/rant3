@@ -20,6 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Package", "Rant.Package\Rant.Package.csproj", "{00697941-DDCE-4F0C-8C43-9D3AE6C78E6E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{91992F9F-5CD0-4EEE-85A1-C49EA9260C0A}"
+	ProjectSection(SolutionItems) = preProject
+		CmdLine.cs = CmdLine.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Berkin-Release|Any CPU = Berkin-Release|Any CPU
