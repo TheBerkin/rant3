@@ -21,7 +21,9 @@ namespace Rant.DicSort
 
             try
             {
-                if (args.Length == 0)
+                var paths = GetPaths();
+
+                if (paths.Length == 0)
                 {
                     foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
                     {
@@ -31,7 +33,7 @@ namespace Rant.DicSort
                 }
                 else
                 {
-                    foreach (var path in args)
+                    foreach (var path in paths)
                     {
                         if (path.EndsWith(".dic"))
                         {
