@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Rant.Engine.Compiler;
+using Rant.Stringes;
 
 namespace Rant.Debugger
 {
