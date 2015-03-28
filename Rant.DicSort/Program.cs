@@ -10,12 +10,14 @@ namespace Rant.DicSort
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Rant Table Sorting Utility\n");
+
             if (Help)
             {
                 Console.WriteLine("USAGE\n");
-                Console.WriteLine("dicsort [paths...] [--diff]");
-                Console.WriteLine("  - Sorts tables in the current directory.");
-                Console.WriteLine("    --diff: Specifies that entries should be diffmarked.");
+                Console.WriteLine("  dicsort [paths...] [--diff]");
+                Console.WriteLine("    - Sorts tables in the current directory.");
+                Console.WriteLine("      --diff: Specifies that entries should be diffmarked.");
                 return;
             }
 

@@ -10,6 +10,8 @@ namespace Rant.Package
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Rant Package Utility\n");
+
             if (Help)
             {
                 ShowHelp();
@@ -70,7 +72,6 @@ namespace Rant.Package
 
         private static void ShowHelp()
         {
-            Console.WriteLine("Rant Package Utility\n");
             Console.WriteLine("USAGE\n");
 
             Console.WriteLine("  rantpkg [-out package-path]");

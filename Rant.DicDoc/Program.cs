@@ -13,13 +13,15 @@ namespace DicDoc
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Rant Dictionary Documentation Generator\n");
+
             if (Help)
             {
                 Console.WriteLine("USAGE\n");
-                Console.WriteLine("dicdoc");
-                Console.WriteLine("  - Generates documentation for the current directory.");
-                Console.WriteLine("dicdoc your-dictionary-dir");
-                Console.WriteLine("  - Generates documentation for the specified directory.");
+                Console.WriteLine("  dicdoc");
+                Console.WriteLine("    - Generates documentation for the current directory.");
+                Console.WriteLine("  dicdoc your-dictionary-dir");
+                Console.WriteLine("    - Generates documentation for the specified directory.");
                 return;
             }
 
