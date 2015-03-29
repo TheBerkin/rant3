@@ -35,6 +35,21 @@ namespace Rant
             => (_tables ?? (_tables = new HashSet<RantDictionaryTable>())).Add(table);
 
         /// <summary>
+        /// Adds the tables from the specified dictionary to the package.
+        /// </summary>
+        /// <param name="dictionary">The dictionary to add.</param>
+        public void AddDictionary(RantDictionary dictionary)
+        {
+            if (_tables == null) 
+                _tables = new HashSet<RantDictionaryTable>();
+
+            foreach (var table in dictionary.GetTables())
+            {
+                _tables.Add(table);
+            }
+        }
+
+        /// <summary>
         /// Enumerates the patterns contained in the package.
         /// </summary>
         /// <returns></returns>
