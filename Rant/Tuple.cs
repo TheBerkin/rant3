@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Rant.Engine.Util;
 
-using Rant.Engine.Util;
-
-namespace Rant.Engine
+namespace Rant
 {
     /// <summary>
     /// Makes tuples for your pleasure.

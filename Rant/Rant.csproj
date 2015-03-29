@@ -102,7 +102,7 @@
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
     <Compile Include="Engine\ParseMode.cs" />
-    <Compile Include="Engine\Tuple.cs" />
+    <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />
@@ -170,7 +170,7 @@
     <Compile Include="Engine\Constructs\SubStore.cs" />
     <Compile Include="Engine\Constructs\SyncType.cs" />
     <Compile Include="Engine\Constructs\Synchronizer.cs" />
-    <Compile Include="Engine\Argument.cs" />
+    <Compile Include="Engine\Constructs\Argument.cs" />
     <Compile Include="Engine\Util.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
