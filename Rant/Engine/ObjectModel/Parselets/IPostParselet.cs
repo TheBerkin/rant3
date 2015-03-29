@@ -14,6 +14,6 @@ namespace Rant.Engine.ObjectModel.Parselets
         /// </summary>
         int Precedence { get; }
 
-        RantExpression Parse(VM.State state, RantExpression left, Token<R> tokenOperator);
+        RantExpression Parse(RantState state, RantExpression left, Token<R> tokenOperator);
     }
 }

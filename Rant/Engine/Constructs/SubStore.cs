@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Rant.Engine
+namespace Rant.Engine.Constructs
 {
     internal class SubStore
     {

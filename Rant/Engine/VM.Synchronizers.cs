@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Rant.Engine.Constructs;
+
 namespace Rant.Engine
 {
     internal partial class VM

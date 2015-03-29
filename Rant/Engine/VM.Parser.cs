@@ -5,13 +5,14 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine.Blueprints;
 using Rant.Engine.Compiler;
+using Rant.Engine.Constructs;
 using Rant.Engine.Util;
 using Rant.Stringes;
 using Rant.Vocabulary;
 
 namespace Rant.Engine
 {
-    internal delegate bool TokenFunc(VM interpreter, Token<R> firstToken, PatternReader reader, VM.State state);
+    internal delegate bool TokenFunc(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state);
 
     internal partial class VM
     {
@@ -25,7 +26,7 @@ namespace Rant.Engine
             {R.Text, DoText}
         };
 
-        private static bool DoQuery(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoQuery(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             reader.SkipSpace();
 
@@ -244,25 +245,25 @@ namespace Rant.Engine
             return false;
         }
 
-        private static bool DoText(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoText(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             interpreter.Print(firstToken.Value);
             return false;
         }
 
-        private static bool DoConstant(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoConstant(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             interpreter.Print(UnescapeConstantLiteral(firstToken.Value));
             return false;
         }
 
-        private static bool DoEscape(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoEscape(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             interpreter.Print(Unescape(firstToken.Value, interpreter, interpreter.RNG));
             return false;
         }
 
-        private static bool DoTag(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoTag(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             var name = reader.ReadToken();
 
@@ -270,7 +271,7 @@ namespace Rant.Engine
             {
                 case R.Question: // Metapattern
                     state.Pre(new MetapatternBlueprint(interpreter));
-                    interpreter.PushState(State.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All), interpreter));
+                    interpreter.PushState(RantState.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All), interpreter));
                     return true;
                 case R.Regex: // Replacer
                     return DoReplacer(name, interpreter, reader, state);
@@ -304,7 +305,7 @@ namespace Rant.Engine
         }
 
         
-        private static bool DoSubCall(Token<R> first, VM interpreter, PatternReader reader, State state)
+        private static bool DoSubCall(Token<R> first, VM interpreter, PatternReader reader, RantState state)
         {
             var name = reader.ReadToken();
             if (!ValidateName(name.Value))
@@ -342,7 +343,7 @@ namespace Rant.Engine
         }
 
         
-        private static bool DoSubDefinition(Token<R> first, VM interpreter, PatternReader reader, State state)
+        private static bool DoSubDefinition(Token<R> first, VM interpreter, PatternReader reader, RantState state)
         {
             bool meta = reader.Take(R.Question);
             reader.Read(R.LeftSquare);
@@ -375,7 +376,7 @@ namespace Rant.Engine
 
             if (meta)
             {
-                interpreter.PushState(State.CreateSub(reader.Source, body, interpreter));
+                interpreter.PushState(RantState.CreateSub(reader.Source, body, interpreter));
                 state.Pre(new DelegateBlueprint(interpreter, _ =>
                 {
                     _.Engine.Subroutines.Define(tName.Value, Subroutine.FromString(tName.Value, _.PopResultString(), parameters.ToArray()));
@@ -391,7 +392,7 @@ namespace Rant.Engine
         }
 
         
-        private static bool DoReplacer(Token<R> name, VM interpreter, PatternReader reader, State state)
+        private static bool DoReplacer(Token<R> name, VM interpreter, PatternReader reader, RantState state)
         {
             reader.Read(R.Colon);
 
@@ -400,11 +401,11 @@ namespace Rant.Engine
 
             state.Pre(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
 
-            interpreter.PushState(State.CreateSub(reader.Source, args[0], interpreter));
+            interpreter.PushState(RantState.CreateSub(reader.Source, args[0], interpreter));
             return true;
         }
 
-        private static bool DoBlock(VM interpreter, Token<R> firstToken, PatternReader reader, State state)
+        private static bool DoBlock(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             var attribs = interpreter.NextBlockAttribs;
             interpreter.NextBlockAttribs = new BlockAttribs();

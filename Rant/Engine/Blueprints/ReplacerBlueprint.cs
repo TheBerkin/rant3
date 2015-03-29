@@ -70,9 +70,9 @@ namespace Rant.Engine.Blueprints
             return false;
         }
 
-        private VM.State CreateMatchEvaluatorState(RantPattern source, VM I, MatchCollection matches, int matchPosition)
+        private RantState CreateMatchEvaluatorState(RantPattern source, VM I, MatchCollection matches, int matchPosition)
         {
-            var state = VM.State.CreateSub(source, _evaluator, I);
+            var state = RantState.CreateSub(source, _evaluator, I);
             state.CurrentMatches = matches;
             state.MatchPosition = matchPosition;
 

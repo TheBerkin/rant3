@@ -2,7 +2,7 @@
 
 using Rant.Engine.Blueprints;
 
-namespace Rant.Engine
+namespace Rant.Engine.Constructs
 {
     internal class Repeater
     {
@@ -79,7 +79,7 @@ namespace Rant.Engine
             // Push separator if applicable
             if (!IsLast && _attribs.Separator != null && _attribs.Separator.Any())
             {
-                var sepState = VM.State.CreateSub(
+                var sepState = RantState.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Separator,
                     ii,
@@ -100,12 +100,12 @@ namespace Rant.Engine
                 ii.PushState(sepState);
             }
 
-            VM.State afterState = null;
+            RantState afterState = null;
 
             // Push postfix if applicable
             if (_attribs.After != null && _attribs.After.Any())
             {
-                ii.PushState(afterState = VM.State.CreateSub(
+                ii.PushState(afterState = RantState.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.After,
                     ii,
@@ -113,7 +113,7 @@ namespace Rant.Engine
             }
 
             // Push next item
-            var itemState = VM.State.CreateSub(ii.CurrentState.Reader.Source,                
+            var itemState = RantState.CreateSub(ii.CurrentState.Reader.Source,                
                 _attribs.Sync != null 
                 ? _block.Items[_attribs.Sync.NextItem(_block.Items.Length)].Item2 
                 : _block.Items.PickWeighted(ii.RNG, _block.WeightTotal, item => item.Item1).Item2,
@@ -132,7 +132,7 @@ namespace Rant.Engine
             // Push prefix if applicable
             if (_attribs.Before != null && _attribs.Before.Any())
             {
-                ii.PushState(VM.State.CreateSub(
+                ii.PushState(RantState.CreateSub(
                     ii.CurrentState.Reader.Source,
                     _attribs.Before,
                     ii,

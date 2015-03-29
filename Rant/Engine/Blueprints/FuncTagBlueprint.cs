@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Rant.Engine.Compiler;
+using Rant.Engine.Constructs;
 using Rant.Stringes;
 
 namespace Rant.Engine.Blueprints
@@ -55,7 +56,7 @@ namespace Rant.Engine.Blueprints
                     if ((i >= _tagDef.ParamCount && (lastType & ParamFlags.Code) != ParamFlags.Code) 
                         || (_tagDef.Parameters[i] & ParamFlags.Code) != ParamFlags.Code)
                     {
-                        interpreter.PushState(VM.State.CreateSub(source, argData[i], interpreter));
+                        interpreter.PushState(RantState.CreateSub(source, argData[i], interpreter));
                     }
                 }
             }

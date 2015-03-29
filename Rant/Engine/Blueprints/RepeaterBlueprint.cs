@@ -1,4 +1,6 @@
-﻿namespace Rant.Engine.Blueprints
+﻿using Rant.Engine.Constructs;
+
+namespace Rant.Engine.Blueprints
 {
     internal sealed class RepeaterBlueprint : Blueprint
     {

@@ -9,6 +9,6 @@ namespace Rant.Engine.ObjectModel.Parselets
     /// </summary>
     internal interface IPreParselet
     {
-        RantExpression Parse(VM.State state, Token<R> tokenPrefix);
+        RantExpression Parse(RantState state, Token<R> tokenPrefix);
     }
 }

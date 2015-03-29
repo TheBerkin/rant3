@@ -5,7 +5,7 @@ using System.Linq;
 using Rant.Engine.Compiler;
 using Rant.Stringes;
 
-namespace Rant.Engine
+namespace Rant.Engine.Constructs
 {
     internal class Block
     {

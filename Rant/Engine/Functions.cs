@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.Blueprints;
+using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Stringes;
 using Rant.Engine.Util;
@@ -149,7 +150,7 @@ namespace Rant.Engine
 
         private static bool Quote(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output)
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output)
                 .Pre(new DelegateBlueprint(vm, _ =>
                 {
                     vm.OpenQuote();
@@ -202,7 +203,7 @@ namespace Rant.Engine
         private static bool BranchScope(VM vm, RantPattern source, Stringe tagName, Argument[] args)
         {
             vm.RNG.Branch(args[0].AsString().Hash());
-            var state = VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output);
+            var state = RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output);
             state.Post(new DelegateBlueprint(vm, _ =>
             {
                 vm.RNG.Merge();
@@ -229,7 +230,7 @@ namespace Rant.Engine
             if (vm.CurrentRepeater == null) return false;
             vm.CurrentRepeater.Finish();
             vm.Objects.ExitScope();
-            VM.State state = null;
+            RantState state = null;
             while (!vm.BaseStates.Contains(state = vm.CurrentState))
             {
                 vm.PopState();
@@ -248,7 +249,7 @@ namespace Rant.Engine
             {
                 if (!Util.TryParseMode(conString, out e)) continue;
                 if ((cmp.Result & e) != e) continue;
-                vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
+                vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
                 return true;
             }
 
@@ -260,7 +261,7 @@ namespace Rant.Engine
             var cmp = new Comparison(args[0].AsString(), args[1].AsString());
             vm.Comparisons.Push(cmp);
 
-            var state = VM.State.CreateSub(source, args[2].AsPattern(), vm, vm.CurrentState.Output);
+            var state = RantState.CreateSub(source, args[2].AsPattern(), vm, vm.CurrentState.Output);
             state.Post(new DelegateBlueprint(vm, I =>
             {
                 I.Comparisons.Pop();
@@ -282,7 +283,7 @@ namespace Rant.Engine
         {
             if (!vm.Engine.Flags.Contains(args[0]))
             {
-                vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
+                vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
                 return true;
             }
             vm.SetElse();
@@ -292,7 +293,7 @@ namespace Rant.Engine
         private static bool Else(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (!vm.UseElse()) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
@@ -300,7 +301,7 @@ namespace Rant.Engine
         {
             if (vm.Engine.Flags.Contains(args[0]))
             {
-                vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
+                vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
                 return true;
             }
             vm.SetElse();
@@ -484,7 +485,7 @@ namespace Rant.Engine
             }
             var cases = vm.CurrentState.Output.GetCurrentCases();
             vm.CurrentState.Output.SetCase(caps);
-            vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
+            vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
                 .Post(new DelegateBlueprint(vm,
                 _ =>
                 {
@@ -518,7 +519,7 @@ namespace Rant.Engine
                 throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
             }
             var oldFormat = vm.NumberFormatter.NumberFormat;
-            vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
+            vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
             .Pre(new DelegateBlueprint(vm, _ =>
             {
                 _.NumberFormatter.NumberFormat = fmt;
@@ -563,7 +564,7 @@ namespace Rant.Engine
                 throw Error(source, tagname, "Invalid digit format '\{fmtstr}'");
             }
             var oldfmt = vm.NumberFormatter.BinaryFormat;
-            vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
+            vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
                 .Pre(new DelegateBlueprint(vm, _ =>
                 {
                     _.NumberFormatter.BinaryFormat = fmt;
@@ -607,7 +608,7 @@ namespace Rant.Engine
             }
 
             // Argument is tokens
-            vm.PushState(VM.State.CreateSub(source, arg.AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, arg.AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
@@ -625,7 +626,7 @@ namespace Rant.Engine
 
         private static bool Alt(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
-            var testState = VM.State.CreateSub(source, args[0].AsPattern(), vm,
+            var testState = RantState.CreateSub(source, args[0].AsPattern(), vm,
                 vm.CurrentState.Output);
             testState.Post(new AltBlueprint(vm, testState, args[1].AsPattern()));
             vm.PushState(testState);
@@ -634,7 +635,7 @@ namespace Rant.Engine
 
         private static bool Any(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
-            var testState = VM.State.CreateSub(source, args[0].AsPattern(), vm,
+            var testState = RantState.CreateSub(source, args[0].AsPattern(), vm,
                 vm.CurrentState.Output);
             testState.Post(new AnyBlueprint(vm, testState, args[1].AsPattern()));
             vm.PushState(testState);
@@ -681,7 +682,7 @@ namespace Rant.Engine
             }
 
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.Nth(offset, interval)) return false;
-            vm.PushState(VM.State.CreateSub(source, args[2].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[2].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
@@ -699,63 +700,63 @@ namespace Rant.Engine
             }
 
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.Nth(0, interval)) return false;
-            vm.PushState(VM.State.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool Even(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.IsEven) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool Odd(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.IsOdd) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool NotMiddle(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || !(vm.CurrentRepeater.IsFirst || vm.CurrentRepeater.IsLast)) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool NotLast(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || vm.CurrentRepeater.IsLast) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool NotFirst(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || vm.CurrentRepeater.IsFirst) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool Middle(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || vm.CurrentRepeater.IsLast || vm.CurrentRepeater.IsFirst) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool Last(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.IsLast) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 
         private static bool First(VM vm, RantPattern source, Stringe tagname, Argument[] args)
         {
             if (vm.CurrentRepeater == null || !vm.CurrentRepeater.IsFirst) return false;
-            vm.PushState(VM.State.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
+            vm.PushState(RantState.CreateSub(source, args[0].AsPattern(), vm, vm.CurrentState.Output));
             return true;
         }
 

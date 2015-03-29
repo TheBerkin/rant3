@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Debugger\LineEventArgs.cs" />
-    <Compile Include="Engine\Block.cs" />
+    <Compile Include="Engine\Constructs\Block.cs" />
     <Compile Include="Engine\Blueprints\AltBlueprint.cs" />
     <Compile Include="Engine\Blueprints\AnyBlueprint.cs" />
     <Compile Include="Engine\Blueprints\Blueprint.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="RantOutput.cs" />
     <Compile Include="RantPackage.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
-    <Compile Include="Engine\Comparison.cs" />
+    <Compile Include="Engine\Constructs\Comparison.cs" />
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
@@ -130,7 +130,7 @@
     </Compile>
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
-    <Compile Include="Engine\BlockAttribs.cs" />
+    <Compile Include="Engine\Constructs\BlockAttribs.cs" />
     <Compile Include="Formats\IndefiniteArticles.cs" />
     <Compile Include="Formats\IndefiniteArticleRules.cs" />
     <Compile Include="Engine\VM.cs" />
@@ -140,7 +140,7 @@
     <Compile Include="Engine\VM.Parser.cs" />
     <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
-    <Compile Include="Engine\ParamType.cs" />
+    <Compile Include="Engine\Constructs\ParamType.cs" />
     <Compile Include="RantException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
@@ -151,7 +151,7 @@
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
     <Compile Include="Engine\Formatters\Numerals.cs" />
     <Compile Include="Vocabulary\Query.cs" />
-    <Compile Include="Engine\Repeater.cs" />
+    <Compile Include="Engine\Constructs\Repeater.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
@@ -159,17 +159,17 @@
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternSource.cs" />
     <Compile Include="Engine\PatternReader.cs" />
-    <Compile Include="Engine\VM.State.cs" />
+    <Compile Include="Engine\RantState.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
     <Compile Include="Stringes\Stringe.cs" />
     <Compile Include="Stringes\StringeReader.cs" />
     <Compile Include="Stringes\LexerRules.cs" />
     <Compile Include="Stringes\Token.cs" />
-    <Compile Include="Engine\Subroutine.cs" />
-    <Compile Include="Engine\SubStore.cs" />
-    <Compile Include="Engine\SyncType.cs" />
-    <Compile Include="Engine\Synchronizer.cs" />
+    <Compile Include="Engine\Constructs\Subroutine.cs" />
+    <Compile Include="Engine\Constructs\SubStore.cs" />
+    <Compile Include="Engine\Constructs\SyncType.cs" />
+    <Compile Include="Engine\Constructs\Synchronizer.cs" />
     <Compile Include="Engine\Argument.cs" />
     <Compile Include="Engine\Util.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />

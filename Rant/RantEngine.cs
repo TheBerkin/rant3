@@ -5,6 +5,7 @@ using System.Linq;
 
 using Rant.Debugger;
 using Rant.Engine;
+using Rant.Engine.Constructs;
 using Rant.Engine.ObjectModel;
 using Rant.Formats;
 using Rant.Vocabulary;

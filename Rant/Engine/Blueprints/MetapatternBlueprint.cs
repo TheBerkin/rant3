@@ -11,7 +11,7 @@
         {
             var srcstr = I.PopResultString();
             var src = new RantPattern("Meta_\{srcstr.Hash():X16}", RantPatternSource.Metapattern, srcstr);
-            I.PushState(new VM.State(I, src, I.CurrentState.Output));
+            I.PushState(new RantState(I, src, I.CurrentState.Output));
             return true;
         }
     }

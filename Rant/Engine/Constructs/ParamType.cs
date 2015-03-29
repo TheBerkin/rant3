@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Engine
+namespace Rant.Engine.Constructs
 {
     [Flags]
     internal enum ParamFlags

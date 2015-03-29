@@ -8,6 +8,7 @@ using System.Threading;
 
 using Rant.Debugger;
 using Rant.Engine.Compiler;
+using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Engine.ObjectModel;
 using Rant.Formats;
@@ -50,14 +51,14 @@ namespace Rant.Engine
 
         // State information
         private int _stateCount = 0;
-        private State _prevState = null;
-        private readonly State _mainState;
+        private RantState _prevState = null;
+        private readonly RantState _mainState;
 
         // Flag conditional fields
         private bool _else = false;
 
         // Stacks
-        private readonly Stack<State> _stateStack = new Stack<State>();
+        private readonly Stack<RantState> _stateStack = new Stack<RantState>();
         private readonly Stack<RantOutput> _resultStack = new Stack<RantOutput>();
         private readonly Stack<Repeater> _repeaterStack = new Stack<Repeater>();
         private readonly Stack<Match> _matchStack = new Stack<Match>();
@@ -65,13 +66,15 @@ namespace Rant.Engine
         private readonly Stack<Comparison> _comparisons = new Stack<Comparison>();
         private readonly ChannelStack _output;
 
-        private readonly HashSet<State> _baseStates = new HashSet<State>();
+        private readonly HashSet<RantState> _baseStates = new HashSet<RantState>();
 
         private readonly Limit<int> _charLimit;
 
         public Limit<int> CharLimit => _charLimit;
 
-        public HashSet<State> BaseStates => _baseStates;
+        public ChannelStack Channels => _output;
+
+        public HashSet<RantState> BaseStates => _baseStates;
 
         public Stack<Dictionary<string, Argument>> SubArgStack => _subArgStack;
 
@@ -89,7 +92,7 @@ namespace Rant.Engine
             _startingGen = rng.Generation;
             _charLimit = new Limit<int>(0, limitChars, (a, b) => a + b, (a, b) => b == 0 || a <= b);
             _output = new ChannelStack(engine.Format, _charLimit);
-            _mainState = new State(this, input, _output);
+            _mainState = new RantState(this, input, _output);
         }
 
         #region Formatting
@@ -171,7 +174,7 @@ namespace Rant.Engine
         #region States
 
 
-        public void PushState(State state)
+        public void PushState(RantState state)
         {
             if (_stateCount >= RantEngine.MaxStackSize)
                 throw new RantException(_mainSource, null, "Exceeded maximum stack size of \{RantEngine.MaxStackSize}.");
@@ -181,10 +184,10 @@ namespace Rant.Engine
             _stateStack.Push(state);
         }
 
-        public State PrevState => _prevState;
+        public RantState PrevState => _prevState;
 
 
-        public State PopState()
+        public RantState PopState()
         {
             _stateCount--;
             var s = _stateStack.Pop();
@@ -192,7 +195,7 @@ namespace Rant.Engine
             return s;
         }
 
-        public State CurrentState => _stateStack.Any() ? _stateStack.Peek() : null;
+        public RantState CurrentState => _stateStack.Any() ? _stateStack.Peek() : null;
 
         #endregion
 
@@ -206,7 +209,7 @@ namespace Rant.Engine
 
             // ReSharper disable TooWideLocalVariableScope
 
-            State state;                // The current state object being used
+            RantState state;                // The current state object being used
             PatternReader reader;       // The current source reader being used
             Token<R> token;             // The next token in the stream
             TokenFunc currentFunc;      // Current parser function

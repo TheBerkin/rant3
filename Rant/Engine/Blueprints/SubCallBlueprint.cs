@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Rant.Engine.Compiler;
+using Rant.Engine.Constructs;
 using Rant.Stringes;
 
 namespace Rant.Engine.Blueprints
@@ -28,7 +29,7 @@ namespace Rant.Engine.Blueprints
                 {
                     if (_subroutine.Parameters[i].Item2 == ParamFlags.None)
                     {
-                        interpreter.PushState(VM.State.CreateSub(source, args[i], interpreter));
+                        interpreter.PushState(RantState.CreateSub(source, args[i], interpreter));
                     }
                 }
             }
@@ -47,7 +48,7 @@ namespace Rant.Engine.Blueprints
                 _args.Select((arg, i) => new KeyValuePair<string, Argument>(_subroutine.Parameters[i].Item1, arg)).ToDictionary(pair => pair.Key, pair => pair.Value);
             
             // Create the state for the subroutine code
-            var state = new VM.State(I, _subroutine.Source, I.CurrentState.Output);
+            var state = new RantState(I, _subroutine.Source, I.CurrentState.Output);
 
             // Pre-blueprint pushes args
             state.Pre(new DelegateBlueprint(I, _ =>

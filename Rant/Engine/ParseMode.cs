@@ -8,10 +8,10 @@
         /// <summary>
         /// Parses tags, queries, blocks, and plain text.
         /// </summary>
-        Pattern,
+        Rant,
         /// <summary>
-        /// Parses object model expressions, such as arithmetic and list operations.
+        /// Parses object model expressions and statements, such as arithmetic and list operations.
         /// </summary>
-        Expression
+        Rave
     }
 }
