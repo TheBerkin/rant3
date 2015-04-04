@@ -1,12 +1,17 @@
 <p align="center">
-<a href="https://ci.appveyor.com/project/TheBerkin/rant"><img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true" alt="Build status"></img></a>
-</p>
-
-<p align="center">
 <img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
 
-
+<p align="center">
+  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20-%20PASSING&pendingText=Master%20Build%20-%20BUILDING&failingText=Master%20Build%20-%20FAILING" alt="Build status">
+    </img>
+  </a>
+  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20-%20PASSING&pendingText=Dev%20Build%20-%20BUILDING&failingText=Dev%20Build%20-%20FAILING" alt="Build status">
+    </img>
+  </a>
+</p>
 ##What is Rant?
 
 Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
