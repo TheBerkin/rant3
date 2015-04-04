@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Rant.Engine.Blueprints;
 using Rant.Engine.Compiler;
 using Rant.Engine.Constructs;
-using Rant.Engine.Util;
+using static Rant.Engine.Util;
 using Rant.Stringes;
 using Rant.Vocabulary;
 
@@ -52,14 +52,14 @@ namespace Rant.Engine
                     case R.Colon: // Local definition
                     {
                         if (!ValidateName(macroNameToken.Value))
-                            throw Error(reader.Source, macroNameToken, "Invalid macro name: '\{macroNameToken.Value}'");
+                            throw Error(reader.Source, macroNameToken, $"Invalid macro name: '{macroNameToken.Value}'");
                         storeMacro = true;
                     }
                     break;
                     case R.Equal: // Global definition
                     {
                         if (!ValidateName(macroNameToken.Value))
-                            throw Error(reader.Source, macroNameToken, "Invalid macro name: '\{macroNameToken.Value}'");
+                            throw Error(reader.Source, macroNameToken, $"Invalid macro name: '{macroNameToken.Value}'");
                         storeMacro = true;
                         macroIsGlobal = true;
                     }
@@ -70,7 +70,7 @@ namespace Rant.Engine
                         var mNameSub = macroNameToken.Value.Split(new[] { '.' }, StringSplitOptions.None);
                         if (!interpreter.LocalQueryMacros.TryGetValue(mNameSub[0], out q) && !interpreter.Engine.GlobalQueryMacros.TryGetValue(mNameSub[0], out q))
                         {
-                            throw new RantException(reader.Source, macroNameToken, "Nonexistent query macro '\{macroName}'");
+                            throw new RantException(reader.Source, macroNameToken, $"Nonexistent query macro '{macroName}'");
                         }
                         if (mNameSub.Length > 2) throw Error(reader.Source, firstToken, "Invald subtype accessor on macro call.");
                         var oldSub = q.Subtype;
@@ -102,7 +102,7 @@ namespace Rant.Engine
                             interpreter.QueryState.DeleteRhyme(reader.ReadLoose(R.Text, "rhyme carrier name").Value);
                             break;
                         default:
-                            throw Error(reader.Source, token, "Unrecognized token in carrier reset: '\{token.Value}'");
+                            throw Error(reader.Source, token, $"Unrecognized token in carrier reset: '{token.Value}'");
                     }
                     reader.SkipSpace();
                 }
@@ -201,7 +201,7 @@ namespace Rant.Engine
                                 }                                
                                 break;
                             default:
-                                throw new RantException(reader.Source, typeToken, "Unrecognized token '\{typeToken.Value}' in carrier.");
+                                throw new RantException(reader.Source, typeToken, $"Unrecognized token '{typeToken.Value}' in carrier.");
                         }
                         carrier.AddComponent(comp, reader.ReadLoose(R.Text, "carrier component name").Value);
                         reader.SkipSpace();
@@ -216,7 +216,7 @@ namespace Rant.Engine
                 else if (!reader.SkipSpace())
                 {
                     var t = !reader.End ? reader.ReadToken() : null;
-                    throw new RantException(reader.Source, t, t == null ? "Unexpected end-of-file in query." : "Unexpected token '\{t.Value}' in query.");
+                    throw new RantException(reader.Source, t, t == null ? "Unexpected end-of-file in query." : $"Unexpected token '{t.Value}' in query.");
                 }
             }
 
@@ -280,7 +280,7 @@ namespace Rant.Engine
             }
 
             if (!ValidateName(name.Value.Trim()))
-                throw new RantException(reader.Source, name, "Invalid tag name '\{name.Value}'");
+                throw new RantException(reader.Source, name, $"Invalid tag name '{name.Value}'");
 
             bool none = false;
             if (!reader.Take(R.Colon))
@@ -309,7 +309,7 @@ namespace Rant.Engine
         {
             var name = reader.ReadToken();
             if (!ValidateName(name.Value))
-                throw new RantException(reader.Source, name, "Invalid subroutine name '\{name.Value}'");
+                throw new RantException(reader.Source, name, $"Invalid subroutine name '{name.Value}'");
             
             bool none = false;
 
@@ -327,14 +327,14 @@ namespace Rant.Engine
             if (none)
             {
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, 0)) == null)
-                    throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and 0 parameters.");
+                    throw new RantException(reader.Source, name, $"No subroutine was found with the name '{name.Value}' and 0 parameters.");
             }
             else
             {
                 args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon,
                     Delimiters.All).ToArray();
                 if((sub = interpreter.Engine.Subroutines.Get(name.Value, args.Length)) == null)
-                    throw new RantException(reader.Source, name, "No subroutine was found with the name '\{name.Value}' and \{args.Length} parameter\{(args.Length != 1 ? "s" : "")}.");
+                    throw new RantException(reader.Source, name, $"No subroutine was found with the name '{name.Value}' and {args.Length} parameter{(args.Length != 1 ? "s" : "")}.");
             }
 
             state.Pre(new SubCallBlueprint(interpreter, reader.Source, sub, args));
@@ -352,7 +352,7 @@ namespace Rant.Engine
             var tName = reader.Read(R.Text, "subroutine name");
 
             if (!ValidateName(tName.Value))
-                throw new RantException(reader.Source, tName, "Invalid subroutine name: '\{tName.Value}'");
+                throw new RantException(reader.Source, tName, $"Invalid subroutine name: '{tName.Value}'");
             
             if (!reader.Take(R.Colon))
             {
@@ -397,7 +397,7 @@ namespace Rant.Engine
             reader.Read(R.Colon);
 
             var args = reader.ReadMultiItemScope(R.LeftSquare, R.RightSquare, R.Semicolon, Delimiters.All).ToArray();
-            if (args.Length != 2) throw new RantException(reader.Source, name, "Replacer expected two arguments, but got \{args.Length}.");
+            if (args.Length != 2) throw new RantException(reader.Source, name, $"Replacer expected two arguments, but got {args.Length}.");
 
             state.Pre(new ReplacerBlueprint(interpreter, ParseRegex(name.Value), args[1]));
 

@@ -208,6 +208,6 @@ namespace Rant
         /// Returns a string that identifies the channel by name and visibility.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => "\{Name} (\{Visiblity})";
+        public override string ToString() => $"{Name} ({Visiblity})";
     }
 }

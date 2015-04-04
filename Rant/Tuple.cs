@@ -1,4 +1,4 @@
-﻿using Rant.Engine.Util;
+﻿using static Rant.Engine.Util;
 
 namespace Rant
 {
@@ -141,7 +141,7 @@ namespace Rant
             this.Item1 = Item1;
         }
 
-        public override string ToString() => "{Item1: \{Item1}}";
+        public override string ToString() => $"{{Item1: {Item1}}}";
 
         public override int GetHashCode() => Item1.GetHashCode();
 
@@ -169,7 +169,7 @@ namespace Rant
             this.Item2 = Item2;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2);
 
@@ -200,7 +200,7 @@ namespace Rant
             this.Item3 = Item3;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3);
 
@@ -234,7 +234,7 @@ namespace Rant
             this.Item4 = Item4;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4);
 
@@ -271,7 +271,7 @@ namespace Rant
             this.Item5 = Item5;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5);
 
@@ -311,7 +311,7 @@ namespace Rant
             this.Item6 = Item6;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6);
 
@@ -354,7 +354,7 @@ namespace Rant
             this.Item7 = Item7;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}, Item7: \{Item7}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7);
 
@@ -400,7 +400,7 @@ namespace Rant
             this.Item8 = Item8;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}, Item7: \{Item7}, Item8: \{Item8}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}, Item8: {Item8}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7, Item8);
 

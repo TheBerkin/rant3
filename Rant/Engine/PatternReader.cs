@@ -371,7 +371,7 @@ namespace Rant.Engine
                 {
                     // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
                     if (!_stack.Any())
-                        throw new RantException(_source, token, "Unexpected token '\{token.Value}'");
+                        throw new RantException(_source, token, $"Unexpected token '{token.Value}'");
 
                     var lastOpening = _stack.Pop();
 
@@ -389,7 +389,7 @@ namespace Rant.Engine
                 }
                 yield return token;
             }
-            throw new RantException(_source, null, "Unexpected end of file; expected '\{RantLexer.Rules.GetSymbolForId(_stack.Any() ? bracketPairs.GetClosing(_stack.Peek().ID) : tokenType)}'.");
+            throw new RantException(_source, null, $"Unexpected end of file; expected '{RantLexer.Rules.GetSymbolForId(_stack.Any() ? bracketPairs.GetClosing(_stack.Peek().ID) : tokenType)}'.");
         }
     }
 }

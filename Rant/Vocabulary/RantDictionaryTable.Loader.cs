@@ -46,7 +46,7 @@ namespace Rant.Vocabulary
                                 case "name":
                                     if (!header) LoadError(path, token, "The #name directive may only be used in the file header.");
                                     if (parts.Length != 2) LoadError(path, token, "#name directive expected one word:\r\n\r\n" + token.Value);
-                                    if (!Util.ValidateName(parts[1])) LoadError(path, token, "Invalid #name value: '\{parts[1]}'");
+                                    if (!Util.ValidateName(parts[1])) LoadError(path, token, $"Invalid #name value: '{parts[1]}'");
                                     name = parts[1].ToLower();
                                     break;
                                 case "subs":
@@ -61,11 +61,11 @@ namespace Rant.Vocabulary
                                     }
                                     if (!int.TryParse(parts[1], out version))
                                     {
-                                        LoadError(path, token, "Invalid version number '\{parts[1]}'");
+                                        LoadError(path, token, $"Invalid version number '{parts[1]}'");
                                     }
                                     if (version > Version)
                                     {
-                                        LoadError(path, token, "Unsupported file version '\{version}'");
+                                        LoadError(path, token, $"Unsupported file version '{version}'");
                                     }
                                     break;
                                 case "nsfw":

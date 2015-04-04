@@ -218,13 +218,13 @@ namespace Rant.Engine.ObjectModel
                 case RantObjectType.Boolean:
                     return _boolean.ToString();
                 case RantObjectType.String:
-                    return "\"\{_string}\"";
+                    return $"\"{_string}\"";
                 case RantObjectType.No:
                     return "no";
                 case RantObjectType.Number:
                     return _number.ToString();
                 case RantObjectType.Pattern:
-                    return "$'\{_pattern.Code}'";
+                    return $"$'{_pattern.Code}'";
                 case RantObjectType.List:
                     {
                         var sb = new StringBuilder();

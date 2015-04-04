@@ -4,9 +4,9 @@ using System.Globalization;
 using Rant;
 using Rant.Vocabulary;
 
-using System.Console;
+using static System.Console;
 
-using Rant.Common.CmdLine;
+using static Rant.Common.CmdLine;
 
 namespace RantConsole
 {
@@ -37,7 +37,7 @@ namespace RantConsole
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to load content: \{ex}");
+                Console.WriteLine($"Failed to load content: {ex}");
             }
 
             rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
@@ -101,7 +101,7 @@ namespace RantConsole
                     if (!writeToFile)
                     {
                         ForegroundColor = ConsoleColor.Green;
-                        WriteLine("\{chan.Name} (\{chan.Visiblity}):");
+                        WriteLine($"{chan.Name} ({chan.Visiblity}):");
                         ResetColor();
                     }
                 }
@@ -112,7 +112,7 @@ namespace RantConsole
                     {
                         var path = Property("out");
                         File.WriteAllText(Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)
-                            + (chan.Name != "main" ? ".\{chan.Name}" : "" + "." + Path.GetExtension(path))), chan.Value); 
+                            + (chan.Name != "main" ? $".{chan.Name}" : "" + "." + Path.GetExtension(path))), chan.Value); 
                     }
                     else
                     {

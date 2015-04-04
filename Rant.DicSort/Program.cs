@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-using Rant.Common.CmdLine;
+using static Rant.Common.CmdLine;
 using Rant.Vocabulary;
 
 namespace Rant.DicSort
@@ -29,7 +29,7 @@ namespace Rant.DicSort
                 {
                     foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
                     {
-                        Console.WriteLine("Processing \{path}...");
+                        Console.WriteLine($"Processing {path}...");
                         ProcessDicFile(path);
                     }
                 }
@@ -39,14 +39,14 @@ namespace Rant.DicSort
                     {
                         if (path.EndsWith(".dic"))
                         {
-                            Console.WriteLine("Processing \{path}...");
+                            Console.WriteLine($"Processing {path}...");
                             ProcessDicFile(path);
                         }
                         else if (!Path.HasExtension(path))
                         {
                             foreach (var file in Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
                             {
-                                Console.WriteLine("Processing \{file}...");
+                                Console.WriteLine($"Processing {file}...");
                                 ProcessDicFile(file);
                             }
                         }

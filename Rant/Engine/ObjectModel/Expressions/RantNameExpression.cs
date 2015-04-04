@@ -16,7 +16,7 @@ namespace Rant.Engine.ObjectModel.Expressions
         {
             var obj = vm.Objects[_token.Value];
             if (obj == null)
-                throw new RantException(vm.CurrentState.Reader.Source, _token, "Tried to access undefined variable '\{_token.Value}'.");
+                throw new RantException(vm.CurrentState.Reader.Source, _token, $"Tried to access undefined variable '{_token.Value}'.");
             return obj;
         }
     }

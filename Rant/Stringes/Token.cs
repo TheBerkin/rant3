@@ -29,6 +29,6 @@ namespace Rant.Stringes
             _id = id;
         }
 
-        public override string ToString() => "<\{_id} @ L \{Line}, C \{Column}\{String.IsNullOrEmpty(Value) ? String.Empty : "'\{Value}'"}";
+        public override string ToString() => $"<{_id} @ L {Line}, C {Column}{(String.IsNullOrEmpty(Value) ? String.Empty : $"'{Value}'")}>";
     }
 }

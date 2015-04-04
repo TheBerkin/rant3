@@ -7,7 +7,7 @@ using Rant.Engine.Blueprints;
 using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Stringes;
-using Rant.Engine.Util;
+using static Rant.Engine.Util;
 
 namespace Rant.Engine
 {
@@ -182,7 +182,7 @@ namespace Rant.Engine
             long g;
             if (!Int64.TryParse(gStr, out g))
             {
-                throw Error(source, tagName, "Invalid generation value '\{gStr}'");
+                throw Error(source, tagName, $"Invalid generation value '{gStr}'");
             }
             vm.RNG.Generation = g;
             return false;
@@ -331,7 +331,7 @@ namespace Rant.Engine
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
                 if (!ValidateName(flag))
-                    throw Error(source, tagname, "Invalid flag name '\{flag}'");
+                    throw Error(source, tagname, $"Invalid flag name '{flag}'");
 
                 vm.Engine.Flags.Remove(flag);
             }
@@ -343,7 +343,7 @@ namespace Rant.Engine
             foreach (var flag in args.Where(flag => !String.IsNullOrEmpty(flag)))
             {
                 if (!ValidateName(flag))
-                    throw Error(source, tagname, "Invalid flag name '\{flag}'");
+                    throw Error(source, tagname, $"Invalid flag name '{flag}'");
 
                 vm.Engine.Flags.Add(flag);
             }
@@ -398,7 +398,7 @@ namespace Rant.Engine
             var result = vm.Engine.CallHook(name, args.Skip(1).Select(arg => arg.AsString()).ToArray());
             if (result == null)
             {
-                throw Error(source, tagname, "A hook with the name '\{name}' does not exist.");
+                throw Error(source, tagname, $"A hook with the name '{name}' does not exist.");
             }
             vm.Print(result);
             return false;
@@ -457,7 +457,7 @@ namespace Rant.Engine
             var cv_str = args[1].AsString();
             if (!Util.TryParseMode(cv_str, out cv))
             {
-                throw Error(source, tagname, "Invalid channel visibility option '\{cv_str}'");
+                throw Error(source, tagname, $"Invalid channel visibility option '{cv_str}'");
             }
             vm.CurrentState.Output.PushChannel(args[0].AsString(), cv, vm.Format);
             return false;
@@ -469,7 +469,7 @@ namespace Rant.Engine
             var caps_str = args[0].AsString();
             if (!Util.TryParseMode(caps_str, out caps))
             {
-                throw Error(source, tagname, "Invalid case format '\{caps_str}'");
+                throw Error(source, tagname, $"Invalid case format '{caps_str}'");
             }
             vm.CurrentState.Output.SetCase(caps);
             return false;
@@ -481,7 +481,7 @@ namespace Rant.Engine
             var caps_str = args[0].AsString();
             if (!Util.TryParseMode(caps_str, out caps))
             {
-                throw Error(source, tagname, "Invalid case format '\{caps_str}'");
+                throw Error(source, tagname, $"Invalid case format '{caps_str}'");
             }
             var cases = vm.CurrentState.Output.GetCurrentCases();
             vm.CurrentState.Output.SetCase(caps);
@@ -504,7 +504,7 @@ namespace Rant.Engine
             var fmtstr = args[0].AsString();
             if (!Util.TryParseMode(fmtstr, out fmt))
             {
-                throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
+                throw Error(source, tagname, $"Invalid number format '{fmtstr}'");
             }
             vm.NumberFormatter.NumberFormat = fmt;
             return false;
@@ -516,7 +516,7 @@ namespace Rant.Engine
             var fmtstr = args[0].AsString();
             if (!Util.TryParseMode(fmtstr, out fmt))
             {
-                throw Error(source, tagname, "Invalid number format '\{fmtstr}'");
+                throw Error(source, tagname, $"Invalid number format '{fmtstr}'");
             }
             var oldFormat = vm.NumberFormatter.NumberFormat;
             vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
@@ -542,7 +542,7 @@ namespace Rant.Engine
             bool hasDigitCount = fmtParts.Length == 2;
             if (!Util.TryParseMode(fmtParts[0], out fmtType))
             {
-                throw Error(source, tagname, "Invalid digit format '\{fmtParts[0]}'");
+                throw Error(source, tagname, $"Invalid digit format '{fmtParts[0]}'");
             }
             vm.NumberFormatter.BinaryFormat = fmtType;
             if (hasDigitCount)
@@ -561,7 +561,7 @@ namespace Rant.Engine
             var fmtstr = args[0].AsString();
             if (!Util.TryParseMode(fmtstr, out fmt))
             {
-                throw Error(source, tagname, "Invalid digit format '\{fmtstr}'");
+                throw Error(source, tagname, $"Invalid digit format '{fmtstr}'");
             }
             var oldfmt = vm.NumberFormatter.BinaryFormat;
             vm.PushState(RantState.CreateSub(source, args[1].AsPattern(), vm, vm.CurrentState.Output)
@@ -584,7 +584,7 @@ namespace Rant.Engine
             var fmtstr = args[0].AsString();
             if (!Util.TryParseMode(fmtstr, out fmt))
             {
-                throw Error(source, tagname, "Invalid endianness '\{fmtstr}'");
+                throw Error(source, tagname, $"Invalid endianness '{fmtstr}'");
             }
             vm.NumberFormatter.Endianness = fmt;
             return false;
@@ -598,7 +598,7 @@ namespace Rant.Engine
             Argument arg;
             var argName = args[0].AsString().Trim();
             if (!vm.SubArgStack.Peek().TryGetValue(argName, out arg))
-                throw Error(source, tagname, "Could not find argument '\{argName}'.");
+                throw Error(source, tagname, $"Could not find argument '{argName}'.");
 
             // Argument is string
             if (arg.Flags == ParamFlags.None)
@@ -790,7 +790,7 @@ namespace Rant.Engine
             SyncType type;
             if (!Util.TryParseMode(typeStr, out type))
             {
-                throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
+                throw Error(source, tagname, $"Invalid synchronizer type: '{typeStr}'");
             }
             vm.SyncCreateApply(args[0].AsString(), type);
             return false;
@@ -802,7 +802,7 @@ namespace Rant.Engine
             SyncType type;
             if (!Util.TryParseMode(typeStr, out type))
             {
-                throw Error(source, tagname, "Invalid synchronizer type: '\{typeStr}'");
+                throw Error(source, tagname, $"Invalid synchronizer type: '{typeStr}'");
             }
             vm.SyncCreate(args[0].AsString(), type);
             return false;
@@ -813,7 +813,7 @@ namespace Rant.Engine
             var syncName = args[0].AsString();
             if (!vm.SyncApply(syncName))
             {
-                throw Error(source, tagname, "Tried to use nonexistent synchronizer '\{syncName}");
+                throw Error(source, tagname, $"Tried to use nonexistent synchronizer '{syncName}");
             }
             return false;
         }
@@ -824,7 +824,7 @@ namespace Rant.Engine
             var syncName = args[0].AsString();
             if (!vm.SyncApply(syncName))
             {
-                throw Error(source, tagname, "Tried to use nonexistent synchronizer '\{syncName}");
+                throw Error(source, tagname, $"Tried to use nonexistent synchronizer '{syncName}");
             }
             return false;
         }
@@ -881,7 +881,7 @@ namespace Rant.Engine
             int num;
             if (!ParseInt(reps, out num))
             {
-                throw Error(source, tagName, "Invalid repetition value '\{reps}' - must be a number.");
+                throw Error(source, tagName, $"Invalid repetition value '{reps}' - must be a number.");
             }
             if (num < 0)
             {
@@ -901,7 +901,7 @@ namespace Rant.Engine
             {
                 if (!Util.TryParseMode(rhymeMode, out rhyme))
                 {
-                    throw Error(source, tagname, "Invalid rhyme mode '\{rhymeMode}'");
+                    throw Error(source, tagname, $"Invalid rhyme mode '{rhymeMode}'");
                 }
                 allowedRhymes.Add(rhyme);
             }

@@ -86,6 +86,7 @@
         <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
+        <PropertyValue name="PlaceOpenBraceOnNewLineForFunctionsAndClasses">false</PropertyValue>
         <PropertyValue name="ShowErrorsAsWarnings">true</PropertyValue>
         <PropertyValue name="ShowSyntaxErrors">true</PropertyValue>
       </ToolsOptionsSubCategory>
@@ -103,6 +104,8 @@
         <PropertyValue name="DisableBrowsingUpToDateCheck">true</PropertyValue>
         <PropertyValue name="DisableErrorReporting">false</PropertyValue>
         <PropertyValue name="DisableIntelliSenseErrorsInErrorList">false</PropertyValue>
+        <PropertyValue name="EnableSingleFileISense">false</PropertyValue>
+        <PropertyValue name="EnableSingleFileISenseSquiggles">false</PropertyValue>
         <PropertyValue name="EnumerateCommentTasks">true</PropertyValue>
         <PropertyValue name="GroupBrackets">true</PropertyValue>
         <PropertyValue name="HighlightMatchingTokens">true</PropertyValue>
@@ -140,6 +143,8 @@
         <PropertyValue name="RenameSearchComments">true</PropertyValue>
         <PropertyValue name="RenameSearchStrings">true</PropertyValue>
         <PropertyValue name="RenameShowPreview">true</PropertyValue>
+        <PropertyValue name="RenameSkipPreviewIfConfirmed">false</PropertyValue>
+        <PropertyValue name="ShowSingleFileISenseErrorsInTaskList">false</PropertyValue>
         <PropertyValue name="SpaceAfterCastParenthesis">false</PropertyValue>
         <PropertyValue name="SpaceAfterComma">true</PropertyValue>
         <PropertyValue name="SpaceAfterSemicolon">true</PropertyValue>
@@ -191,6 +196,7 @@
         <PropertyValue name="UseCommonJSCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
       </ToolsOptionsSubCategory>
       <ToolsOptionsSubCategory name="HTMLX Specific">
+        <PropertyValue name="EnableTagNavigator">false</PropertyValue>
         <PropertyValue name="EnableValidation">true</PropertyValue>
         <PropertyValue name="ErrorsAsWarnings">true</PropertyValue>
         <PropertyValue name="FormatOnPaste">true</PropertyValue>

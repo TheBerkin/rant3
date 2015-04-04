@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web.UI;
 
 using Rant.Vocabulary;
-using Rant.Common.CmdLine;
+using static Rant.Common.CmdLine;
 
 namespace DicDoc
 {
@@ -38,7 +38,7 @@ namespace DicDoc
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Something horrible happened while generating:\n\n\{ex}");
+                Console.WriteLine($"Something horrible happened while generating:\n\n{ex}");
                 Console.ResetColor();
             }
         }

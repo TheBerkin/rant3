@@ -108,6 +108,6 @@ namespace Rant
         /// Returns a string describing the source.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => "(\{Type}) \{Name}";
+        public override string ToString() => $"({Type}) {Name}";
     }
 }

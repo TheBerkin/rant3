@@ -2,7 +2,7 @@
 using System.IO;
 
 using Rant.Vocabulary;
-using Rant.Common.CmdLine;
+using static Rant.Common.CmdLine;
 
 namespace Rant.Package
 {

@@ -177,7 +177,7 @@ namespace Rant.Engine
         public void PushState(RantState state)
         {
             if (_stateCount >= RantEngine.MaxStackSize)
-                throw new RantException(_mainSource, null, "Exceeded maximum stack size of \{RantEngine.MaxStackSize}.");
+                throw new RantException(_mainSource, null, $"Exceeded maximum stack size of {RantEngine.MaxStackSize}.");
 
             if (_stateStack.Any()) _prevState = _stateStack.Peek();
             _stateCount++;
@@ -240,7 +240,7 @@ namespace Rant.Engine
 
                     // Error on illegal delimiter
                     if (Delimiters.All.ContainsClosing(token.ID) && !Delimiters.All.Contains(token.ID, token.ID))
-                        throw new RantException(reader.Source, token, "Unexpected delimiter '\{RantLexer.Rules.GetSymbolForId(token.ID)}'");
+                        throw new RantException(reader.Source, token, $"Unexpected delimiter '{RantLexer.Rules.GetSymbolForId(token.ID)}'");
 
 #if EDITOR
                     if (state.Reader.Source.SourceStringe == _mainSource.SourceStringe)

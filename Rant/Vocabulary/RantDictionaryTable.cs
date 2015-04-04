@@ -32,12 +32,12 @@ namespace Rant.Vocabulary
         {
             if (!Util.ValidateName(name))
             {
-                throw new FormatException("Invalid table name: '\{name}'");
+                throw new FormatException($"Invalid table name: '{name}'");
             }
 
             if (!subtypes.All(Util.ValidateName))
             {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'").ToArray()));
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
             }
 
             _subtypes = subtypes;
@@ -55,12 +55,12 @@ namespace Rant.Vocabulary
         {
             if (!Util.ValidateName(name))
             {
-                throw new FormatException("Invalid table name: '\{name}'");
+                throw new FormatException($"Invalid table name: '{name}'");
             }
-
+			
             if (!subtypes.All(Util.ValidateName))
             {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'").ToArray()));
+                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
             }
 
             _subtypes = subtypes;
