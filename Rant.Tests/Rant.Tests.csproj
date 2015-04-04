@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="BasicInput.cs" />
     <Compile Include="Capitalization.cs" />
-    <Compile Include="Expressions\Variables.cs" />
     <Compile Include="Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repeaters.cs" />
