@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true)](https://ci.appveyor.com/project/TheBerkin/rant)
+
 <p align="center">
 <img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
