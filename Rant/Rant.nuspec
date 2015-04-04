@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rant</id>
+    <version>1.0.0</version>
+    <title>Rant</title>
+    <authors>Nicholas Fleck, Andrew Rogers</authors>
+    <owners>Nicholas Fleck, Andrew Rogers</owners>
+    <licenseUrl>https://github.com/TheBerkin/Rant/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/TheBerkin/Rant</projectUrl>
+    <iconUrl>http://i.imgur.com/EZinvT5.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.</description>
+    <summary>Flexible, powerful procedural text generation language</summary>
+    <copyright>Copyright 2015 Nicholas Fleck</copyright>
+    <tags>rant procedural text generation scripting language .net C#</tags>
+  </metadata>
+</package>
