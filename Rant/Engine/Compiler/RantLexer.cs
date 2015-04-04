@@ -71,6 +71,7 @@ namespace Rant.Engine.Compiler
                 {"^", R.Caret},
                 {"`", R.Backtick},
 				{"*", R.Asterisk},
+				{"/", R.ForwardSlash},
 				{NumberRegex, R.Number},
                 {SyllableRangeRegex, R.RangeLiteral},
                 {WeightRegex, R.Weight},
