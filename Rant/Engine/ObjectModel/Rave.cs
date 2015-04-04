@@ -43,7 +43,7 @@ namespace Rant.Engine.ObjectModel
 				var state = _stateStack.Peek();
 				while (state.Parser.MoveNext())
 				{
-					_stateStack.Push(new RaveState(this, state.Precedence));
+					_stateStack.Push(new RaveState(this, state.Parser.Current));
 					goto moar;
 				}
 				_stateStack.Pop();

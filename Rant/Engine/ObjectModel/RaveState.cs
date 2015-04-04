@@ -11,11 +11,11 @@ namespace Rant.Engine.ObjectModel
 	internal class RaveState
 	{
 		private readonly Precedence _precedence;
-		private readonly IEnumerator<bool> _parser;
+		private readonly IEnumerator<Precedence> _parser;
 
 		public Precedence Precedence => _precedence;
 
-		public IEnumerator<bool> Parser => _parser;
+		public IEnumerator<Precedence> Parser => _parser;
 
 		private Parselet _preParselet;
 		private InfixParselet _postParselet;
@@ -27,7 +27,7 @@ namespace Rant.Engine.ObjectModel
 		}
 		
 
-		public IEnumerator<bool> CreateParse(Rave rave)
+		public IEnumerator<Precedence> CreateParse(Rave rave)
 		{
 			rave.Reader.SkipSpace();
 			var token = rave.Reader.ReadToken();
@@ -36,14 +36,15 @@ namespace Rant.Engine.ObjectModel
 			if (RaveParse.PreParselets.TryGetValue(token.ID, out _preParselet))
 			{
 				var preParser = _preParselet.Parse(token, rave);
-				while (preParser.MoveNext()) yield return true;
+				while (preParser.MoveNext()) yield return _precedence;
 			}
 			else
 			{
 				throw new RantException(rave.Reader.Source, token, $"Unexpected prefix token: '{token.Value}'");
 			}
 
-			while (rave.GetPrecedence() > _precedence)
+			Precedence nextPrecedence;
+			while ((nextPrecedence = rave.GetPrecedence()) > _precedence)
 			{
 				token = rave.Reader.ReadToken();
 				rave.Reader.SkipSpace();
@@ -51,7 +52,7 @@ namespace Rant.Engine.ObjectModel
 				if (RaveParse.PostParselets.TryGetValue(token.ID, out _postParselet))
 				{
 					var postParser = _postParselet.Parse(token, rave);
-					while (postParser.MoveNext()) yield return true;
+					while (postParser.MoveNext()) yield return nextPrecedence;
 				}
 				else
 				{
