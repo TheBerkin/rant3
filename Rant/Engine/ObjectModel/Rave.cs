@@ -3,6 +3,7 @@ using System.Linq;
 
 using Rant.Engine.Compiler;
 using Rant.Engine.ObjectModel.Parselets;
+using Rant.Engine.ObjectModel.Metas;
 
 namespace Rant.Engine.ObjectModel
 {
@@ -17,7 +18,7 @@ namespace Rant.Engine.ObjectModel
 		public readonly VM Rant;
 
 		private readonly Stack<RaveState> _stateStack = new Stack<RaveState>(8);
-		private readonly Stack<RantObject> _valueStack = new Stack<RantObject>(8);
+		private readonly Stack<Meta> _valueStack = new Stack<Meta>(8);
 
 		public static RaveValueGen Value(RantObject obj) => () => obj;
 
@@ -27,9 +28,13 @@ namespace Rant.Engine.ObjectModel
 			Reader = reader;
 		}
 
-		public void PushVal(RantObject obj) => _valueStack.Push(obj);
+		public void PushVal(RantObject obj) => _valueStack.Push(new ValueMeta(obj));
 
-		public RantObject PopVal() => _valueStack.Any() ? _valueStack.Pop() : null;
+		public void PushName(string name) => _valueStack.Push(new NameMeta(name));
+
+		public RantObject PopVal() => _valueStack.Any() ? _valueStack.Pop().Resolve(this) : null;
+
+		public Meta Pop() => _valueStack.Any() ? _valueStack.Pop() : null;
 
 		public void Run()
 		{

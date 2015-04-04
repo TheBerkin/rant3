@@ -10,15 +10,11 @@ namespace Rant.Engine.ObjectModel.Parselets
 		public override IEnumerator<bool> Parse(Token<R> token, Rave vm)
 		{
 			var name = token.Value;
+
 			if (!Util.ValidateName(name))
 				throw new RantException(vm.Reader.Source, token, $"Invalid identifier name '{name}'");
 
-			var value = vm.Rant.Objects[name];
-
-			if (value == null)
-				throw new RantException(vm.Reader.Source, token, $"Tried to access nonexistent variable '{name}'");
-
-			vm.PushVal(value);
+			vm.PushName(name);
 
 			yield break;
 		}

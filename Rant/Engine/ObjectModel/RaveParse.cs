@@ -28,6 +28,7 @@ namespace Rant.Engine.ObjectModel
 				{R.Hyphen, new BinaryOperatorParselet(Precedence.Sum, false)},
 				{R.Asterisk, new BinaryOperatorParselet(Precedence.Product, false)},
 				{R.ForwardSlash, new BinaryOperatorParselet(Precedence.Product, false)},
+				{R.Equal, new BinaryOperatorParselet(Precedence.Assignment, true)},
 
 				{R.LeftSquare, new IndexerParselet()}
 			};

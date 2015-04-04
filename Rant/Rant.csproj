@@ -93,6 +93,8 @@
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
+    <Compile Include="Engine\ObjectModel\Metas\Meta.cs" />
+    <Compile Include="Engine\ObjectModel\Metas\NameMeta.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\BinaryOperatorParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\EscapeParselet.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Engine\ObjectModel\Rave.cs" />
     <Compile Include="Engine\ObjectModel\RaveParse.cs" />
     <Compile Include="Engine\ObjectModel\RaveState.cs" />
+    <Compile Include="Engine\ObjectModel\Metas\ValueMeta.cs" />
     <Compile Include="Engine\ParseMode.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
