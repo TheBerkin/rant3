@@ -17,28 +17,28 @@ namespace Rant.Tests
         [Test]
         public void Hex8()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad 2]`8` `15` `55` `128` `255`").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad 2]@8@ @15@ @55@ @128@ @255@").MainValue,
                 "08 0F 37 80 FF");
         }
 
         [Test]
         public void Hex16()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad 4]`12` `64` `456` `5000` `65535`").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad 4]@12@ @64@ @456@ @5000@ @65535@").MainValue,
                 "000C 0040 01C8 1388 FFFF");
         }
 
         [Test]
         public void Hex16BigEndian()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][endian:big][digits:pad 4]`12` `64` `456` `5000` `65535`").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][endian:big][digits:pad 4]@12@ @64@ @456@ @5000@ @65535@").MainValue,
                 "0C00 4000 C801 8813 FFFF");
         }
 
         [Test]
         public void DigitGrouping()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:group-commas]`1000` `10000` `32768` `300000` `1000000`").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:group-commas]@1000@ @10000@ @32768@ @300000@ @1000000@").MainValue,
                 "1,000 10,000 32,768 300,000 1,000,000");
         }
 

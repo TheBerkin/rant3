@@ -54,14 +54,25 @@ namespace Rant.Engine.ObjectModel
 				_stateStack.Pop();
 			}
 
+			Reader.SkipSpace();
+
 			// Parse more if there is no script terminator
-			if (!Reader.TakeLoose(R.At))
+			if (!Reader.Take(R.At))
 			{
 				_stateStack.Push(new RaveState(this, Precedence.Never));
 				goto moar;
 			}
-
-			Rant.Print(PopVal());
+			
+			var val = PopVal();
+			switch (val.Type)
+			{
+				case RantObjectType.Number:
+					Rant.Print(Rant.FormatNumber((double)val.Value));
+					break;
+				default:
+					Rant.Print(val);
+					break;
+			}
 		}
 
 		public Precedence GetPrecedence()
