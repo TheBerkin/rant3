@@ -213,6 +213,10 @@
         /// </para>
         /// </summary>
         Plus,
+		/// <summary>
+		/// *
+		/// </summary>
+		Asterisk,
         /// <summary>
         /// *123:
         /// <para>
@@ -228,6 +232,10 @@
         /// (a - b)
         /// </summary>
         RangeLiteral,
+		/// <summary>
+		/// Any decimal number.
+		/// </summary>
+		Number,
         /// <summary>
         /// End of file.
         /// </summary>

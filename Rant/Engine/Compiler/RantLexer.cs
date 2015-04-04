@@ -27,6 +27,7 @@ namespace Rant.Engine.Compiler
         private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
         private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
         private static readonly Regex SyllableRangeRegex = new Regex(@"\(\s*(-?\d+|\d+\s*-(\s*\d+)?)\s*\)", DefaultOptions);
+		private static readonly Regex NumberRegex = new Regex(@"-?\d+(\.\d+)?", DefaultOptions);
 
         internal static readonly LexerRules<R> Rules;
 
@@ -69,6 +70,8 @@ namespace Rant.Engine.Compiler
                 {"+", R.Plus},
                 {"^", R.Caret},
                 {"`", R.Backtick},
+				{"*", R.Asterisk},
+				{NumberRegex, R.Number},
                 {SyllableRangeRegex, R.RangeLiteral},
                 {WeightRegex, R.Weight},
                 {CommentRegex, R.Ignore, 3},

@@ -9,6 +9,7 @@ using Rant.Engine.Constructs;
 using static Rant.Engine.Util;
 using Rant.Stringes;
 using Rant.Vocabulary;
+using Rant.Engine.ObjectModel;
 
 namespace Rant.Engine
 {
@@ -23,10 +24,18 @@ namespace Rant.Engine
             {R.LeftAngle, DoQuery},
             {R.EscapeSequence, DoEscape},
             {R.ConstantLiteral, DoConstant},
-            {R.Text, DoText}
+            {R.Text, DoText},
+			{R.At, DoScript}
         };
 
-        private static bool DoQuery(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
+		private static bool DoScript(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
+		{
+			var rave = new Rave(interpreter, reader);
+			rave.Run();
+			return false;
+		}
+
+		private static bool DoQuery(VM interpreter, Token<R> firstToken, PatternReader reader, RantState state)
         {
             reader.SkipSpace();
 
@@ -268,7 +277,7 @@ namespace Rant.Engine
             var name = reader.ReadToken();
 
             switch (name.ID)
-            {
+            {	
                 case R.Question: // Metapattern
                     state.Pre(new MetapatternBlueprint(interpreter));
                     interpreter.PushState(RantState.CreateSub(reader.Source, reader.ReadToScopeClose(R.LeftSquare, R.RightSquare, Delimiters.All), interpreter));
