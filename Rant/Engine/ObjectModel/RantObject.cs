@@ -60,7 +60,9 @@ namespace Rant.Engine.ObjectModel
 
 		public RantObject(List<RantObject> list)
 		{
-			if (list != null) _list = list;
+			if (list == null) return;
+			Type = RantObjectType.List;
+			_list = list;
 		}
 
 		public RantObject(bool boolean)
@@ -72,6 +74,7 @@ namespace Rant.Engine.ObjectModel
 		public RantObject(string str)
 		{
 			if (str == null) return;
+			Type = RantObjectType.String;
 			_string = str;
 		}
 
@@ -271,6 +274,23 @@ namespace Rant.Engine.ObjectModel
 						}
 						break;
 					}
+				case RantObjectType.String:
+				{
+					switch (b.Type)
+					{
+						case RantObjectType.Number:
+						{
+							var sb = new StringBuilder();
+							int c = (int)b._number;
+							for (int i = 0; i < c; i++)
+							{
+								sb.Append(a._string);
+							}
+							return new RantObject(sb.ToString());
+						}
+					}
+					break;
+				}
 			}
 
 			return No;
@@ -301,7 +321,7 @@ namespace Rant.Engine.ObjectModel
 				case RantObjectType.Boolean:
 					return _boolean.ToString();
 				case RantObjectType.String:
-					return $"\"{_string}\"";
+					return _string;
 				case RantObjectType.No:
 					return "no";
 				case RantObjectType.Number:
@@ -315,12 +335,8 @@ namespace Rant.Engine.ObjectModel
 						sb.Append("(");
 						foreach (var rantObject in _list)
 						{
-							if (first)
-							{
-								first = false;
-								sb.Append(", ");
-							}
-
+							if (!first) sb.Append(", ");
+							first = false;
 							sb.Append(rantObject);
 						}
 						sb.Append(")");

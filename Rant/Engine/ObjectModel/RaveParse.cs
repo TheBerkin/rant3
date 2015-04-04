@@ -15,7 +15,11 @@ namespace Rant.Engine.ObjectModel
 			PreParselets = new Dictionary<R, Parselet>
 			{
 				{R.Number, new NumberParselet()},
-				{R.LeftParen, new GroupParselet()}
+				{R.LeftParen, new GroupParselet()},
+				{R.ConstantLiteral, new StringParselet()},
+                {R.EscapeSequence, new EscapeParselet()},
+				{R.Var, new VarParselet()},
+				{R.Text, new NameParselet()}
 			};
 
 			PostParselets = new Dictionary<R, InfixParselet>
@@ -23,7 +27,9 @@ namespace Rant.Engine.ObjectModel
 				{R.Plus, new BinaryOperatorParselet(Precedence.Sum, false)},
 				{R.Hyphen, new BinaryOperatorParselet(Precedence.Sum, false)},
 				{R.Asterisk, new BinaryOperatorParselet(Precedence.Product, false)},
-				{R.ForwardSlash, new BinaryOperatorParselet(Precedence.Product, false)}
+				{R.ForwardSlash, new BinaryOperatorParselet(Precedence.Product, false)},
+
+				{R.LeftSquare, new IndexerParselet()}
 			};
 		}
 	}

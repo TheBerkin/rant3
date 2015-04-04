@@ -35,6 +35,7 @@ namespace Rant.Engine.ObjectModel.Parselets
 				case R.ForwardSlash:
 					vm.PushVal(a / b);
 					break;
+					// TODO: Lazily resolve variables so that assignments can actually be made...
 			}
 		}
 	}

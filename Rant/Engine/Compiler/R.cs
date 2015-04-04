@@ -236,6 +236,10 @@
 		/// Any decimal number.
 		/// </summary>
 		Number,
+		/// <summary>
+		/// var keyword
+		/// </summary>
+		Var,
         /// <summary>
         /// End of file.
         /// </summary>

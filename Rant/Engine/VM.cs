@@ -199,9 +199,13 @@ namespace Rant.Engine
 
         #endregion
 
-        public void Print(object input) => _stateStack.Peek().Print(input?.ToString());
+	    public void Print(object input)
+	    {
+		    if (input == null) return;
+		    _stateStack.Peek().Print(input.ToString());
+	    }
 
-        public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
+	    public string PopResultString() => !_resultStack.Any() ? "" : _resultStack.Pop().MainValue;
 
         public RantOutput Run(double timeout = -1)
         {

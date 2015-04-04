@@ -25,7 +25,6 @@ namespace Rant.Engine.ObjectModel
 			_precedence = precedence;
 			_parser = CreateParse(rave);
 		}
-		
 
 		public IEnumerator<Precedence> CreateParse(Rave rave)
 		{

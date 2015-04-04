@@ -95,10 +95,15 @@
     <Compile Include="Engine\Formatters\Symbols.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\EscapeParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\GroupParselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\IndexerParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\InfixParselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\NameParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\NumberParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\Parselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\StringParselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\VarParselet.cs" />
     <Compile Include="Engine\ObjectModel\Precedence.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
