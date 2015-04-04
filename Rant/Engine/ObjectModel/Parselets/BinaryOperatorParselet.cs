@@ -15,7 +15,7 @@ namespace Rant.Engine.ObjectModel.Parselets
 		public override IEnumerator<bool> Parse(Token<R> token, Rave vm)
 		{
 			// Request value
-			yield return true;
+			yield return false;
 
 			// Pop operands
 			var b = vm.PopVal();

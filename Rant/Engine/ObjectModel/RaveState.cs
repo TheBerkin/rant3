@@ -36,7 +36,8 @@ namespace Rant.Engine.ObjectModel
 			if (RaveParse.PreParselets.TryGetValue(token.ID, out _preParselet))
 			{
 				var preParser = _preParselet.Parse(token, rave);
-				while (preParser.MoveNext()) yield return _precedence;
+				while (preParser.MoveNext())
+					yield return preParser.Current ? _preParselet.PrecedenceOverride : _precedence;
 			}
 			else
 			{
@@ -52,7 +53,8 @@ namespace Rant.Engine.ObjectModel
 				if (RaveParse.PostParselets.TryGetValue(token.ID, out _postParselet))
 				{
 					var postParser = _postParselet.Parse(token, rave);
-					while (postParser.MoveNext()) yield return nextPrecedence;
+					while (postParser.MoveNext())
+						yield return postParser.Current ? _postParselet.PrecedenceOverride : nextPrecedence;
 				}
 				else
 				{

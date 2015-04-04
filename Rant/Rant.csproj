@@ -95,6 +95,7 @@
     <Compile Include="Engine\Formatters\Symbols.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\BinaryOperatorParselet.cs" />
+    <Compile Include="Engine\ObjectModel\Parselets\GroupParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\InfixParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\NumberParselet.cs" />
     <Compile Include="Engine\ObjectModel\Parselets\Parselet.cs" />

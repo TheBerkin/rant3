@@ -14,7 +14,8 @@ namespace Rant.Engine.ObjectModel
 		{
 			PreParselets = new Dictionary<R, Parselet>
 			{
-				{R.Number, new NumberParselet()}
+				{R.Number, new NumberParselet()},
+				{R.LeftParen, new GroupParselet()}
 			};
 
 			PostParselets = new Dictionary<R, InfixParselet>
