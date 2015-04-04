@@ -1,8 +1,11 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true)](https://ci.appveyor.com/project/TheBerkin/rant)
+<p align="center">
+<a href="https://ci.appveyor.com/project/TheBerkin/rant"><img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true" alt="Build status"></img></a>
+</p>
 
 <p align="center">
 <img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
+
 
 ##What is Rant?
 
