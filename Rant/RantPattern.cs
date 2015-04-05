@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-using Rant.Engine;
 using Rant.Engine.Compiler;
 using Rant.Engine.Constructs;
 using Rant.Stringes;
@@ -54,7 +53,7 @@ namespace Rant
             _type = type;
             _code = code;
             _stringe = code.ToStringe();
-            _tokens = RantLexer.GenerateTokens(_stringe);
+            _tokens = RantLexer.GenerateTokens(_stringe).ToList();
         }
 
         internal RantPattern(RantPattern derived, IEnumerable<Token<R>> sub)
