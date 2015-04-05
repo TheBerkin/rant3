@@ -11,7 +11,10 @@
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status">
     </img>
   </a>
+  <br/>
+  <a href="https://gratipay.com/TheBerkin/"><img src="http://img.shields.io/gratipay/TheBerkin.svg"></a>
 </p>
+
 ##What is Rant?
 
 Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
