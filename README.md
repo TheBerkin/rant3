@@ -1,8 +1,4 @@
 <p align="center">
-<img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
-</p>
-
-<p align="center">
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status">
     </img>
@@ -11,8 +7,11 @@
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status">
     </img>
   </a>
-  <br/>
   <a href="https://gratipay.com/TheBerkin/"><img src="http://img.shields.io/gratipay/TheBerkin.svg"></a>
+</p>
+
+<p align="center">
+<img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
 
 ##What is Rant?
