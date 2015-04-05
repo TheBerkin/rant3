@@ -4,11 +4,11 @@
 
 <p align="center">
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20-%20PASSING&pendingText=Master%20Build%20-%20BUILDING&failingText=Master%20Build%20-%20FAILING" alt="Build status">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status">
     </img>
   </a>
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20-%20PASSING&pendingText=Dev%20Build%20-%20BUILDING&failingText=Dev%20Build%20-%20FAILING" alt="Build status">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status">
     </img>
   </a>
 </p>
