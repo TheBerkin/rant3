@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RantPkg")]
-[assembly: AssemblyDescription("Rant package utility")]
+[assembly: AssemblyTitle("Rave")]
+[assembly: AssemblyDescription("Command-line utilities for Rant")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Rant.Package")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyProduct("Rave")]
+[assembly: AssemblyCopyright("Copyright © Nicholas Fleck 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("00697941-ddce-4f0c-8c43-9d3ae6c78e6e")]
+[assembly: Guid("409c7dd6-8deb-4df9-9d1e-91861b782a35")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web.UI;
 
 using Rant.Vocabulary;
 
-namespace DicDoc
+namespace Rave.DicDoc
 {
-    public static class PageGenerator
+	public static class PageGenerator
     {
         public static string GenerateTablePage(RantDictionaryTable table, string filename)
         {

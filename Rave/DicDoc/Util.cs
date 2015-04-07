@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DicDoc
+namespace Rave.DicDoc
 {
     public class Util
     {
