@@ -134,7 +134,10 @@ namespace Rant
     /// <typeparam name="A">First type.</typeparam>
     public sealed class _<A>
     {
-        public readonly A Item1;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
 
         internal _(A Item1)
         {
@@ -160,8 +163,14 @@ namespace Rant
     /// <typeparam name="B">Second type.</typeparam>
     public sealed class _<A, B>
     {
+		/// <summary>
+		/// The first item.
+		/// </summary>
         public readonly A Item1;
-        public readonly B Item2;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
 
         internal _(A Item1, B Item2)
         {
@@ -189,9 +198,18 @@ namespace Rant
     /// <typeparam name="C">Third type.</typeparam>
     public sealed class _<A, B, C>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
 
         internal _(A Item1, B Item2, C Item3)
         {
@@ -221,10 +239,22 @@ namespace Rant
     /// <typeparam name="D">Fourth type.</typeparam>
     public sealed class _<A, B, C, D>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
-        public readonly D Item4;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
+		/// <summary>
+		/// The fourth item.
+		/// </summary>
+		public readonly D Item4;
 
         internal _(A Item1, B Item2, C Item3, D Item4)
         {
@@ -256,11 +286,26 @@ namespace Rant
     /// <typeparam name="E">Fifth type.</typeparam>
     public sealed class _<A, B, C, D, E>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
-        public readonly D Item4;
-        public readonly E Item5;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
+		/// <summary>
+		/// The fourth item.
+		/// </summary>
+		public readonly D Item4;
+		/// <summary>
+		/// The fifth item.
+		/// </summary>
+		public readonly E Item5;
 
         internal _(A Item1, B Item2, C Item3, D Item4, E Item5)
         {
@@ -294,12 +339,30 @@ namespace Rant
     /// <typeparam name="F">Sixth type.</typeparam>
     public sealed class _<A, B, C, D, E, F>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
-        public readonly D Item4;
-        public readonly E Item5;
-        public readonly F Item6;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
+		/// <summary>
+		/// The fourth item.
+		/// </summary>
+		public readonly D Item4;
+		/// <summary>
+		/// The fifth item.
+		/// </summary>
+		public readonly E Item5;
+		/// <summary>
+		/// The sixth item.
+		/// </summary>
+		public readonly F Item6;
 
         internal _(A Item1, B Item2, C Item3, D Item4, E Item5, F Item6)
         {
@@ -335,13 +398,34 @@ namespace Rant
     /// <typeparam name="G">Seventh type.</typeparam>
     public sealed class _<A, B, C, D, E, F, G>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
-        public readonly D Item4;
-        public readonly E Item5;
-        public readonly F Item6;
-        public readonly G Item7;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
+		/// <summary>
+		/// The fourth item.
+		/// </summary>
+		public readonly D Item4;
+		/// <summary>
+		/// The fifth item.
+		/// </summary>
+		public readonly E Item5;
+		/// <summary>
+		/// The sixth item.
+		/// </summary>
+		public readonly F Item6;
+		/// <summary>
+		/// The seventh item.
+		/// </summary>
+		public readonly G Item7;
 
         internal _(A Item1, B Item2, C Item3, D Item4, E Item5, F Item6, G Item7)
         {
@@ -379,14 +463,38 @@ namespace Rant
     /// <typeparam name="H">Eighth tuple.</typeparam>
     public sealed class _<A, B, C, D, E, F, G, H>
     {
-        public readonly A Item1;
-        public readonly B Item2;
-        public readonly C Item3;
-        public readonly D Item4;
-        public readonly E Item5;
-        public readonly F Item6;
-        public readonly G Item7;
-        public readonly H Item8;
+		/// <summary>
+		/// The first item.
+		/// </summary>
+		public readonly A Item1;
+		/// <summary>
+		/// The second item.
+		/// </summary>
+		public readonly B Item2;
+		/// <summary>
+		/// The third item.
+		/// </summary>
+		public readonly C Item3;
+		/// <summary>
+		/// The fourth item.
+		/// </summary>
+		public readonly D Item4;
+		/// <summary>
+		/// The fifth item.
+		/// </summary>
+		public readonly E Item5;
+		/// <summary>
+		/// The sixth item.
+		/// </summary>
+		public readonly F Item6;
+		/// <summary>
+		/// The seventh item.
+		/// </summary>
+		public readonly G Item7;
+		/// <summary>
+		/// The eighth item.
+		/// </summary>
+		public readonly H Item8;
 
         internal _(A Item1, B Item2, C Item3, D Item4, E Item5, F Item6, G Item7, H Item8)
         {
