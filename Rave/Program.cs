@@ -17,60 +17,70 @@ namespace Rave
 				return;
 			}
 
-			switch (Command)
+			try
 			{
-				case "docs":
-					{
-						DocGenerator.Run();
-						break;
-					}
-				case "sort":
-					{
-						TableSorter.Run();
-						break;
-					}
-				case "pack":
-					{
-						PackGenerator.Run();
-						break;
-					}
-				case "build":
-					{
-						// TODO: compiler command
-						WriteLine("Sorry, this command isn't implemented yet :(");
-						break;
-					}
-				case "help":
-					{
-						foreach (var name in GetPaths())
+				switch (Command)
+				{
+					case "docs":
 						{
-							WriteLine($"'{name}'");
-
-							switch (name.ToLower())
-							{
-								case "docs":
-									DocGenerator.GetHelp();
-									break;
-								case "sort":
-									TableSorter.GetHelp();
-									break;
-								case "pack":
-									PackGenerator.GetHelp();
-									break;
-								case "help":
-									WriteLine("Are you serious?");
-									break;
-								default:
-									WriteLine($"No help info found for '{name}'");
-									break;
-							}
-							WriteLine();
+							DocGenerator.Run();
+							break;
 						}
+					case "sort":
+						{
+							TableSorter.Run();
+							break;
+						}
+					case "pack":
+						{
+							PackGenerator.Run();
+							break;
+						}
+					case "build":
+						{
+							// TODO: compiler command
+							WriteLine("Sorry, this command isn't implemented yet :(");
+							break;
+						}
+					case "help":
+						{
+							foreach (var name in GetPaths())
+							{
+								WriteLine($"'{name}'");
+
+								switch (name.ToLower())
+								{
+									case "docs":
+										DocGenerator.GetHelp();
+										break;
+									case "sort":
+										TableSorter.GetHelp();
+										break;
+									case "pack":
+										PackGenerator.GetHelp();
+										break;
+									case "help":
+										WriteLine("Are you serious?");
+										break;
+									default:
+										WriteLine($"No help info found for '{name}'");
+										break;
+								}
+								WriteLine();
+							}
+							break;
+						}
+					default:
+						WriteLine($"Unknown command: '{Command}'");
 						break;
-					}
-				default:
-					WriteLine($"Unknown command: '{Command}'");
-					break;
+				}
+			}
+			catch (Exception ex)
+			{
+				ForegroundColor = ConsoleColor.Red;
+				WriteLine(ex.Message);
+				ResetColor();
+				Environment.Exit(1);
 			}
 		}
 	}

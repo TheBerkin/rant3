@@ -20,45 +20,36 @@ namespace Rave.DicSort
 
 		public static void Run()
 		{
-			try
-			{
-				var paths = GetPaths();
+			var paths = GetPaths();
 
-				if (paths.Length == 0)
+			if (paths.Length == 0)
+			{
+				foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
 				{
-					foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
+					Console.WriteLine($"Processing {path}...");
+					ProcessDicFile(path);
+				}
+			}
+			else
+			{
+				foreach (var path in paths)
+				{
+					if (path.EndsWith(".dic"))
 					{
 						Console.WriteLine($"Processing {path}...");
 						ProcessDicFile(path);
 					}
-				}
-				else
-				{
-					foreach (var path in paths)
+					else if (!Path.HasExtension(path))
 					{
-						if (path.EndsWith(".dic"))
+						foreach (var file in Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
 						{
-							Console.WriteLine($"Processing {path}...");
-							ProcessDicFile(path);
-						}
-						else if (!Path.HasExtension(path))
-						{
-							foreach (var file in Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
-							{
-								Console.WriteLine($"Processing {file}...");
-								ProcessDicFile(file);
-							}
+							Console.WriteLine($"Processing {file}...");
+							ProcessDicFile(file);
 						}
 					}
 				}
-				Console.WriteLine("Done.");
 			}
-			catch (Exception ex)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Something awful happened while processing your files:\n\n" + ex.ToString());
-				Console.ResetColor();
-			}
+			Console.WriteLine("Done.");
 		}
 
 		private static void ProcessDicFile(string path)

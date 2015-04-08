@@ -29,31 +29,24 @@ namespace Rave.Packer
 			var outputPath = Property("out", Path.Combine(
 				Directory.GetParent(Environment.CurrentDirectory).FullName,
 				Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
-			try
+			
+			Console.WriteLine("Packing...");
+
+			if (paths.Length == 0)
 			{
-				Console.WriteLine("Packing...");
-
-				if (paths.Length == 0)
-				{
-					Pack(pkg, Environment.CurrentDirectory);
-				}
-				else
-				{
-					foreach (var path in paths)
-					{
-						Pack(pkg, path);
-					}
-				}
-
-				pkg.Save(outputPath);
-
-				Console.WriteLine("\nPackage saved to " + outputPath);
+				Pack(pkg, Environment.CurrentDirectory);
 			}
-			catch (Exception ex)
+			else
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Something went wrong while generating your package:\n" + ex);
+				foreach (var path in paths)
+				{
+					Pack(pkg, path);
+				}
 			}
+
+			pkg.Save(outputPath);
+
+			Console.WriteLine("\nPackage saved to " + outputPath);
 
 			Console.ResetColor();
 		}

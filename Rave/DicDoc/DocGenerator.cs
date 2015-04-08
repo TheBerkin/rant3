@@ -22,23 +22,14 @@ namespace Rave.DicDoc
 
 		public static void Run()
 		{
-			try
-			{
-				Console.WriteLine("Working...");
+			Console.WriteLine("Working...");
 
-				var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
-				var dicDir = args.Length == 0 ? Environment.CurrentDirectory : args[0];
+			var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+			var dicDir = args.Length == 0 ? Environment.CurrentDirectory : args[0];
 
-				GenerateDictionary(dicDir);
+			GenerateDictionary(dicDir);
 
-				Console.WriteLine("Done.");
-			}
-			catch (Exception ex)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine($"Something horrible happened while generating:\n\n{ex}");
-				Console.ResetColor();
-			}
+			Console.WriteLine("Done.");
 		}
 
 		static void GenerateDictionary(string dicDir)

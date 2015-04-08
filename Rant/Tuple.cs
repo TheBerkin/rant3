@@ -144,11 +144,24 @@ namespace Rant
             this.Item1 = Item1;
         }
 
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
         public override string ToString() => $"{{Item1: {Item1}}}";
 
-        public override int GetHashCode() => Item1.GetHashCode();
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => Item1.GetHashCode();
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A>;
             if (t == null) return false;
@@ -178,11 +191,24 @@ namespace Rant
             this.Item2 = Item2;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B>;
             if (t == null) return false;
@@ -218,11 +244,24 @@ namespace Rant
             this.Item3 = Item3;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2, Item3);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2, Item3);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C>;
             if (t == null) return false;
@@ -264,11 +303,24 @@ namespace Rant
             this.Item4 = Item4;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C, D>;
             if (t == null) return false;
@@ -316,11 +368,24 @@ namespace Rant
             this.Item5 = Item5;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C, D, E>;
             if (t == null) return false;
@@ -374,11 +439,24 @@ namespace Rant
             this.Item6 = Item6;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C, D, E, F>;
             if (t == null) return false;
@@ -438,11 +516,24 @@ namespace Rant
             this.Item7 = Item7;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}}}";
 
-        public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7);
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7);
 
-        public override bool Equals(object obj)
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
+		public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C, D, E, F, G>;
             if (t == null) return false;
@@ -508,10 +599,23 @@ namespace Rant
             this.Item8 = Item8;
         }
 
-        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}, Item8: {Item8}}}";
+		/// <summary>
+		/// Returns a string representation of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}, Item8: {Item8}}}";
 
+		/// <summary>
+		/// Returns a hash of the tuple's contents.
+		/// </summary>
+		/// <returns></returns>
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7, Item8);
 
+		/// <summary>
+		/// Determines whether the current instance is equal to the specified object.
+		/// </summary>
+		/// <param name="obj">The object to test.</param>
+		/// <returns></returns>
         public override bool Equals(object obj)
         {
             var t = obj as _<A, B, C, D, E, F, G, H>;
