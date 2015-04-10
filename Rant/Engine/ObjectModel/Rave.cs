@@ -15,14 +15,14 @@ namespace Rant.Engine.ObjectModel
 	internal class Rave
 	{	
 		public readonly PatternReader Reader;
-		public readonly VM Rant;
+		public readonly Sandbox Rant;
 
 		private readonly Stack<RaveState> _stateStack = new Stack<RaveState>(8);
 		private readonly Stack<Meta> _valueStack = new Stack<Meta>(8);
 
 		public static RaveValueGen Value(RantObject obj) => () => obj;
 
-		public Rave(VM vm, PatternReader reader)
+		public Rave(Sandbox vm, PatternReader reader)
 		{
 			Rant = vm;
 			Reader = reader;

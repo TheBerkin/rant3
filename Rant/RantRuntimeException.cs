@@ -10,7 +10,7 @@ namespace Rant
     /// <summary>
     /// Represents a runtime error raised by the Rant engine.
     /// </summary>
-    public sealed class RantException : Exception
+    public sealed class RantRuntimeException : Exception
     {
         private readonly int _line;
         private readonly int _col;
@@ -43,7 +43,7 @@ namespace Rant
         /// </summary>
         public string Code => _source;
 
-        internal RantException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
+        internal RantRuntimeException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
             : base((token != null ? ($"({source.Name} @ Ln {token.Line}, Col {token.Column}): ") : "") + message)
         {
             _source = source.Code;
@@ -62,7 +62,7 @@ namespace Rant
             }
         }
 
-        internal RantException(IEnumerable<Token<R>> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
+        internal RantRuntimeException(IEnumerable<Token<R>> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
             : base((tokens != null ? ($"({source.Name} @ Ln {tokens.First().Line}, Col {tokens.First().Column}): ") : "") + message)
         {
             _source = source.Code;
@@ -85,7 +85,7 @@ namespace Rant
             }
         }
 
-        internal RantException(string source, Stringe token, string message = "A generic syntax error was encountered.")
+        internal RantRuntimeException(string source, Stringe token, string message = "A generic syntax error was encountered.")
             : base((token != null ? ($"(Ln {token.Line}, Col {token.Column}) - ") : "") + message)
         {
             _source = source;

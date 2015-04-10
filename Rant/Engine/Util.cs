@@ -11,7 +11,7 @@ namespace Rant.Engine
 {
     internal static class Util
     {
-        private static readonly Dictionary<char, Func<VM, char>> EscapeTable = new Dictionary<char, Func<VM, char>>
+        private static readonly Dictionary<char, Func<Sandbox, char>> EscapeTable = new Dictionary<char, Func<Sandbox, char>>
         {
             {'n', vm => '\n'},
             {'r', vm => '\r'},
@@ -199,7 +199,7 @@ namespace Rant.Engine
             return Regex.Replace(literal, @"""""", @"""");
         }
 
-        public static string Unescape(string sequence, VM vm, RNG rng = null)
+        public static string Unescape(string sequence, Sandbox vm, RNG rng = null)
         {
             var match = RantLexer.EscapeRegex.Match(sequence);
             int count;
@@ -218,7 +218,7 @@ namespace Rant.Engine
             }
             else
             {
-                Func<VM, char> func;
+                Func<Sandbox, char> func;
                 if (code[0] == 'a')
                 {
                     foreach (var ch in vm.CurrentState.Output.GetActive())
