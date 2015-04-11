@@ -25,9 +25,17 @@ namespace Rant
 		/// </summary>
 		public int Length { get; private set; }
 
-		internal RantCompilerException(Stringe source)
+		internal RantCompilerException(string name, Stringe source, string message) 
+			: base(source != null ? $"{name} @ Line {source.Line}, Col {source.Column}: {message}"
+				  : $"{name}: {message}")
 		{
-			
+			if (source != null)
+			{
+				Line = source.Line;
+				Column = source.Column;
+				Index = source.Offset;
+				Length = source.Length;
+			}
 		}
 	}
 }

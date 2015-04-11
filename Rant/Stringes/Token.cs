@@ -3,14 +3,10 @@
 namespace Rant.Stringes
 {
     /// <summary>
-    /// Represents a token that contains a custom identifier.
+    /// Represents a token with a string value and a custom identifier.
     /// </summary>
     /// <typeparam name="T">The identifier type.</typeparam>
-#if EDITOR
-    public sealed class Token<T> : Stringe where T : struct
-#else
     internal sealed class Token<T> : Stringe where T : struct
-#endif
     {
         private readonly T _id;
 
@@ -29,6 +25,12 @@ namespace Rant.Stringes
             _id = id;
         }
 
-        public override string ToString() => $"<{_id} @ L {Line}, C {Column}{(String.IsNullOrEmpty(Value) ? String.Empty : $"'{Value}'")}>";
+		/// <summary>
+		/// Returns a string representation of the current token.
+		/// </summary>
+		/// <returns></returns>
+	    public override string ToString() => 
+			String.Concat("<", _id, ", L", Line, " C", Column, " ",
+			String.IsNullOrEmpty(Value) ? "" : String.Concat("'", Value, "'"), ">");
     }
 }

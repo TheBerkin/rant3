@@ -69,7 +69,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,7 +76,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debugger\LineEventArgs.cs" />
+    <Compile Include="Engine\Compiler\Syntax\RAEscape.cs" />
+    <Compile Include="Engine\Compiler\Syntax\RAFunction.cs" />
+    <Compile Include="Engine\RantParameter.cs" />
+    <Compile Include="Engine\RantParameterType.cs" />
+    <Compile Include="Engine\RantFunctionAttribute.cs" />
+    <Compile Include="Engine\RantFunctionInfo.cs" />
+    <Compile Include="Engine\RantFunctions.cs" />
     <Compile Include="Engine\Sandbox.cs" />
     <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Compiler\Syntax\RABlock.cs" />
@@ -90,27 +95,13 @@
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\Meta.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\NameMeta.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\EscapeParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\GroupParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\IndexerParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\InfixParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\NameParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\NumberParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\Parselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\StringParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\VarParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Precedence.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
-    <Compile Include="Engine\ObjectModel\Rave.cs" />
-    <Compile Include="Engine\ObjectModel\RaveParse.cs" />
-    <Compile Include="Engine\ObjectModel\RaveState.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\ValueMeta.cs" />
+    <Compile Include="RantCompilerException.cs" />
+    <Compile Include="Stringes\Lexer.cs" />
+    <Compile Include="Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Formats\RantSystemFormat.cs" />
@@ -145,7 +136,7 @@
     <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="Engine\Constructs\ParamType.cs" />
-    <Compile Include="RantException.cs" />
+    <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
     <Compile Include="RantChannel.cs" />
@@ -161,12 +152,11 @@
     <Compile Include="Engine\Compiler\R.cs" />
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternSource.cs" />
-    <Compile Include="Engine\PatternReader.cs" />
+    <Compile Include="Engine\TokenReader.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
     <Compile Include="Stringes\Stringe.cs" />
     <Compile Include="Stringes\StringeReader.cs" />
-    <Compile Include="Stringes\LexerRules.cs" />
     <Compile Include="Stringes\Token.cs" />
     <Compile Include="Engine\Constructs\SyncType.cs" />
     <Compile Include="Engine\Constructs\Synchronizer.cs" />

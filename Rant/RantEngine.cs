@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Rant.Debugger;
 using Rant.Engine;
 using Rant.Engine.Constructs;
 using Rant.Engine.ObjectModel;
@@ -17,6 +16,11 @@ namespace Rant
     /// </summary>
     public sealed class RantEngine
     {
+	    static RantEngine()
+	    {
+		    RantFunctions.Load();
+	    }
+
 		private static readonly RNG Seeds = new RNG();
 
 		/// <summary>

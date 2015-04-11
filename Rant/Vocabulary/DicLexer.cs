@@ -9,11 +9,11 @@ namespace Rant.Vocabulary
     {
         private const RegexOptions DicRegexOptions = RegexOptions.Compiled;
 
-        private static readonly LexerRules<DicTokenType> Rules;
+        private static readonly Lexer<DicTokenType> Rules;
 
         static DicLexer()
         {
-            Rules = new LexerRules<DicTokenType>
+            Rules = new Lexer<DicTokenType>
             {
                 {new Regex(@"\#\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Directive, 2},
                 {new Regex(@"\|\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Property, 2},
@@ -23,7 +23,7 @@ namespace Rant.Vocabulary
                 {new Regex(@"\s+"), DicTokenType.Ignore}
             };
             Rules.AddEndToken(DicTokenType.EOF);
-            Rules.IgnoreRules.Add(DicTokenType.Ignore);
+            Rules.Ignore(DicTokenType.Ignore);
         }
 
         public static IEnumerable<Token<DicTokenType>> Tokenize(string data)

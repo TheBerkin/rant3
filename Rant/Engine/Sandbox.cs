@@ -51,11 +51,18 @@ namespace Rant.Engine
 		/// </summary>
 		public RantFormat Format => _format;
 
+		/// <summary>
+		/// The object stack used by the interpreter.
+		/// </summary>
+		public ObjectStack Objects => _objects;
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_format = engine.Format;
 			_sizeLimit = new Limit<int>(0, sizeLimit, (a, b) => a + b, (a, b) => b == 0 || a <= b);
 			_mainOutput = new OutputWriter(_format, _sizeLimit);
+			_outputs = new Stack<OutputWriter>();
+			_outputs.Push(_mainOutput);
 			_rng = rng;
 			_startingGen = rng.Generation;
 			_pattern = pattern;
@@ -69,6 +76,8 @@ namespace Rant.Engine
 		public void Print(object obj) => CurrentOutput.Write(obj?.ToString() ?? String.Empty);
 
 		public void AddOutputWriter() => _outputs.Push(new OutputWriter(_format, _sizeLimit));
+
+		public RantOutput PopOutput() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
 
 		/// <summary>
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
@@ -98,7 +107,7 @@ namespace Rant.Engine
 				while (action.MoveNext())
 				{
 					if (callStack.Count == RantEngine.MaxStackSize)
-						throw new RantException(_pattern, null, $"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+						throw new RantRuntimeException(_pattern, null, $"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 
 					// Push child node onto stack and start over
 					callStack.Push(action.Current.Run(this));
@@ -109,7 +118,7 @@ namespace Rant.Engine
 				callStack.Pop();
 			}
 			
-			return new RantOutput(_rng.Seed, _startingGen, _mainOutput.Channels);
+			return PopOutput();
 		}
 	}
 }

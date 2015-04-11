@@ -37,15 +37,12 @@ namespace Rant
 
 	    internal RantAction Action => _action;
 
-        internal Stringe SourceStringe => _stringe;
-
         internal RantPattern(string name, RantPatternSource type, string code)
         {
             _name = name;
             _type = type;
             _code = code;
-            _stringe = code.ToStringe();
-	        _action = RantCompiler.Compile(_stringe);
+	        _action = RantCompiler.Compile(name, code);
         }
 
         /// <summary>

@@ -16,6 +16,12 @@ namespace Rant.Engine.Compiler.Syntax
 			_actions.AddRange(actions);
 		}
 
+		public RASequence(List<RantAction> actions)
+		{
+			if (actions == null) return;
+			_actions.AddRange(actions);
+		}
+
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			foreach (var action in _actions) yield return action;

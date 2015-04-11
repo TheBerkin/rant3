@@ -6,53 +6,44 @@ using Rant.Stringes;
 
 namespace Rant.Engine
 {
-    internal class PatternReader
+    internal class TokenReader
     {
-        private readonly RantPattern _source;
+        private readonly string _sourceName;
         private readonly Token<R>[] _tokens;
         private int _pos;
 
         private readonly Stack<Token<R>> _stack = new Stack<Token<R>>(10); 
 
-        public PatternReader(RantPattern source)
+        public TokenReader(string sourceName, IEnumerable<Token<R>> tokens)
         {
-            _source = source;
-            _tokens = source.Tokens.ToArray();
+            _sourceName = sourceName;
+            _tokens = tokens.ToArray();
             _pos = 0;
         }
 
-        public RantPattern Source
-        {
-            get { return _source; }
-        }
+        public string SourceName => _sourceName;
 
-        public int Position
+	    public int Position
         {
             get { return _pos; }
             set { _pos = value; }
         }
 
-        public bool End
-        {
-            get { return _pos >= _tokens.Length; }
-        }
+        public bool End => _pos >= _tokens.Length;
 
-        public Token<R> PrevToken
-        {
-            get { return _pos == 0 ? null : _tokens[_pos - 1]; }
-        }
+	    public Token<R> PrevToken => _pos == 0 ? null : _tokens[_pos - 1];
 
-        
-        public Token<R> ReadToken()
+
+	    public Token<R> ReadToken()
         {
-            if (End) throw new RantException(_source, null, "Unexpected end of file.");
+            if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
             return _tokens[_pos++];
         }
 
         
         public Token<R> PeekToken()
         {
-            if (End) throw new RantException(_source, null, "Unexpected end of file.");
+            if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
             return _tokens[_pos];
         }
 
@@ -66,7 +57,7 @@ namespace Rant.Engine
             if (End)
             {
                 if (!allowEof)
-                    throw new RantException(_source, null, "Unexpected end-of-file.");
+                    throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
                 return false;
             }
             if (_tokens[_pos].ID != type) return false;
@@ -79,7 +70,7 @@ namespace Rant.Engine
             if (End)
             {
                 if (!allowEof)
-                    throw new RantException(_source, null, "Unexpected end-of-file.");
+                    throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
                 return false;
             }
             SkipSpace();
@@ -150,7 +141,7 @@ namespace Rant.Engine
             if (End)
             {
                 if (!allowEof)
-                    throw new RantException(_source, null, "Unexpected end-of-file.");
+                    throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
                 return false;
             }
             if (_tokens[_pos].ID != type) return false;
@@ -164,10 +155,10 @@ namespace Rant.Engine
         public Token<R> Read(R type, string expectedTokenName = null)
         {
             if (End) 
-                throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+                throw new RantCompilerException(_sourceName, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
             if (_tokens[_pos].ID != type)
             {
-                throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
+                throw new RantCompilerException(_sourceName, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
             }
             return _tokens[_pos++];
         }
@@ -176,11 +167,11 @@ namespace Rant.Engine
         public Token<R> ReadLoose(R type, string expectedTokenName = null)
         {
             if (End)
-                throw new RantException(_source, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+                throw new RantCompilerException(_sourceName, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
             SkipSpace();
             if (_tokens[_pos].ID != type)
             {
-                throw new RantException(_source, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
+                throw new RantCompilerException(_sourceName, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
             }
             var t = _tokens[_pos++];
             SkipSpace();
@@ -192,7 +183,7 @@ namespace Rant.Engine
             if (End)
             {
                 if (!allowEof)
-                    throw new RantException(_source, null, "Unexpected end-of-file.");
+                    throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
                 return false;
             }
 
@@ -219,13 +210,10 @@ namespace Rant.Engine
         }
 
         
-        public bool SkipSpace()
-        {
-            return TakeAll(R.Whitespace);
-        }
+        public bool SkipSpace() => TakeAll(R.Whitespace);
 
-        
-        public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Delimiters bracketPairs)
+
+	    public IEnumerable<IEnumerable<Token<R>>> ReadMultiItemScope(R open, R close, R separator, Delimiters bracketPairs)
         {
             SkipSpace();
             _stack.Clear();
@@ -251,7 +239,7 @@ namespace Rant.Engine
                     // Handle invalid closures
                     if (!bracketPairs.Contains(lastOpening.ID, token.ID)) // Not in main pair
                     {
-                        throw new RantException(_source, token,
+                        throw new RantCompilerException(_sourceName, token,
                             "Invalid closure '"
                             + lastOpening.Value
                             + " ... "
@@ -302,7 +290,7 @@ namespace Rant.Engine
                 // Move to next position
                 _pos++;
             }
-            throw new RantException(_source, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantCompilerException(_sourceName, null, "Unexpected end of file - expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
         
@@ -331,7 +319,7 @@ namespace Rant.Engine
                     
                     if (!bracketPairs.Contains(lastOpening.ID, token.ID))
                     {
-                        throw new RantException(_source, token,
+                        throw new RantCompilerException(_sourceName, token,
                             "Invalid closure '"
                             + lastOpening.Value
                             + " ... "
@@ -347,7 +335,7 @@ namespace Rant.Engine
                 }
                 yield return token;
             }
-            throw new RantException(_source, null, "Unexpected end of file; expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
+            throw new RantCompilerException(_sourceName, null, "Unexpected end of file; expected '" + RantLexer.Rules.GetSymbolForId(close) + "'.");
         }
 
         
@@ -371,13 +359,13 @@ namespace Rant.Engine
                 {
                     // Since this method assumes that the first opening bracket was already read, an empty _stack indicates main scope closure.
                     if (!_stack.Any())
-                        throw new RantException(_source, token, $"Unexpected token '{token.Value}'");
+                        throw new RantCompilerException(_sourceName, token, $"Unexpected token '{token.Value}'");
 
                     var lastOpening = _stack.Pop();
 
                     if (!bracketPairs.Contains(lastOpening.ID, token.ID))
                     {
-                        throw new RantException(_source, token,
+                        throw new RantCompilerException(_sourceName, token,
                             "Invalid closure '"
                             + lastOpening.Value
                             + " ... "
@@ -389,7 +377,7 @@ namespace Rant.Engine
                 }
                 yield return token;
             }
-            throw new RantException(_source, null, $"Unexpected end of file; expected '{RantLexer.Rules.GetSymbolForId(_stack.Any() ? bracketPairs.GetClosing(_stack.Peek().ID) : tokenType)}'.");
+            throw new RantCompilerException(_sourceName, null, $"Unexpected end of file; expected '{RantLexer.Rules.GetSymbolForId(_stack.Any() ? bracketPairs.GetClosing(_stack.Peek().ID) : tokenType)}'.");
         }
     }
 }

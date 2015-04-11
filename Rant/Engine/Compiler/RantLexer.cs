@@ -29,7 +29,7 @@ namespace Rant.Engine.Compiler
 		private static readonly Regex SyllableRangeRegex = new Regex(@"\(\s*(~?\d+|\d+\s*~(\s*\d+)?)\s*\)", DefaultOptions);
 		private static readonly Regex NumberRegex = new Regex(@"-?\d+(\.\d+)?", DefaultOptions);
 
-		internal static readonly LexerRules<R> Rules;
+		internal static readonly Lexer<R> Rules;
 
 		private static Stringe TruncatePadding(Stringe input)
 		{
@@ -39,8 +39,10 @@ namespace Rant.Engine.Compiler
 
 		static RantLexer()
 		{
-			Rules = new LexerRules<R>
+			Rules = new Lexer<R>
 			{
+				{CommentRegex, R.Ignore, 3},
+				{BlackspaceRegex, R.Ignore, 2},
 				{EscapeRegex, R.EscapeSequence},
 				{RegexRegex, R.Regex},
 				{ConstantLiteralRegex, R.ConstantLiteral},
@@ -78,14 +80,12 @@ namespace Rant.Engine.Compiler
 				{"var", R.Var},
 				{NumberRegex, R.Number},
 				//{SyllableRangeRegex, R.RangeLiteral},
-				{WeightRegex, R.Weight},
-				{CommentRegex, R.Ignore, 3},
-				{BlackspaceRegex, R.Ignore, 2},
+				//{WeightRegex, R.Weight},
 				{WhitespaceRegex, R.Whitespace}
 			};
 			Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
 			Rules.AddEndToken(R.EOF);
-			Rules.IgnoreRules.Add(R.Ignore);
+			Rules.Ignore(R.Ignore);
 		}
 
 		/// <summary>

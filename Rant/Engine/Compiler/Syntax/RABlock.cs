@@ -15,11 +15,16 @@ namespace Rant.Engine.Compiler.Syntax
 			_items.AddRange(items);
 		}
 
+		public RABlock(List<RantAction> items)
+		{
+			_items.AddRange(items);
+		}
+
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
-            for (int i = 0; i < attribs.Repetitons; i++)
+			for (int i = 0; i < attribs.Repetitons; i++)
 			{
 				next = attribs.NextIndex(_items.Count, sb.RNG);
 				if (next == -1) yield break;

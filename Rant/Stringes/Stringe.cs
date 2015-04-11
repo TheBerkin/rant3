@@ -5,14 +5,10 @@ using System.Linq;
 
 namespace Rant.Stringes
 {
-    /// <summary>
-    /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
-    /// </summary>
-#if EDITOR
-    public class Stringe : IEnumerable<Chare>
-#else
-    internal class Stringe : IEnumerable<Chare>
-#endif
+	/// <summary>
+	/// Represents a string or a substring in relation to its parent. Provides line number, column, offset, and other useful data.
+	/// </summary>
+	internal class Stringe : IEnumerable<Chare>
     {
         private readonly Stref _stref;
         private readonly int _offset;
@@ -20,6 +16,9 @@ namespace Rant.Stringes
         private readonly int _line;
         private readonly int _column;
         private string _substring;
+
+        // Used to cache requested metadata so that we don't have a bunch of unused fields
+        private Dictionary<string, object> _meta = null;
 
         /// <summary>
         /// Returns an empty stringe based on the position of another stringe.
@@ -42,69 +41,139 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Returns a stringe whose endpoints are the specified stringes. The stringes must both belong to the same parent string.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static Stringe Range(Stringe a, Stringe b)
+        {
+            if (a == null) throw new ArgumentNullException("a");
+            if (b == null) throw new ArgumentNullException("b");
+            if (a._stref != b._stref)
+                throw new ArgumentException("The stringes do not belong to the same parent.");
+
+            if (a == b) return a;
+            if (a.IsSubstringeOf(b)) return b;
+            if (b.IsSubstringeOf(a)) return a;
+
+            // Right side of A intersects left side of B.
+            if (a._offset > b._offset && a._offset + a._length < b._offset + b._length)
+            {
+                return a.Substringe(0, b._offset + b._length - a._offset);
+            }
+
+            // Left side of A intersects right side of B.
+            if (a._offset < b._offset + b._length && a._offset > b._offset)
+            {
+                return b.Substringe(0, a._offset + a._length - b._offset);
+            }
+
+            // A is to the left of B.
+            if (a._offset + a._length <= b._offset)
+            {
+                return a.Substringe(0, b._offset + b._length - a._offset);
+            }
+
+            // B is to the left of A.
+            if (b._offset + b._length <= a._offset)
+            {
+                return b.Substringe(0, a._offset + a._length - b._offset);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns a stringe comprised of all text between the two specified stringes. Returns null if the stringes are adjacent or intersected.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static Stringe Between(Stringe a, Stringe b)
+        {
+            if (a == null) throw new ArgumentNullException("a");
+            if (b == null) throw new ArgumentNullException("b");
+            if (a._stref != b._stref)
+                throw new ArgumentException("The stringes do not belong to the same parent.");
+
+            if (a == b) return a;
+            if (a.IsSubstringeOf(b)) return b;
+            if (b.IsSubstringeOf(a)) return a;
+
+            // Right side of A intersects left side of B.
+            if (a._offset > b._offset && a._offset + a._length < b._offset + b._length)
+            {
+                return null;
+            }
+
+            // Left side of A intersects right side of B.
+            if (a._offset < b._offset + b._length && a._offset > b._offset)
+            {
+                return null;
+            }
+
+            // A is to the left of B.
+            if (a._offset + a._length <= b._offset)
+            {
+                return a.Substringe(a._length, b._offset - a._offset - a._length);
+            }
+
+            // B is to the left of A.
+            if (b._offset + b._length <= a._offset)
+            {
+                return b.Substringe(b._length, a._offset - b._offset - b._length);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// The offset of the stringe in the string.
         /// </summary>
-        public int Offset
-        {
-            get { return _offset; }
-        }
+        public int Offset => _offset;
 
         /// <summary>
         /// The length of the string represented by the stringe.
         /// </summary>
-        public int Length
-        {
-            get { return _length; }
-        }
+        public int Length => _length;
 
         /// <summary>
         /// The 1-based line number at which the stringe begins.
         /// </summary>
-        public int Line
-        {
-            get { return _line; }
-        }
+        public int Line => _line;
 
         /// <summary>
         /// The 1-based column at which the stringe begins.
         /// </summary>
-        public int Column
-        {
-            get { return _column; }
-        }
+        public int Column => _column;
+
+        /// <summary>
+        /// The index at which the stringe ends in the string.
+        /// </summary>
+        public int End => _offset + _length;
 
         /// <summary>
         /// Indicates if the stringe is a substring.
         /// </summary>
-        public bool IsSubstring
-        {
-            get { return _offset > 0 || _length < _stref.String.Length; }
-        }
+        public bool IsSubstring => _offset > 0 || _length < _stref.String.Length;
 
         /// <summary>
         /// Indicates if the stringe is empty.
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return _length == 0; }
-        }
+        public bool IsEmpty => _length == 0;
 
         /// <summary>
         /// The substring value represented by the stringe. If the stringe is the parent, this will provide the original string.
         /// </summary>
-        public string Value
-        {
-            // Lazily evaluated.
-            get { return _substring ?? (_substring = _stref.String.Substring(_offset, _length)); }
-        }
+        public string Value => _substring ?? (_substring = _stref.String.Substring(_offset, _length));
 
         /// <summary>
         /// Gets the original string from which the stringe was originally derived.
         /// </summary>
-        public string ParentString
-        {
-            get { return _stref.String; }
-        }
+        public string ParentString => _stref.String;
+
+        private Dictionary<string, object> Meta => _meta ?? (_meta = new Dictionary<string, object>());
 
         /// <summary>
         /// Creates a new stringe from the specified string.
@@ -119,6 +188,41 @@ namespace Rant.Stringes
             _line = 1;
             _column = 1;
             _substring = null;
+        }
+
+        /// <summary>
+        /// The number of times the current string occurs in the parent string.
+        /// </summary>
+        /// <returns></returns>
+        public int OccurrenceCount
+        {
+            get
+            {
+                const string name = "Occurrences";
+                object obj;
+                if (Meta.TryGetValue(name, out obj)) return (int)obj;
+
+                int count = StringeUtils.GetMatchCount(_stref.String, Value);
+                Meta[name] = count;
+                return count;
+            }
+        }
+
+        /// <summary>
+        /// The next index in the parent string at which the current stringe value occurs.
+        /// </summary>
+        public int NextIndex
+        {
+            get
+            {
+                const string name = "NextIndex";
+                object obj;
+                if (Meta.TryGetValue(name, out obj)) return (int)obj;
+
+                int nextIndex = _stref.String.IndexOf(Value, _offset + 1, StringComparison.InvariantCulture);
+                Meta[name] = nextIndex;
+                return nextIndex;
+            }
         }
 
         internal Stringe(Stringe value)
@@ -177,12 +281,17 @@ namespace Rant.Stringes
         /// </summary>
         /// <param name="index">The index of the charactere to retrieve.</param>
         /// <returns></returns>
-        public Chare this[int index]
+        public Chare this[int index] => _stref.Chares[index] ?? (_stref.Chares[index] = new Chare(this, _stref.String[index], index + _offset));
+
+        /// <summary>
+        /// Determines whether the current stringe is a substringe of the specified parent stringe.
+        /// </summary>
+        /// <param name="parent">The parent stringe to compare to.</param>
+        /// <returns></returns>
+        public bool IsSubstringeOf(Stringe parent)
         {
-            get
-            {
-                return _stref.Chares[index] ?? (_stref.Chares[index] = new Chare(this, _stref.String[index], index + _offset));
-            }
+            if (_stref != parent._stref) return false;
+            return _offset >= parent._offset && _offset + _length <= parent._offset + parent._length;
         }
 
         /// <summary>
@@ -343,6 +452,11 @@ namespace Rant.Stringes
             return Substringe(a, b - a);
         }
 
+        /// <summary>
+        /// Returns a copy of the stringe with the specified characters removed from the start.
+        /// </summary>
+        /// <param name="trimChars">The characters to remove.</param>
+        /// <returns></returns>
         public Stringe TrimStart(params char[] trimChars)
         {
             if (_length == 0) return this;
@@ -362,6 +476,11 @@ namespace Rant.Stringes
             return Substringe(a);
         }
 
+        /// <summary>
+        /// Returns a copy of the stringe with the specified characters removed from the end.
+        /// </summary>
+        /// <param name="trimChars">The characters to remove.</param>
+        /// <returns></returns>
         public Stringe TrimEnd(params char[] trimChars)
         {
             if (_length == 0) return this;
@@ -382,7 +501,7 @@ namespace Rant.Stringes
         }
 
         /// <summary>
-        /// Indicates if the left side of the line on which the stringe exists is composed entirely of white space.
+        /// Indicates whether the left side of the line on which the stringe exists is composed entirely of white space.
         /// </summary>
         public bool LeftPadded
         {
@@ -438,16 +557,32 @@ namespace Rant.Stringes
             }
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(params string[] separators)
         {
             return Split(separators, StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(params char[] separators)
         {
             return Split(separators, StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(char[] separators, StringSplitOptions options)
         {
             int start = 0;
@@ -461,6 +596,12 @@ namespace Rant.Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(string[] separators, StringSplitOptions options)
         {
             int start = 0;
@@ -475,6 +616,13 @@ namespace Rant.Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="count">The maximum number of substringes to return. If the count exceeds this number, the last item will be the remainder of the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(char[] separators, int count, StringSplitOptions options = StringSplitOptions.None)
         {
             if (count == 0) yield break;
@@ -504,6 +652,13 @@ namespace Rant.Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="count">The maximum number of substringes to return. If the count exceeds this number, the last item will be the remainder of the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(string[] separators, int count, StringSplitOptions options = StringSplitOptions.None)
         {
             if (count == 0) yield break;
@@ -534,19 +689,67 @@ namespace Rant.Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
-        public static explicit operator string(Stringe stringe)
+        /// <summary>
+        /// Converts a Stringe to its string value.
+        /// </summary>
+        /// <param name="stringe">The stringe to convert.</param>
+        public static explicit operator string(Stringe stringe) => stringe.Value;
+
+        /// <summary>
+        /// Converts a string to a Stringe.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        public static implicit operator Stringe(string value) => new Stringe(value);
+
+        /// <summary>
+        /// Determines whether two stringes are equal.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static bool operator ==(Stringe a, Stringe b)
         {
-            return stringe.Value;
-        }        
+            if (Equals(a, null) && Equals(b, null)) return true;
+            if (Equals(a, null) || Equals(b, null)) return false;
+            return a._stref == b._stref && a.Value == b.Value;
+        }
+
+        /// <summary>
+        /// Determines whether two stringes are not equal.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static bool operator !=(Stringe a, Stringe b)
+        {
+            if (Equals(a, null) && Equals(b, null)) return false;
+            if (Equals(a, null) || Equals(b, null)) return true;
+            return a._stref != b._stref || a.Value != b.Value;
+        }
+
+        /// <summary>
+        /// Determines whether the current stringe is equal to the specified object.
+        /// </summary>
+        /// <param name="obj">The object to compare with.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            var stre = obj as Stringe;
+            if (stre == null) return false;
+            return this == stre;
+        }
+
+        /// <summary>
+        /// Returns the hash of the current stringe.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode() => StringeUtils.HashOf(_stref.String, _offset, _length);
 
         /// <summary>
         /// Returns the string value of the stringe.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value;
 
         /// <summary>
         /// Stores cached character data for a Stringe.

@@ -75,10 +75,15 @@ namespace RantConsole
                 }
                 catch (Exception e)
                 {
-                    ForegroundColor = ConsoleColor.Red;
-                    if (e is RantException)
+                    if (e is RantRuntimeException)
                     {
-                        WriteLine(e.Message);
+						ForegroundColor = ConsoleColor.Red;
+						WriteLine($"Runtime error: {e.Message}");
+                    }
+					else if (e is RantCompilerException)
+					{
+						ForegroundColor = ConsoleColor.Yellow;
+						WriteLine($"Compiler error: {e.Message}");
                     }
                     else
                     {
