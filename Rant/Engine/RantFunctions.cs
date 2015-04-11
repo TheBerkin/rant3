@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -27,12 +26,9 @@ namespace Rant.Engine
 				if (attr == null) continue;
 				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
 				var info = new RantFunctionInfo(name, method);
-				if (info != null)
-				{
-					if (Util.ValidateName(name)) FunctionTable[name] = info;
-					foreach(var alias in attr.Aliases.Where(Util.ValidateName))
-						FunctionTable[alias] = info;
-				}
+				if (Util.ValidateName(name)) FunctionTable[name] = info;
+				foreach(var alias in attr.Aliases.Where(Util.ValidateName))
+					FunctionTable[alias] = info;
 			}
 			Loaded = true;
 		}

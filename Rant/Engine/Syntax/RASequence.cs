@@ -28,7 +28,7 @@ namespace Rant.Engine.Syntax
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			foreach (var action in _actions) yield return action;
+			return _actions.GetEnumerator();
 		}
 	}
 }
