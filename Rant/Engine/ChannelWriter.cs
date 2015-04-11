@@ -7,7 +7,7 @@ using Rant.Formats;
 
 namespace Rant.Engine
 {
-    internal class OutputWriter
+    internal class ChannelWriter
     {
         private readonly List<RantChannel> _stack;
         private readonly Dictionary<string, RantChannel> _channels;
@@ -17,7 +17,7 @@ namespace Rant.Engine
         private int _stackSize;
         private int _lastWriteSize, _size;
 
-        public OutputWriter(RantFormat formatStyle, Limit<int> sizeLimit)
+        public ChannelWriter(RantFormat formatStyle, Limit<int> sizeLimit)
         {
             _sizeLimit = sizeLimit;
             _main = new RantChannel("main", RantChannelVisibility.Public, formatStyle);

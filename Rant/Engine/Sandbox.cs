@@ -15,8 +15,8 @@ namespace Rant.Engine
 	internal class Sandbox
 	{
 		private readonly RantEngine _engine;
-		private readonly OutputWriter _mainOutput;
-		private readonly Stack<OutputWriter> _outputs; 
+		private readonly ChannelWriter _mainOutput;
+		private readonly Stack<ChannelWriter> _outputs; 
 		private readonly RNG _rng;
 		private readonly long _startingGen;
 		private readonly RantFormat _format;
@@ -29,12 +29,12 @@ namespace Rant.Engine
 		/// <summary>
 		/// Gets the main output channel stack.
 		/// </summary>
-		public OutputWriter MainOutput => _mainOutput;
+		public ChannelWriter MainOutput => _mainOutput;
 
 		/// <summary>
 		/// Gets the current output channel stack.
 		/// </summary>
-		public OutputWriter CurrentOutput => _outputs.Peek();
+		public ChannelWriter CurrentOutput => _outputs.Peek();
 
 		/// <summary>
 		/// Gets the random number generator in use by the interpreter.
@@ -60,8 +60,8 @@ namespace Rant.Engine
 		{
 			_format = engine.Format;
 			_sizeLimit = new Limit<int>(0, sizeLimit, (a, b) => a + b, (a, b) => b == 0 || a <= b);
-			_mainOutput = new OutputWriter(_format, _sizeLimit);
-			_outputs = new Stack<OutputWriter>();
+			_mainOutput = new ChannelWriter(_format, _sizeLimit);
+			_outputs = new Stack<ChannelWriter>();
 			_outputs.Push(_mainOutput);
 			_rng = rng;
 			_startingGen = rng.Generation;
@@ -75,7 +75,7 @@ namespace Rant.Engine
 		/// <param name="obj">The value to print.</param>
 		public void Print(object obj) => CurrentOutput.Write(obj?.ToString() ?? String.Empty);
 
-		public void AddOutputWriter() => _outputs.Push(new OutputWriter(_format, _sizeLimit));
+		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
 		public RantOutput PopOutput() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
 

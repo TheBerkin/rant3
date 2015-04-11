@@ -141,7 +141,7 @@
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
     <Compile Include="RantChannel.cs" />
-    <Compile Include="Engine\OutputWriter.cs" />
+    <Compile Include="Engine\ChannelWriter.cs" />
     <Compile Include="RantChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
