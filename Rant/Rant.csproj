@@ -76,6 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Constructs\BlockStatus.cs" />
+    <Compile Include="Engine\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />
     <Compile Include="Engine\Delegates\Witchcraft.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="Engine\Syntax\RantAction.cs" />
     <Compile Include="Engine\Syntax\RASequence.cs" />
     <Compile Include="Engine\Syntax\RAText.cs" />
-    <Compile Include="Engine\Constructs\Block.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
@@ -136,7 +137,6 @@
     <Compile Include="Formats\IndefiniteArticleRules.cs" />
     <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
-    <Compile Include="Engine\Constructs\ParamType.cs" />
     <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
@@ -161,7 +161,6 @@
     <Compile Include="Stringes\Token.cs" />
     <Compile Include="Engine\Constructs\SyncType.cs" />
     <Compile Include="Engine\Constructs\Synchronizer.cs" />
-    <Compile Include="Engine\Constructs\Argument.cs" />
     <Compile Include="Engine\Util.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />

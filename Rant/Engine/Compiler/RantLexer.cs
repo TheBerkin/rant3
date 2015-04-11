@@ -27,7 +27,7 @@ namespace Rant.Engine.Compiler
 		private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
 		private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
 		private static readonly Regex SyllableRangeRegex = new Regex(@"\(\s*(~?\d+|\d+\s*~(\s*\d+)?)\s*\)", DefaultOptions);
-		private static readonly Regex NumberRegex = new Regex(@"-?\d+(\.\d+)?", DefaultOptions);
+		private static readonly Regex NumberRegex = new Regex(@"(?<!\w)-?\d+(\.\d+)?", DefaultOptions);
 
 		internal static readonly Lexer<R> Rules;
 

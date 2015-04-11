@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Engine.Constructs;
+
 namespace Rant.Engine.Syntax
 {
 	/// <summary>
@@ -28,12 +30,13 @@ namespace Rant.Engine.Syntax
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
+			var block = new BlockStatus(_items.Count);
+			sb.Blocks.Push(block);
 			for (int i = 0; i < attribs.Repetitons; i++)
 			{
 				next = attribs.NextIndex(_items.Count, sb.RNG);
-				if (next == -1) yield break;
-				// TODO: Push repeater context to allow proper usage of [repcount], [repindex], etc...
-
+				block.Next(next);
+				if (next == -1) break;
 				// Separator
 				if (i > 0 && attribs.Separator != null) yield return attribs.Separator;
 				// Prefix
@@ -43,6 +46,7 @@ namespace Rant.Engine.Syntax
 				// Affix
 				if (attribs.After != null) yield return attribs.After;
 			}
+			sb.Blocks.Pop();
 		}
 	}
 }

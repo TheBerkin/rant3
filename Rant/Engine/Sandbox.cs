@@ -23,6 +23,7 @@ namespace Rant.Engine
 		private readonly RantPattern _pattern;
 		private readonly ObjectStack _objects;
 		private readonly Limit<int> _sizeLimit;
+		private readonly Stack<BlockStatus> _blocks; 
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -52,9 +53,14 @@ namespace Rant.Engine
 		public RantFormat Format => _format;
 
 		/// <summary>
-		/// The object stack used by the interpreter.
+		/// Gest the object stack used by the interpreter.
 		/// </summary>
 		public ObjectStack Objects => _objects;
+
+		/// <summary>
+		/// Gets the block state stack.
+		/// </summary>
+		public Stack<BlockStatus> Blocks => _blocks; 
 
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
@@ -67,6 +73,7 @@ namespace Rant.Engine
 			_startingGen = rng.Generation;
 			_pattern = pattern;
 			_objects = new ObjectStack(engine.Objects);
+			_blocks = new Stack<BlockStatus>();
 		}
 
 		/// <summary>

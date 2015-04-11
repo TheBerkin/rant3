@@ -13,16 +13,14 @@ namespace Rant.Engine
 	// They may return either void or IEnumerator<RantAction> depending on your needs.
 	internal static class RantFunctions
 	{
+		private static bool Loaded = false;
 		private static readonly Dictionary<string, RantFunctionInfo> FunctionTable = 
 			new Dictionary<string, RantFunctionInfo>(StringComparer.InvariantCultureIgnoreCase);
-
-		private static bool Loaded = false;
 
 		internal static void Load()
 		{
 			if (Loaded) return;
-			var methods = typeof(RantFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
-			foreach (var method in methods)
+			foreach (var method in typeof(RantFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
 			{
 				if (!method.IsStatic) continue;
 				var attr = method.GetCustomAttributes().OfType<RantFunctionAttribute>().FirstOrDefault();
@@ -47,30 +45,35 @@ namespace Rant.Engine
 		}
 
 		[RantFunction("rep", "r")]
+		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb, int times)
 		{
 			sb.CurrentBlockAttribs.Repetitons = times;
 		}
 
 		[RantFunction("sep", "s")]
+		[RantDescription("Sets the separator pattern for the next block.")]
 		private static void Sep(Sandbox sb, RantAction separatorAction)
 		{
 			sb.CurrentBlockAttribs.Separator = separatorAction;
 		}
 
 		[RantFunction]
+		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb, RantAction beforeAction)
 		{
 			sb.CurrentBlockAttribs.Before = beforeAction;
 		}
 
 		[RantFunction]
+		[RantDescription("Sets the postfix pattern for the next block.")]
 		private static void After(Sandbox sb, RantAction afterAction)
 		{
 			sb.CurrentBlockAttribs.After = afterAction;
 		}
 
 		[RantFunction]
+		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
 		private static void Chance(Sandbox sb, int chance)
 		{
 			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
@@ -78,9 +81,51 @@ namespace Rant.Engine
 
 
 		[RantFunction("case", "caps")]
+		[RantDescription("Changes the capitalization mode for all open channels.")]
 		private static void Case(Sandbox sb, Case textCase)
 		{
 			sb.CurrentOutput.SetCase(textCase);
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is the first.")]
+		private static IEnumerator<RantAction> First(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration == 1) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is the last.")]
+		private static IEnumerator<RantAction> Last(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+            if (block.Iteration == block.Count) yield return action;
+		}
+
+		[RantFunction("repnum", "rn")]
+		[RantDescription("Prints the iteration number of the current block.")]
+		private static void RepNum(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			sb.Print(sb.Blocks.Peek().Iteration);
+		}
+
+		[RantFunction("index", "i")]
+		[RantDescription("Prints the zero-based index of the block item currently being executed.")]
+		private static void Index(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			sb.Print(sb.Blocks.Peek().Index);
+		}
+
+		[RantFunction("index1", "i1")]
+		[RantDescription("Prints the one-based index of the block item currently being executed.")]
+		private static void IndexOne(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			sb.Print(sb.Blocks.Peek().Index + 1);
 		}
 	}
 }
