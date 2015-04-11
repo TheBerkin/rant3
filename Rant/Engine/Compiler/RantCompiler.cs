@@ -150,7 +150,7 @@ namespace Rant.Engine.Compiler
 		{
 			if (argc != func.Parameters.Length)
 				throw new RantCompilerException(_sourceName, Stringe.Range(from, to),
-					$"The function '{func.Name}' requires '{func.Parameters.Length}' arguments.");
+					$"The function '{func.Name}' requires '{func.Parameters.Length}' argument(s).");
 		}
 
 		private void Unexpected(Stringe token)

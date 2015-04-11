@@ -42,9 +42,12 @@ namespace Rant.Engine.Compiler.Syntax
 					case RantParameterType.Number:
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						if (!Double.TryParse(sb.PopOutput().MainValue, out d))
+						var strNum = sb.PopOutput().MainValue;
+                        if (!Double.TryParse(strNum, out d))
 						{
 							d = 0;
+							int n;
+							if (Util.ParseInt(strNum, out n)) d = n;
 						}
 						args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
 						break;
