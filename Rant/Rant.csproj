@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Engine\Compiler\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Compiler\Syntax\RAFunction.cs" />
+    <Compile Include="Engine\Delegates\Witchcraft.cs" />
     <Compile Include="Engine\RantParameter.cs" />
     <Compile Include="Engine\RantParameterType.cs" />
     <Compile Include="Engine\RantFunctionAttribute.cs" />

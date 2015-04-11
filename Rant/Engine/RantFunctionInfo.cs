@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Rant.Engine.Delegates;
 using Rant.IO;
 
 namespace Rant.Engine
@@ -14,7 +15,7 @@ namespace Rant.Engine
 	internal class RantFunctionInfo
 	{
 		private readonly string _name;
-		private readonly MethodInfo _method;
+		private readonly Witchcraft _delegate;
 		private readonly int _argc;
 		private readonly RantParameter[] _params;
 
@@ -63,17 +64,16 @@ namespace Rant.Engine
 				// Create Rant parameter
 				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType);
 			}
-
-			_method = method;
 			_name = name;
+
+			_delegate = Witchcraft.Create(method);
 		}
 
 		public IEnumerator<RantAction> Invoke(Sandbox sb, object[] arguments)
 		{
 			var args = new List<object>();
-			args.Add(sb);
 			args.AddRange(arguments);
-			return _method.Invoke(null, args.ToArray()) as IEnumerator<RantAction> ?? CreateEmptyIterator();
+			return _delegate.Invoke(sb, args.ToArray()) as IEnumerator<RantAction> ?? CreateEmptyIterator();
 		}
 
 		private static IEnumerator<RantAction> CreateEmptyIterator()
