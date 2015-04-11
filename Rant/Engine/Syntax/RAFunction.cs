@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rant.Engine.Compiler.Syntax
+namespace Rant.Engine.Syntax
 {
 	internal class RAFunction : RantAction
 	{
@@ -10,7 +10,8 @@ namespace Rant.Engine.Compiler.Syntax
 		private readonly List<RantAction> _argActions;
 		private readonly int _argc;
 
-		public RAFunction(RantFunctionInfo funcInfo, List<RantAction> argActions)
+		public RAFunction(Stringe stringe, RantFunctionInfo funcInfo, List<RantAction> argActions) 
+			: base(stringe)
 		{
 			_funcInfo = funcInfo;
 			_argActions = argActions;
@@ -40,17 +41,35 @@ namespace Rant.Engine.Compiler.Syntax
 
 					// Numbers are evaluated, verified, and converted
 					case RantParameterType.Number:
-						sb.AddOutputWriter();
-						yield return _argActions[i];
-						var strNum = sb.PopOutput().MainValue;
-                        if (!Double.TryParse(strNum, out d))
 						{
-							d = 0;
-							int n;
-							if (Util.ParseInt(strNum, out n)) d = n;
+							sb.AddOutputWriter();
+							yield return _argActions[i];
+							var strNum = sb.PopOutput().MainValue;
+							if (!Double.TryParse(strNum, out d))
+							{
+								d = 0;
+								int n;
+								if (Util.ParseInt(strNum, out n)) d = n;
+							}
+							args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
+							break;
 						}
-						args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
-						break;
+
+					// Modes are parsed into enumeration members
+					case RantParameterType.Mode:
+						{
+							sb.AddOutputWriter();
+							yield return _argActions[i];
+							var strMode = sb.PopOutput().MainValue;
+							object value;
+							if (!Util.TryParseMode(_funcInfo.Parameters[i].NativeType, strMode, out value))
+							{
+								throw new RantRuntimeException(_argActions[i].Stringe.ParentString, _argActions[i].Stringe,
+									$"Invalid mode value '{strMode}'.");
+							}
+							args[i] = value;
+							break;
+						}
 				}
 			}
 

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rant.Engine.Compiler.Syntax
+namespace Rant.Engine.Syntax
 {
 	internal class RAEscape : RantAction
 	{
@@ -66,18 +66,20 @@ namespace Rant.Engine.Compiler.Syntax
 		private readonly int _times;
 		private bool _unicode;
 
-		public RAEscape(string escapeSequence)
+		public RAEscape(Stringe escapeSequence) : base(escapeSequence)
 		{
+			var escape = escapeSequence.Value;
+
 			// The lexer already assures that the string isn't empty.
 			int codeIndex = 1; // skip past the backslash
 
 			// parse the quantifier
-			if (Char.IsDigit(escapeSequence[codeIndex]) && escapeSequence[codeIndex] != '0')
+			if (Char.IsDigit(escape[codeIndex]) && escape[codeIndex] != '0')
 			{
-				int commaIndex = escapeSequence.IndexOf(',', codeIndex + 1);
+				int commaIndex = escape.IndexOf(',', codeIndex + 1);
 				if (commaIndex != -1)
 				{
-					Util.ParseInt(escapeSequence.Substring(1, commaIndex - 1), out _times);
+					Util.ParseInt(escape.Substring(1, commaIndex - 1), out _times);
 					codeIndex = commaIndex + 1;
 				}
 			}
@@ -87,16 +89,16 @@ namespace Rant.Engine.Compiler.Syntax
 			}
 
 			// parse the code
-			switch (escapeSequence[codeIndex])
+			switch (escape[codeIndex])
 			{
 				// unicode character is the only special case
 				case 'u':
-					_code = (char)Convert.ToUInt16(escapeSequence.Substring(codeIndex + 1), 16);
+					_code = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1), 16);
 					_unicode = true;
 					break;
 				// everything else
 				default:
-					_code = escapeSequence[codeIndex];
+					_code = escape[codeIndex];
 					break;
 			}
 		}

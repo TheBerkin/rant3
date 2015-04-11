@@ -34,10 +34,10 @@ namespace Rant.Engine.Delegates
 		public static Witchcraft Create(MethodInfo methodInfo)
 		{
 			bool isVoid = methodInfo.ReturnType == typeof(void);
-            var types = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
+			var types = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
 			if (types.Length == 0 || types[0] != typeof(Sandbox))
 				throw new ArgumentException("Method must have a Sandbox parameter come first.", nameof(methodInfo));
-			
+
 			var argTypes = types.Skip(1).ToArray();
 			if (argTypes.Length >= _funcTypes.Length) return null;
 
@@ -53,8 +53,8 @@ namespace Rant.Engine.Delegates
 				}
 			}
 
-			Type type = isVoid 
-				? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes) 
+			Type type = isVoid
+				? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes)
 				: _funcTypes[argTypes.Length - 1].MakeGenericType(argTypes);
 
 			return (Witchcraft)Activator.CreateInstance(type, methodInfo);

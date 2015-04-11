@@ -76,8 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\Compiler\Syntax\RAEscape.cs" />
-    <Compile Include="Engine\Compiler\Syntax\RAFunction.cs" />
+    <Compile Include="Engine\Syntax\RAEscape.cs" />
+    <Compile Include="Engine\Syntax\RAFunction.cs" />
     <Compile Include="Engine\Delegates\Witchcraft.cs" />
     <Compile Include="Engine\RantParameter.cs" />
     <Compile Include="Engine\RantParameterType.cs" />
@@ -86,10 +86,10 @@
     <Compile Include="Engine\RantFunctions.cs" />
     <Compile Include="Engine\Sandbox.cs" />
     <Compile Include="Engine\Compiler\RantCompiler.cs" />
-    <Compile Include="Engine\Compiler\Syntax\RABlock.cs" />
-    <Compile Include="Engine\Compiler\Syntax\RantAction.cs" />
-    <Compile Include="Engine\Compiler\Syntax\RASequence.cs" />
-    <Compile Include="Engine\Compiler\Syntax\RAText.cs" />
+    <Compile Include="Engine\Syntax\RABlock.cs" />
+    <Compile Include="Engine\Syntax\RantAction.cs" />
+    <Compile Include="Engine\Syntax\RASequence.cs" />
+    <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Constructs\Block.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />

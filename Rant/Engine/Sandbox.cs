@@ -1,4 +1,4 @@
-﻿using Rant.Engine.Compiler.Syntax;
+﻿using Rant.Engine.Syntax;
 using Rant.Engine.Constructs;
 using Rant.Formats;
 using System;

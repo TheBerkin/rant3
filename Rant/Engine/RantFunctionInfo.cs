@@ -1,4 +1,4 @@
-﻿using Rant.Engine.Compiler.Syntax;
+﻿using Rant.Engine.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +51,10 @@ namespace Rant.Engine
 				else if (type == typeof(string))
 				{
 					rantType = RantParameterType.String;
+				}
+				else if (type.IsEnum)
+				{
+					rantType = RantParameterType.Mode;
 				}
 				else if (IOUtil.IsNumericType(type))
 				{

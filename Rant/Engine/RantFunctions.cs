@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using Rant.Engine.Compiler.Syntax;
+using Rant.Engine.Formatters;
+using Rant.Engine.Syntax;
 
 namespace Rant.Engine
 {
@@ -28,7 +29,12 @@ namespace Rant.Engine
 				if (attr == null) continue;
 				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
 				var info = new RantFunctionInfo(name, method);
-				if (info != null) FunctionTable[name] = info;
+				if (info != null)
+				{
+					if (Util.ValidateName(name)) FunctionTable[name] = info;
+					foreach(var alias in attr.Aliases.Where(Util.ValidateName))
+						FunctionTable[alias] = info;
+				}
 			}
 			Loaded = true;
 		}
@@ -40,16 +46,41 @@ namespace Rant.Engine
 			return func;
 		}
 
-		[RantFunction]
+		[RantFunction("rep", "r")]
 		private static void Rep(Sandbox sb, int times)
 		{
 			sb.CurrentBlockAttribs.Repetitons = times;
 		}
 
-		[RantFunction]
+		[RantFunction("sep", "s")]
 		private static void Sep(Sandbox sb, RantAction separatorAction)
 		{
 			sb.CurrentBlockAttribs.Separator = separatorAction;
-		} 
+		}
+
+		[RantFunction]
+		private static void Before(Sandbox sb, RantAction beforeAction)
+		{
+			sb.CurrentBlockAttribs.Before = beforeAction;
+		}
+
+		[RantFunction]
+		private static void After(Sandbox sb, RantAction afterAction)
+		{
+			sb.CurrentBlockAttribs.After = afterAction;
+		}
+
+		[RantFunction]
+		private static void Chance(Sandbox sb, int chance)
+		{
+			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
+		}
+
+
+		[RantFunction("case", "caps")]
+		private static void Case(Sandbox sb, Case textCase)
+		{
+			sb.CurrentOutput.SetCase(textCase);
+		}
 	}
 }

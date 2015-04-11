@@ -11,19 +11,24 @@ namespace Rant.Engine
 {
 	internal static class Util
 	{
-		public static bool TryParseMode<TEnum>(string modeString, out TEnum value)
+		private static Dictionary<Type, HashSet<string>> _enumTable = new Dictionary<Type, HashSet<string>>();
+
+		private static void CacheEnum(Type type)
 		{
-			value = default(TEnum);
-			if (!typeof(TEnum).IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");
-			try
-			{
-				value = (TEnum)Enum.Parse(typeof(TEnum), NameToCamel(modeString), true);
-				return true;
-			}
-			catch
-			{
-				return false;
-			}
+			if (!type.IsEnum || _enumTable.ContainsKey(type)) return;
+			_enumTable[type] = new HashSet<string>(Enum.GetNames(type));
+		}
+
+		public static bool TryParseMode(Type enumType, string modeString, out object value)
+		{
+			value = null;
+			if (!enumType.IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");
+			CacheEnum(enumType);
+			var name = NameToCamel(modeString.Trim());
+            var cache = _enumTable[enumType];
+			if (!cache.Contains(name)) return false;
+			value = Enum.Parse(enumType, name, true);
+			return true;
 		}
 
 		public static bool IsNullOrWhiteSpace(string value)

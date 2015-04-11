@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Rant.Stringes;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Rant.Engine.Compiler.Syntax
+namespace Rant.Engine.Syntax
 {
 	/// <summary>
 	/// Represents a block construct, which provides multiple options to the interpreter for the next sequence, one of which is chosen.
@@ -11,11 +13,13 @@ namespace Rant.Engine.Compiler.Syntax
 		private readonly List<RantAction> _items = new List<RantAction>();
 
 		public RABlock(params RantAction[] items)
+			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Length - 1].Stringe) : null)
 		{
 			_items.AddRange(items);
 		}
 
 		public RABlock(List<RantAction> items)
+			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Count - 1].Stringe) : null)
 		{
 			_items.AddRange(items);
 		}

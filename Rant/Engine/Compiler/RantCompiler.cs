@@ -1,4 +1,4 @@
-﻿using Rant.Engine.Compiler.Syntax;
+﻿using Rant.Engine.Syntax;
 using Rant.Stringes;
 using System.Collections.Generic;
 
@@ -57,9 +57,12 @@ namespace Rant.Engine.Compiler
 
 				switch (token.ID)
 				{
+					case R.EOF:
+						goto done;
+
 					// Escape sequence
 					case R.EscapeSequence:
-						actions.Add(new RAEscape(token.Value));
+						actions.Add(new RAEscape(token));
 						break;
 
 					case R.LeftSquare:
@@ -79,7 +82,7 @@ namespace Rant.Engine.Compiler
 							{
 								var end = _reader.Read(R.RightSquare);
 								VerifyArgCount(func, 0, token, end);
-								actions.Add(new RAFunction(func, argList));
+								actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
 							}
 							break;
 						}
@@ -93,7 +96,7 @@ namespace Rant.Engine.Compiler
 							var func = _funcCalls.Pop();
 							VerifyArgCount(func, sequences.Count, fromToken, token);
 							// TODO: Add support for function overloads
-							return new RAFunction(func, sequences);
+							return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
 						}
 
 					// Argument separator
@@ -128,12 +131,19 @@ namespace Rant.Engine.Compiler
 						actions.Clear();
 						break;
 
+					// Constant literals
+					case R.ConstantLiteral:
+						actions.Add(new RAText(token, Util.UnescapeConstantLiteral(token.Value)));
+						break;
+
 					// Plain text
 					default:
-						actions.Add(new RAText(token.Value));
+						actions.Add(new RAText(token));
 						break;
 				}
 			}
+
+			done:
 
 			switch (type)
 			{

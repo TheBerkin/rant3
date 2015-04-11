@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Engine.Compiler;
-using Rant.Engine.Compiler.Syntax;
+using Rant.Engine.Syntax;
 using Rant.Stringes;
 
 namespace Rant.Engine.Constructs

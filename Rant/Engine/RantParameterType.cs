@@ -4,6 +4,7 @@
 	{
 		 String,
 		 Pattern,
-		 Number
+		 Number,
+		 Mode
 	}
 }

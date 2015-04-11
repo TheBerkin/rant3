@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Rant.Stringes;
+using System;
 using System.Collections.Generic;
 
-namespace Rant.Engine.Compiler.Syntax
+namespace Rant.Engine.Syntax
 {
 	/// <summary>
 	/// Prints a string constant to the output.
@@ -10,7 +11,12 @@ namespace Rant.Engine.Compiler.Syntax
 	{
 		private readonly string _text;
 
-		public RAText(string text)
+		public RAText(Stringe token) : base(token)
+		{
+			_text = token.Value ?? String.Empty;
+		}
+
+		public RAText(Stringe token, string text) : base(token)
 		{
 			_text = text ?? String.Empty;
 		}

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 
 using Rant.Engine.Compiler;
-using Rant.Engine.Compiler.Syntax;
+using Rant.Engine.Syntax;
 using Rant.Engine.Constructs;
 using Rant.Stringes;
 
@@ -18,7 +18,6 @@ namespace Rant
 	    private readonly RantAction _action;
         private readonly RantPatternSource _type;
         private readonly string _name;
-        private readonly Stringe _stringe;
 
         /// <summary>
         /// The name of the source code.
