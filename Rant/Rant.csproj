@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Constructs\BlockStatus.cs" />
-    <Compile Include="Engine\RantDescriptionAttribute.cs" />
+    <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />
     <Compile Include="Engine\Delegates\Witchcraft.cs" />

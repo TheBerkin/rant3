@@ -28,6 +28,11 @@ namespace Rant.Engine
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
 		/// <summary>
+		/// Gets the engine instance to which the sandbox is bound.
+		/// </summary>
+		public RantEngine Engine => _engine;
+
+		/// <summary>
 		/// Gets the main output channel stack.
 		/// </summary>
 		public ChannelWriter MainOutput => _mainOutput;
@@ -64,6 +69,7 @@ namespace Rant.Engine
 
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
+			_engine = engine;
 			_format = engine.Format;
 			_sizeLimit = new Limit<int>(0, sizeLimit, (a, b) => a + b, (a, b) => b == 0 || a <= b);
 			_mainOutput = new ChannelWriter(_format, _sizeLimit);
