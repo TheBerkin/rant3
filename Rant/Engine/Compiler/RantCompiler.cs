@@ -17,7 +17,7 @@ namespace Rant.Engine.Compiler
 		private readonly TokenReader _reader;
 		private readonly Stack<RantFunctionInfo> _funcCalls = new Stack<RantFunctionInfo>();
 		private readonly Stack<Regex> _regexes = new Stack<Regex>();
-		private RantQueryInfo _query;
+		private Query _query;
 
 		private RantCompiler(string sourceName, string source)
 		{
@@ -198,11 +198,14 @@ namespace Rant.Engine.Compiler
 					case R.LeftAngle:
 						{
 							var name = _reader.ReadLoose(R.Text);
-							_query = new RantQueryInfo(name);
+							_query = new Query();
+							_query.ClassFilters = new List<_<bool, string>[]>();
+							_query.RegexFilters = new List<_<bool, Regex>>();
+							_query.Name = name.Value;
 							var exclusivity = _reader.PeekToken();
 							if (exclusivity.ID == R.Dollar)
 							{
-								_query.IsExclusive = true;
+								_query.Exclusive = true;
 								_reader.ReadToken();
 							}
 							actions.Add(Read(ReadType.Query, token));
@@ -213,7 +216,7 @@ namespace Rant.Engine.Compiler
 						{
 							if (type != ReadType.Query) goto default;
 							var subtype = _reader.ReadLoose(R.Text);
-							_query.Subtype = subtype;
+							_query.Subtype = subtype.Value;
 						}
 						break;
 					// query filters
@@ -227,11 +230,13 @@ namespace Rant.Engine.Compiler
 							{
 								negative = true;
 								_reader.ReadToken();
-								if (_query.IsExclusive)
+								if (_query.Exclusive)
 									throw new RantCompilerException(_sourceName, token, "You can't define a negative class filter in an exclusive query.");
 							}
 							className = _reader.ReadLoose(R.Text);
-							_query.ClassFilters.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
+							// aaaaaaaaaaaaaaaaaaaaaaaaaaa
+							((List<_<bool, string>[]>)_query.ClassFilters)
+								.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
 						}
 						break;
 					// query regex filters
@@ -243,13 +248,14 @@ namespace Rant.Engine.Compiler
 							if (nextToken.ID == R.Exclamation)
 							{
 								negative = true;
-								if (_query.IsExclusive)
+								if (_query.Exclusive)
 									throw new RantCompilerException(_sourceName, token, "You can't define a negative regex filter in an exclusive query.");
 								nextToken = _reader.ReadToken();
 							}
 							if (nextToken.ID != R.Regex)
 								throw new RantCompilerException(_sourceName, token, "Expected regex.");
-							_query.RegexFilters.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
+							((List<_<bool, Regex>>)_query.RegexFilters)
+								.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
 						}
 						break;
 					// syllable range
@@ -286,7 +292,7 @@ namespace Rant.Engine.Compiler
 								range.Maximum = range.Minimum = firstNumber;
 							if (range.Minimum == null && range.Maximum == null)
 								throw new RantCompilerException(_sourceName, token, "Unknown syllable range syntax.");
-							_query.Range = range;
+							_query.SyllablePredicate = range;
 						}
 						break;
 					// query carriers
