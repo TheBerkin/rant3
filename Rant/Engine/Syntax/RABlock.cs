@@ -14,14 +14,14 @@ namespace Rant.Engine.Syntax
 	{
 		private readonly List<RantAction> _items = new List<RantAction>();
 
-		public RABlock(params RantAction[] items)
-			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Length - 1].Stringe) : null)
+		public RABlock(Stringe range, params RantAction[] items)
+			: base(range)
 		{
 			_items.AddRange(items);
 		}
 
-		public RABlock(List<RantAction> items)
-			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Count - 1].Stringe) : null)
+		public RABlock(Stringe range, List<RantAction> items)
+			: base(range)
 		{
 			_items.AddRange(items);
 		}

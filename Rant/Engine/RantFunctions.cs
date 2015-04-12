@@ -41,6 +41,17 @@ namespace Rant.Engine
 			return func;
 		}
 
+		[RantFunction("num", "n")]
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
+		private static void Number(Sandbox sb, 
+			[RantDescription("The minimum value of the number to generate.")]
+			int min, 
+			[RantDescription("The maximum value of the number to generate.")]
+			int max)
+		{
+			sb.Print(sb.RNG.Next(min, max + 1));
+		}
+
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb, 

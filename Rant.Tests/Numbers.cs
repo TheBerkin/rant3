@@ -7,8 +7,21 @@ namespace Rant.Tests
     {
         private readonly RantEngine rant = new RantEngine();
 
+		[Test]
+	    public void RandomNumbers()
+	    {
+		    var output = rant.Do(@"[r:10][s:\s]{[n:1;100]}").MainValue.Split(' ');
+			Assert.AreEqual(10, output.Length);
+		    int i;
+		    foreach (var numberString in output)
+		    {
+			    Assert.True(int.TryParse(numberString, out i));
+				Assert.True(i >= 1 && i <= 100);
+		    }
+	    }
+
         [Test]
-        public void Verbal()
+		public void Verbal()
         {
             Assert.AreEqual(rant.Do(@"[r:10][s:,\s][numfmt:verbal-en]{[repnum]}").MainValue,
                 "one, two, three, four, five, six, seven, eight, nine, ten");

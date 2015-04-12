@@ -127,7 +127,8 @@ namespace Rant.Engine.Compiler
 
 						// Add item to block
 						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
-						if (token.ID == R.RightCurly) return new RABlock(sequences);
+						if (token.ID == R.RightCurly)
+							return new RABlock(Stringe.Range(fromToken, token), sequences);
 						actions.Clear();
 						break;
 
