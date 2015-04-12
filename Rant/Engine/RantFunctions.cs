@@ -148,6 +148,24 @@ namespace Rant.Engine
 			if (block.Iteration < block.Count) yield return action;
 		}
 
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
+		private static IEnumerator<RantAction> Middle(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration > 1 && block.Iteration < block.Count) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
+		private static IEnumerator<RantAction> Ends(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration == 1 || block.Iteration == block.Count) yield return action;
+		}
+
 		[RantFunction("repnum", "rn")]
 		[RantDescription("Prints the iteration number of the current block.")]
 		private static void RepNum(Sandbox sb)
@@ -162,6 +180,15 @@ namespace Rant.Engine
 		{
 			if (!sb.Blocks.Any()) return;
 			sb.Print(sb.Blocks.Peek().Count);
+		}
+
+		[RantFunction("reprem", "rr")]
+		[RantDescription("Prints the number of repetitions remaining to be performed on the current block.")]
+		private static void RepRem(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			var block = sb.Blocks.Peek();
+			sb.Print(block.Count - block.Iteration);
 		}
 
 		[RantFunction("index", "i")]
