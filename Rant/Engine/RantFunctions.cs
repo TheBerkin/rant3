@@ -52,6 +52,15 @@ namespace Rant.Engine
 			sb.Print(sb.RNG.Next(min, max + 1));
 		}
 
+		[RantFunction("numfmt")]
+		private static void NumberFormat(Sandbox sb, NumberFormat format)
+		{
+			foreach (var channel in sb.CurrentOutput.GetActive())
+			{
+				channel.NumberFormatter.NumberFormat = format;
+			}
+		}
+
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb, 

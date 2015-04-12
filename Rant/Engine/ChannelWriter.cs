@@ -97,7 +97,7 @@ namespace Rant.Engine
         {
             foreach (var ch in GetActive())
             {
-                ch.Formatter.Case = caps;
+                ch.OutputFormatter.Case = caps;
             }
         }
 
@@ -106,13 +106,14 @@ namespace Rant.Engine
             var table = new Dictionary<RantChannel, Case>();
             foreach (var ch in GetActive())
             {
-                table[ch] = ch.Formatter.Case;
+                table[ch] = ch.OutputFormatter.Case;
             }
             return table;
         } 
 
         public void Write(string input)
         {
+	        if (input == null) return;
             foreach (var ch in GetActive())
             {
                 if (!_sizeLimit.Accumulate(input.Length))
@@ -123,7 +124,20 @@ namespace Rant.Engine
             CheckSizeLimit();
         }
 
-        public IEnumerable<RantChannel> GetActive()
+		public void Write(object input)
+		{
+			if (input == null) return;
+			foreach (var ch in GetActive())
+			{
+				if (!_sizeLimit.Accumulate(input.ToString().Length))
+					throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + ")");
+				ch.Write(input);
+			}
+
+			CheckSizeLimit();
+		}
+
+		public IEnumerable<RantChannel> GetActive()
         {
             var lastVisibility = RantChannelVisibility.Public;
             bool p = false;

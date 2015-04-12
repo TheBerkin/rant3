@@ -4,6 +4,7 @@ using System.Text;
 using Rant.Engine;
 using Rant.Engine.Formatters;
 using Rant.Formats;
+using Rant.IO;
 
 namespace Rant
 {
@@ -21,7 +22,8 @@ namespace Rant
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>> _articleConverters = new Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>>();
 
-        private readonly OutputFormatter _formatter;
+        private readonly OutputFormatter _outputFormatter = new OutputFormatter();
+	    private readonly NumberFormatter _numberFormatter = new NumberFormatter();
 
         private int _bufferCount;
         private int _length;
@@ -36,7 +38,9 @@ namespace Rant
         /// </summary>
         public RantChannelVisibility Visiblity { get; internal set; }
 
-        internal OutputFormatter Formatter => _formatter;
+        internal OutputFormatter OutputFormatter => _outputFormatter;
+
+	    internal NumberFormatter NumberFormatter => _numberFormatter;
 
         internal RantFormat Format
         {
@@ -51,22 +55,40 @@ namespace Rant
             _currentBuffer = new StringBuilder(InitialBufferSize);
             _buffers = new List<StringBuilder>{_currentBuffer};
             _format = format;
-            _formatter = new OutputFormatter();
         }
 
+		/// <summary>
+		/// Writes a value to the buffer.
+		/// </summary>
+		/// <param name="value">The value to print.</param>
         internal void Write(string value)
         {
             if (value == null) return;
             _length += value.Length;
-            _currentBuffer.Append(_formatter.Format(value, _format));
+            _currentBuffer.Append(_outputFormatter.Format(value, _format));
             UpdateArticle(_currentBuffer);
         }
 
-        internal void WriteArticle()
+		/// <summary>
+		/// Writes a value to the buffer and applies the current number formatting if the value is a numeric type.
+		/// </summary>
+		/// <param name="value">The value to print.</param>
+		internal void Write(object value)
+		{
+			if (value == null) return;
+			var str = IOUtil.IsNumericType(value.GetType()) 
+				? _numberFormatter.FormatNumber(Convert.ToDouble(value)) 
+				: value.ToString();
+			_length += str.Length;
+			_currentBuffer.Append(_outputFormatter.Format(str, _format));
+			UpdateArticle(_currentBuffer);
+		}
+
+		internal void WriteArticle()
         {
-            char lc = _formatter.LastChar;
+            char lc = _outputFormatter.LastChar;
             
-            var anBuilder = _.Create(new StringBuilder(_formatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _formatter.Clone());
+            var anBuilder = _.Create(new StringBuilder(_outputFormatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _outputFormatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;
             _buffers.Add(anBuilder.Item1);
@@ -111,12 +133,12 @@ namespace Rant
             {
                 sb = _forePrintPoints[name] = new StringBuilder(InitialBufferSize);
                 if (overwrite) sb.Length = 0;
-                sb.Append(_formatter.Format(value, _format));
+                sb.Append(_outputFormatter.Format(value, _format));
             }
             else
             {
                 if (overwrite) sb.Length = 0;
-                sb.Append(_formatter.Format(value, _format));
+                sb.Append(_outputFormatter.Format(value, _format));
                 UpdateArticle(sb);
             }
         }

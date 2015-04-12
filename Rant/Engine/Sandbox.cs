@@ -86,7 +86,7 @@ namespace Rant.Engine
 		/// Prints the specified value to the output channel stack.
 		/// </summary>
 		/// <param name="obj">The value to print.</param>
-		public void Print(object obj) => CurrentOutput.Write(obj?.ToString() ?? String.Empty);
+		public void Print(object obj) => CurrentOutput.Write(obj);
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
