@@ -19,7 +19,7 @@ namespace Rant.Engine.Compiler
 		private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
 		internal static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
-		internal static readonly Regex RegexRegex = new Regex(@"//(.*?[^\\])?//i?", DefaultOptions);
+		internal static readonly Regex RegexRegex = new Regex(@"`((\\[\\`]|.)*?)?`i?", DefaultOptions);
 
 		private static readonly Regex WeightRegex = new Regex(@"\*[ ]*(?<value>\d+(\.\d+)?)[ ]*\*", DefaultOptions);
 		private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);

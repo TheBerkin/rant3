@@ -4,6 +4,7 @@ using Rant.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
 
@@ -23,7 +24,8 @@ namespace Rant.Engine
 		private readonly RantPattern _pattern;
 		private readonly ObjectStack _objects;
 		private readonly Limit<int> _sizeLimit;
-		private readonly Stack<BlockStatus> _blocks; 
+		private readonly Stack<BlockState> _blocks;
+		private readonly Stack<Match> _matches; 
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -65,7 +67,12 @@ namespace Rant.Engine
 		/// <summary>
 		/// Gets the block state stack.
 		/// </summary>
-		public Stack<BlockStatus> Blocks => _blocks; 
+		public Stack<BlockState> Blocks => _blocks;
+
+		/// <summary>
+		/// Gets the replacer match stack. The topmost item is the current match for the current replacer.
+		/// </summary>
+		public Stack<Match> RegexMatches => _matches;
 
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
@@ -79,7 +86,8 @@ namespace Rant.Engine
 			_startingGen = rng.Generation;
 			_pattern = pattern;
 			_objects = new ObjectStack(engine.Objects);
-			_blocks = new Stack<BlockStatus>();
+			_blocks = new Stack<BlockState>();
+			_matches = new Stack<Match>();
 		}
 
 		/// <summary>

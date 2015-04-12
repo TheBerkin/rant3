@@ -170,5 +170,12 @@ namespace Rant.Engine
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
 		}
+
+		[RantFunction]
+		private static void Match(Sandbox sb)
+		{
+			if (!sb.RegexMatches.Any()) return;
+			sb.Print(sb.RegexMatches.Peek().Value);
+		}
 	}
 }

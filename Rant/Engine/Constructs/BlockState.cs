@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Supplies state information about an active block, such as the iteration, item count, and current index.
 	/// </summary>
-	internal class BlockStatus
+	internal class BlockState
 	{
 		private readonly int _count;
 		private int _iterNum;
@@ -15,7 +15,7 @@
 
 		public int Index => _index;
 
-		public BlockStatus(int count)
+		public BlockState(int count)
 		{
 			_count = count;
 		}

@@ -30,7 +30,7 @@ namespace Rant.Engine.Syntax
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
-			var block = new BlockStatus(_items.Count);
+			var block = new BlockState(_items.Count);
 			sb.Blocks.Push(block);
 			for (int i = 0; i < attribs.Repetitons; i++)
 			{

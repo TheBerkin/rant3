@@ -26,16 +26,28 @@ namespace Rant
 		public int Length { get; private set; }
 
 		internal RantCompilerException(string name, Stringe source, string message) 
-			: base(source != null ? $"{name} @ Line {source.Line}, Col {source.Column}: {message}"
+			: base(source != null 
+				  ? $"{name} @ Line {source.Line}, Col {source.Column}: {message}"
 				  : $"{name}: {message}")
 		{
-			if (source != null)
-			{
-				Line = source.Line;
-				Column = source.Column;
-				Index = source.Offset;
-				Length = source.Length;
-			}
+			if (source == null) return;
+			Line = source.Line;
+			Column = source.Column;
+			Index = source.Offset;
+			Length = source.Length;
+		}
+
+		internal RantCompilerException(string name, Stringe source, Exception innerException)
+			: base(source != null 
+				  ? $"{name} @ Line {source.Line}, Col {source.Column}: {innerException.Message}"
+				  : $"{name}: {innerException.Message}",
+				  innerException)
+		{
+			if (source == null) return;
+			Line = source.Line;
+			Column = source.Column;
+			Index = source.Offset;
+			Length = source.Length;
 		}
 	}
 }

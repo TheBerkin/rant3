@@ -76,7 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\Constructs\BlockStatus.cs" />
+    <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\Constructs\ReplacerState.cs" />
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Syntax\RABlock.cs" />
     <Compile Include="Engine\Syntax\RantAction.cs" />
+    <Compile Include="Engine\Syntax\RAReplacer.cs" />
     <Compile Include="Engine\Syntax\RASequence.cs" />
     <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />

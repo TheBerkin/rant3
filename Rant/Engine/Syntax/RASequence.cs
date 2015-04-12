@@ -13,14 +13,14 @@ namespace Rant.Engine.Syntax
 		private readonly List<RantAction> _actions = new List<RantAction>();
 
 		public RASequence(params RantAction[] actions)
-			: base(actions.Any() ? Stringe.Range(actions[0].Stringe, actions[actions.Length - 1].Stringe) : null)
+			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Length - 1].Range) : null)
 		{
 			if (actions == null) return;
 			_actions.AddRange(actions);
 		}
 
 		public RASequence(List<RantAction> actions)
-			: base(actions.Any() ? Stringe.Range(actions[0].Stringe, actions[actions.Count - 1].Stringe) : null)
+			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Count - 1].Range) : null)
 		{
 			if (actions == null) return;
 			_actions.AddRange(actions);
