@@ -69,15 +69,12 @@ namespace Rant.Engine
 				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType);
 			}
 			_name = name;
-
 			_delegate = Witchcraft.Create(method);
 		}
 
 		public IEnumerator<RantAction> Invoke(Sandbox sb, object[] arguments)
 		{
-			var args = new List<object>();
-			args.AddRange(arguments);
-			return _delegate.Invoke(sb, args.ToArray()) as IEnumerator<RantAction> ?? CreateEmptyIterator();
+			return _delegate.Invoke(sb, arguments) as IEnumerator<RantAction> ?? CreateEmptyIterator();
 		}
 
 		private static IEnumerator<RantAction> CreateEmptyIterator()

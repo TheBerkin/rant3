@@ -14,14 +14,14 @@ namespace Rant.Engine.Syntax
 	{
 		private readonly List<RantAction> _items = new List<RantAction>();
 
-		public RABlock(params RantAction[] items)
-			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Length - 1].Stringe) : null)
+		public RABlock(Stringe range, params RantAction[] items)
+			: base(range)
 		{
 			_items.AddRange(items);
 		}
 
-		public RABlock(List<RantAction> items)
-			: base(items.Any() ? Stringe.Range(items[0].Stringe, items[items.Count - 1].Stringe) : null)
+		public RABlock(Stringe range, List<RantAction> items)
+			: base(range)
 		{
 			_items.AddRange(items);
 		}
@@ -30,15 +30,17 @@ namespace Rant.Engine.Syntax
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
-			var block = new BlockStatus(_items.Count);
+			var block = new BlockState(attribs.Repetitons);
 			sb.Blocks.Push(block);
 			for (int i = 0; i < attribs.Repetitons; i++)
 			{
 				next = attribs.NextIndex(_items.Count, sb.RNG);
-				block.Next(next);
 				if (next == -1) break;
+				block.Next(next);
+				sb.Blocks.Pop(); // Don't allow separator to access block state
 				// Separator
 				if (i > 0 && attribs.Separator != null) yield return attribs.Separator;
+				sb.Blocks.Push(block); // Now put it back
 				// Prefix
 				if (attribs.Before != null) yield return attribs.Before;
 				// Content

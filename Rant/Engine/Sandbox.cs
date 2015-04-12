@@ -4,6 +4,7 @@ using Rant.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
 
@@ -23,9 +24,15 @@ namespace Rant.Engine
 		private readonly RantPattern _pattern;
 		private readonly ObjectStack _objects;
 		private readonly Limit<int> _sizeLimit;
-		private readonly Stack<BlockStatus> _blocks; 
+		private readonly Stack<BlockState> _blocks;
+		private readonly Stack<Match> _matches; 
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
+
+		/// <summary>
+		/// Gets the engine instance to which the sandbox is bound.
+		/// </summary>
+		public RantEngine Engine => _engine;
 
 		/// <summary>
 		/// Gets the main output channel stack.
@@ -60,7 +67,12 @@ namespace Rant.Engine
 		/// <summary>
 		/// Gets the block state stack.
 		/// </summary>
-		public Stack<BlockStatus> Blocks => _blocks; 
+		public Stack<BlockState> Blocks => _blocks;
+
+		/// <summary>
+		/// Gets the replacer match stack. The topmost item is the current match for the current replacer.
+		/// </summary>
+		public Stack<Match> RegexMatches => _matches;
 
 		/// <summary>
 		/// Gets the current engine object.
@@ -69,6 +81,7 @@ namespace Rant.Engine
 
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
+			_engine = engine;
 			_format = engine.Format;
 			_sizeLimit = new Limit<int>(0, sizeLimit, (a, b) => a + b, (a, b) => b == 0 || a <= b);
 			_mainOutput = new ChannelWriter(_format, _sizeLimit);
@@ -78,15 +91,20 @@ namespace Rant.Engine
 			_startingGen = rng.Generation;
 			_pattern = pattern;
 			_objects = new ObjectStack(engine.Objects);
+<<<<<<< HEAD
 			_blocks = new Stack<BlockStatus>();
 			_engine = engine;
+=======
+			_blocks = new Stack<BlockState>();
+			_matches = new Stack<Match>();
+>>>>>>> 41e9ec62008f98465e36438219f375529c8cc221
 		}
 
 		/// <summary>
 		/// Prints the specified value to the output channel stack.
 		/// </summary>
 		/// <param name="obj">The value to print.</param>
-		public void Print(object obj) => CurrentOutput.Write(obj?.ToString() ?? String.Empty);
+		public void Print(object obj) => CurrentOutput.Write(obj);
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 

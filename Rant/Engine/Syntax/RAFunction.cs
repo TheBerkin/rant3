@@ -10,8 +10,8 @@ namespace Rant.Engine.Syntax
 		private readonly List<RantAction> _argActions;
 		private readonly int _argc;
 
-		public RAFunction(Stringe stringe, RantFunctionInfo funcInfo, List<RantAction> argActions) 
-			: base(stringe)
+		public RAFunction(Stringe range, RantFunctionInfo funcInfo, List<RantAction> argActions) 
+			: base(range)
 		{
 			_funcInfo = funcInfo;
 			_argActions = argActions;
@@ -64,7 +64,7 @@ namespace Rant.Engine.Syntax
 							object value;
 							if (!Util.TryParseMode(_funcInfo.Parameters[i].NativeType, strMode, out value))
 							{
-								throw new RantRuntimeException(_argActions[i].Stringe.ParentString, _argActions[i].Stringe,
+								throw new RantRuntimeException(_argActions[i].Range.ParentString, _argActions[i].Range,
 									$"Invalid mode value '{strMode}'.");
 							}
 							args[i] = value;

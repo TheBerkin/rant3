@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 
 using Rant.Engine.Formatters;
+using Rant.Engine.Metadata;
 using Rant.Engine.Syntax;
 
 namespace Rant.Engine
@@ -40,37 +41,67 @@ namespace Rant.Engine
 			return func;
 		}
 
+		[RantFunction("num", "n")]
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
+		private static void Number(Sandbox sb, 
+			[RantDescription("The minimum value of the number to generate.")]
+			int min, 
+			[RantDescription("The maximum value of the number to generate.")]
+			int max)
+		{
+			sb.Print(sb.RNG.Next(min, max + 1));
+		}
+
+		[RantFunction("numfmt")]
+		private static void NumberFormat(Sandbox sb, NumberFormat format)
+		{
+			foreach (var channel in sb.CurrentOutput.GetActive())
+			{
+				channel.NumberFormatter.NumberFormat = format;
+			}
+		}
+
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
-		private static void Rep(Sandbox sb, int times)
+		private static void Rep(Sandbox sb, 
+			[RantDescription("The number of times to repeat the next block.")]
+			int times)
 		{
 			sb.CurrentBlockAttribs.Repetitons = times;
 		}
 
 		[RantFunction("sep", "s")]
 		[RantDescription("Sets the separator pattern for the next block.")]
-		private static void Sep(Sandbox sb, RantAction separatorAction)
+		private static void Sep(Sandbox sb, 
+			[RantDescription("The separator pattern to run between iterations of the next block.")]
+			RantAction separatorAction)
 		{
 			sb.CurrentBlockAttribs.Separator = separatorAction;
 		}
 
 		[RantFunction]
 		[RantDescription("Sets the prefix pattern for the next block.")]
-		private static void Before(Sandbox sb, RantAction beforeAction)
+		private static void Before(Sandbox sb, 
+			[RantDescription("The pattern to run before each iteration of the next block.")]
+			RantAction beforeAction)
 		{
 			sb.CurrentBlockAttribs.Before = beforeAction;
 		}
 
 		[RantFunction]
 		[RantDescription("Sets the postfix pattern for the next block.")]
-		private static void After(Sandbox sb, RantAction afterAction)
+		private static void After(Sandbox sb, 
+			[RantDescription("The pattern to run after each iteration of the next block.")]
+			RantAction afterAction)
 		{
 			sb.CurrentBlockAttribs.After = afterAction;
 		}
 
 		[RantFunction]
 		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
-		private static void Chance(Sandbox sb, int chance)
+		private static void Chance(Sandbox sb, 
+			[RantDescription("The percent probability that the next block will execute.")]
+			int chance)
 		{
 			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 		}
@@ -92,6 +123,14 @@ namespace Rant.Engine
 		}
 
 		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
+		private static IEnumerator<RantAction> NotFirst(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration > 1) yield return action;
+		}
+
+		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the last.")]
 		private static IEnumerator<RantAction> Last(Sandbox sb, RantAction action)
 		{
@@ -100,12 +139,29 @@ namespace Rant.Engine
             if (block.Iteration == block.Count) yield return action;
 		}
 
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
+		private static IEnumerator<RantAction> NotLast(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration < block.Count) yield return action;
+		}
+
 		[RantFunction("repnum", "rn")]
 		[RantDescription("Prints the iteration number of the current block.")]
 		private static void RepNum(Sandbox sb)
 		{
 			if (!sb.Blocks.Any()) return;
 			sb.Print(sb.Blocks.Peek().Iteration);
+		}
+
+		[RantFunction("repcount", "rc")]
+		[RantDescription("Prints the repetition count of the current block.")]
+		private static void RepCount(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			sb.Print(sb.Blocks.Peek().Count);
 		}
 
 		[RantFunction("index", "i")]
@@ -122,6 +178,29 @@ namespace Rant.Engine
 		{
 			if (!sb.Blocks.Any()) return;
 			sb.Print(sb.Blocks.Peek().Index + 1);
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is an odd number.")]
+		private static IEnumerator<RantAction> Odd(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration % 2 != 0) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is an even number.")]
+		private static IEnumerator<RantAction> Even(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
+		}
+
+		[RantFunction]
+		private static void Match(Sandbox sb)
+		{
+			if (!sb.RegexMatches.Any()) return;
+			sb.Print(sb.RegexMatches.Peek().Value);
 		}
 	}
 }

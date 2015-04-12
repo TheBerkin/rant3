@@ -11,7 +11,7 @@ namespace Rant.Engine
 {
 	internal static class Util
 	{
-		private static Dictionary<Type, HashSet<string>> _enumTable = new Dictionary<Type, HashSet<string>>();
+		private static readonly Dictionary<Type, HashSet<string>> _enumTable = new Dictionary<Type, HashSet<string>>();
 
 		private static void CacheEnum(Type type)
 		{
@@ -153,11 +153,15 @@ namespace Rant.Engine
 
 		public static Regex ParseRegex(string regexLiteral)
 		{
-			if (String.IsNullOrEmpty(regexLiteral)) throw new ArgumentException("Argument 'regexLiteral' cannot be null or empty.");
+			if (String.IsNullOrEmpty(regexLiteral))
+				throw new ArgumentException($"Argument '{nameof(regexLiteral)}' cannot be null nor empty.");
 			bool noCase = regexLiteral.EndsWith("i");
 			var literal = regexLiteral.TrimEnd('i');
-			if (!literal.StartsWith("//") || !literal.EndsWith("//")) throw new FormatException("Regex literal was not in the correct format.");
-			return new Regex(literal.Substring(2, literal.Length - 4), (noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture);
+			if (!literal.StartsWith("`") || !literal.EndsWith("`"))
+				throw new FormatException("Regex literal was not in the correct format.");
+			
+			return new Regex(literal.Substring(1, literal.Length - 2), 
+				(noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 		}
 
 		public static string UnescapeConstantLiteral(string literal)

@@ -35,7 +35,7 @@ namespace Rant.Engine.Formatters
                 case NumberFormat.Normal:
                     return number.ToString(CultureInfo.InvariantCulture);
                 case NumberFormat.Group:
-                    return String.Format("{0:n0}", number);
+                    return $"{number:n0}";
                 case NumberFormat.GroupCommas:
                     return number.ToString("n0", CommaGroupFormat);
                 case NumberFormat.GroupDots:
