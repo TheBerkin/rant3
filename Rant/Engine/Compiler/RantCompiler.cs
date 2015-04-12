@@ -11,6 +11,7 @@ namespace Rant.Engine.Compiler
 		private readonly IEnumerable<Token<R>> _tokens;
 		private readonly TokenReader _reader;
 		private readonly Stack<RantFunctionInfo> _funcCalls = new Stack<RantFunctionInfo>();
+		private readonly Stack<RantQueryInfo> _queries = new Stack<RantQueryInfo>();
 
 		private RantCompiler(string sourceName, string source)
 		{
@@ -33,7 +34,11 @@ namespace Rant.Engine.Compiler
 			/// <summary>
 			/// Reads a list of arguments and returns an RAFunction.
 			/// </summary>
-			FuncCall
+			FuncCall,
+			/// <summary>
+			/// Reads a query and returns a RAQuery
+			/// </summary>
+			Query
 		}
 
 		public static RantAction Compile(string sourceName, string source)
@@ -135,6 +140,49 @@ namespace Rant.Engine.Compiler
 					case R.ConstantLiteral:
 						actions.Add(new RAText(token, Util.UnescapeConstantLiteral(token.Value)));
 						break;
+
+					case R.LeftAngle:
+						{
+							var name = _reader.ReadLoose(R.Text);
+							_queries.Push(new RantQueryInfo(name));
+							actions.Add(Read(ReadType.Query, token));
+						}
+						break;
+					case R.Subtype:
+						{
+							if (type != ReadType.Query) goto default;
+							var subtype = _reader.ReadLoose(R.Text);
+							_queries.Peek().Subtype = subtype;
+						}
+						break;
+					case R.Dollar:
+						{
+							if (type != ReadType.Query) goto default;
+							var nextToken = _reader.PeekToken();
+							if (nextToken.ID == R.Subtype)
+								throw new RantCompilerException(_sourceName, token, "The query exclusivity operator can only be placed after the name and subtype of a query.");
+							_queries.Peek().IsExclusive = true;
+						}
+						break;
+					case R.Hyphen:
+						{
+							if (type != ReadType.Query) goto default;
+							var nextToken = _reader.PeekToken();
+							Stringe className;
+							bool negative = false;
+							if (nextToken.ID == R.Exclamation)
+							{
+								negative = true;
+								_reader.ReadToken();
+								if (_queries.Peek().IsExclusive)
+									throw new RantCompilerException(_sourceName, token, "You can't define a negative class filter in an exclusive query.");
+							}
+							className = _reader.ReadLoose(R.Text);
+							_queries.Peek().ClassFilters.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
+						}
+						break;
+					case R.RightAngle:
+						return new RAQuery(_queries.Pop());
 
 					// Plain text
 					default:

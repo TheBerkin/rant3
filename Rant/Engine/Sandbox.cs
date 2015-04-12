@@ -62,6 +62,11 @@ namespace Rant.Engine
 		/// </summary>
 		public Stack<BlockStatus> Blocks => _blocks; 
 
+		/// <summary>
+		/// Gets the current engine object.
+		/// </summary>
+		public RantEngine Engine => _engine;
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_format = engine.Format;
@@ -74,6 +79,7 @@ namespace Rant.Engine
 			_pattern = pattern;
 			_objects = new ObjectStack(engine.Objects);
 			_blocks = new Stack<BlockStatus>();
+			_engine = engine;
 		}
 
 		/// <summary>

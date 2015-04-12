@@ -78,11 +78,12 @@ namespace Rant.Engine.Compiler
 				{"/", R.ForwardSlash},
 				{",", R.Comma},
 				{"var", R.Var},
-				{NumberRegex, R.Number},
+				{".", R.Subtype},
 				//{SyllableRangeRegex, R.RangeLiteral},
 				//{WeightRegex, R.Weight},
 				{WhitespaceRegex, R.Whitespace}
 			};
+			Rules.Add(NumberRegex, R.Number, 2);
 			Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
 			Rules.AddEndToken(R.EOF);
 			Rules.Ignore(R.Ignore);
