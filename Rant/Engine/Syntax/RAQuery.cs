@@ -24,14 +24,13 @@ namespace Rant.Engine.Syntax
 			var query = new Query(
 				_info.Name.Value, 
 				(_info.Subtype != null ? _info.Subtype.Value : null),
-				null, 
+				_info.Carrier, 
 				_info.IsExclusive, 
 				_info.ClassFilters, 
-				null, 
+				_info.RegexFilters, 
 				null
 			);
-			var state = new QueryState();
-			var result = sb.Engine.Dictionary.Query(sb.RNG, query, state);
+			var result = sb.Engine.Dictionary.Query(sb.RNG, query, sb.QueryState);
 			sb.Print(result);
 			yield break;
 		}

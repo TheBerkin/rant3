@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Rant.Engine.Syntax;
+using Rant.Vocabulary;
 using Rant.Stringes;
 
 using System.Collections.Generic;
@@ -46,6 +47,10 @@ namespace Rant.Engine.Compiler
 			/// Reads a query and returns a RAQuery
 			/// </summary>
 			Query,
+			/// <summary>
+			/// Reads a query carrier
+			/// </summary>
+			QueryCarrier,
 			/// <summary>
 			/// Reads the arguments needed by a replacer and return an RAReplacer.
 			/// </summary>
@@ -189,14 +194,21 @@ namespace Rant.Engine.Compiler
 					case R.ConstantLiteral:
 						actions.Add(new RAText(token, Util.UnescapeConstantLiteral(token.Value)));
 						break;
-
+					//queries
 					case R.LeftAngle:
 						{
 							var name = _reader.ReadLoose(R.Text);
 							_queries.Push(new RantQueryInfo(name));
+							var exclusivity = _reader.PeekToken();
+							if (exclusivity.ID == R.Dollar)
+							{
+								_queries.Peek().IsExclusive = true;
+								_reader.ReadToken();
+							}
 							actions.Add(Read(ReadType.Query, token));
 						}
 						break;
+					// query subtypes
 					case R.Subtype:
 						{
 							if (type != ReadType.Query) goto default;
@@ -204,15 +216,7 @@ namespace Rant.Engine.Compiler
 							_queries.Peek().Subtype = subtype;
 						}
 						break;
-					case R.Dollar:
-						{
-							if (type != ReadType.Query) goto default;
-							var nextToken = _reader.PeekToken();
-							if (nextToken.ID == R.Subtype)
-								throw new RantCompilerException(_sourceName, token, "The query exclusivity operator can only be placed after the name and subtype of a query.");
-							_queries.Peek().IsExclusive = true;
-						}
-						break;
+					// query filters
 					case R.Hyphen:
 						{
 							if (type != ReadType.Query) goto default;
@@ -230,7 +234,106 @@ namespace Rant.Engine.Compiler
 							_queries.Peek().ClassFilters.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
 						}
 						break;
+					// query regex filters
+					case R.Question:
+						{
+							if (type != ReadType.Query) goto default;
+							var nextToken = _reader.ReadToken();
+							bool negative = false;
+							if (nextToken.ID == R.Exclamation)
+							{
+								negative = true;
+								if (_queries.Peek().IsExclusive)
+									throw new RantCompilerException(_sourceName, token, "You can't define a negative regex filter in an exclusive query.");
+								nextToken = _reader.ReadToken();
+							}
+							if (nextToken.ID != R.Regex)
+								throw new RantCompilerException(_sourceName, token, "Expected regex.");
+							_queries.Peek().RegexFilters.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
+						}
+						break;
+					// query carriers
+					case R.DoubleColon:
+						{
+							if(type != ReadType.Query) goto default;
+							return Read(ReadType.QueryCarrier, token);
+						}
+						break;
+					// match carrier
+					case R.Equal:
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							var name = _reader.ReadLoose(R.Text);
+							_queries.Peek().Carrier.AddComponent(CarrierComponent.Match, name.Value);
+						}
+						break;
+					// associative, disassociative, divergent, relational, or the match versions of those
+					case R.At:
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							// 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
+							var componentType = CarrierComponent.Associative;
+							var nextToken = _reader.PeekToken();
+							// disassociative
+							if (nextToken.ID == R.Exclamation)
+							{
+								componentType = CarrierComponent.Dissociative;
+								_reader.ReadToken();
+							}
+							// divergent
+							else if (nextToken.ID == R.Plus)
+							{
+								componentType = CarrierComponent.Divergent;
+								_reader.ReadToken();
+							}
+							// relational
+							else if (nextToken.ID == R.Question)
+							{
+								componentType = CarrierComponent.Relational;
+								_reader.ReadToken();
+							}
+							// match
+							if (_reader.PeekToken().ID == R.Equal)
+							{
+								_reader.ReadToken();
+								if (componentType == CarrierComponent.Associative)
+									componentType = CarrierComponent.MatchAssociative;
+								if (componentType == CarrierComponent.Dissociative)
+									componentType = CarrierComponent.MatchDissociative;
+								if (componentType == CarrierComponent.Divergent)
+									componentType = CarrierComponent.MatchDivergent;
+								if (componentType == CarrierComponent.Relational)
+									componentType = CarrierComponent.MatchRelational;
+							}
+							var name = _reader.ReadLoose(R.Text).Value;
+							_queries.Peek().Carrier.AddComponent(componentType, name);
+						}
+						break;
+					// unique or match-unique
+					case R.Exclamation:
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							bool match = false;
+							if (_reader.PeekToken().ID == R.Equal)
+							{
+								match = true;
+								_reader.ReadToken();
+							}
+							var name = _reader.ReadLoose(R.Text).Value;
+							_queries.Peek().Carrier.AddComponent((match ? CarrierComponent.MatchUnique : CarrierComponent.Unique), name);
+						}
+						break;
+					// rhyme
+					case R.Ampersand:
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							var name = _reader.ReadLoose(R.Text).Value;
+							_queries.Peek().Carrier.AddComponent(CarrierComponent.Rhyme, name);
+						}
+						break;
+					// end of queries
 					case R.RightAngle:
+						if (type != ReadType.Query && type != ReadType.QueryCarrier) goto default;
 						return new RAQuery(_queries.Pop());
 
 					// Plain text

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
+using Rant.Vocabulary;
 
 namespace Rant.Engine
 {
@@ -25,7 +26,8 @@ namespace Rant.Engine
 		private readonly ObjectStack _objects;
 		private readonly Limit<int> _sizeLimit;
 		private readonly Stack<BlockState> _blocks;
-		private readonly Stack<Match> _matches; 
+		private readonly Stack<Match> _matches;
+		private readonly QueryState _queryState;
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -75,9 +77,9 @@ namespace Rant.Engine
 		public Stack<Match> RegexMatches => _matches;
 
 		/// <summary>
-		/// Gets the current engine object.
+		/// Gets the current query state.
 		/// </summary>
-		public RantEngine Engine => _engine;
+		public QueryState QueryState => _queryState;
 
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
@@ -91,13 +93,9 @@ namespace Rant.Engine
 			_startingGen = rng.Generation;
 			_pattern = pattern;
 			_objects = new ObjectStack(engine.Objects);
-<<<<<<< HEAD
-			_blocks = new Stack<BlockStatus>();
-			_engine = engine;
-=======
 			_blocks = new Stack<BlockState>();
 			_matches = new Stack<Match>();
->>>>>>> 41e9ec62008f98465e36438219f375529c8cc221
+			_queryState = new QueryState();
 		}
 
 		/// <summary>
