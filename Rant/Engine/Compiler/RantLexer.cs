@@ -23,7 +23,7 @@ namespace Rant.Engine.Compiler
 
 		private static readonly Regex WeightRegex = new Regex(@"\*[ ]*(?<value>\d+(\.\d+)?)[ ]*\*", DefaultOptions);
 		private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
-		private static readonly Regex BlackspaceRegex = new Regex(@"(^\s+|\s*[\r\n]+\s*|\s+$)", DefaultOptions | RegexOptions.Multiline);
+		private static readonly Regex BlackspaceRegex = new Regex(@"((^|(?<=(?<!\\)[\[\{]))\s+|\s*[\r\n]+\s*|\s+($|(?=[\]\}])))", DefaultOptions | RegexOptions.Multiline);
 		private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
 		private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
 		private static readonly Regex SyllableRangeRegex = new Regex(@"\(\s*(~?\d+|\d+\s*~(\s*\d+)?)\s*\)", DefaultOptions);
