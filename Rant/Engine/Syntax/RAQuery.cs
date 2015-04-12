@@ -22,7 +22,10 @@ namespace Rant.Engine.Syntax
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			if (sb.Engine.Dictionary == null)
+			{
 				sb.Print("[Missing Table]");
+				yield break;
+			}
 			// carrier erase query
 			if (_query.Name == null)
 			{
