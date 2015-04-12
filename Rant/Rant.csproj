@@ -130,7 +130,7 @@
     <Compile Include="Vocabulary\DoubleMetaphone.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
-    <Compile Include="Vocabulary\RangePredicate.cs" />
+    <Compile Include="Vocabulary\Range.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
     </Compile>

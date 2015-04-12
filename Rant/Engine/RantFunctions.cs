@@ -52,12 +52,39 @@ namespace Rant.Engine
 			sb.Print(sb.RNG.Next(min, max + 1));
 		}
 
+		[RantFunction("tonum")]
+		[RantDescription("Formats an input string using the current number format settings and prints the result.")]
+		private static void Number(Sandbox sb, string input)
+		{
+			double number;
+			sb.Print(double.TryParse(input, out number) ? number : 0);
+		}
+
 		[RantFunction("numfmt")]
 		private static void NumberFormat(Sandbox sb, NumberFormat format)
 		{
 			foreach (var channel in sb.CurrentOutput.GetActive())
 			{
 				channel.NumberFormatter.NumberFormat = format;
+			}
+		}
+
+		[RantFunction]
+		private static void Digits(Sandbox sb, BinaryFormat format, int digits)
+		{
+			foreach (var channel in sb.CurrentOutput.GetActive())
+			{
+				channel.NumberFormatter.BinaryFormat = format;
+				channel.NumberFormatter.BinaryFormatDigits = digits;
+			}
+		}
+
+		[RantFunction]
+		private static void Endian(Sandbox sb, Endianness endianness)
+		{
+			foreach (var channel in sb.CurrentOutput.GetActive())
+			{
+				channel.NumberFormatter.Endianness = endianness;
 			}
 		}
 
@@ -148,6 +175,24 @@ namespace Rant.Engine
 			if (block.Iteration < block.Count) yield return action;
 		}
 
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
+		private static IEnumerator<RantAction> Middle(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration > 1 && block.Iteration < block.Count) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
+		private static IEnumerator<RantAction> Ends(Sandbox sb, RantAction action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration == 1 || block.Iteration == block.Count) yield return action;
+		}
+
 		[RantFunction("repnum", "rn")]
 		[RantDescription("Prints the iteration number of the current block.")]
 		private static void RepNum(Sandbox sb)
@@ -156,12 +201,28 @@ namespace Rant.Engine
 			sb.Print(sb.Blocks.Peek().Iteration);
 		}
 
+		[RantFunction("repelapsed", "re")]
+		private static void RepElapsed(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			sb.Print(sb.Blocks.Peek().Iteration - 1);
+		}
+
 		[RantFunction("repcount", "rc")]
 		[RantDescription("Prints the repetition count of the current block.")]
 		private static void RepCount(Sandbox sb)
 		{
 			if (!sb.Blocks.Any()) return;
 			sb.Print(sb.Blocks.Peek().Count);
+		}
+
+		[RantFunction("reprem", "rr")]
+		[RantDescription("Prints the number of repetitions remaining to be performed on the current block.")]
+		private static void RepRem(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			var block = sb.Blocks.Peek();
+			sb.Print(block.Count - block.Iteration);
 		}
 
 		[RantFunction("index", "i")]
@@ -201,6 +262,13 @@ namespace Rant.Engine
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Value);
+		}
+
+		[RantFunction]
+		private static void Group(Sandbox sb, string groupName)
+		{
+			if (!sb.RegexMatches.Any()) return;
+			sb.Print(sb.RegexMatches.Peek().Groups[groupName].Value);
 		}
 	}
 }
