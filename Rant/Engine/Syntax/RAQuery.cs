@@ -14,7 +14,7 @@ namespace Rant.Engine.Syntax
 		private Query _query;
 
 		public RAQuery(Query query)
-			: base(query.Name)
+			: base(query.OriginStringe)
 		{
 			_query = query;
 		}
@@ -23,6 +23,14 @@ namespace Rant.Engine.Syntax
 		{
 			if (sb.Engine.Dictionary == null)
 				sb.Print("[Missing Table]");
+			// carrier erase query
+			if (_query.Name == null)
+			{
+				foreach (CarrierComponent type in Enum.GetValues(typeof(CarrierComponent)))
+					foreach (string name in _query.Carrier.GetCarriers(type))
+						sb.QueryState.RemoveType(type, name);
+				yield break;
+			}
 			var result = sb.Engine.Dictionary.Query(sb.RNG, _query, sb.QueryState);
 			sb.Print(result);
 			yield break;

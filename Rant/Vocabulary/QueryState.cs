@@ -180,5 +180,21 @@ namespace Rant.Vocabulary
 
             return result;
         }
+
+		public void RemoveType(CarrierComponent type, string name)
+		{
+			if (type == CarrierComponent.Rhyme)
+				DeleteRhyme(name);
+			else if (type == CarrierComponent.Unique)
+				DeleteUnique(name);
+			else if (
+				type == CarrierComponent.Associative ||
+				type == CarrierComponent.Relational ||
+				type == CarrierComponent.Dissociative ||
+				type == CarrierComponent.Divergent)
+				DeleteAssociation(name);
+			else
+				DeleteMatch(name);
+		}
     }
 }

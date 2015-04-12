@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
-    <Compile Include="Engine\RantQueryInfo.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
     <Compile Include="Engine\Constructs\ReplacerState.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />

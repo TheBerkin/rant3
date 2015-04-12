@@ -197,11 +197,15 @@ namespace Rant.Engine.Compiler
 					//queries
 					case R.LeftAngle:
 						{
-							var name = _reader.ReadLoose(R.Text);
+							Stringe name = null;
+							if (_reader.PeekToken().ID != R.DoubleColon)
+								name = _reader.ReadLoose(R.Text);
 							_query = new Query();
 							_query.ClassFilters = new List<_<bool, string>[]>();
 							_query.RegexFilters = new List<_<bool, Regex>>();
-							_query.Name = name.Value;
+							_query.Carrier = new Carrier();
+							_query.OriginStringe = name;
+							_query.Name = (name == null ? null : name.Value);
 							var exclusivity = _reader.PeekToken();
 							if (exclusivity.ID == R.Dollar)
 							{
@@ -362,7 +366,8 @@ namespace Rant.Engine.Compiler
 								_reader.ReadToken();
 							}
 							var name = _reader.ReadLoose(R.Text).Value;
-							_query.Carrier.AddComponent((match ? CarrierComponent.MatchUnique : CarrierComponent.Unique), name);
+							var componentType = (match ? CarrierComponent.MatchUnique : CarrierComponent.Unique);
+							_query.Carrier.AddComponent(componentType, name);
 						}
 						break;
 					// rhyme
