@@ -30,15 +30,17 @@ namespace Rant.Engine.Syntax
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
-			var block = new BlockState(_items.Count);
+			var block = new BlockState(attribs.Repetitons);
 			sb.Blocks.Push(block);
 			for (int i = 0; i < attribs.Repetitons; i++)
 			{
 				next = attribs.NextIndex(_items.Count, sb.RNG);
-				block.Next(next);
 				if (next == -1) break;
+				block.Next(next);
+				sb.Blocks.Pop(); // Don't allow separator to access block state
 				// Separator
 				if (i > 0 && attribs.Separator != null) yield return attribs.Separator;
+				sb.Blocks.Push(block); // Now put it back
 				// Prefix
 				if (attribs.Before != null) yield return attribs.Before;
 				// Content

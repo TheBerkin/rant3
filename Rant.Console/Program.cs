@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Globalization;
+using System.Linq;
+
 using Rant;
 using Rant.Vocabulary;
 
@@ -65,9 +67,9 @@ namespace RantConsole
 
 			while (true)
             {
-                ForegroundColor = Flag("nsfw") ? ConsoleColor.Magenta : ConsoleColor.Yellow;
-                Write("\u211d> "); // real number symbol
-                ResetColor();
+                ForegroundColor = Flag("nsfw") ? ConsoleColor.DarkRed : ConsoleColor.Gray;
+                Write("RANT> "); // real number symbol
+	            ForegroundColor = ConsoleColor.White;
 	            PrintOutput(rant, ReadLine());
             }
         }
@@ -76,16 +78,22 @@ namespace RantConsole
         {
 	        try
 	        {
-		        var pattern = isFile
+				var sw = new Stopwatch();
+
+		        sw.Start();
+				var pattern = isFile
 			        ? RantPattern.FromFile(source)
 			        : RantPattern.FromString(source);
-
-				var sw = new Stopwatch();
-		        sw.Start();
+		        sw.Stop();
+		        var compileTime = sw.Elapsed;
+				
+				sw.Restart();
 		        var output = USE_SEED
 					? engine.Do(pattern, SEED, 0, PATTERN_TIMEOUT)
 					: engine.Do(pattern, 0, PATTERN_TIMEOUT);
 		        sw.Stop();
+
+		        var runTime = sw.Elapsed;
 
 				bool writeToFile = !String.IsNullOrEmpty(Property("out"));
 				foreach (var chan in output)
@@ -125,22 +133,13 @@ namespace RantConsole
 				if ((pattern.Type != RantPatternSource.File || Flag("wait")) && !Flag("nostats"))
 				{
 					WriteLine();
-					ForegroundColor = ConsoleColor.DarkGray;
-					Write("Seed: ");
-					ForegroundColor = ConsoleColor.DarkMagenta;
-					WriteLine($"{output.Seed:X16}");
-					ForegroundColor = ConsoleColor.DarkGray;
-					if (output.BaseGeneration != 0)
-					{
-						Write("Base Gen: ");
-						ForegroundColor = ConsoleColor.DarkMagenta;
-						WriteLine(output.BaseGeneration);
-					}
-					ForegroundColor = ConsoleColor.DarkGray;
-					Write("Time: ");
-					ForegroundColor = ConsoleColor.DarkMagenta;
-					WriteLine(sw.Elapsed.ToString("c"));
-					ResetColor();
+					PrintStats(
+						new Stat("Seed", 
+						$"{output.Seed:X16}{(output.BaseGeneration != 0 ? ":" + output.BaseGeneration : String.Empty)}"),
+						new Stat("Compile Time", compileTime.ToString("c")),
+						new Stat("Run Time", runTime.ToString("c"))
+						);
+					WriteLine();
 				}
 			}
 #if !DEBUG
@@ -167,5 +166,31 @@ namespace RantConsole
 				ResetColor();
 			}
         }
+
+	    static void PrintStats(params Stat[] stats)
+	    {
+		    int alignment = stats.Max(s => s.Name.Length);
+		    var fmtString = $"{{0, {alignment}}}: ";
+		    foreach (var stat in stats)
+		    {
+				ForegroundColor = ConsoleColor.DarkGray;
+				Write(fmtString, stat.Name);
+				ForegroundColor = ConsoleColor.DarkMagenta;
+				WriteLine(stat.Value);
+			}
+			ResetColor();
+		}
+
+	    private class Stat
+	    {
+		    public readonly string Name;
+		    public readonly object Value;
+
+		    public Stat(string name, object value)
+		    {
+			    Name = name;
+			    Value = value;
+		    }
+	    }
     }
 }
