@@ -21,15 +21,14 @@ namespace Rant.Engine.Syntax
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			var query = new Query(
-				_info.Name.Value, 
-				(_info.Subtype != null ? _info.Subtype.Value : null),
-				_info.Carrier, 
-				_info.IsExclusive, 
-				_info.ClassFilters, 
-				_info.RegexFilters, 
-				null
-			);
+			var query = new Query();
+			query.Name = _info.Name.Value;
+			query.Subtype = (_info.Subtype != null ? _info.Subtype.Value : null);
+			query.Carrier = _info.Carrier;
+			query.Exclusive = _info.IsExclusive;
+			query.ClassFilters = _info.ClassFilters;
+			query.RegexFilters = _info.RegexFilters;
+			query.SyllablePredicate = _info.Range;
 			var result = sb.Engine.Dictionary.Query(sb.RNG, query, sb.QueryState);
 			sb.Print(result);
 			yield break;

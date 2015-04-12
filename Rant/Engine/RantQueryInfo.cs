@@ -20,6 +20,7 @@ namespace Rant.Engine
 		public List<_<bool, string>[]> ClassFilters;
 		public List<_<bool, Regex>> RegexFilters;
 		public Carrier Carrier;
+		public Range Range = Range.Anything;
 
 		public RantQueryInfo(Stringe name)
 		{

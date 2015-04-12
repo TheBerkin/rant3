@@ -16,8 +16,8 @@ namespace Rant.Engine.Compiler
 		private readonly IEnumerable<Token<R>> _tokens;
 		private readonly TokenReader _reader;
 		private readonly Stack<RantFunctionInfo> _funcCalls = new Stack<RantFunctionInfo>();
-		private readonly Stack<RantQueryInfo> _queries = new Stack<RantQueryInfo>();
 		private readonly Stack<Regex> _regexes = new Stack<Regex>();
+		private RantQueryInfo _query;
 
 		private RantCompiler(string sourceName, string source)
 		{
@@ -198,11 +198,11 @@ namespace Rant.Engine.Compiler
 					case R.LeftAngle:
 						{
 							var name = _reader.ReadLoose(R.Text);
-							_queries.Push(new RantQueryInfo(name));
+							_query = new RantQueryInfo(name);
 							var exclusivity = _reader.PeekToken();
 							if (exclusivity.ID == R.Dollar)
 							{
-								_queries.Peek().IsExclusive = true;
+								_query.IsExclusive = true;
 								_reader.ReadToken();
 							}
 							actions.Add(Read(ReadType.Query, token));
@@ -213,7 +213,7 @@ namespace Rant.Engine.Compiler
 						{
 							if (type != ReadType.Query) goto default;
 							var subtype = _reader.ReadLoose(R.Text);
-							_queries.Peek().Subtype = subtype;
+							_query.Subtype = subtype;
 						}
 						break;
 					// query filters
@@ -227,11 +227,11 @@ namespace Rant.Engine.Compiler
 							{
 								negative = true;
 								_reader.ReadToken();
-								if (_queries.Peek().IsExclusive)
+								if (_query.IsExclusive)
 									throw new RantCompilerException(_sourceName, token, "You can't define a negative class filter in an exclusive query.");
 							}
 							className = _reader.ReadLoose(R.Text);
-							_queries.Peek().ClassFilters.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
+							_query.ClassFilters.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
 						}
 						break;
 					// query regex filters
@@ -243,13 +243,50 @@ namespace Rant.Engine.Compiler
 							if (nextToken.ID == R.Exclamation)
 							{
 								negative = true;
-								if (_queries.Peek().IsExclusive)
+								if (_query.IsExclusive)
 									throw new RantCompilerException(_sourceName, token, "You can't define a negative regex filter in an exclusive query.");
 								nextToken = _reader.ReadToken();
 							}
 							if (nextToken.ID != R.Regex)
 								throw new RantCompilerException(_sourceName, token, "Expected regex.");
-							_queries.Peek().RegexFilters.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
+							_query.RegexFilters.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
+						}
+						break;
+					// syllable range
+					case R.LeftParen:
+						{
+							var nextToken = _reader.ReadToken();
+							int firstNumber = -1;
+							int secondNumber = -1;
+							var range = new Range(null, null);
+							if (nextToken.ID == R.Number)
+							{
+								Util.ParseInt(nextToken.Value, out firstNumber);
+								nextToken = _reader.ReadToken();
+							}
+							if (nextToken.ID == R.Hyphen)
+							{
+								var number = _reader.ReadToken();
+								// (num - num)
+								if (number.ID == R.Number)
+								{
+									Util.ParseInt(number.Value, out secondNumber);
+									range.Minimum = firstNumber;
+									range.Maximum = secondNumber;
+								}
+								// (num -)
+								else if (number.ID == R.RightParen && firstNumber != -1)
+									range.Minimum = firstNumber;
+							}
+							// (- num), interpreted as -num
+							else if (firstNumber < 0)
+								range.Maximum = Math.Abs(firstNumber);
+							// (num)
+							else if (firstNumber != -1)
+								range.Maximum = range.Minimum = firstNumber;
+							if (range.Minimum == null && range.Maximum == null)
+								throw new RantCompilerException(_sourceName, token, "Unknown syllable range syntax.");
+							_query.Range = range;
 						}
 						break;
 					// query carriers
@@ -258,13 +295,12 @@ namespace Rant.Engine.Compiler
 							if(type != ReadType.Query) goto default;
 							return Read(ReadType.QueryCarrier, token);
 						}
-						break;
 					// match carrier
 					case R.Equal:
 						{
 							if (type != ReadType.QueryCarrier) goto default;
 							var name = _reader.ReadLoose(R.Text);
-							_queries.Peek().Carrier.AddComponent(CarrierComponent.Match, name.Value);
+							_query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
 						}
 						break;
 					// associative, disassociative, divergent, relational, or the match versions of those
@@ -306,7 +342,7 @@ namespace Rant.Engine.Compiler
 									componentType = CarrierComponent.MatchRelational;
 							}
 							var name = _reader.ReadLoose(R.Text).Value;
-							_queries.Peek().Carrier.AddComponent(componentType, name);
+							_query.Carrier.AddComponent(componentType, name);
 						}
 						break;
 					// unique or match-unique
@@ -320,7 +356,7 @@ namespace Rant.Engine.Compiler
 								_reader.ReadToken();
 							}
 							var name = _reader.ReadLoose(R.Text).Value;
-							_queries.Peek().Carrier.AddComponent((match ? CarrierComponent.MatchUnique : CarrierComponent.Unique), name);
+							_query.Carrier.AddComponent((match ? CarrierComponent.MatchUnique : CarrierComponent.Unique), name);
 						}
 						break;
 					// rhyme
@@ -328,13 +364,13 @@ namespace Rant.Engine.Compiler
 						{
 							if (type != ReadType.QueryCarrier) goto default;
 							var name = _reader.ReadLoose(R.Text).Value;
-							_queries.Peek().Carrier.AddComponent(CarrierComponent.Rhyme, name);
+							_query.Carrier.AddComponent(CarrierComponent.Rhyme, name);
 						}
 						break;
 					// end of queries
 					case R.RightAngle:
 						if (type != ReadType.Query && type != ReadType.QueryCarrier) goto default;
-						return new RAQuery(_queries.Pop());
+						return new RAQuery(_query);
 
 					// Plain text
 					default:
