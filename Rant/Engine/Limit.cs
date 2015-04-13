@@ -2,35 +2,22 @@
 
 namespace Rant.Engine
 {
-    internal sealed class Limit<T>
+    internal sealed class Limit
     {
-        private T _value;
-        private readonly T _limit;
-        private readonly Func<T, T, T> _accumulatorFunc;
-        private readonly Func<T, T, bool> _checkFunc;
+	    private readonly int _max;
+	    private int _value;
 
-        public Limit(T startValue, T limit, Func<T, T, T> accumulator, Func<T, T, bool> limitChecker)
-        {
-            _value = startValue;
-            _limit = limit;
-            _accumulatorFunc = accumulator;
-            _checkFunc = limitChecker;
-        }
+	    public int Maximum => _max;
 
-        public T LimitValue
-        {
-            get { return _limit; }
-        }
+	    public Limit(int max)
+	    {
+		    _max = max;
+		    _value = 0;
+	    }
 
-        public T CurrentValue
-        {
-            get { return _value; }
-        }
-
-        public bool Accumulate(T value)
-        {
-            _value = _accumulatorFunc(_value, value);
-            return _checkFunc(_value, _limit);
-        }
+	    public bool Accumulate(int value)
+	    {
+		    return _max > 0 && (_value += value) > _max;
+	    }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using Rant.Engine.Formatters;
 using Rant.Formats;
@@ -12,15 +13,14 @@ namespace Rant.Engine
         private readonly List<RantChannel> _stack;
         private readonly Dictionary<string, RantChannel> _channels;
         private readonly RantChannel _main;
-        private readonly Limit<int> _sizeLimit;
+        private readonly Limit _sizeLimit;
 
         private int _stackSize;
-        private int _lastWriteSize, _size;
 
-        public ChannelWriter(RantFormat formatStyle, Limit<int> sizeLimit)
+        public ChannelWriter(RantFormat formatStyle, Limit sizeLimit)
         {
             _sizeLimit = sizeLimit;
-            _main = new RantChannel("main", RantChannelVisibility.Public, formatStyle);
+            _main = new RantChannel("main", RantChannelVisibility.Public, formatStyle, _sizeLimit);
 
             _stack = new List<RantChannel> { _main };
             _stackSize = 1;
@@ -55,10 +55,6 @@ namespace Rant.Engine
             }
         }
 
-        public long LastWriteSize => _lastWriteSize;
-
-        public long Size => _size;
-
         public string GetOutputFor(string channelName)
         {
             RantChannel channel;
@@ -70,7 +66,7 @@ namespace Rant.Engine
             RantChannel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
-                ch = new RantChannel(channelName, visibility, formatStyle);
+                ch = new RantChannel(channelName, visibility, formatStyle, _sizeLimit);
                 _channels[channelName] = ch;
             }
 
@@ -116,12 +112,8 @@ namespace Rant.Engine
 	        if (input == null) return;
             foreach (var ch in GetActive())
             {
-                if (!_sizeLimit.Accumulate(input.Length))
-                    throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + ")");
                 ch.Write(input);
             }
-
-            CheckSizeLimit();
         }
 
 		public void Write(object input)
@@ -129,13 +121,18 @@ namespace Rant.Engine
 			if (input == null) return;
 			foreach (var ch in GetActive())
 			{
-				if (!_sizeLimit.Accumulate(input.ToString().Length))
-					throw new InvalidOperationException("Exceeded character limit (" + _sizeLimit.LimitValue + ")");
 				ch.Write(input);
 			}
-
-			CheckSizeLimit();
 		}
+
+	    public void Write(StringBuilder buffer)
+	    {
+		    if (buffer == null) return;
+		    foreach (var ch in GetActive())
+		    {
+			    ch.WriteBuffer(buffer);
+		    }
+	    }
 
 		public IEnumerable<RantChannel> GetActive()
         {
@@ -165,13 +162,6 @@ namespace Rant.Engine
                 lastVisibility = _stack[i].Visiblity;
                 yield return _stack[i];
             }
-        }
-
-        private void CheckSizeLimit()
-        {
-            int _lastSize = _size;
-            _size = _channels.Sum(pair => pair.Value.Length);
-            _lastWriteSize = _size - _lastSize;
         }
 
         public Dictionary<string, RantChannel> Channels => _channels;

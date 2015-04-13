@@ -21,12 +21,13 @@ namespace Rant
         private readonly Dictionary<string, StringBuilder> _backPrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<string, StringBuilder> _forePrintPoints = new Dictionary<string, StringBuilder>();
         private readonly Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>> _articleConverters = new Dictionary<StringBuilder, _<StringBuilder, OutputFormatter>>();
-
+	    private readonly Limit _limit;
         private readonly OutputFormatter _outputFormatter = new OutputFormatter();
 	    private readonly NumberFormatter _numberFormatter = new NumberFormatter();
 
         private int _bufferCount;
         private int _length;
+	    private bool _articles;
 
         /// <summary>
         /// The name of the channel.
@@ -48,13 +49,15 @@ namespace Rant
             set { _format = value; }
         }
 
-        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat format)
+        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat format, Limit limit)
         {
             Name = name;
             Visiblity = visibility;
             _currentBuffer = new StringBuilder(InitialBufferSize);
             _buffers = new List<StringBuilder>{_currentBuffer};
             _format = format;
+	        _articles = false;
+	        _limit = limit;
         }
 
 		/// <summary>
@@ -63,10 +66,12 @@ namespace Rant
 		/// <param name="value">The value to print.</param>
         internal void Write(string value)
         {
-            if (value == null) return;
+			if (value == null) return;
+			if (_limit.Accumulate(value.Length))
+				throw new InvalidOperationException($"Exceeded character limit ({_limit.Maximum})");
             _length += value.Length;
             _currentBuffer.Append(_outputFormatter.Format(value, _format));
-            UpdateArticle(_currentBuffer);
+            if (_articles) UpdateArticle(_currentBuffer);
         }
 
 		/// <summary>
@@ -76,18 +81,29 @@ namespace Rant
 		internal void Write(object value)
 		{
 			if (value == null) return;
-			var str = IOUtil.IsNumericType(value.GetType()) 
-				? _numberFormatter.FormatNumber(Convert.ToDouble(value)) 
+			var str = IOUtil.IsNumericType(value.GetType())
+				? _numberFormatter.FormatNumber(Convert.ToDouble(value))
 				: value.ToString();
+			if (_limit.Accumulate(str.Length))
+				throw new InvalidOperationException($"Exceeded character limit ({_limit.Maximum})");
 			_length += str.Length;
 			_currentBuffer.Append(_outputFormatter.Format(str, _format));
 			UpdateArticle(_currentBuffer);
 		}
 
+	    internal void WriteBuffer(StringBuilder buffer)
+	    {
+		    if (buffer == null) return;
+			if (_limit.Accumulate(buffer.Length))
+				throw new InvalidOperationException($"Exceeded character limit ({_limit.Maximum})");
+		    _length += buffer.Length;
+			_buffers.Add(buffer);
+		    _buffers.Add(_currentBuffer = new StringBuilder());
+	    }
+
 		internal void WriteArticle()
-        {
-            char lc = _outputFormatter.LastChar;
-            
+		{
+			_articles = true;
             var anBuilder = _.Create(new StringBuilder(_outputFormatter.Format(_format.IndefiniteArticles.ConsonantForm, _format, OutputFormatterOptions.NoUpdate | OutputFormatterOptions.IsArticle)), _outputFormatter.Clone());
             var afterBuilder = _currentBuffer = new StringBuilder();
             _articleConverters[afterBuilder] = anBuilder;

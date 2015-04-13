@@ -4,6 +4,7 @@ using Rant.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
@@ -24,7 +25,7 @@ namespace Rant.Engine
 		private readonly RantFormat _format;
 		private readonly RantPattern _pattern;
 		private readonly ObjectStack _objects;
-		private readonly Limit<int> _sizeLimit;
+		private readonly Limit _sizeLimit;
 		private readonly Stack<BlockState> _blocks;
 		private readonly Stack<Match> _matches;
 		private readonly QueryState _queryState;
@@ -85,7 +86,7 @@ namespace Rant.Engine
 		{
 			_engine = engine;
 			_format = engine.Format;
-			_sizeLimit = new Limit<int>(0, sizeLimit, (a, b) => a + b, (a, b) => b == 0 || a <= b);
+			_sizeLimit = new Limit(sizeLimit);
 			_mainOutput = new ChannelWriter(_format, _sizeLimit);
 			_outputs = new Stack<ChannelWriter>();
 			_outputs.Push(_mainOutput);
@@ -103,6 +104,22 @@ namespace Rant.Engine
 		/// </summary>
 		/// <param name="obj">The value to print.</param>
 		public void Print(object obj) => CurrentOutput.Write(obj);
+
+		private readonly StringBuilder _printManyBuffer = new StringBuilder(256);
+
+		public void PrintMany(Func<char> generator, int times)
+		{
+			_printManyBuffer.Length = 0;
+			for (int i = 0; i < times; i++) _printManyBuffer.Append(generator());
+			CurrentOutput.Write(_printManyBuffer);
+		}
+
+		public void PrintMany(Func<string> generator, int times)
+		{
+			_printManyBuffer.Length = 0;
+			for (int i = 0; i < times; i++) _printManyBuffer.Append(generator());
+			CurrentOutput.Write(_printManyBuffer);
+		}
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
@@ -122,6 +139,7 @@ namespace Rant.Engine
 		public RantOutput Run(double timeout)
 		{
 			var callStack = new Stack<IEnumerator<RantAction>>();
+			IEnumerator<RantAction> action;
 
 			// Push the AST root
 			callStack.Push(_pattern.Action.Run(this));
@@ -130,7 +148,7 @@ namespace Rant.Engine
 			while (callStack.Any())
 			{
 				// Get the topmost call stack item
-				var action = callStack.Peek();
+				action = callStack.Peek();
 
 				// Execute the node until it runs out of children
 				while (action.MoveNext())

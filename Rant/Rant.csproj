@@ -78,7 +78,6 @@
   <ItemGroup>
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
-    <Compile Include="Engine\Constructs\ReplacerState.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />
     <Compile Include="Engine\Delegates\Witchcraft.cs" />
