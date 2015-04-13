@@ -12,6 +12,8 @@ namespace Rant.Engine.Syntax
 	{
 		private readonly List<RantAction> _actions = new List<RantAction>();
 
+		public List<RantAction> Actions => _actions;
+
 		public RASequence(params RantAction[] actions)
 			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Length - 1].Range) : null)
 		{

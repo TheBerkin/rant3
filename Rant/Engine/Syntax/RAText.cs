@@ -11,6 +11,8 @@ namespace Rant.Engine.Syntax
 	{
 		private readonly string _text;
 
+		public string Text => _text;
+
 		public RAText(Stringe token) : base(token)
 		{
 			_text = token.Value ?? String.Empty;

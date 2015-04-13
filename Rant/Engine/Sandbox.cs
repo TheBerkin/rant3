@@ -29,6 +29,7 @@ namespace Rant.Engine
 		private readonly Stack<BlockState> _blocks;
 		private readonly Stack<Match> _matches;
 		private readonly QueryState _queryState;
+		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -82,6 +83,13 @@ namespace Rant.Engine
 		/// </summary>
 		public QueryState QueryState => _queryState;
 
+		/// <summary>
+		/// Gets the current RantPattern.
+		/// </summary>
+		public RantPattern Pattern => _pattern;
+
+		public Stack<Dictionary<string, RantAction>> SubroutineArgs => _subroutineArgs;
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_engine = engine;
@@ -97,6 +105,7 @@ namespace Rant.Engine
 			_blocks = new Stack<BlockState>();
 			_matches = new Stack<Match>();
 			_queryState = new QueryState();
+			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
 		}
 
 		/// <summary>

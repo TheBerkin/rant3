@@ -17,6 +17,7 @@ namespace Rant.Engine.Compiler
 		private readonly TokenReader _reader;
 		private readonly Stack<RantFunctionInfo> _funcCalls = new Stack<RantFunctionInfo>();
 		private readonly Stack<Regex> _regexes = new Stack<Regex>();
+		private readonly Stack<RASubroutine> _subroutines = new Stack<RASubroutine>();
 		private Query _query;
 
 		private RantCompiler(string sourceName, string source)
@@ -25,6 +26,7 @@ namespace Rant.Engine.Compiler
 			_source = source;
 			_tokens = RantLexer.GenerateTokens(source.ToStringe());
 			_reader = new TokenReader(sourceName, _tokens);
+			_subroutines = new Stack<RASubroutine>();
 		}
 
 		private enum ReadType
@@ -54,7 +56,15 @@ namespace Rant.Engine.Compiler
 			/// <summary>
 			/// Reads the arguments needed by a replacer and return an RAReplacer.
 			/// </summary>
-			ReplacerArgs
+			ReplacerArgs,
+			/// <summary>
+			/// Reads the arguments needed by a subroutine.
+			/// </summary>
+			SubroutineArgs,
+			/// <summary>
+			/// Reads the body of a subroutine.
+			/// </summary>
+			SubroutineBody
 		}
 
 		public static RantAction Compile(string sourceName, string source)
@@ -81,82 +91,116 @@ namespace Rant.Engine.Compiler
 					case R.EOF:
 						goto done;
 
-						// Escape sequence
+					// Escape sequence
 					case R.EscapeSequence:
 						actions.Add(new RAEscape(token));
 						break;
 
 					case R.LeftSquare:
-					{
-						var tagToken = _reader.ReadToken();
-						switch (tagToken.ID)
 						{
-							case R.Text:
+							var tagToken = _reader.ReadToken();
+							switch (tagToken.ID)
 							{
-								string name = tagToken.Value;
-								var func = RantFunctions.GetFunction(name);
-								if (func == null)
-									SyntaxError(tagToken, $"Unknown function: '{name}'");
-								var argList = new List<RantAction>();
-								if (_reader.TakeLoose(R.Colon))
-								{
-									_funcCalls.Push(func);
-									actions.Add(Read(ReadType.FuncCall, token));
-								}
-								else
-								{
-									var end = _reader.Read(R.RightSquare);
-									VerifyArgCount(func, 0, token, end);
-									actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
-								}
-								break;
+								case R.Text:
+									{
+										string name = tagToken.Value;
+										var func = RantFunctions.GetFunction(name);
+										if (func == null)
+											SyntaxError(tagToken, $"Unknown function: '{name}'");
+										var argList = new List<RantAction>();
+										if (_reader.TakeLoose(R.Colon))
+										{
+											_funcCalls.Push(func);
+											actions.Add(Read(ReadType.FuncCall, token));
+										}
+										else
+										{
+											var end = _reader.Read(R.RightSquare);
+											VerifyArgCount(func, 0, token, end);
+											actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
+										}
+										break;
+									}
+								case R.Regex:
+									{
+										try
+										{
+											_regexes.Push(Util.ParseRegex(tagToken.Value));
+										}
+										catch (Exception e)
+										{
+											SyntaxError(tagToken, e);
+										}
+										_reader.ReadLoose(R.Colon);
+										actions.Add(Read(ReadType.ReplacerArgs, token));
+										break;
+									}
+								case R.Dollar:
+									{
+										bool call = false;
+										var nextToken = _reader.ReadToken();
+										if (nextToken.ID != R.LeftSquare)
+											call = true;
+										else
+											nextToken = _reader.ReadToken();
+										if (nextToken.ID != R.Text)
+											SyntaxError(nextToken, "Expected subroutine name.");
+										_reader.ReadLoose(R.Colon);
+										_subroutines.Push(new RASubroutine(nextToken));
+										_subroutines.Peek().IsCall = call;
+										actions.Add(Read(ReadType.SubroutineArgs, token));
+									}
+									break;
+								default:
+									SyntaxError(tagToken, "Expected function name or regex.");
+									break;
 							}
-							case R.Regex:
-							{
-								try
-								{
-									_regexes.Push(Util.ParseRegex(tagToken.Value));
-								}
-								catch (Exception e)
-								{
-									SyntaxError(tagToken, e);
-								}
-								_reader.ReadLoose(R.Colon);
-								actions.Add(Read(ReadType.ReplacerArgs, token));
-								break;
-							}
-							default:
-								SyntaxError(tagToken, "Expected function name or regex.");
-								break;
+							break;
 						}
-						break;
-					}
 
 					case R.RightSquare:
-					{
-						if (!(type == ReadType.FuncCall || type == ReadType.ReplacerArgs))
-							Unexpected(token);
-						// Add item to args
-						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
-						switch (type)
 						{
-							case ReadType.FuncCall:
+							if (!(type == ReadType.FuncCall || type == ReadType.ReplacerArgs || type == ReadType.SubroutineBody || type == ReadType.SubroutineArgs))
+								Unexpected(token);
+							// Add item to args
+							sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
+							switch (type)
 							{
-								var func = _funcCalls.Pop();
-								VerifyArgCount(func, sequences.Count, fromToken, token);
-								// TODO: Add support for function overloads
-								return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
+								case ReadType.SubroutineBody:
+									return new RASequence(sequences);
+								case ReadType.FuncCall:
+									{
+										var func = _funcCalls.Pop();
+										VerifyArgCount(func, sequences.Count, fromToken, token);
+										// TODO: Add support for function overloads
+										return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
+									}
+								case ReadType.ReplacerArgs:
+									return new RAReplacer(Stringe.Range(fromToken, token),
+										_regexes.Pop(), sequences[0], sequences[1]);
+								case ReadType.SubroutineArgs:
+									var subroutine = _subroutines.Peek();
+									subroutine.Parameters = sequences;
+									if (subroutine.IsCall)
+										return _subroutines.Pop();
+									// verify that every entry in sequences is a text action
+									// i don't know how to do this better ok
+									foreach (RantAction action in sequences)
+										if (!(action is RAText))
+											SyntaxError(token, "Subroutine argument names may only be text.");
+									// seriously there needs to be a better way of converting the tokens to names
+									var nextToken = _reader.ReadToken();
+									if (nextToken.ID != R.Colon)
+										SyntaxError(nextToken, "Expected subroutine body.");
+									subroutine.Body = Read(ReadType.SubroutineBody, nextToken);
+									return _subroutines.Pop();
 							}
-							case ReadType.ReplacerArgs:
-								return new RAReplacer(Stringe.Range(fromToken, token), 
-									_regexes.Pop(), sequences[0], sequences[1]);
+							break;
 						}
-						break;
-					}
 
 					// Argument separator
 					case R.Semicolon:
-						if (!(type == ReadType.FuncCall || type == ReadType.ReplacerArgs)) goto default;
+						if (!(type == ReadType.FuncCall || type == ReadType.ReplacerArgs || type == ReadType.SubroutineArgs)) goto default;
 						// If it's a replacer, make sure there are no arguments already.
 						if (type == ReadType.ReplacerArgs && sequences.Count == 1)
 							SyntaxError(token, "Too many arguments in replacer.");
@@ -265,6 +309,7 @@ namespace Rant.Engine.Compiler
 					// syllable range
 					case R.LeftParen:
 						{
+							if (type != ReadType.Query) goto default;
 							var nextToken = _reader.ReadToken();
 							int firstNumber = -1;
 							int secondNumber = -1;
@@ -302,7 +347,7 @@ namespace Rant.Engine.Compiler
 					// query carriers
 					case R.DoubleColon:
 						{
-							if(type != ReadType.Query) goto default;
+							if (type != ReadType.Query) goto default;
 							return Read(ReadType.QueryCarrier, token);
 						}
 					// match carrier

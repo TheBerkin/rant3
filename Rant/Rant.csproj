@@ -93,6 +93,7 @@
     <Compile Include="Engine\Syntax\RAQuery.cs" />
     <Compile Include="Engine\Syntax\RAReplacer.cs" />
     <Compile Include="Engine\Syntax\RASequence.cs" />
+    <Compile Include="Engine\Syntax\RASubroutine.cs" />
     <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />

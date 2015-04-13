@@ -258,6 +258,17 @@ namespace Rant.Engine
 		}
 
 		[RantFunction]
+		[RantDescription("Returns the specified argument from the current subroutine.")]
+		private static IEnumerator<RantAction> Arg(Sandbox sb, string name)
+		{
+			if (!sb.SubroutineArgs.Any()) yield break;
+			var args = sb.SubroutineArgs.Peek();
+			if (args.ContainsKey(name))
+				yield return args[name];
+			yield break;
+		}
+
+		[RantFunction]
 		private static void Match(Sandbox sb)
 		{
 			if (!sb.RegexMatches.Any()) return;
