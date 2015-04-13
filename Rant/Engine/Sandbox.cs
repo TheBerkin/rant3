@@ -105,20 +105,28 @@ namespace Rant.Engine
 		/// <param name="obj">The value to print.</param>
 		public void Print(object obj) => CurrentOutput.Write(obj);
 
-		private readonly StringBuilder _printManyBuffer = new StringBuilder(256);
-
 		public void PrintMany(Func<char> generator, int times)
 		{
-			_printManyBuffer.Length = 0;
-			for (int i = 0; i < times; i++) _printManyBuffer.Append(generator());
-			CurrentOutput.Write(_printManyBuffer);
+			if (times == 1)
+			{
+				CurrentOutput.Write(generator());
+				return;
+			}
+			var buffer = new StringBuilder();
+			for (int i = 0; i < times; i++) buffer.Append(generator());
+			CurrentOutput.Write(buffer);
 		}
 
 		public void PrintMany(Func<string> generator, int times)
 		{
-			_printManyBuffer.Length = 0;
-			for (int i = 0; i < times; i++) _printManyBuffer.Append(generator());
-			CurrentOutput.Write(_printManyBuffer);
+			if (times == 1)
+			{
+				CurrentOutput.Write(generator());
+				return;
+			}
+			var buffer = new StringBuilder();
+			for (int i = 0; i < times; i++) buffer.Append(generator());
+			CurrentOutput.Write(buffer);
 		}
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
