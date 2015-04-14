@@ -285,11 +285,11 @@ namespace Rant.Engine.Compiler
 						bool negative = false;
 						if (nextToken.ID == R.Exclamation)
 						{
-							negative = true;
-							_reader.ReadToken();
 							if (_query.Exclusive)
 								throw new RantCompilerException(_sourceName, token,
 									"You can't define a negative class filter in an exclusive query.");
+							negative = true;
+							_reader.ReadToken();
 						}
 						className = _reader.ReadLoose(R.Text);
 						// aaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -306,9 +306,6 @@ namespace Rant.Engine.Compiler
 						if (nextToken.ID == R.Exclamation)
 						{
 							negative = true;
-							if (_query.Exclusive)
-								throw new RantCompilerException(_sourceName, token,
-									"You can't define a negative regex filter in an exclusive query.");
 							nextToken = _reader.ReadToken();
 						}
 						if (nextToken.ID != R.Regex)
