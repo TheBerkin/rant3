@@ -9,7 +9,7 @@ namespace Rant.Tests
 		public void NoParamsOutput()
 		{
 			Assert.AreEqual("1 2 3 4 5 6 7 8 9 10", 
-				new RantEngine().Do(@"[$[test]:[r:10][s:\s]{[rn]}][$test]"));
+				new RantEngine().Do(@"[$[test]:[r:10][s:\s]{[rn]}][$test]").MainValue);
 		}
 
 		[Test]
