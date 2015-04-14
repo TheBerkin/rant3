@@ -47,10 +47,26 @@ namespace Rant.Engine
             return _tokens[_pos];
         }
 
-        public bool IsNext(R type)
+	    public R PeekType() => End ? R.EOF : _tokens[_pos].ID;
+
+	    public bool IsNext(R type)
         {
             return !End && _tokens[_pos].ID == type;
         }
+
+	    public R LastNonSpaceType
+	    {
+		    get
+		    {
+			    if (_pos == 0) return R.EOF;
+			    R id;
+			    for (int i = _pos; i >= 0; i--)
+			    {
+				    if ((id = _tokens[i].ID) != R.Whitespace) return id;
+			    }
+			    return R.EOF;
+		    }
+	    }
 
         public bool Take(R type, bool allowEof = true)
         {

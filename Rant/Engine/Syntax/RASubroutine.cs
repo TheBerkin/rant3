@@ -10,7 +10,7 @@ namespace Rant.Engine.Syntax
 {
 	internal class RASubroutine : RantAction
 	{
-		private Stringe _name;
+		private readonly Stringe _name;
 
 		public string Name => _name.Value;
 		public List<RantAction> Parameters;
@@ -31,7 +31,7 @@ namespace Rant.Engine.Syntax
 			else
 			{
 				if (sb.Objects[Name] == null)
-					throw new RantRuntimeException(sb.Pattern, _name, $"The subroutine {Name} does not exist.");
+					throw new RantRuntimeException(sb.Pattern, _name, $"The subroutine '{Name}' does not exist.");
 				var sub = (RASubroutine)sb.Objects[Name].Value;
 				if (sub.Parameters.Count != Parameters.Count)
 					throw new RantRuntimeException(sb.Pattern, _name, "Argument mismatch on subroutine call.");
