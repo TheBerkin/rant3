@@ -52,5 +52,12 @@ namespace Rant.Tests
 		{
 			new RantEngine().Do(@"[$missing]");
 		}
+
+		[Test]
+		[ExpectedException(typeof(RantRuntimeException))]
+		public void StackOverflow()
+		{
+			new RantEngine().Do(@"[$[_]:[$_]][$_]");
+		}
 	}
 }
