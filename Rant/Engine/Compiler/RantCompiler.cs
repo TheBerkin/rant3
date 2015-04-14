@@ -280,38 +280,24 @@ namespace Rant.Engine.Compiler
 					case R.Hyphen:
 					{
 						if (type != ReadType.Query) goto default;
-						var nextToken = _reader.PeekToken();
-						Stringe className;
-						bool negative = false;
-						if (nextToken.ID == R.Exclamation)
-						{
-							if (_query.Exclusive)
-								throw new RantCompilerException(_sourceName, token,
-									"You can't define a negative class filter in an exclusive query.");
-							negative = true;
-							_reader.ReadToken();
-						}
-						className = _reader.ReadLoose(R.Text);
+						bool negative = _reader.Take(R.Exclamation);
+						if (_query.Exclusive && negative)
+							throw new RantCompilerException(_sourceName, token,
+								"You can't define a negative class filter in an exclusive query.");
+						var className = _reader.ReadLoose(R.Text);
 						// aaaaaaaaaaaaaaaaaaaaaaaaaaa
 						((List<_<bool, string>[]>)_query.ClassFilters)
-							.Add(new _<bool, string>[] { new _<bool, string>(!negative, className.Value) });
+							.Add(new[] { new _<bool, string>(!negative, className.Value) });
 					}
 						break;
 					// query regex filters
 					case R.Question:
 					{
 						if (type != ReadType.Query) goto default;
-						var nextToken = _reader.ReadToken();
-						bool negative = false;
-						if (nextToken.ID == R.Exclamation)
-						{
-							negative = true;
-							nextToken = _reader.ReadToken();
-						}
-						if (nextToken.ID != R.Regex)
-							throw new RantCompilerException(_sourceName, token, "Expected regex.");
+						bool negative = _reader.Take(R.Exclamation);
+						var regexToken = _reader.Read(R.Regex, "regex");
 						((List<_<bool, Regex>>)_query.RegexFilters)
-							.Add(new _<bool, Regex>(!negative, Util.ParseRegex(nextToken.Value)));
+							.Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
 					}
 						break;
 					// syllable range
