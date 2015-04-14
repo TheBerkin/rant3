@@ -68,6 +68,7 @@
     <Compile Include="Queries.cs" />
     <Compile Include="Repeaters.cs" />
     <Compile Include="Replacers.cs" />
+    <Compile Include="Subroutines.cs" />
     <Compile Include="Targets.cs" />
   </ItemGroup>
   <ItemGroup>
