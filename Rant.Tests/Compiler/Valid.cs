@@ -40,5 +40,32 @@ namespace Rant.Tests.Compiler
 		{
 			RantPattern.FromString($"[$[test:{args}]:{{A|B|C|D}}]");
 		}
+
+		[TestCase("<noun>")]
+		[TestCase("<noun.plural>")]
+		[TestCase("<noun-class>")]
+		[TestCase("<noun - class>")]
+		[TestCase("<noun-class1-class2>")]
+		[TestCase("<noun-class1-!class2>")]
+		[TestCase("<noun-!class-!class2>")]
+		[TestCase("<noun-class1|class2>")]
+		[TestCase("<noun-class1 | class2>")]
+		[TestCase("<noun-!class1|!class2>")]
+		[TestCase("<noun-class1|class2-class3|class4>")]
+		[TestCase("<noun-!class1|!class2-!class3|!class4>")]
+		[TestCase("<noun$-class.plural>")]
+		[TestCase("<noun$-class .plural>")]
+		[TestCase("<noun$-class>")]
+		[TestCase("<noun$>")]
+		[TestCase("<noun ? `regex`>")]
+		[TestCase("<noun ?! `regex`>")]
+		[TestCase("<noun ? `regex` ?! `regex`>")]
+		[TestCase("<noun::=a>")]
+		[TestCase("<noun :: =a>")]
+		[TestCase("<noun :: =a @b>")]
+		public void Queries(string query)
+		{
+			RantPattern.FromString(query);
+		}
 	}
 }

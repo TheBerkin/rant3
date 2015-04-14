@@ -36,6 +36,58 @@ namespace Rant.Tests.Compiler
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
+		public void UnexpectedQueryTerminator()
+		{
+			RantPattern.FromString(@">");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void UnterminatedQuery()
+		{
+			RantPattern.FromString(@"<noun");
+		}
+
+		[TestCase("\"")]
+		[TestCase(".")]
+		[TestCase("")]
+		[TestCase("?")]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void InvalidQueryTableName(string name)
+		{
+			RantPattern.FromString($"<{name}>");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void InvalidQuerySubtype()
+		{
+			RantPattern.FromString(@"<noun.???>");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void MissingQuerySubtype()
+		{
+			RantPattern.FromString(@"<noun.>");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void MissingQueryClassFilter()
+		{
+			RantPattern.FromString(@"<noun->");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void InvalidCarrierDelete()
+		{
+			RantPattern.FromString(@"<::>");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
 		public void NonexistentFunction()
 		{
 			RantPattern.FromString(@"[berkin_rules]");
@@ -54,6 +106,27 @@ namespace Rant.Tests.Compiler
 		public void UnterminatedFunctionCall()
 		{
 			RantPattern.FromString(@"[rep:10");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void BadParameterNames()
+		{
+			RantPattern.FromString(@"[$[epic_fail:good_param;bad=param]:NO]");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void BadNameArgsSeparator()
+		{
+			RantPattern.FromString(@"[numfmt;verbal-en]");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void ExtraOpeningBracket()
+		{
+			RantPattern.FromString(@"[[rep:10]");
 		}
 	}
 }

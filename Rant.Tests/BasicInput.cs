@@ -65,12 +65,5 @@ namespace Rant.Tests
         {
             Assert.AreEqual(rant.Do(@"  { \s \s \4,s  }   ").MainValue, "        ");
         }
-
-        [Test]
-        [ExpectedException(typeof(RantRuntimeException))]
-        public void Timeout()
-        {
-            rant.Do(@"[?[src][src]]", 0, 5.0);
-        }
     }
 }

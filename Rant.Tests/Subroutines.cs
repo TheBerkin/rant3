@@ -26,6 +26,27 @@ namespace Rant.Tests
 		}
 
 		[Test]
+		public void ArgumentsConstant()
+		{
+			Assert.AreEqual("ABC",
+				new RantEngine().Do(@"[$[test:arg1;arg2;arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:A;B;C]").MainValue);
+		}
+
+		[Test]
+		public void ArgumentsDynamic()
+		{
+			Assert.AreEqual("{|}",
+				new RantEngine().Do(@"[$[test:arg1;arg2;arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:\{;\|;\}]").MainValue);
+		}
+
+		[Test]
+		public void ArgumentsLazy()
+		{
+			Assert.AreEqual("123",
+				new RantEngine().Do(@"[$[test:@a]:[r:3]{[arg:a]}][$test:[rn]]").MainValue);
+		}
+
+		[Test]
 		[ExpectedException(typeof(RantRuntimeException))]
 		public void MissingSubroutine()
 		{
