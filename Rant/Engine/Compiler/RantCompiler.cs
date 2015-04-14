@@ -218,6 +218,7 @@ namespace Rant.Engine.Compiler
 
 					// Block
 					case R.LeftCurly:
+						_reader.SkipSpace();
 						actions.Add(Read(ReadType.Block, token));
 						break;
 
