@@ -24,7 +24,7 @@ namespace Rant.Vocabulary
         public string Subtype { get; set; }
 
 	    /// <summary>
-        /// Specifies exclusivity of class filters.
+        /// Specifies exclusivity of the class filter.
         /// </summary>
         public bool Exclusive { get; set; }
 
@@ -34,9 +34,9 @@ namespace Rant.Vocabulary
         public Range SyllablePredicate { get; set; }
 
 	    /// <summary>
-        /// The class filters to search by.
+        /// The class filter to search by.
         /// </summary>
-        public IEnumerable<_<bool, string>[]> ClassFilters { get; set; }
+        public ClassFilter ClassFilter { get; set; }
 
 	    /// <summary>
         /// The regex filters to search by.

@@ -254,12 +254,14 @@ namespace Rant.Engine.Compiler
 						Stringe name = null;
 						if (_reader.PeekToken().ID != R.DoubleColon)
 							name = _reader.ReadLoose(R.Text);
-						_query = new Query();
-						_query.ClassFilters = new List<_<bool, string>[]>();
-						_query.RegexFilters = new List<_<bool, Regex>>();
-						_query.Carrier = new Carrier();
-						_query.OriginStringe = name;
-						_query.Name = (name == null ? null : name.Value);
+						_query = new Query
+						{
+							ClassFilter = new ClassFilter(),
+							RegexFilters = new List<_<bool, Regex>>(),
+							Carrier = new Carrier(),
+							OriginStringe = name,
+							Name = name?.Value
+						};
 						var exclusivity = _reader.PeekToken();
 						if (exclusivity.ID == R.Dollar)
 						{
@@ -286,9 +288,7 @@ namespace Rant.Engine.Compiler
 							throw new RantCompilerException(_sourceName, token,
 								"You can't define a negative class filter in an exclusive query.");
 						var className = _reader.ReadLoose(R.Text);
-						// aaaaaaaaaaaaaaaaaaaaaaaaaaa
-						((List<_<bool, string>[]>)_query.ClassFilters)
-							.Add(new[] { new _<bool, string>(!negative, className.Value) });
+						_query.ClassFilter.AddRuleSwitch(new ClassFilterRule(className.Value, !negative));
 					}
 						break;
 					// query regex filters

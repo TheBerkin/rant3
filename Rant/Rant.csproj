@@ -125,6 +125,8 @@
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\ClassFilter.cs" />
+    <Compile Include="Vocabulary\ClassFilterRule.cs" />
     <Compile Include="Vocabulary\Diff.cs" />
     <Compile Include="Vocabulary\DoubleMetaphone.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
