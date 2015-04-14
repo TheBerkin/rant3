@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Rant.Engine.Syntax;
 using Rant.Vocabulary;
@@ -145,7 +146,7 @@ namespace Rant.Engine.Compiler
 											nextToken = _reader.ReadToken();
 										if (nextToken.ID != R.Text)
 											SyntaxError(nextToken, "Expected subroutine name.");
-										_reader.ReadLoose(R.Colon);
+										if (_reader.PeekToken().ID == R.Colon) _reader.ReadToken();
 										_subroutines.Push(new RASubroutine(nextToken));
 										_subroutines.Peek().IsCall = call;
 										actions.Add(Read(ReadType.SubroutineArgs, token));
@@ -180,12 +181,14 @@ namespace Rant.Engine.Compiler
 										_regexes.Pop(), sequences[0], sequences[1]);
 								case ReadType.SubroutineArgs:
 									var subroutine = _subroutines.Peek();
-									subroutine.Parameters = sequences;
+									subroutine.Parameters = sequences
+										// filter out empty sequences
+										.Where(x => !(x is RASequence && (x as RASequence).Actions.Count == 0)).ToList();
 									if (subroutine.IsCall)
 										return _subroutines.Pop();
 									// verify that every entry in sequences is a text action
 									// i don't know how to do this better ok
-									foreach (RantAction action in sequences)
+									foreach (RantAction action in subroutine.Parameters)
 										if (!(action is RAText))
 											SyntaxError(token, "Subroutine argument names may only be text.");
 									// seriously there needs to be a better way of converting the tokens to names
