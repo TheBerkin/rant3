@@ -107,6 +107,13 @@ namespace Rant.Engine
 			sb.CurrentBlockAttribs.Separator = separatorAction;
 		}
 
+		[RantFunction("rs")]
+		private static void RepSep(Sandbox sb, int times, RantAction separator)
+		{
+			sb.CurrentBlockAttribs.Repetitons = times;
+			sb.CurrentBlockAttribs.Separator = separator;
+		}
+
 		[RantFunction]
 		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb, 
@@ -224,6 +231,13 @@ namespace Rant.Engine
 			if (!sb.Blocks.Any()) return;
 			var block = sb.Blocks.Peek();
 			sb.Print(block.Count - block.Iteration);
+		}
+
+		[RantFunction]
+		[RantDescription("Prints the number of currently active blocks.")]
+		private static void Depth(Sandbox sb)
+		{
+			sb.Print(sb.Blocks.Count);
 		}
 
 		[RantFunction("index", "i")]
