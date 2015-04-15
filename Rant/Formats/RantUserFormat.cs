@@ -1,4 +1,6 @@
-﻿namespace Rant.Formats
+﻿using System.Globalization;
+
+namespace Rant.Formats
 {
     /// <summary>
     /// Represents a user-specified Rant format.
@@ -36,5 +38,10 @@
         /// The vowel-sensitive indefinite articles used by the \a escape sequence.
         /// </summary>
         public new IndefiniteArticles IndefiniteArticles { get; set; } = IndefiniteArticles.English;
+
+		/// <summary>
+		/// The culture to format output strings with.
+		/// </summary>
+		public new CultureInfo Culture { get; set; } = CultureInfo.InvariantCulture;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Rant.Engine;
 using Rant.Engine.Formatters;
@@ -83,7 +84,7 @@ namespace Rant
 			if (value == null) return;
 			var str = IOUtil.IsNumericType(value.GetType())
 				? _numberFormatter.FormatNumber(Convert.ToDouble(value))
-				: value.ToString();
+				: Convert.ToString(value, _format.Culture);
 			if (_limit.Accumulate(str.Length))
 				throw new InvalidOperationException($"Exceeded character limit ({_limit.Maximum})");
 			_length += str.Length;

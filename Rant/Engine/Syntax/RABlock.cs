@@ -18,11 +18,11 @@ namespace Rant.Engine.Syntax
 		// Item weights.
 		// Dynamic weights are patterns that must be run to get the weight value.
 		// Constant weights can be used directly. This is used for optimization.
+		// TODO: Move _weights to local scope for thread safety
 		private readonly double[] _weights = null;
 		private readonly List<_<int, RantAction>> _dynamicWeights = null;
 		private readonly double _constantWeightSum;
 		private readonly bool _weighted = false;
-		private double _weightSum;
 
 		public RABlock(Stringe range, params RantAction[] items)
 			: base(range)
@@ -56,7 +56,6 @@ namespace Rant.Engine.Syntax
 				_constantWeightSum = _weights.Sum() - _dynamicWeights.Count;
 				_weighted = true;
 			}
-			
 		}
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
@@ -66,9 +65,10 @@ namespace Rant.Engine.Syntax
 			int next = -1;
 			var block = new BlockState(attribs.Repetitons);
 
+			double weightSum = _constantWeightSum;
+
 			if (_weighted && attribs.Sync == null)
 			{
-				_weightSum = _constantWeightSum;
 				foreach (var dw in _dynamicWeights)
 				{
 					sb.AddOutputWriter();
@@ -77,7 +77,7 @@ namespace Rant.Engine.Syntax
 					if (!Double.TryParse(strWeight, out _weights[dw.Item1]))
 						throw new RantRuntimeException(sb.Pattern, dw.Item2.Range,
 							$"Dynamic weight returned invalid weight value: '{strWeight}'");
-					_weightSum += _weights[dw.Item1];
+					weightSum += _weights[dw.Item1];
 				}
 			}
 
@@ -86,7 +86,7 @@ namespace Rant.Engine.Syntax
 			{
 				if (_weighted)
 				{
-					double choice = sb.RNG.NextDouble(_weightSum);
+					double choice = sb.RNG.NextDouble(weightSum);
 					for (int j = 0; j < _count; j++)
 					{
 						if (choice < _weights[j])
@@ -104,14 +104,18 @@ namespace Rant.Engine.Syntax
 
 				if (next == -1) break;
 				block.Next(next);
+
 				sb.Blocks.Pop(); // Don't allow separator to access block state
-								 // Separator
+				// Separator
 				if (i > 0 && attribs.Separator != null) yield return attribs.Separator;
 				sb.Blocks.Push(block); // Now put it back
-									   // Prefix
+
+				// Prefix
 				if (attribs.Before != null) yield return attribs.Before;
+
 				// Content
 				yield return _items[next];
+
 				// Affix
 				if (attribs.After != null) yield return attribs.After;
 			}

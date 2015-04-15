@@ -210,6 +210,7 @@ namespace Rant.Engine
 		}
 
 		[RantFunction("repelapsed", "re")]
+		[RantDescription("Prints the number of iterations remaining to be performed on the current block.")]
 		private static void RepElapsed(Sandbox sb)
 		{
 			if (!sb.Blocks.Any()) return;
@@ -225,12 +226,21 @@ namespace Rant.Engine
 		}
 
 		[RantFunction("reprem", "rr")]
-		[RantDescription("Prints the number of repetitions remaining to be performed on the current block.")]
+		[RantDescription("Prints the number of remaining repetitions queued after the current one.")]
 		private static void RepRem(Sandbox sb)
 		{
 			if (!sb.Blocks.Any()) return;
 			var block = sb.Blocks.Peek();
 			sb.Print(block.Count - block.Iteration);
+		}
+
+		[RantFunction("repqueued", "rq")]
+		[RantDescription("Prints the number of repetitions remaining to be completed on the current block.")]
+		private static void RepQueued(Sandbox sb)
+		{
+			if (!sb.Blocks.Any()) return;
+			var block = sb.Blocks.Peek();
+			sb.Print(block.Count - (block.Iteration - 1));
 		}
 
 		[RantFunction]

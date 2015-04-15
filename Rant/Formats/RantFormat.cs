@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Rant.Formats
 {
@@ -61,6 +62,11 @@ namespace Rant.Formats
         /// The vowel-sensitive indefinite articles used by the \a escape sequence.
         /// </summary>
         public IndefiniteArticles IndefiniteArticles { get; protected set; } = IndefiniteArticles.English;
+
+		/// <summary>
+		/// The culture to format output strings with.
+		/// </summary>
+		public CultureInfo Culture { get; protected set; } = CultureInfo.InvariantCulture;
 
         protected void InternalAddTitleCaseExclusions(params string[] words)
         {
