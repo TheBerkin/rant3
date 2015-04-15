@@ -54,7 +54,9 @@ namespace Rant.Engine
 				}
 				else if (type.IsEnum)
 				{
-					rantType = RantParameterType.Mode;
+					rantType = type.GetCustomAttributes(typeof(FlagsAttribute)).Any()
+						? RantParameterType.Flags
+						: RantParameterType.Mode;
 				}
 				else if (IOUtil.IsNumericType(type))
 				{

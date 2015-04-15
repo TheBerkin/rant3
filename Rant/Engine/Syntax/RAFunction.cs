@@ -1,4 +1,5 @@
 ﻿using Rant.Stringes;
+
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace Rant.Engine.Syntax
 		private readonly List<RantAction> _argActions;
 		private readonly int _argc;
 
-		public RAFunction(Stringe range, RantFunctionInfo funcInfo, List<RantAction> argActions) 
+		public RAFunction(Stringe range, RantFunctionInfo funcInfo, List<RantAction> argActions)
 			: base(range)
 		{
 			_funcInfo = funcInfo;
@@ -41,35 +42,53 @@ namespace Rant.Engine.Syntax
 
 					// Numbers are evaluated, verified, and converted
 					case RantParameterType.Number:
+					{
+						sb.AddOutputWriter();
+						yield return _argActions[i];
+						var strNum = sb.PopOutput().MainValue;
+						if (!Double.TryParse(strNum, out d))
 						{
-							sb.AddOutputWriter();
-							yield return _argActions[i];
-							var strNum = sb.PopOutput().MainValue;
-							if (!Double.TryParse(strNum, out d))
-							{
-								d = 0;
-								int n;
-								if (Util.ParseInt(strNum, out n)) d = n;
-							}
-							args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
-							break;
+							d = 0;
+							int n;
+							if (Util.ParseInt(strNum, out n)) d = n;
 						}
+						args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
+						break;
+					}
 
 					// Modes are parsed into enumeration members
 					case RantParameterType.Mode:
+					{
+						sb.AddOutputWriter();
+						yield return _argActions[i];
+						var strMode = sb.PopOutput().MainValue;
+						object value;
+						if (!Util.TryParseEnum(_funcInfo.Parameters[i].NativeType, strMode, out value))
 						{
-							sb.AddOutputWriter();
-							yield return _argActions[i];
-							var strMode = sb.PopOutput().MainValue;
-							object value;
-							if (!Util.TryParseMode(_funcInfo.Parameters[i].NativeType, strMode, out value))
-							{
-								throw new RantRuntimeException(_argActions[i].Range.ParentString, _argActions[i].Range,
-									$"Invalid mode value '{strMode}'.");
-							}
-							args[i] = value;
-							break;
+							throw new RantRuntimeException(sb.Pattern, _argActions[i].Range,
+								$"Unknown mode value '{strMode}'.");
 						}
+						args[i] = value;
+						break;
+					}
+					case RantParameterType.Flags:
+					{
+						var enumType = _funcInfo.Parameters[i].NativeType;
+						sb.AddOutputWriter();
+						yield return _argActions[i];
+						long flags = 0;
+						var strFlags = sb.PopOutput().MainValue;
+						object value;
+						foreach(var flag in strFlags.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries))
+						{
+							if (!Util.TryParseEnum(enumType, flag, out value))
+								throw new RantRuntimeException(sb.Pattern, _argActions[i].Range,
+									$"Unknown flag value '{flag}'.");
+							flags |= Convert.ToInt64(value);
+						}
+						args[i] = Enum.ToObject(enumType, flags);
+						break;
+					}
 				}
 			}
 

@@ -19,7 +19,7 @@ namespace Rant.Engine
 			_enumTable[type] = new HashSet<string>(Enum.GetNames(type));
 		}
 
-		public static bool TryParseMode(Type enumType, string modeString, out object value)
+		public static bool TryParseEnum(Type enumType, string modeString, out object value)
 		{
 			value = null;
 			if (!enumType.IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");

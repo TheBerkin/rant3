@@ -5,6 +5,7 @@
 		 String,
 		 Pattern,
 		 Number,
-		 Mode
+		 Mode,
+		 Flags
 	}
 }

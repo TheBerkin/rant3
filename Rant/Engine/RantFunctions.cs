@@ -6,6 +6,7 @@ using System.Reflection;
 using Rant.Engine.Formatters;
 using Rant.Engine.Metadata;
 using Rant.Engine.Syntax;
+using Rant.Vocabulary;
 
 namespace Rant.Engine
 {
@@ -265,7 +266,6 @@ namespace Rant.Engine
 			var args = sb.SubroutineArgs.Peek();
 			if (args.ContainsKey(name))
 				yield return args[name];
-			yield break;
 		}
 
 		[RantFunction]
@@ -280,6 +280,12 @@ namespace Rant.Engine
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Groups[groupName].Value);
+		}
+
+		[RantFunction]
+		private static void Rhyme(Sandbox sb, RhymeFlags flags)
+		{
+			sb.QueryState.Rhymer.AllowedRhymes = flags;
 		}
 	}
 }
