@@ -68,7 +68,12 @@ namespace Rant.Engine.Compiler
 			/// <summary>
 			/// Reads the body of a subroutine.
 			/// </summary>
-			SubroutineBody
+			SubroutineBody,
+
+			/// <summary>
+			/// Reads a block weight.
+			/// </summary>
+			BlockWeight
 		}
 
 		public static RantAction Compile(string sourceName, string source)
@@ -83,6 +88,9 @@ namespace Rant.Engine.Compiler
 			// Stores sequences of actions for blocks, function calls, etc.
 			var sequences = new List<RantAction>();
 
+			List<_<int, RantAction>> dynamicWeights = null;
+			List<_<int, double>> constantWeights = null;
+
 			Token<R> token = null;
 
 			// ok let's do this
@@ -95,7 +103,7 @@ namespace Rant.Engine.Compiler
 					case R.EOF:
 						goto done;
 
-						// Escape sequence
+					// Escape sequence
 					case R.EscapeSequence:
 						actions.Add(new RAEscape(token));
 						break;
@@ -238,9 +246,9 @@ namespace Rant.Engine.Compiler
 						// Add item to block
 						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
 						if (token.ID == R.RightCurly)
-							return new RABlock(Stringe.Range(fromToken, token), sequences);
-						else
-							_reader.SkipSpace();
+							return new RABlock(Stringe.Range(fromToken, token), sequences,
+								dynamicWeights, constantWeights);
+						_reader.SkipSpace();
 						actions.Clear();
 						break;
 
@@ -299,11 +307,48 @@ namespace Rant.Engine.Compiler
 						var regexToken = _reader.Read(R.Regex, "regex");
 						((List<_<bool, Regex>>)_query.RegexFilters)
 							.Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
-					}
 						break;
-					// syllable range
+					}
+						
+					// syllable range, block weight
 					case R.LeftParen:
 					{
+						// Block weight
+						if (type == ReadType.Block && !actions.Any())
+						{
+							constantWeights = new List<_<int, double>>();
+							dynamicWeights = new List<_<int, RantAction>>();
+							var weightAction = Read(ReadType.BlockWeight, token);
+							if (weightAction is RAText) // Constant
+							{
+								var strWeight = (weightAction as RAText).Text;
+								double d;
+								int i;
+								if (!Double.TryParse(strWeight, out d))
+								{
+									if (Util.ParseInt(strWeight, out i))
+									{
+										d = i;
+									}
+									else
+									{
+										SyntaxError(weightAction.Range,
+											$"Invalid weight value '{strWeight}' - constant must be a number.");
+									}
+								}
+								if (d < 0)
+									SyntaxError(weightAction.Range, 
+										$"Invalid weight value '{strWeight}' - constant cannot be negative.");
+
+								constantWeights.Add(_.Create(sequences.Count, d));
+							}
+							else // Dynamic
+							{
+								dynamicWeights.Add(_.Create(sequences.Count, weightAction));
+							}
+							break;
+						}
+
 						if (type != ReadType.Query) goto default;
 						var nextToken = _reader.ReadToken();
 						int firstNumber = -1;
@@ -337,8 +382,17 @@ namespace Rant.Engine.Compiler
 						if (range.Minimum == null && range.Maximum == null)
 							throw new RantCompilerException(_sourceName, token, "Unknown syllable range syntax.");
 						_query.SyllablePredicate = range;
-					}
 						break;
+					}
+
+					case R.RightParen:
+					{
+						if (type != ReadType.BlockWeight) goto default;
+						_reader.SkipSpace();
+						if (!actions.Any()) SyntaxError(token, "Expected weight value.");
+						return actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions);
+					}
+						
 					// query carriers
 					case R.DoubleColon:
 					{
