@@ -316,8 +316,8 @@ namespace Rant.Engine.Compiler
 						// Block weight
 						if (type == ReadType.Block && !actions.Any())
 						{
-							constantWeights = new List<_<int, double>>();
-							dynamicWeights = new List<_<int, RantAction>>();
+							if (constantWeights == null) constantWeights = new List<_<int, double>>();
+							if (dynamicWeights == null) dynamicWeights = new List<_<int, RantAction>>();
 							var weightAction = Read(ReadType.BlockWeight, token);
 							if (weightAction is RAText) // Constant
 							{
