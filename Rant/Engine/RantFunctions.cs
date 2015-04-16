@@ -99,6 +99,13 @@ namespace Rant.Engine
 			sb.CurrentBlockAttribs.Repetitons = times;
 		}
 
+		[RantFunction]
+		[RantDescription("Sets the repetition count to the number of items in the next block.")]
+		private static void RepEach(Sandbox sb)
+		{
+			sb.CurrentBlockAttribs.RepEach = true;
+		}
+
 		[RantFunction("sep", "s")]
 		[RantDescription("Sets the separator pattern for the next block.")]
 		private static void Sep(Sandbox sb, 
@@ -341,7 +348,7 @@ namespace Rant.Engine
 			sb.SyncManager.Step(name);
 		}
 
-		[RantFunction]
+		[RantFunction("xreset")]
 		[RantDescription("Resets a synchronizer.")]
 		private static void SyncReset(Sandbox sb, string name)
 		{

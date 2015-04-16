@@ -180,7 +180,7 @@ namespace Rant.Engine
 					if (callStack.Count == RantEngine.MaxStackSize)
 						throw new RantRuntimeException(_pattern, action.Current.Range,
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
-
+					
 					// Push child node onto stack and start over
 					callStack.Push(action.Current.Run(this));
 					goto top;

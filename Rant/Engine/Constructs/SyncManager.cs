@@ -16,7 +16,9 @@ namespace Rant.Engine.Constructs
 
 		public void Create(string name, SyncType type, bool apply)
 		{
-			var sync = _syncTable[name] = new Synchronizer(type, _sb.RNG.NextRaw());
+			Synchronizer sync;
+			if (!_syncTable.TryGetValue(name, out sync))
+				sync = _syncTable[name] = new Synchronizer(type, _sb.RNG.NextRaw());
 			if (apply) _sb.CurrentBlockAttribs.Sync = sync;
 		}
 

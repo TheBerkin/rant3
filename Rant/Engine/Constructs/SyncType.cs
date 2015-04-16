@@ -6,7 +6,7 @@
         Ordered,
         Reverse,
         Deck,
-        CDeck,
+        Cdeck,
         Locked
     }
 }

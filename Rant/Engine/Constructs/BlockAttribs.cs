@@ -4,7 +4,18 @@ namespace Rant.Engine.Constructs
 {
     internal class BlockAttribs
     {
-        public int Repetitons { get; set; }
+	    private int _reps;
+
+	    public int Repetitons
+	    {
+		    get { return _reps; }
+		    set
+		    {
+			    _reps = value;
+			    RepEach = false;
+		    }
+	    }
+		public bool RepEach { get; set; }
         public RantAction Separator { get; set; }
         public RantAction Before { get; set; }
         public RantAction After { get; set; }
@@ -19,6 +30,7 @@ namespace Rant.Engine.Constructs
 	    public void SetDefaults()
 	    {
 			Repetitons = 1;
+		    RepEach = false;
 			Chance = 100;
 			Separator = null;
 			Before = null;
