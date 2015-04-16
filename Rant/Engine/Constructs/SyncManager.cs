@@ -6,6 +6,7 @@ namespace Rant.Engine.Constructs
 	{
 		private readonly Dictionary<string, Synchronizer> _syncTable =
 			new Dictionary<string, Synchronizer>();
+		private readonly HashSet<string> _pinQueue = new HashSet<string>(); 
 
 		private readonly Sandbox _sb;
 
@@ -18,7 +19,11 @@ namespace Rant.Engine.Constructs
 		{
 			Synchronizer sync;
 			if (!_syncTable.TryGetValue(name, out sync))
-				sync = _syncTable[name] = new Synchronizer(type, _sb.RNG.NextRaw());
+				sync = _syncTable[name] = 
+					new Synchronizer(type, _sb.RNG.NextRaw())
+					{
+						Pinned = _pinQueue.Remove(name)
+					};
 			if (apply) _sb.CurrentBlockAttribs.Sync = sync;
 		}
 
@@ -33,7 +38,17 @@ namespace Rant.Engine.Constructs
 		{
 			Synchronizer sync;
 			if (_syncTable.TryGetValue(name, out sync))
+			{
 				sync.Pinned = isPinned;
+			}
+			else if (isPinned)
+			{
+				_pinQueue.Add(name);
+			}
+			else
+			{
+				_pinQueue.Remove(name);
+			}
 		}
 
 		public void Step(string name)
