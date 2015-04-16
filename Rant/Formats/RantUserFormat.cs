@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 
+using Rant.Engine;
+
 namespace Rant.Formats
 {
     /// <summary>
@@ -43,5 +45,11 @@ namespace Rant.Formats
 		/// The culture to format output strings with.
 		/// </summary>
 		public new CultureInfo Culture { get; set; } = CultureInfo.InvariantCulture;
-    }
+
+		/// <summary>
+		/// Adds the specified strings to the title case exclusion list for the current format.
+		/// </summary>
+		/// <param name="words">The words to exclude from title case capitalization.</param>
+		public void AddTitleCaseExclusions(params string[] words) => TitleCaseExclusions.AddRange(words);
+	}
 }

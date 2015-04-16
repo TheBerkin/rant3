@@ -110,7 +110,6 @@
     <Compile Include="Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
-    <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />
     <Compile Include="IO\BitField.cs" />
     <Compile Include="IO\EasyReader.cs" />

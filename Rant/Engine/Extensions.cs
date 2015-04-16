@@ -33,6 +33,11 @@ namespace Rant.Engine
             }
         }
 
+	    public static void AddRange<T>(this HashSet<T> hashset, params T[] items)
+	    {
+		    foreach (var item in items) hashset.Add(item);
+	    }
+
         public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, int> weightSelectionFunc, T defaultValue = default(T))
         {
             int selection = rng.Next(collection.Sum(weightSelectionFunc));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
+
 using Rant.Engine;
 using Rant.Engine.Formatters;
 using Rant.Formats;
@@ -33,7 +33,7 @@ namespace Rant
         /// <summary>
         /// The name of the channel.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// The visibility of the channel.

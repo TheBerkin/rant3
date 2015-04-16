@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 
+using Rant.Engine;
+
 namespace Rant.Formats
 {
     /// <summary>
     /// Describes language-specific formatting instructions for localizing interpreter output.
     /// </summary>
-    public abstract class RantFormat
+    public class RantFormat
     {
         /// <summary>
         /// English formatting.
@@ -16,16 +18,25 @@ namespace Rant.Formats
 
         static RantFormat()
         {
-            English = new RantSystemFormat
+            English = new RantFormat
             {
                 IndefiniteArticles = IndefiniteArticles.English
             };
-            English.InternalAddTitleCaseExclusions(
+            English.TitleCaseExclusions.AddRange(
                 "a", "an", "the", "that", "where", "when", "for", "any", "or", "and", "of", "in", "at", "as", "into", "if",
                 "are", "you", "why", "from");
         }
 
-        private readonly HashSet<string> _titleCaseExcludedWords = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase); 
+	    internal RantFormat()
+	    {   
+	    }
+
+        private readonly HashSet<string> _titleCaseExcludedWords = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+		/// <summary>
+		/// Gets the collection of words excluded from Title Case capitalization.
+		/// </summary>
+	    protected HashSet<string> TitleCaseExclusions => _titleCaseExcludedWords; 
 
         #region Quotation marks
 
@@ -52,8 +63,8 @@ namespace Rant.Formats
         /// <summary>
         /// The letter set used by escape sequences like \c and \w.
         /// </summary>
-        public char[] Letters { get; protected set; } = new []
-        {
+        public char[] Letters { get; protected set; } =
+		{
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
@@ -63,21 +74,10 @@ namespace Rant.Formats
         /// </summary>
         public IndefiniteArticles IndefiniteArticles { get; protected set; } = IndefiniteArticles.English;
 
-		/// <summary>
-		/// The culture to format output strings with.
-		/// </summary>
-		public CultureInfo Culture { get; protected set; } = CultureInfo.InvariantCulture;
-
-        protected void InternalAddTitleCaseExclusions(params string[] words)
-        {
-            foreach (var word in words) _titleCaseExcludedWords.Add(word);
-        }
-
-        /// <summary>
-        /// Adds the specified strings to the title case exclusion list for the current format.
-        /// </summary>
-        /// <param name="words">The words to exclude from title case capitalization.</param>
-        public virtual void AddTitleCaseExclusions(params string[] words) => InternalAddTitleCaseExclusions(words);
+	    /// <summary>
+	    /// The culture to format output strings with.
+	    /// </summary>
+	    public CultureInfo Culture { get; protected set; } = CultureInfo.InvariantCulture;
 
         internal bool Excludes(string word) => _titleCaseExcludedWords.Contains(word);
     }
