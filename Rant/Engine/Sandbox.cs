@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -175,6 +176,11 @@ namespace Rant.Engine
 		{
 			var callStack = new Stack<IEnumerator<RantAction>>();
 			IEnumerator<RantAction> action;
+			
+			long timeoutMS = (long)(timeout * 1000);
+			bool timed = timeoutMS > 0;
+			var sw = new Stopwatch();
+			sw.Start();
 
 			// Push the AST root
 			callStack.Push(_pattern.Action.Run(this));
@@ -188,7 +194,11 @@ namespace Rant.Engine
 				// Execute the node until it runs out of children
 				while (action.MoveNext())
 				{
-					if (callStack.Count == RantEngine.MaxStackSize)
+					if (timed && sw.ElapsedMilliseconds >= timeoutMS)
+						throw new RantRuntimeException(_pattern, action.Current.Range,
+							$"The pattern has timed out ({timeout}s).");
+
+					if (callStack.Count >= RantEngine.MaxStackSize)
 						throw new RantRuntimeException(_pattern, action.Current.Range,
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 					
@@ -200,8 +210,10 @@ namespace Rant.Engine
 				// Remove node once finished
 				callStack.Pop();
 			}
+
+			sw.Stop();
 			
 			return PopOutput();
 		}
-	}
+    }
 }

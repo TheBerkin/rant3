@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 
 using Rant.Engine;
-using Rant.Engine.Constructs;
 using Rant.Engine.ObjectModel;
 using Rant.Formats;
 using Rant.Vocabulary;
@@ -106,7 +105,7 @@ namespace Rant
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
         public RantEngine(IRantDictionary dictionary)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             _dictionary = dictionary;
         }
 
@@ -138,7 +137,7 @@ namespace Rant
         /// <param name="mergeBehavior">The table merging strategy to employ.</param>
         public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
-            if (package == null) throw new ArgumentNullException("package");
+            if (package == null) throw new ArgumentNullException(nameof(package));
 
             var patterns = package.GetPatterns();
             var tables = package.GetTables();
