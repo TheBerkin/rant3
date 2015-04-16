@@ -30,6 +30,7 @@ namespace Rant.Engine
 		private readonly Stack<Match> _matches;
 		private readonly QueryState _queryState;
 		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
+		private readonly SyncManager _syncManager;
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 
@@ -90,6 +91,11 @@ namespace Rant.Engine
 
 		public Stack<Dictionary<string, RantAction>> SubroutineArgs => _subroutineArgs;
 
+		/// <summary>
+		/// Gets the synchronizer manager instance for the current Sandbox.
+		/// </summary>
+		public SyncManager SyncManager => _syncManager;
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_engine = engine;
@@ -106,6 +112,7 @@ namespace Rant.Engine
 			_matches = new Stack<Match>();
 			_queryState = new QueryState();
 			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
+			_syncManager = new SyncManager(this);
 		}
 
 		/// <summary>

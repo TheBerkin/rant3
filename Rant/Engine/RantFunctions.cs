@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Engine.Metadata;
 using Rant.Engine.Syntax;
@@ -310,6 +311,41 @@ namespace Rant.Engine
 		private static void Rhyme(Sandbox sb, RhymeFlags flags)
 		{
 			sb.QueryState.Rhymer.AllowedRhymes = flags;
+		}
+
+		[RantFunction("sync", "x")]
+		[RantDescription("Creates and applies a synchronizer with the specified name and type.")]
+		private static void Sync(Sandbox sb, string name, SyncType type)
+		{
+			sb.SyncManager.Create(name, type, true);
+		}
+
+		[RantFunction("xpin")]
+		[RantDescription("Pins a synchronizer.")]
+		private static void SyncPin(Sandbox sb, string name)
+		{
+			sb.SyncManager.SetPinned(name, true);
+		}
+
+		[RantFunction("xunpin")]
+		[RantDescription("Pins a synchronizer.")]
+		private static void SyncUnpin(Sandbox sb, string name)
+		{
+			sb.SyncManager.SetPinned(name, false);
+		}
+
+		[RantFunction("xstep")]
+		[RantDescription("Iterates a synchronizer.")]
+		private static void SyncStep(Sandbox sb, string name)
+		{
+			sb.SyncManager.Step(name);
+		}
+
+		[RantFunction]
+		[RantDescription("Resets a synchronizer.")]
+		private static void SyncReset(Sandbox sb, string name)
+		{
+			sb.SyncManager.Reset(name);
 		}
 	}
 }

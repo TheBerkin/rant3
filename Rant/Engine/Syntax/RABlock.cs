@@ -60,7 +60,6 @@ namespace Rant.Engine.Syntax
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			sb.Objects.EnterScope();
 			var attribs = sb.NextAttribs();
 			int next = -1;
 			var block = new BlockState(attribs.Repetitons);
@@ -114,13 +113,15 @@ namespace Rant.Engine.Syntax
 				if (attribs.Before != null) yield return attribs.Before;
 
 				// Content
+				sb.Objects.EnterScope();
 				yield return _items[next];
+				sb.Objects.ExitScope();
 
 				// Affix
 				if (attribs.After != null) yield return attribs.After;
 			}
 			sb.Blocks.Pop();
-			sb.Objects.ExitScope();
+			
 		}
 	}
 }
