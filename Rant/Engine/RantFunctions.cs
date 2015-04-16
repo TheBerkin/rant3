@@ -354,5 +354,16 @@ namespace Rant.Engine
 		{
 			sb.SyncManager.Reset(name);
 		}
+
+		[RantFunction("quote", "q")]
+		[RantDescription("Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
+		private static IEnumerator<RantAction> Quote(Sandbox sb, RantAction quoteAction)
+		{
+			sb.IncreaseQuote();
+			sb.PrintOpeningQuote();
+			yield return quoteAction;
+			sb.PrintClosingQuote();
+			sb.DecreaseQuote();
+		}
 	}
 }

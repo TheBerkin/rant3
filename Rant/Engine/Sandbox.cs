@@ -33,6 +33,7 @@ namespace Rant.Engine
 		private readonly SyncManager _syncManager;
 		
 		private BlockAttribs _blockAttribs = new BlockAttribs();
+		private int _quoteLevel = 0;
 
 		/// <summary>
 		/// Gets the engine instance to which the sandbox is bound.
@@ -148,6 +149,16 @@ namespace Rant.Engine
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
 		public RantOutput PopOutput() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
+
+		public void IncreaseQuote() => _quoteLevel++;
+
+		public void DecreaseQuote() => _quoteLevel--;
+
+		public void PrintOpeningQuote()
+			=> CurrentOutput.Write(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote);
+
+		public void PrintClosingQuote()
+			=> CurrentOutput.Write(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote);
 
 		/// <summary>
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
