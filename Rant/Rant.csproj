@@ -106,6 +106,7 @@
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantUtils.cs" />
     <Compile Include="Stringes\Lexer.cs" />
     <Compile Include="Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />

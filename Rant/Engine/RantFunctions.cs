@@ -36,6 +36,8 @@ namespace Rant.Engine
 			Loaded = true;
 		}
 
+		public static bool FunctionExists(string name) => FunctionTable.ContainsKey(name);
+
 		public static RantFunctionInfo GetFunction(string name)
 		{
 			RantFunctionInfo func;
