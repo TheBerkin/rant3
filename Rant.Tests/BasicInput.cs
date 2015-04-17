@@ -42,7 +42,19 @@ namespace Rant.Tests
             Assert.AreEqual(rant.Do(@"\[Lorem ipsum\]").MainValue, "[Lorem ipsum]");
         }
 
-        [Test]
+		[Test]
+	    public void UnicodeCharacters()
+	    {
+		    Assert.AreEqual("\u2764", rant.Do(@"\u2764").MainValue);
+	    }
+
+		[Test]
+		public void QuantifiedUnicodeCharacters()
+		{
+			Assert.AreEqual(new string('\u2764', 16), rant.Do(@"\16,u2764").MainValue);
+        }
+
+		[Test]
         public void QuantifiedEscapeSequence()
         {
             Assert.AreEqual(rant.Do(@"\24,=").MainValue, "========================");
@@ -52,13 +64,6 @@ namespace Rant.Tests
         public void Whitespace()
         {
             Assert.AreEqual(rant.Do(@"  { \s \s \4,s  }   ").MainValue, "        ");
-        }
-
-        [Test]
-        [ExpectedException(typeof(RantException))]
-        public void Timeout()
-        {
-            rant.Do(@"[?[src][src]]", 0, 5.0);
         }
     }
 }

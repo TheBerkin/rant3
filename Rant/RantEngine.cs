@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Rant.Debugger;
 using Rant.Engine;
-using Rant.Engine.Constructs;
 using Rant.Engine.ObjectModel;
 using Rant.Formats;
 using Rant.Vocabulary;
@@ -17,39 +15,35 @@ namespace Rant
     /// </summary>
     public sealed class RantEngine
     {
-#if EDITOR
-        /// <summary>
-        /// Fired when the interpreter encounters an instruction on a new line.
-        /// </summary>
-        public event EventHandler<LineEventArgs> ActiveLineChanged;
-#endif
+	    static RantEngine()
+	    {
+		    RantFunctions.Load();
+	    }
 
-        /// <summary>
-        /// The maximum stack size allowed for a pattern.
-        /// </summary>
-        public static int MaxStackSize = 64;
+		private static readonly RNG Seeds = new RNG();
+
+		/// <summary>
+		/// The maximum stack size allowed for a pattern.
+		/// </summary>
+		public static int MaxStackSize = 64;
 
         /// <summary>
         /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
         /// </summary>
         public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
         
-        private static readonly RNG Seeds = new RNG();
-
-
-        internal readonly Dictionary<string, Query> GlobalQueryMacros = new Dictionary<string, Query>();
-        internal readonly SubStore Subroutines = new SubStore();
         internal readonly ObjectTable Objects = new ObjectTable();
 
         private readonly NsfwFilter _filter = DefaultNsfwFilter;
-        private Dictionary<string, RantPattern> PackagePatterns; 
+        private Dictionary<string, RantPattern> PackagePatterns;
+		private IRantDictionary _dictionary;
 
-        /// <summary>
-        /// Accesses global variables.
-        /// </summary>
-        /// <param name="name">The name of the variable to access.</param>
-        /// <returns></returns>
-        public RantObject this[string name]
+		/// <summary>
+		/// Accesses global variables.
+		/// </summary>
+		/// <param name="name">The name of the variable to access.</param>
+		/// <returns></returns>
+		public RantObject this[string name]
         {
             get { return Objects[name]; }
             set { Objects[name] = value; }
@@ -64,8 +58,6 @@ namespace Rant
         /// The current formatting settings for the engine.
         /// </summary>
         public RantFormat Format = RantFormat.English;
-
-        private IRantDictionary _dictionary;
 
         /// <summary>
         /// The vocabulary associated with this instance.
@@ -113,7 +105,7 @@ namespace Rant
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
         public RantEngine(IRantDictionary dictionary)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             _dictionary = dictionary;
         }
 
@@ -145,7 +137,7 @@ namespace Rant
         /// <param name="mergeBehavior">The table merging strategy to employ.</param>
         public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
-            if (package == null) throw new ArgumentNullException("package");
+            if (package == null) throw new ArgumentNullException(nameof(package));
 
             var patterns = package.GetPatterns();
             var tables = package.GetTables();
@@ -218,7 +210,7 @@ namespace Rant
             }
         }
 
-        private RantOutput RunVM(VM vm, double timeout)
+        private RantOutput RunVM(Sandbox vm, double timeout)
         {
 #if EDITOR
             EventHandler<LineEventArgs> lineEvent = (sender, e) =>
@@ -250,7 +242,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -262,7 +254,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -275,7 +267,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -288,7 +280,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -301,7 +293,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromString(input), rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit), timeout);
         }
 
         /// <summary>
@@ -314,7 +306,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, RantPattern.FromFile(path), rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit), timeout);
         }
 
         /// <summary>
@@ -326,7 +318,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -339,7 +331,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, input, new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, input, new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -352,7 +344,7 @@ namespace Rant
         /// <returns></returns>
         public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1)
         {
-            return RunVM(new VM(this, input, rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, input, rng, charLimit), timeout);
         }
 
         /// <summary>
@@ -367,7 +359,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new VM(this, PackagePatterns[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, PackagePatterns[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -383,7 +375,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new VM(this, PackagePatterns[patternName], new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, PackagePatterns[patternName], new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -399,7 +391,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new VM(this, PackagePatterns[patternName], rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, PackagePatterns[patternName], rng, charLimit), timeout);
         }
         #endregion
 

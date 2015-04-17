@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 
+using Rant.Engine.Syntax;
+
 namespace Rant.Engine.ObjectModel
 {
 	/// <summary>
@@ -19,6 +21,7 @@ namespace Rant.Engine.ObjectModel
 		private List<RantObject> _list = null;
 		private bool _boolean = false;
 		private RantPattern _pattern = null;
+		private RantAction _action = null;
 
 		/// <summary>
 		/// The type of the object.
@@ -46,6 +49,8 @@ namespace Rant.Engine.ObjectModel
 						return _string;
 					case RantObjectType.List:
 						return _list;
+					case RantObjectType.Action:
+						return _action;
 				}
 				return null;
 			}
@@ -84,6 +89,12 @@ namespace Rant.Engine.ObjectModel
 			_number = num;
 		}
 
+		internal RantObject(RantAction action)
+		{
+			Type = RantObjectType.Action;
+			_action = action;
+		}
+
 		public RantObject(object obj)
 		{
 			if (obj == null) return;
@@ -117,7 +128,11 @@ namespace Rant.Engine.ObjectModel
 			{
 				_pattern = (RantPattern)obj;
 			}
-
+			else if (obj is RantAction)
+			{
+				_action = (RantAction)obj;
+				Type = RantObjectType.Action;
+			}
 		}
 
 		public RantObject ConvertTo(RantObjectType type)
@@ -210,6 +225,7 @@ namespace Rant.Engine.ObjectModel
 				_number = _number,
 				_pattern = _pattern,
 				_string = _string,
+				_action = _action,
 				Type = Type
 			};
 		}

@@ -33,24 +33,25 @@ namespace Rant.Engine.Formatters
         {
             if (String.IsNullOrEmpty(input)) return input;
 
-            // Check for special symbols
-            switch (input.ToLowerInvariant())
-            {
-                case SymbolCodes.EnDash:
-                    return Symbols.EnDash;
-                case SymbolCodes.EmDash:
-                    return Symbols.EmDash;
-                case SymbolCodes.Copyright:
-                    return Symbols.Copyright;
-                case SymbolCodes.RegisteredTM:
-                    return Symbols.RegisteredTM;
-                case SymbolCodes.Trademark:
-                    return Symbols.Trademark;
-                case SymbolCodes.Bullet:
-                    return Symbols.Bullet;
-                case SymbolCodes.Eszett:
-                    return Symbols.Eszett;
-            }
+			// Check for special symbols
+			// TODO: Move symbols to a dictionary
+			switch (input.ToLowerInvariant())
+			{
+				case SymbolCodes.EnDash:
+					return Symbols.EnDash;
+				case SymbolCodes.EmDash:
+					return Symbols.EmDash;
+				case SymbolCodes.Copyright:
+					return Symbols.Copyright;
+				case SymbolCodes.RegisteredTM:
+					return Symbols.RegisteredTM;
+				case SymbolCodes.Trademark:
+					return Symbols.Trademark;
+				case SymbolCodes.Bullet:
+					return Symbols.Bullet;
+				case SymbolCodes.Eszett:
+					return Symbols.Eszett;
+			}
 
             switch (Case)
             {
@@ -71,7 +72,7 @@ namespace Rant.Engine.Formatters
                         _lastChar == '\0'
                         || Char.IsSeparator(_lastChar)
                         || Char.IsWhiteSpace(_lastChar))
-                                                                 || Char.IsPunctuation(_lastChar)
+                        || Char.IsPunctuation(_lastChar)
                         ? m.Value.ToUpper() : m.Value);
                     break;
                 case Case.Sentence:

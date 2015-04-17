@@ -25,6 +25,10 @@
         /// Represents a resizable set of values.
         /// </summary>
         List,
+		/// <summary>
+		/// Represents a VM action.
+		/// </summary>
+		Action,
         /// <summary>
         /// Represents a lack of a value.
         /// </summary>

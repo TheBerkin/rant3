@@ -25,7 +25,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\MainBuild\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -69,7 +69,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,47 +76,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debugger\LineEventArgs.cs" />
-    <Compile Include="Engine\Constructs\Block.cs" />
-    <Compile Include="Engine\Blueprints\AltBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\AnyBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\Blueprint.cs" />
-    <Compile Include="Engine\Blueprints\DelegateBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\MetapatternBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\RepeaterBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\ReplacerBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\SubCallBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
+    <Compile Include="Engine\Constructs\SyncManager.cs" />
+    <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
+    <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\Syntax\RAEscape.cs" />
+    <Compile Include="Engine\Syntax\RAFunction.cs" />
+    <Compile Include="Engine\Delegates\Witchcraft.cs" />
+    <Compile Include="Engine\RantParameter.cs" />
+    <Compile Include="Engine\RantParameterType.cs" />
+    <Compile Include="Engine\RantFunctionAttribute.cs" />
+    <Compile Include="Engine\RantFunctionInfo.cs" />
+    <Compile Include="Engine\RantFunctions.cs" />
+    <Compile Include="Engine\Sandbox.cs" />
+    <Compile Include="Engine\Compiler\RantCompiler.cs" />
+    <Compile Include="Engine\Syntax\RABlock.cs" />
+    <Compile Include="Engine\Syntax\RantAction.cs" />
+    <Compile Include="Engine\Syntax\RAQuery.cs" />
+    <Compile Include="Engine\Syntax\RAReplacer.cs" />
+    <Compile Include="Engine\Syntax\RASequence.cs" />
+    <Compile Include="Engine\Syntax\RASubroutine.cs" />
+    <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\Meta.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\NameMeta.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\EscapeParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\GroupParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\IndexerParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\InfixParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\NameParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\NumberParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\Parselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\StringParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Parselets\VarParselet.cs" />
-    <Compile Include="Engine\ObjectModel\Precedence.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
-    <Compile Include="Engine\ObjectModel\Rave.cs" />
-    <Compile Include="Engine\ObjectModel\RaveParse.cs" />
-    <Compile Include="Engine\ObjectModel\RaveState.cs" />
-    <Compile Include="Engine\ObjectModel\Metas\ValueMeta.cs" />
-    <Compile Include="Engine\ParseMode.cs" />
+    <Compile Include="RantCompilerException.cs" />
+    <Compile Include="Stringes\Lexer.cs" />
+    <Compile Include="Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
-    <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />
     <Compile Include="IO\BitField.cs" />
     <Compile Include="IO\EasyReader.cs" />
@@ -133,11 +125,13 @@
     <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\ClassFilter.cs" />
+    <Compile Include="Vocabulary\ClassFilterRule.cs" />
     <Compile Include="Vocabulary\Diff.cs" />
     <Compile Include="Vocabulary\DoubleMetaphone.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
-    <Compile Include="Vocabulary\RangePredicate.cs" />
+    <Compile Include="Vocabulary\Range.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -146,44 +140,32 @@
     <Compile Include="Engine\Constructs\BlockAttribs.cs" />
     <Compile Include="Formats\IndefiniteArticles.cs" />
     <Compile Include="Formats\IndefiniteArticleRules.cs" />
-    <Compile Include="Engine\VM.cs" />
-    <Compile Include="Engine\VM.Markers.cs" />
-    <Compile Include="Engine\VM.Synchronizers.cs" />
-    <Compile Include="Engine\Functions.cs" />
-    <Compile Include="Engine\VM.Parser.cs" />
     <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
-    <Compile Include="Engine\Constructs\ParamType.cs" />
-    <Compile Include="RantException.cs" />
+    <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
     <Compile Include="RantChannel.cs" />
-    <Compile Include="Engine\ChannelStack.cs" />
+    <Compile Include="Engine\ChannelWriter.cs" />
     <Compile Include="RantChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
     <Compile Include="Engine\Formatters\Numerals.cs" />
     <Compile Include="Vocabulary\Query.cs" />
-    <Compile Include="Engine\Constructs\Repeater.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Engine\Compiler\R.cs" />
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternSource.cs" />
-    <Compile Include="Engine\PatternReader.cs" />
-    <Compile Include="Engine\RantState.cs" />
+    <Compile Include="Engine\TokenReader.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
     <Compile Include="Stringes\Stringe.cs" />
     <Compile Include="Stringes\StringeReader.cs" />
-    <Compile Include="Stringes\LexerRules.cs" />
     <Compile Include="Stringes\Token.cs" />
-    <Compile Include="Engine\Constructs\Subroutine.cs" />
-    <Compile Include="Engine\Constructs\SubStore.cs" />
     <Compile Include="Engine\Constructs\SyncType.cs" />
     <Compile Include="Engine\Constructs\Synchronizer.cs" />
-    <Compile Include="Engine\Constructs\Argument.cs" />
     <Compile Include="Engine\Util.cs" />
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />

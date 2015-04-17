@@ -2,14 +2,10 @@
 
 namespace Rant.Stringes
 {
-    /// <summary>
-    /// Provides information about a character in a stringe.
-    /// </summary>
-#if EDITOR
-    public sealed class Chare
-#else
-    internal sealed class Chare
-#endif
+	/// <summary>
+	/// Represents a charactere, which provides location information on a character taken from a stringe.
+	/// </summary>
+	internal sealed class Chare
     {
         private readonly Stringe _src;
         private readonly char _character;
@@ -17,21 +13,24 @@ namespace Rant.Stringes
         private int _line;
         private int _column;
 
-        public Stringe Source
-        {
-            get { return _src; }
-        }
+        /// <summary>
+        /// The stringe from which the charactere was taken.
+        /// </summary>
+        public Stringe Source => _src;
 
-        public char Character
-        {
-            get { return _character; }
-        }
+        /// <summary>
+        /// The underlying character.
+        /// </summary>
+        public char Character => _character;
 
-        public int Offset
-        {
-            get { return _offset; }
-        }
+        /// <summary>
+        /// The position of the charactere in the stringe.
+        /// </summary>
+        public int Offset => _offset;
 
+        /// <summary>
+        /// The line on which the charactere appears.
+        /// </summary>
         public int Line
         {
             get
@@ -41,6 +40,9 @@ namespace Rant.Stringes
             }
         }
 
+        /// <summary>
+        /// The column on which the charactere appears.
+        /// </summary>
         public int Column
         {
             get
@@ -86,14 +88,20 @@ namespace Rant.Stringes
             _column = col;
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Returns the string representation of the current charactere.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => _character.ToString(CultureInfo.InvariantCulture);
+
+        public static bool operator ==(Chare chare, char c)
         {
-            return _character.ToString(CultureInfo.InvariantCulture);
+            return chare?._character == c;
         }
 
-        public static implicit operator char(Chare chare)
+        public static bool operator !=(Chare chare, char c)
         {
-            return chare._character;
+            return !(chare == c);
         }
     }
 }

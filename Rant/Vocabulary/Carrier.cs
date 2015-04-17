@@ -44,7 +44,7 @@ namespace Rant.Vocabulary
                 return;
             }
             foreach (var value in values) set.Add(value);
-        }
+		}
 
         /// <summary>
         /// Iterates through the current instances's carriers of the specified type.

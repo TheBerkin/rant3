@@ -240,6 +240,13 @@
 		/// var keyword
 		/// </summary>
 		Var,
+		/// <summary>
+		/// .
+		/// <para>
+		/// Used by queries to denote subtypes.
+		/// </para>
+		/// </summary>
+		Subtype,
         /// <summary>
         /// End of file.
         /// </summary>

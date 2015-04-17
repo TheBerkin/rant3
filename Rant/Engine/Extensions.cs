@@ -7,13 +7,14 @@ namespace Rant.Engine
 {
     internal static class Extensions
     {
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong RotL(this ulong data, int times)
         {
             return (data << (times % 64)) | (data >> (64 - (times % 64)));
         }
 
-        
-        public static ulong RotR(this ulong data, int times)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ulong RotR(this ulong data, int times)
         {
             return (data >> (times % 64)) | (data << (64 - (times % 64)));
         }
@@ -31,6 +32,11 @@ namespace Rant.Engine
                 return seed;
             }
         }
+
+	    public static void AddRange<T>(this HashSet<T> hashset, params T[] items)
+	    {
+		    foreach (var item in items) hashset.Add(item);
+	    }
 
         public static T PickWeighted<T>(this IEnumerable<T> collection, RNG rng, Func<T, int> weightSelectionFunc, T defaultValue = default(T))
         {

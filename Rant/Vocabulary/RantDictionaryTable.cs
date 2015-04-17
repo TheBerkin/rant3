@@ -145,23 +145,12 @@ namespace Rant.Vocabulary
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Bad Subtype]";
 
-            var pool =
-                query.Exclusive
-                    ? _entries.Where(
-                        e => e.GetClasses().Any() == query.ClassFilters.Any()
-                        && e.GetClasses().All(
-                            c => query.ClassFilters.Any(
-                                set => set.Any(
-                                    t => t.Item2 == c))))
-                    : _entries.Where(
-                        e => query.ClassFilters.All(
-                            set => set.Any(
-                                t => t.Item1 == e.ContainsClass(t.Item2))));
+            var pool = _entries.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
-            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
+			pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
             if (query.SyllablePredicate != null)
-                pool = pool.Where(e => query.SyllablePredicate(e.Terms[index].SyllableCount));
+                pool = pool.Where(e => query.SyllablePredicate.Test(e.Terms[index].SyllableCount));
 
             if (!pool.Any()) return MissingTerm;
 

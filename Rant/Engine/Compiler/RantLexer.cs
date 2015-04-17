@@ -19,7 +19,7 @@ namespace Rant.Engine.Compiler
 		private const RegexOptions DefaultOptions = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 
 		internal static readonly Regex EscapeRegex = new Regex(@"\\((?<count>\d+((\.\d+)?[kMB])?),)?((?<code>[^u\s\r\n])|u(?<unicode>[0-9a-f]{4}))", DefaultOptions);
-		internal static readonly Regex RegexRegex = new Regex(@"//(.*?[^\\])?//i?", DefaultOptions);
+		internal static readonly Regex RegexRegex = new Regex(@"`((\\[\\`]|.)*?)?`i?", DefaultOptions);
 
 		private static readonly Regex WeightRegex = new Regex(@"\*[ ]*(?<value>\d+(\.\d+)?)[ ]*\*", DefaultOptions);
 		private static readonly Regex WhitespaceRegex = new Regex(@"\s+", DefaultOptions);
@@ -27,9 +27,9 @@ namespace Rant.Engine.Compiler
 		private static readonly Regex CommentRegex = new Regex(@"\s*#.*?(?=[\r\n]|$)", DefaultOptions | RegexOptions.Multiline);
 		private static readonly Regex ConstantLiteralRegex = new Regex(@"""([^""]|"""")*""", DefaultOptions);
 		private static readonly Regex SyllableRangeRegex = new Regex(@"\(\s*(~?\d+|\d+\s*~(\s*\d+)?)\s*\)", DefaultOptions);
-		private static readonly Regex NumberRegex = new Regex(@"-?\d+(\.\d+)?", DefaultOptions);
+		private static readonly Regex NumberRegex = new Regex(@"(?<!\w)-?\d+(\.\d+)?", DefaultOptions);
 
-		internal static readonly LexerRules<R> Rules;
+		internal static readonly Lexer<R> Rules;
 
 		private static Stringe TruncatePadding(Stringe input)
 		{
@@ -39,8 +39,10 @@ namespace Rant.Engine.Compiler
 
 		static RantLexer()
 		{
-			Rules = new LexerRules<R>
+			Rules = new Lexer<R>
 			{
+				{CommentRegex, R.Ignore, 3},
+				{BlackspaceRegex, R.Ignore, 2},
 				{EscapeRegex, R.EscapeSequence},
 				{RegexRegex, R.Regex},
 				{ConstantLiteralRegex, R.ConstantLiteral},
@@ -76,16 +78,15 @@ namespace Rant.Engine.Compiler
 				{"/", R.ForwardSlash},
 				{",", R.Comma},
 				{"var", R.Var},
-				{NumberRegex, R.Number},
+				{".", R.Subtype},
 				//{SyllableRangeRegex, R.RangeLiteral},
-				{WeightRegex, R.Weight},
-				{CommentRegex, R.Ignore, 3},
-				{BlackspaceRegex, R.Ignore, 2},
+				//{WeightRegex, R.Weight},
 				{WhitespaceRegex, R.Whitespace}
 			};
+			Rules.Add(NumberRegex, R.Number, 2);
 			Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
 			Rules.AddEndToken(R.EOF);
-			Rules.IgnoreRules.Add(R.Ignore);
+			Rules.Ignore(R.Ignore);
 		}
 
 		/// <summary>
