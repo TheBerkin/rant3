@@ -19,6 +19,11 @@ namespace Rant.Engine
 		private static readonly Dictionary<string, RantFunctionInfo> FunctionTable = 
 			new Dictionary<string, RantFunctionInfo>(StringComparer.InvariantCultureIgnoreCase);
 
+		static RantFunctions()
+		{
+			Load();
+		}
+
 		internal static void Load()
 		{
 			if (Loaded) return;

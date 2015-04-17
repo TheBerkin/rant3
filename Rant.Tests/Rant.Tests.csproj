@@ -70,6 +70,7 @@
     <Compile Include="Replacers.cs" />
     <Compile Include="Subroutines.cs" />
     <Compile Include="Targets.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
