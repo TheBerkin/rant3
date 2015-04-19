@@ -11,10 +11,10 @@ namespace Rant.Engine.Syntax
 {
 	internal class RAQuery : RantAction
 	{
-		private Query _query;
+		private readonly Query _query;
 
-		public RAQuery(Query query)
-			: base(query.OriginStringe)
+		public RAQuery(Query query, Stringe range)
+			: base(range)
 		{
 			_query = query;
 		}

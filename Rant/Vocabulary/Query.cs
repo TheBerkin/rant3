@@ -42,10 +42,5 @@ namespace Rant.Vocabulary
         /// The regex filters to search by.
         /// </summary>
         public IEnumerable<_<bool, Regex>> RegexFilters { get; set; }
-
-		/// <summary>
-		/// The origin stringe of the query.
-		/// </summary>
-		internal Rant.Stringes.Stringe OriginStringe { get; set; }
 	}
 }

@@ -269,7 +269,6 @@ namespace Rant.Engine.Compiler
 							ClassFilter = new ClassFilter(),
 							RegexFilters = new List<_<bool, Regex>>(),
 							Carrier = new Carrier(),
-							OriginStringe = name,
 							Name = name?.Value
 						};
 						var exclusivity = _reader.PeekToken();
@@ -475,7 +474,7 @@ namespace Rant.Engine.Compiler
 					// end of queries
 					case R.RightAngle:
 						if (type != ReadType.Query && type != ReadType.QueryCarrier) goto default;
-						return new RAQuery(_query);
+						return new RAQuery(_query, Stringe.Between(fromToken, token));
 
 					// Plain text
 					case R.Whitespace:
