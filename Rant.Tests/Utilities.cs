@@ -11,5 +11,11 @@ namespace Rant.Tests
 			Assert.IsTrue(RantUtils.FunctionExists("rep")); // Inherited function name
 			Assert.IsTrue(RantUtils.FunctionExists("x"));	// Alias
 		}
+
+		[Test]
+		public void FunctionDescription()
+		{
+			Assert.AreEqual("Sets the repetition count for the next block.", RantUtils.GetFunctionDescription("rep"));
+		}
 	}
 }

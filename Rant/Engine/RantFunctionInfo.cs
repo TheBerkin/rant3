@@ -14,16 +14,15 @@ namespace Rant.Engine
 	/// </summary>
 	internal class RantFunctionInfo
 	{
-		private readonly string _name;
 		private readonly Witchcraft _delegate;
-		private readonly int _argc;
 		private readonly RantParameter[] _params;
 
 		public RantParameter[] Parameters => _params;
 
-		public string Name => _name;
+		public string Name { get; }
+		public string Description { get; }
 
-		public RantFunctionInfo(string name, MethodInfo method)
+		public RantFunctionInfo(string name, string description, MethodInfo method)
 		{
 			// Sanity checks
 			if (method == null) throw new ArgumentNullException(nameof(method));
@@ -36,8 +35,7 @@ namespace Rant.Engine
 				throw new ArgumentException($"({method.Name}) The first parameter must be of type '{typeof(Sandbox)}'.");
 
 			// Sort out the parameter types for the function
-			_argc = parameters.Length - 1;
-			_params = new RantParameter[_argc];
+			_params = new RantParameter[parameters.Length - 1];
 			Type type;
 			RantParameterType rantType;
 			for (int i = 1; i < parameters.Length; i++)
@@ -70,8 +68,9 @@ namespace Rant.Engine
 				// Create Rant parameter
 				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType);
 			}
-			_name = name;
 			_delegate = Witchcraft.Create(method);
+			Name = name;
+			Description = description;
 		}
 
 		public IEnumerator<RantAction> Invoke(Sandbox sb, object[] arguments)

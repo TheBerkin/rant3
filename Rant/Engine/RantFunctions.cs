@@ -33,7 +33,8 @@ namespace Rant.Engine
 				var attr = method.GetCustomAttributes().OfType<RantFunctionAttribute>().FirstOrDefault();
 				if (attr == null) continue;
 				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
-				var info = new RantFunctionInfo(name, method);
+				var descAttr = method.GetCustomAttributes().OfType<RantDescriptionAttribute>().FirstOrDefault();
+				var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
 				if (Util.ValidateName(name)) FunctionTable[name] = info;
 				foreach(var alias in attr.Aliases.Where(Util.ValidateName))
 					FunctionTable[alias] = info;
@@ -42,6 +43,10 @@ namespace Rant.Engine
 		}
 
 		public static bool FunctionExists(string name) => FunctionTable.ContainsKey(name);
+
+		public static IEnumerable<string> GetFunctionNames() => FunctionTable.Select(item => item.Key);
+
+		public static string GetFunctionDescription(string funcName) => GetFunction(funcName)?.Description ?? String.Empty;
 
 		public static RantFunctionInfo GetFunction(string name)
 		{

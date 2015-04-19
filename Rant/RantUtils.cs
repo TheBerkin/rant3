@@ -1,4 +1,6 @@
-﻿using Rant.Engine;
+﻿using System.Collections.Generic;
+
+using Rant.Engine;
 
 namespace Rant
 {
@@ -16,5 +18,18 @@ namespace Rant
 		{
 			return RantFunctions.FunctionExists(functionName);
 		}
+
+		/// <summary>
+		/// Enumerates the names of all available Rant functions.
+		/// </summary>
+		/// <returns></returns>
+		public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
+
+		/// <summary>
+		/// Returns the description for the function with the specified name.
+		/// </summary>
+		/// <param name="functionName">The name of the function to get the description for.</param>
+		/// <returns></returns>
+		public static string GetFunctionDescription(string functionName) => RantFunctions.GetFunctionDescription(functionName);
 	}
 }
