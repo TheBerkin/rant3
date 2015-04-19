@@ -391,5 +391,19 @@ namespace Rant.Engine
 		{
 			sb.CurrentOutput.CloseChannel(channelName);
 		}
+
+		[RantFunction("target", "t")]
+		[RantDescription("Places a target with the specified name at the current write position.")]
+		private static void Target(Sandbox sb, string targetName)
+		{
+			sb.CurrentOutput.CreateTarget(targetName);
+		}
+
+		[RantFunction]
+		[RantDescription("Writes a string to the specified target.")]
+		private static void Send(Sandbox sb, string targetName, string value)
+		{
+			sb.CurrentOutput.WriteToTarget(targetName, value);
+		}
 	}
 }
