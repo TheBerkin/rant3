@@ -128,5 +128,12 @@ namespace Rant.Tests.Compiler
 		{
 			RantPattern.FromString(@"[[rep:10]");
 		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		public void MissingReplacerArgument()
+		{
+			RantPattern.FromString(@"[`\s*`:this is a test]");
+		}
 	}
 }

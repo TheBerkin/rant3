@@ -105,7 +105,6 @@ namespace Rant
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
         public RantEngine(IRantDictionary dictionary)
         {
-            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             _dictionary = dictionary;
         }
 
