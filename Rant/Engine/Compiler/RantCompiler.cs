@@ -264,7 +264,9 @@ namespace Rant.Engine.Compiler
 						Stringe name = null;
 						if (_reader.PeekToken().ID != R.DoubleColon)
 							name = _reader.ReadLoose(R.Text);
-						_query = new Query
+						if (name != null && (string.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
+							SyntaxError(token, "Invalid table name in query.");
+                        _query = new Query
 						{
 							ClassFilter = new ClassFilter(),
 							RegexFilters = new List<_<bool, Regex>>(),
@@ -301,11 +303,12 @@ namespace Rant.Engine.Compiler
 					}
 						break;
 					// query regex filters
+					case R.Without:
 					case R.Question:
 					{
 						if (type != ReadType.Query) goto default;
-						bool negative = _reader.Take(R.Exclamation);
-						var regexToken = _reader.Read(R.Regex, "regex");
+						bool negative = token.ID == R.Without;
+						var regexToken = _reader.ReadLoose(R.Regex, "regex");
 						((List<_<bool, Regex>>)_query.RegexFilters)
 							.Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
 						break;
@@ -473,7 +476,11 @@ namespace Rant.Engine.Compiler
 						break;
 					// end of queries
 					case R.RightAngle:
-						if (type != ReadType.Query && type != ReadType.QueryCarrier) goto default;
+						if (type != ReadType.Query && type != ReadType.QueryCarrier)
+							SyntaxError(token, "Unexpected query terminator.");
+						if (_query.Name == null && _query.Carrier.GetTotalCount() == 0)
+							SyntaxError(token, "Carrier delete query specified without any carriers.");
+
 						return new RAQuery(_query, Stringe.Between(fromToken, token));
 
 					// Plain text

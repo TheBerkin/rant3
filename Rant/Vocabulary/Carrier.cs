@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rant.Vocabulary
@@ -59,6 +60,18 @@ namespace Rant.Vocabulary
             {
                 yield return value;
             }
+        }
+
+		/// <summary>
+		/// Retreives the total amount of all components.
+		/// </summary>
+		/// <returns>The total amount of all components.</returns>
+		public int GetTotalCount()
+		{
+			int count = 0;
+			foreach (CarrierComponent component in Enum.GetValues(typeof(CarrierComponent)))
+				count += GetTypeCount(component);
+			return count;
         }
     }
 }
