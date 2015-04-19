@@ -187,6 +187,8 @@ namespace Rant.Engine.Compiler
 								return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
 							}
 							case ReadType.ReplacerArgs:
+								if (sequences.Count != 2)
+									SyntaxError(Stringe.Between(token, fromToken), "Replacer must have two arguments.");
 								return new RAReplacer(Stringe.Range(fromToken, token),
 									_regexes.Pop(), sequences[0], sequences[1]);
 							case ReadType.SubroutineArgs:
