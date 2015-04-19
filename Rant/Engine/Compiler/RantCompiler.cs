@@ -109,109 +109,137 @@ namespace Rant.Engine.Compiler
 						break;
 
 					case R.LeftSquare:
-					{
-						var tagToken = _reader.ReadToken();
-						switch (tagToken.ID)
 						{
-							case R.Text:
+							var tagToken = _reader.ReadToken();
+							switch (tagToken.ID)
 							{
-								string name = tagToken.Value;
-								var func = RantFunctions.GetFunction(name);
-								if (func == null)
-									SyntaxError(tagToken, $"Unknown function: '{name}'");
-								var argList = new List<RantAction>();
-								if (_reader.TakeLoose(R.Colon))
-								{
-									_funcCalls.Push(func);
-									actions.Add(Read(ReadType.FuncArgs, token));
-								}
-								else
-								{
-									var end = _reader.Read(R.RightSquare);
-									VerifyArgCount(func, 0, token, end);
-									actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
-								}
-								break;
+								case R.Text:
+									{
+										string name = tagToken.Value;
+										var func = RantFunctions.GetFunction(name);
+										if (func == null)
+											SyntaxError(tagToken, $"Unknown function: '{name}'");
+										var argList = new List<RantAction>();
+										if (_reader.TakeLoose(R.Colon))
+										{
+											_funcCalls.Push(func);
+											actions.Add(Read(ReadType.FuncArgs, token));
+										}
+										else
+										{
+											var end = _reader.Read(R.RightSquare);
+											VerifyArgCount(func, 0, token, end);
+											actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
+										}
+										break;
+									}
+								case R.Regex:
+									{
+										try
+										{
+											_regexes.Push(Util.ParseRegex(tagToken.Value));
+										}
+										catch (Exception e)
+										{
+											SyntaxError(tagToken, e);
+										}
+										_reader.ReadLoose(R.Colon);
+										actions.Add(Read(ReadType.ReplacerArgs, token));
+										break;
+									}
+								case R.Dollar:
+									{
+										bool call = false;
+										var nextToken = _reader.ReadToken();
+										// if the first token isn't a square, it's the name of the subroutine call
+										if (nextToken.ID != R.LeftSquare)
+											call = true;
+										// read the name for the subroutine definition
+										else
+											nextToken = _reader.Read(R.Text, "subroutine name");
+										// if there's a token here, there's args
+										var hasArgs = _reader.Take(R.Colon);
+										if (call)
+										{
+											_subroutines.Push(new RACallSubroutine(nextToken));
+											actions.Add(Read(ReadType.SubroutineArgs, token));
+											break;
+										}
+										// this is a subroutine definition
+										var subroutine = new RADefineSubroutine(nextToken);
+										subroutine.Parameters = new Dictionary<string, SubroutineParameterType>();
+										// read all the args
+										// right now we're at [$[name: or [$[name
+										while (hasArgs && !_reader.End)
+										{
+											var nameToken = _reader.ReadLooseToken();
+											if (nameToken.ID == R.Text)
+												subroutine.Parameters.Add(nameToken.Value, SubroutineParameterType.Greedy);
+											else if (nameToken.ID == R.At)
+											{
+												nameToken = _reader.ReadLoose(R.Text);
+												subroutine.Parameters.Add(nameToken.Value, SubroutineParameterType.Loose);
+											}
+											else
+												SyntaxError(nameToken, "Expected subroutine parameter.");
+											nextToken = _reader.ReadLooseToken();
+											if (nextToken.ID == R.Semicolon)
+												continue;
+											if (nextToken.ID == R.RightSquare)
+												break;
+											SyntaxError(nextToken, "Unexpected token in subroutine parameter definition.");
+										}
+										// if there's no args, we need to get rid of the right square before the body
+										if(!hasArgs)
+											_reader.ReadLoose(R.RightSquare);
+										// start reading the body
+										_reader.ReadLoose(R.Colon);
+										subroutine.Body = Read(ReadType.SubroutineBody, token);
+										actions.Add(subroutine);
+										break;
+									}
+								default:
+									SyntaxError(tagToken, "Expected function name, subroutine, or regex.");
+									break;
 							}
-							case R.Regex:
-							{
-								try
-								{
-									_regexes.Push(Util.ParseRegex(tagToken.Value));
-								}
-								catch (Exception e)
-								{
-									SyntaxError(tagToken, e);
-								}
-								_reader.ReadLoose(R.Colon);
-								actions.Add(Read(ReadType.ReplacerArgs, token));
-								break;
-							}
-							case R.Dollar:
-							{
-								bool call = false;
-								var nextToken = _reader.ReadToken();
-								if (nextToken.ID != R.LeftSquare)
-									call = true;
-								else
-									nextToken = _reader.Read(R.Text, "subroutine name");
-								_reader.Take(R.Colon);
-								_subroutines.Push(new RASubroutine(nextToken) { IsCall = call });
-								actions.Add(Read(ReadType.SubroutineArgs, token));
-								break;
-							}
-							default:
-								SyntaxError(tagToken, "Expected function name, subroutine, or regex.");
-								break;
+							break;
 						}
-						break;
-					}
 
 					case R.RightSquare:
-					{
-						if (
-							!(type == ReadType.FuncArgs || type == ReadType.ReplacerArgs || type == ReadType.SubroutineBody ||
-							  type == ReadType.SubroutineArgs))
-							Unexpected(token);
-						// Add item to args
-						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, token));
-						switch (type)
 						{
-							case ReadType.SubroutineBody:
-								return new RASequence(sequences, token);
-							case ReadType.FuncArgs:
+							if (
+								!(type == ReadType.FuncArgs || type == ReadType.ReplacerArgs || type == ReadType.SubroutineBody ||
+								  type == ReadType.SubroutineArgs))
+								Unexpected(token);
+							// Add item to args
+							sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, token));
+							switch (type)
 							{
-								var func = _funcCalls.Pop();
-								VerifyArgCount(func, sequences.Count, fromToken, token);
-								// TODO: Add support for function overloads
-								return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
+								case ReadType.SubroutineBody:
+									return new RASequence(sequences, token);
+								case ReadType.FuncArgs:
+									{
+										var func = _funcCalls.Pop();
+										VerifyArgCount(func, sequences.Count, fromToken, token);
+										// TODO: Add support for function overloads
+										return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
+									}
+								case ReadType.ReplacerArgs:
+									if (sequences.Count != 2)
+										SyntaxError(Stringe.Between(token, fromToken), "Replacer must have two arguments.");
+									return new RAReplacer(Stringe.Range(fromToken, token),
+										_regexes.Pop(), sequences[0], sequences[1]);
+								case ReadType.SubroutineArgs:
+									var subroutine = _subroutines.Peek();
+									subroutine.Arguments = sequences
+										// filter out empty sequences
+										.Where(x => !(x is RASequence && (x as RASequence).Actions.Count == 0)).ToList();
+									if (subroutine is RACallSubroutine)
+										return _subroutines.Pop();
+									break;
 							}
-							case ReadType.ReplacerArgs:
-								if (sequences.Count != 2)
-									SyntaxError(Stringe.Between(token, fromToken), "Replacer must have two arguments.");
-								return new RAReplacer(Stringe.Range(fromToken, token),
-									_regexes.Pop(), sequences[0], sequences[1]);
-							case ReadType.SubroutineArgs:
-								var subroutine = _subroutines.Peek();
-								subroutine.Parameters = sequences
-									// filter out empty sequences
-									.Where(x => !(x is RASequence && (x as RASequence).Actions.Count == 0)).ToList();
-								if (subroutine.IsCall)
-									return _subroutines.Pop();
-								// verify that every entry in sequences is a text action
-								// i don't know how to do this better ok
-								foreach (RantAction action in subroutine.Parameters)
-									if (!(action is RAText))
-										SyntaxError(token, "Subroutine argument names may only be text.");
-								// seriously there needs to be a better way of converting the tokens to names
-								var nextToken = _reader.ReadToken();
-								if (nextToken.ID != R.Colon)
-									SyntaxError(nextToken, "Expected subroutine body.");
-								subroutine.Body = Read(ReadType.SubroutineBody, nextToken);
-								return _subroutines.Pop();
+							break;
 						}
-						break;
-					}
 
 					// Argument separator
 					case R.Semicolon:
@@ -260,219 +288,219 @@ namespace Rant.Engine.Compiler
 						break;
 					//queries
 					case R.LeftAngle:
-					{
-						Stringe name = null;
-						if (_reader.PeekToken().ID != R.DoubleColon)
-							name = _reader.ReadLoose(R.Text);
-						if (name != null && (string.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
-							SyntaxError(token, "Invalid table name in query.");
-                        _query = new Query
 						{
-							ClassFilter = new ClassFilter(),
-							RegexFilters = new List<_<bool, Regex>>(),
-							Carrier = new Carrier(),
-							Name = name?.Value
-						};
-						var exclusivity = _reader.PeekToken();
-						if (exclusivity.ID == R.Dollar)
-						{
-							_query.Exclusive = true;
-							_reader.ReadToken();
+							Stringe name = null;
+							if (_reader.PeekToken().ID != R.DoubleColon)
+								name = _reader.ReadLoose(R.Text);
+							if (name != null && (string.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
+								SyntaxError(token, "Invalid table name in query.");
+							_query = new Query
+							{
+								ClassFilter = new ClassFilter(),
+								RegexFilters = new List<_<bool, Regex>>(),
+								Carrier = new Carrier(),
+								Name = name?.Value
+							};
+							var exclusivity = _reader.PeekToken();
+							if (exclusivity.ID == R.Dollar)
+							{
+								_query.Exclusive = true;
+								_reader.ReadToken();
+							}
+							actions.Add(Read(ReadType.Query, token));
 						}
-						actions.Add(Read(ReadType.Query, token));
-					}
 						break;
 					// query subtypes
 					case R.Subtype:
-					{
-						if (type != ReadType.Query) goto default;
-						var subtype = _reader.ReadLoose(R.Text);
-						_query.Subtype = subtype.Value;
-					}
+						{
+							if (type != ReadType.Query) goto default;
+							var subtype = _reader.ReadLoose(R.Text);
+							_query.Subtype = subtype.Value;
+						}
 						break;
 					// query filters
 					case R.Hyphen:
-					{
-						if (type != ReadType.Query) goto default;
-						bool negative = _reader.Take(R.Exclamation);
-						if (_query.Exclusive && negative)
-							throw new RantCompilerException(_sourceName, token,
-								"You can't define a negative class filter in an exclusive query.");
-						var className = _reader.ReadLoose(R.Text);
-						_query.ClassFilter.AddRuleSwitch(new ClassFilterRule(className.Value, !negative));
-					}
+						{
+							if (type != ReadType.Query) goto default;
+							bool negative = _reader.Take(R.Exclamation);
+							if (_query.Exclusive && negative)
+								throw new RantCompilerException(_sourceName, token,
+									"You can't define a negative class filter in an exclusive query.");
+							var className = _reader.ReadLoose(R.Text);
+							_query.ClassFilter.AddRuleSwitch(new ClassFilterRule(className.Value, !negative));
+						}
 						break;
 					// query regex filters
 					case R.Without:
 					case R.Question:
-					{
-						if (type != ReadType.Query) goto default;
-						bool negative = token.ID == R.Without;
-						var regexToken = _reader.ReadLoose(R.Regex, "regex");
-						((List<_<bool, Regex>>)_query.RegexFilters)
-							.Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
-						break;
-					}
-						
-					// syllable range, block weight
-					case R.LeftParen:
-					{
-						// Block weight
-						if (type == ReadType.Block && !actions.Any())
 						{
-							if (constantWeights == null) constantWeights = new List<_<int, double>>();
-							if (dynamicWeights == null) dynamicWeights = new List<_<int, RantAction>>();
-							var weightAction = Read(ReadType.BlockWeight, token);
-							if (weightAction is RAText) // Constant
-							{
-								var strWeight = (weightAction as RAText).Text;
-								double d;
-								int i;
-								if (!Double.TryParse(strWeight, out d))
-								{
-									if (Util.ParseInt(strWeight, out i))
-									{
-										d = i;
-									}
-									else
-									{
-										SyntaxError(weightAction.Range,
-											$"Invalid weight value '{strWeight}' - constant must be a number.");
-									}
-								}
-								if (d < 0)
-									SyntaxError(weightAction.Range, 
-										$"Invalid weight value '{strWeight}' - constant cannot be negative.");
-
-								constantWeights.Add(_.Create(sequences.Count, d));
-							}
-							else // Dynamic
-							{
-								dynamicWeights.Add(_.Create(sequences.Count, weightAction));
-							}
+							if (type != ReadType.Query) goto default;
+							bool negative = token.ID == R.Without;
+							var regexToken = _reader.ReadLoose(R.Regex, "regex");
+							((List<_<bool, Regex>>)_query.RegexFilters)
+								.Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
 							break;
 						}
 
-						if (type != ReadType.Query) goto default;
-						var nextToken = _reader.ReadToken();
-						int firstNumber = -1;
-						int secondNumber = -1;
-						var range = new Range(null, null);
-						if (nextToken.ID == R.Number)
+					// syllable range, block weight
+					case R.LeftParen:
 						{
-							Util.ParseInt(nextToken.Value, out firstNumber);
-							nextToken = _reader.ReadToken();
-						}
-						if (nextToken.ID == R.Hyphen)
-						{
-							var number = _reader.ReadToken();
-							// (num - num)
-							if (number.ID == R.Number)
+							// Block weight
+							if (type == ReadType.Block && !actions.Any())
 							{
-								Util.ParseInt(number.Value, out secondNumber);
-								range.Minimum = firstNumber;
-								range.Maximum = secondNumber;
+								if (constantWeights == null) constantWeights = new List<_<int, double>>();
+								if (dynamicWeights == null) dynamicWeights = new List<_<int, RantAction>>();
+								var weightAction = Read(ReadType.BlockWeight, token);
+								if (weightAction is RAText)	// Constant
+								{
+									var strWeight = (weightAction as RAText).Text;
+									double d;
+									int i;
+									if (!Double.TryParse(strWeight, out d))
+									{
+										if (Util.ParseInt(strWeight, out i))
+										{
+											d = i;
+										}
+										else
+										{
+											SyntaxError(weightAction.Range,
+												$"Invalid weight value '{strWeight}' - constant must be a number.");
+										}
+									}
+									if (d < 0)
+										SyntaxError(weightAction.Range,
+											$"Invalid weight value '{strWeight}' - constant cannot be negative.");
+
+									constantWeights.Add(_.Create(sequences.Count, d));
+								}
+								else // Dynamic
+								{
+									dynamicWeights.Add(_.Create(sequences.Count, weightAction));
+								}
+								break;
 							}
-							// (num -)
-							else if (number.ID == R.RightParen && firstNumber != -1)
-								range.Minimum = firstNumber;
+
+							if (type != ReadType.Query) goto default;
+							var nextToken = _reader.ReadToken();
+							int firstNumber = -1;
+							int secondNumber = -1;
+							var range = new Range(null, null);
+							if (nextToken.ID == R.Number)
+							{
+								Util.ParseInt(nextToken.Value, out firstNumber);
+								nextToken = _reader.ReadToken();
+							}
+							if (nextToken.ID == R.Hyphen)
+							{
+								var number = _reader.ReadToken();
+								// (num - num)
+								if (number.ID == R.Number)
+								{
+									Util.ParseInt(number.Value, out secondNumber);
+									range.Minimum = firstNumber;
+									range.Maximum = secondNumber;
+								}
+								// (num -)
+								else if (number.ID == R.RightParen && firstNumber != -1)
+									range.Minimum = firstNumber;
+							}
+							// (- num), interpreted as -num
+							else if (firstNumber < 0)
+								range.Maximum = Math.Abs(firstNumber);
+							// (num)
+							else if (firstNumber != -1)
+								range.Maximum = range.Minimum = firstNumber;
+							if (range.Minimum == null && range.Maximum == null)
+								throw new RantCompilerException(_sourceName, token, "Unknown syllable range syntax.");
+							_query.SyllablePredicate = range;
+							break;
 						}
-						// (- num), interpreted as -num
-						else if (firstNumber < 0)
-							range.Maximum = Math.Abs(firstNumber);
-						// (num)
-						else if (firstNumber != -1)
-							range.Maximum = range.Minimum = firstNumber;
-						if (range.Minimum == null && range.Maximum == null)
-							throw new RantCompilerException(_sourceName, token, "Unknown syllable range syntax.");
-						_query.SyllablePredicate = range;
-						break;
-					}
 
 					case R.RightParen:
-					{
-						if (type != ReadType.BlockWeight) goto default;
-						_reader.SkipSpace();
-						if (!actions.Any()) SyntaxError(token, "Expected weight value.");
-						return actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions, token);
-					}
-						
+						{
+							if (type != ReadType.BlockWeight) goto default;
+							_reader.SkipSpace();
+							if (!actions.Any()) SyntaxError(token, "Expected weight value.");
+							return actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions, token);
+						}
+
 					// query carriers
 					case R.DoubleColon:
-					{
-						if (type != ReadType.Query) goto default;
-						return Read(ReadType.QueryCarrier, token);
-					}
+						{
+							if (type != ReadType.Query) goto default;
+							return Read(ReadType.QueryCarrier, token);
+						}
 					// match carrier
 					case R.Equal:
-					{
-						if (type != ReadType.QueryCarrier) goto default;
-						var name = _reader.ReadLoose(R.Text);
-						_query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
-					}
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							var name = _reader.ReadLoose(R.Text);
+							_query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
+						}
 						break;
 					// associative, disassociative, divergent, relational, or the match versions of those
 					case R.At:
-					{
-						if (type != ReadType.QueryCarrier) goto default;
-						// 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
-						var componentType = CarrierComponent.Associative;
-						var nextToken = _reader.PeekToken();
-						// disassociative
-						switch (nextToken.ID)
 						{
-							case R.Exclamation:
-								componentType = CarrierComponent.Dissociative;
+							if (type != ReadType.QueryCarrier) goto default;
+							// 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
+							var componentType = CarrierComponent.Associative;
+							var nextToken = _reader.PeekToken();
+							// disassociative
+							switch (nextToken.ID)
+							{
+								case R.Exclamation:
+									componentType = CarrierComponent.Dissociative;
+									_reader.ReadToken();
+									break;
+								case R.Plus:
+									componentType = CarrierComponent.Divergent;
+									_reader.ReadToken();
+									break;
+								case R.Question:
+									componentType = CarrierComponent.Relational;
+									_reader.ReadToken();
+									break;
+							}
+							// match
+							if (_reader.PeekToken().ID == R.Equal)
+							{
 								_reader.ReadToken();
-								break;
-							case R.Plus:
-								componentType = CarrierComponent.Divergent;
-								_reader.ReadToken();
-								break;
-							case R.Question:
-								componentType = CarrierComponent.Relational;
-								_reader.ReadToken();
-								break;
+								if (componentType == CarrierComponent.Associative)
+									componentType = CarrierComponent.MatchAssociative;
+								if (componentType == CarrierComponent.Dissociative)
+									componentType = CarrierComponent.MatchDissociative;
+								if (componentType == CarrierComponent.Divergent)
+									componentType = CarrierComponent.MatchDivergent;
+								if (componentType == CarrierComponent.Relational)
+									componentType = CarrierComponent.MatchRelational;
+							}
+							var name = _reader.ReadLoose(R.Text).Value;
+							_query.Carrier.AddComponent(componentType, name);
 						}
-						// match
-						if (_reader.PeekToken().ID == R.Equal)
-						{
-							_reader.ReadToken();
-							if (componentType == CarrierComponent.Associative)
-								componentType = CarrierComponent.MatchAssociative;
-							if (componentType == CarrierComponent.Dissociative)
-								componentType = CarrierComponent.MatchDissociative;
-							if (componentType == CarrierComponent.Divergent)
-								componentType = CarrierComponent.MatchDivergent;
-							if (componentType == CarrierComponent.Relational)
-								componentType = CarrierComponent.MatchRelational;
-						}
-						var name = _reader.ReadLoose(R.Text).Value;
-						_query.Carrier.AddComponent(componentType, name);
-					}
 						break;
 					// unique or match-unique
 					case R.Exclamation:
-					{
-						if (type != ReadType.QueryCarrier) goto default;
-						bool match = false;
-						if (_reader.PeekToken().ID == R.Equal)
 						{
-							match = true;
-							_reader.ReadToken();
+							if (type != ReadType.QueryCarrier) goto default;
+							bool match = false;
+							if (_reader.PeekToken().ID == R.Equal)
+							{
+								match = true;
+								_reader.ReadToken();
+							}
+							var name = _reader.ReadLoose(R.Text).Value;
+							var componentType = (match ? CarrierComponent.MatchUnique : CarrierComponent.Unique);
+							_query.Carrier.AddComponent(componentType, name);
 						}
-						var name = _reader.ReadLoose(R.Text).Value;
-						var componentType = (match ? CarrierComponent.MatchUnique : CarrierComponent.Unique);
-						_query.Carrier.AddComponent(componentType, name);
-					}
 						break;
 					// rhyme
 					case R.Ampersand:
-					{
-						if (type != ReadType.QueryCarrier) goto default;
-						var name = _reader.ReadLoose(R.Text).Value;
-						_query.Carrier.AddComponent(CarrierComponent.Rhyme, name);
-					}
+						{
+							if (type != ReadType.QueryCarrier) goto default;
+							var name = _reader.ReadLoose(R.Text).Value;
+							_query.Carrier.AddComponent(CarrierComponent.Rhyme, name);
+						}
 						break;
 					// end of queries
 					case R.RightAngle:
@@ -485,30 +513,30 @@ namespace Rant.Engine.Compiler
 
 					// Plain text
 					case R.Whitespace:
-					{
-						switch (_reader.PeekType())
 						{
-							case R.EOF:
-							case R.RightSquare:
-							case R.RightAngle:
-							case R.RightCurly:
-								continue;
-							case R.Pipe:
-								if (type == ReadType.Block) continue;
-								break;
-							case R.Semicolon:
-								switch (type)
-								{
-									case ReadType.FuncArgs:
-									case ReadType.ReplacerArgs:
-									case ReadType.SubroutineArgs:
-										continue;
-								}
-								break;
+							switch (_reader.PeekType())
+							{
+								case R.EOF:
+								case R.RightSquare:
+								case R.RightAngle:
+								case R.RightCurly:
+									continue;
+								case R.Pipe:
+									if (type == ReadType.Block) continue;
+									break;
+								case R.Semicolon:
+									switch (type)
+									{
+										case ReadType.FuncArgs:
+										case ReadType.ReplacerArgs:
+										case ReadType.SubroutineArgs:
+											continue;
+									}
+									break;
+							}
+							actions.Add(new RAText(token));
+							break;
 						}
-						actions.Add(new RAText(token));
-						break;
-					}
 					default:
 						actions.Add(new RAText(token));
 						break;

@@ -79,6 +79,7 @@
     <Compile Include="Engine\Constructs\SyncManager.cs" />
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\Syntax\RADefineSubroutine.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />
     <Compile Include="Engine\Delegates\Witchcraft.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Engine\Syntax\RAQuery.cs" />
     <Compile Include="Engine\Syntax\RAReplacer.cs" />
     <Compile Include="Engine\Syntax\RASequence.cs" />
+    <Compile Include="Engine\Syntax\RACallSubroutine.cs" />
     <Compile Include="Engine\Syntax\RASubroutine.cs" />
     <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />

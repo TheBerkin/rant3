@@ -193,6 +193,16 @@ namespace Rant.Engine
             SkipSpace();
             return t;
         }
+
+		public Token<R> ReadLooseToken()
+		{
+			if (End)
+				throw new RantCompilerException(_sourceName, null, "Expected token, but hit end of file.");
+			SkipSpace();
+			var token = _tokens[_pos++];
+			SkipSpace();
+			return token;
+		}
         
         public bool TakeAllUntil(R takeType, R untilType, bool allowEof = true)
         {
