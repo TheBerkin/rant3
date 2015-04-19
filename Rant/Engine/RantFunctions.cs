@@ -377,5 +377,19 @@ namespace Rant.Engine
 			sb.PrintClosingQuote();
 			sb.DecreaseQuote();
 		}
+
+		[RantFunction]
+		[RantDescription("Opens a new output channel with the specified name and visibility.")]
+		private static void Open(Sandbox sb, string channelName, RantChannelVisibility visibility)
+		{
+			sb.CurrentOutput.OpenChannel(channelName, visibility, sb.Format);
+		}
+
+		[RantFunction]
+		[RantDescription("Closes the output channel with the specified name.")]
+		private static void Close(Sandbox sb, string channelName)
+		{
+			sb.CurrentOutput.CloseChannel(channelName);
+		}
 	}
 }

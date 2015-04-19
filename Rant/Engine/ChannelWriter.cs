@@ -59,7 +59,7 @@ namespace Rant.Engine
             return !_channels.TryGetValue(channelName, out channel) ? "" : channel.Value;
         }
 
-        public void PushChannel(string channelName, RantChannelVisibility visibility, RantFormat formatStyle)
+        public void OpenChannel(string channelName, RantChannelVisibility visibility, RantFormat formatStyle)
         {   
             RantChannel ch;
             if (!_channels.TryGetValue(channelName, out ch))
@@ -77,7 +77,7 @@ namespace Rant.Engine
             _stackSize++;
         }
 
-        public void PopChannel(string channelName)
+        public void CloseChannel(string channelName)
         {
             if (channelName == "main") return;
 

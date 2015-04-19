@@ -103,7 +103,7 @@ namespace RantConsole
 						if (Flag("main")) continue;
 						if (!writeToFile)
 						{
-							ForegroundColor = ConsoleColor.DarkGray;
+							ForegroundColor = ConsoleColor.DarkCyan;
 							WriteLine($"{chan.Name} ({chan.Visiblity}):");
 							ResetColor();
 						}
@@ -128,11 +128,11 @@ namespace RantConsole
 						if (pattern.Type != RantPatternSource.File) WriteLine("[Empty]");
 					}
 					ResetColor();
+					WriteLine();
 				}
 
 				if ((pattern.Type != RantPatternSource.File || Flag("wait")) && !Flag("nostats"))
 				{
-					WriteLine();
 					PrintStats(
 						new Stat("Seed", 
 						$"{output.Seed:X16}{(output.BaseGeneration != 0 ? ":" + output.BaseGeneration : String.Empty)}"),
