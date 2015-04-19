@@ -47,6 +47,12 @@ namespace Rant.Tests
 		}
 
 		[Test]
+		public void EmptySubroutine()
+		{
+			new RantEngine().Do(@"[$[test]:]");
+		}
+
+		[Test]
 		[ExpectedException(typeof(RantRuntimeException))]
 		public void MissingSubroutine()
 		{

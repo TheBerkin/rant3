@@ -14,15 +14,8 @@ namespace Rant.Engine.Syntax
 
 		public List<RantAction> Actions => _actions;
 
-		public RASequence(params RantAction[] actions)
-			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Length - 1].Range) : null)
-		{
-			if (actions == null) return;
-			_actions.AddRange(actions);
-		}
-
-		public RASequence(List<RantAction> actions)
-			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Count - 1].Range) : null)
+		public RASequence(List<RantAction> actions, Stringe defaultRange)
+			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Count - 1].Range) : defaultRange)
 		{
 			if (actions == null) return;
 			_actions.AddRange(actions);

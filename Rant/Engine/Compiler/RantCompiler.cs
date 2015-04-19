@@ -174,11 +174,11 @@ namespace Rant.Engine.Compiler
 							  type == ReadType.SubroutineArgs))
 							Unexpected(token);
 						// Add item to args
-						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
+						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, token));
 						switch (type)
 						{
 							case ReadType.SubroutineBody:
-								return new RASequence(sequences);
+								return new RASequence(sequences, token);
 							case ReadType.FuncArgs:
 							{
 								var func = _funcCalls.Pop();
@@ -221,7 +221,7 @@ namespace Rant.Engine.Compiler
 						if (type == ReadType.ReplacerArgs && sequences.Count == 1)
 							SyntaxError(token, "Too many arguments in replacer.");
 						// Add item to args
-						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
+						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, token));
 						actions.Clear();
 						_reader.SkipSpace();
 						break;
@@ -246,7 +246,7 @@ namespace Rant.Engine.Compiler
 						}
 
 						// Add item to block
-						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions));
+						sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, token));
 						if (token.ID == R.RightCurly)
 							return new RABlock(Stringe.Range(fromToken, token), sequences,
 								dynamicWeights, constantWeights);
@@ -391,7 +391,7 @@ namespace Rant.Engine.Compiler
 						if (type != ReadType.BlockWeight) goto default;
 						_reader.SkipSpace();
 						if (!actions.Any()) SyntaxError(token, "Expected weight value.");
-						return actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions);
+						return actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions, token);
 					}
 						
 					// query carriers
@@ -513,7 +513,7 @@ namespace Rant.Engine.Compiler
 			switch (type)
 			{
 				case ReadType.Sequence:
-					return new RASequence(actions);
+					return new RASequence(actions, token);
 				case ReadType.Block:
 					throw new RantCompilerException(_sourceName, fromToken, "Unterminated block found.");
 				default:
