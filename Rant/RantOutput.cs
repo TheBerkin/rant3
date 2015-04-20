@@ -61,7 +61,7 @@ namespace Rant
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _channelMap.GetEnumerator();
+            return _channels.GetEnumerator();
         }
 
         /// <summary>
