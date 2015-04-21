@@ -16,7 +16,7 @@
 
 ##What is Rant?
 
-Rant is a language for adding rich variations to text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for procedurally generating text. The goal of Rant is to augment human creativity with the boundless potential of randomness, enabling content producers to consider their next idea as not just a concept, but a seed for countless possibilities.
+Rant is a language for procedurally generating text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for adding rich variations to your text. The ultimate goal of Rant is to augment human creativity with the boundless potential of randomness, helping content producers consider their next ideas as not just static concepts, but seeds of countless possibilities.
 
 ##Features of Rant
 
@@ -42,36 +42,54 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 **Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
 ```
-[numfmt:verbal-en][rep:10][sep:,\s]{[num:1;50]}
+[case:sentence][numfmt:verbal-en][rep:10][sep:\s]{[num:1;50].}
 ```
 ```
-thirteen, twenty two, thirteen, nineteen, thirty one, thirty four, forty two, twenty six, twelve, forty four
-```
-
----
-
-**Generate 32 random hexadecimal digits grouped into sets of eight**
-```
-[rep:4][sep:\s]{\8,x}
-
-Alternatively...
-
-[rep:32]{\x[notlast:[nth:8;0;\s]]}
-```
-```
-6fb34d31 42e27a48 5884bce5 bf743ec8
+Four. Ten. Thirteen. Fifteen. Eighteen. Twenty four. Seven. Forty eight. Nineteen. Twenty five.
 ```
 
 ---
 
-**Insert text into existing output**
+**Write a poem**
 ```
-The following word is [get:N] characters long: \"[mark:a]<noun-animal|fruit>[mark:b]\"
-[send:N;[dist:a;b]]
+[rhyme:perfect]
+The <noun(1)::&a> <verb.ed(1)-transitive::&a> the <adj::&a> <noun(1)::&a>.
 ```
 ```
-The following word is 7 characters long: "kumquat"
+The bread fed the red head.
 ```
+```
+The drug dug the smug plug.
+```
+
+---
+
+**?????**
+```
+[rs:16;\N]
+{
+    [r:50]{([rr])\u2593|([re])\s}
+}
+```
+```
+▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓ ▓▓▓▓   ▓    ▓       ▓ ▓          
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓ ▓ ▓▓▓ ▓            ▓         
+▓▓▓▓▓▓ ▓▓▓▓▓ ▓ ▓▓▓ ▓ ▓  ▓ ▓▓▓▓ ▓▓ ▓   ▓           
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓ ▓  ▓  ▓    ▓▓   ▓▓  ▓▓         
+▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓ ▓ ▓▓ ▓ ▓ ▓  ▓ ▓ ▓▓▓▓   ▓          
+▓▓▓▓▓▓▓▓▓▓ ▓▓▓ ▓▓▓▓▓▓ ▓  ▓  ▓▓                    
+▓▓▓▓▓▓ ▓▓▓  ▓▓▓  ▓▓ ▓▓ ▓ ▓▓  ▓▓▓ ▓  ▓ ▓ ▓      ▓  
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓    ▓▓  ▓▓ ▓▓▓▓ ▓▓▓  ▓            
+▓▓▓▓▓▓▓▓▓▓ ▓▓▓   ▓▓▓▓▓▓▓ ▓▓                 ▓     
+▓▓▓▓▓▓▓▓ ▓▓ ▓▓▓▓      ▓ ▓  ▓ ▓  ▓  ▓   ▓  ▓▓      
+▓▓▓▓▓▓▓▓▓▓ ▓ ▓ ▓▓ ▓ ▓▓▓▓▓▓▓ ▓      ▓   ▓          
+▓▓▓▓▓▓▓▓▓▓ ▓  ▓▓   ▓▓▓   ▓▓▓▓▓     ▓ ▓▓           
+▓▓▓▓ ▓▓▓▓▓▓▓ ▓▓▓ ▓  ▓▓▓ ▓    ▓     ▓    ▓         
+▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓ ▓▓▓   ▓ ▓▓ ▓▓▓   ▓▓        ▓     
+▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓  ▓▓▓ ▓▓ ▓▓   ▓      ▓ ▓ ▓        
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓     ▓    ▓       ▓▓▓ ▓      
+```
+
 
 ##NuGet
 Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/). Punch the following into your package manager console and smash the Enter key enthusiastically to get it:
