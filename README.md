@@ -40,7 +40,9 @@ Rant is a language for procedurally generating text. It combines a markup langua
 Alick likes to mount shuttlecocks with his pet bat on Mondays.
 ```
 
-**Generate ten random numbers between 1 and 50 and spell them out using US spelling conventions**
+---
+
+**Generate ten random numbers between 1 and 50 and spell them ou**
 ```
 [case:sentence][numfmt:verbal-en][rep:10][sep:\s]{[num:1;50].}
 ```
