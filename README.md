@@ -81,6 +81,10 @@ Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/
 ```
 PM> Install-Package Rant
 ```
+Or if development builds are your thing:
+```
+PM> Install-Package Rant -Pre
+```
 
 But remember, the latest version will always be available on the repository first.
 
