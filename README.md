@@ -127,9 +127,6 @@ See [rantlang.github.io](http://rantlang.github.io) for full documentation of th
 ##Try Rant
 Want to try Rant before you download anything? Check out [RantBox](http://rant.berkin.me/), an online pattern interpreter I made.
 
-##Support Rant
-Rant is free to use; however, developing it takes a lot of time and dedication, and things like hosting and software cost money. If you feel so inclined, you may support the project by donating through **[Gratipay](https://gratipay.com/TheBerkin/)**. Any amount is appreciated :)
-
 ##Other projects
 If you like Rant, you may also like these other, Rant-related projects:
 * [**RIDE**](http://github.com/RantLang/RIDE): The official (and highly WIP) Rant IDE
