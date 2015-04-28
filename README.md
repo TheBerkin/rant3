@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true)](https://ci.appveyor.com/project/TheBerkin/rant)
+
 <p align="center">
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status">
