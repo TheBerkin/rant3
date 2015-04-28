@@ -123,9 +123,6 @@ We have a [Trello board](https://trello.com/b/NnvgqGha/rant) where we also track
 ##Learn Rant
 See [rantlang.github.io](http://rantlang.github.io) for full documentation of the API and Rant language, as well as additional example code.
 
-##Try Rant
-Want to try Rant before you download anything? Check out [RantBox](http://rant.berkin.me/), an online pattern interpreter I made.
-
 ##Other projects
 If you like Rant, you may also like these other, Rant-related projects:
 * [**RIDE**](http://github.com/RantLang/RIDE): The official (and highly WIP) Rant IDE
