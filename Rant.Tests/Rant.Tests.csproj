@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="BasicInput.cs" />
     <Compile Include="Capitalization.cs" />
+    <Compile Include="Channels.cs" />
     <Compile Include="Compiler\Invalid.cs" />
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Numbers.cs" />
