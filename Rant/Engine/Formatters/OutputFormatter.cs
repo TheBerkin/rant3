@@ -63,7 +63,7 @@ namespace Rant.Engine.Formatters
                     break;
                 case Case.First:
                     input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    Case = Case.None;
+                    if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) Case = Case.None;
                     break;
                 case Case.Title:
                     if (((options & OutputFormatterOptions.IsArticle) == OutputFormatterOptions.IsArticle || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
