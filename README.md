@@ -1,5 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a?svg=true)](https://ci.appveyor.com/project/TheBerkin/rant)
-
 <p align="center">
 <img src="http://i.imgur.com/EZinvT5.png" alt="Rant logo"></img>
 </p>
@@ -43,7 +41,7 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 ---
 
-**Generate ten random numbers between 1 and 50 and spell them ou**
+**Generate ten random numbers between 1 and 50 and spell them out**
 ```
 [case:sentence][numfmt:verbal-en][rep:10][sep:\s]{[num:1;50].}
 ```
