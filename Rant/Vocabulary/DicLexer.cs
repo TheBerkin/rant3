@@ -71,17 +71,22 @@ namespace Rant.Vocabulary
 			int nextChar;
 			char currentChar;
 			string value = "";
+			bool pipeAllowed = !isDiffmark;
 
 			// read to the end of the line
 			while (true)
 			{
-				nextChar = reader.Read();
+				nextChar = reader.Peek();
 				if (nextChar == -1)
 					break;
 				currentChar = (char)nextChar;
+				if (isDiffmark && char.IsWhiteSpace(currentChar))
+					pipeAllowed = true;
+
 				// we've made it to the end
-				if ((!isDiffmark && currentChar == '|') || currentChar == '>' || currentChar == '\n' || currentChar == '#')
+				if ((pipeAllowed && currentChar == '|') || currentChar == '>' || currentChar == '\n' || currentChar == '#')
 					break;
+				reader.Read();
 				value = string.Concat(value, currentChar);
 			}
 
