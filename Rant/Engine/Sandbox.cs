@@ -20,7 +20,7 @@ namespace Rant.Engine
 	{
 		private readonly RantEngine _engine;
 		private readonly ChannelWriter _mainOutput;
-		private readonly Stack<ChannelWriter> _outputs; 
+		private readonly Stack<ChannelWriter> _outputs;
 		private readonly RNG _rng;
 		private readonly long _startingGen;
 		private readonly RantFormat _format;
@@ -32,7 +32,7 @@ namespace Rant.Engine
 		private readonly QueryState _queryState;
 		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
 		private readonly SyncManager _syncManager;
-		
+
 		private BlockAttribs _blockAttribs = new BlockAttribs();
 		private int _quoteLevel = 0;
 
@@ -149,7 +149,7 @@ namespace Rant.Engine
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
-		public RantOutput PopOutput() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
+		public RantOutput Return() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
 
 		public void IncreaseQuote() => _quoteLevel++;
 
@@ -168,7 +168,12 @@ namespace Rant.Engine
 		public BlockAttribs NextAttribs()
 		{
 			var ba = _blockAttribs;
-			_blockAttribs = new BlockAttribs();
+			switch (ba.Persistence)
+			{
+				case AttribPersistence.Off:
+					_blockAttribs = new BlockAttribs();
+					break;
+			}
 			return ba;
 		}
 
@@ -176,7 +181,7 @@ namespace Rant.Engine
 		{
 			var callStack = new Stack<IEnumerator<RantAction>>();
 			IEnumerator<RantAction> action;
-			
+
 			long timeoutMS = (long)(timeout * 1000);
 			bool timed = timeoutMS > 0;
 			var sw = new Stopwatch();
@@ -201,7 +206,7 @@ namespace Rant.Engine
 					if (callStack.Count >= RantEngine.MaxStackSize)
 						throw new RantRuntimeException(_pattern, action.Current.Range,
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
-					
+
 					// Push child node onto stack and start over
 					callStack.Push(action.Current.Run(this));
 					goto top;
@@ -212,8 +217,8 @@ namespace Rant.Engine
 			}
 
 			sw.Stop();
-			
-			return PopOutput();
+
+			return Return();
 		}
-    }
+	}
 }

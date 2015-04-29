@@ -29,7 +29,7 @@ namespace Rant.Engine.Syntax
 				{
 					sb.AddOutputWriter();
 					yield return Arguments[i];
-					var output = sb.PopOutput();
+					var output = sb.Return();
 					args[parameters[i]] = new RAText(_name, output.MainValue);
 				}
 				else

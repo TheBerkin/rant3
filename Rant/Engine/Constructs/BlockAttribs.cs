@@ -17,10 +17,13 @@ namespace Rant.Engine.Constructs
 	    }
 		public bool RepEach { get; set; }
         public RantAction Separator { get; set; }
+		public RantAction Start { get; set; }
         public RantAction Before { get; set; }
         public RantAction After { get; set; }
+		public RantAction End { get; set; }
         public Synchronizer Sync { get; set; }
 		public int Chance { get; set; }
+		public AttribPersistence Persistence { get; set; }
 
         public BlockAttribs()
         {
@@ -36,7 +39,10 @@ namespace Rant.Engine.Constructs
 			Before = null;
 			After = null;
 			Sync = null;
-		}
+		    Start = null;
+		    End = null;
+		    Persistence = AttribPersistence.Off;
+	    }
 
 		/// <summary>
 		/// Calculates the index of the next block item to execute.

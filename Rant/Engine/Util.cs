@@ -182,6 +182,8 @@ namespace Rant.Engine
 			return String.IsNullOrEmpty(input) ? alternate : input;
 		}
 
+		public static int Mod(int a, int b) => ((a % b) + b) % b;
+
 		internal static RantRuntimeException Error(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.")
 		{
 			return new RantRuntimeException(source, token, message);

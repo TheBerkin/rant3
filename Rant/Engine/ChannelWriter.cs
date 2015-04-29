@@ -123,15 +123,6 @@ namespace Rant.Engine
 			}
 		}
 
-	    public void Write(StringBuilder buffer)
-	    {
-		    if (buffer == null) return;
-		    foreach (var ch in GetActive())
-		    {
-			    ch.WriteBuffer(buffer);
-		    }
-	    }
-
 		public IEnumerable<RantChannel> GetActive()
         {
             var lastVisibility = RantChannelVisibility.Public;

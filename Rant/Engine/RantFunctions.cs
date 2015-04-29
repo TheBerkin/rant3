@@ -405,5 +405,62 @@ namespace Rant.Engine
 		{
 			sb.CurrentOutput.WriteToTarget(targetName, value);
 		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
+		private static IEnumerator<RantAction> Nth(Sandbox sb, int interval, RantAction pattern)
+		{
+			if(!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration % interval != 0) yield break;
+			yield return pattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number offset by a specific amount.")]
+		private static IEnumerator<RantAction> NthO(Sandbox sb, int interval, int offset, RantAction pattern)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) != 0) yield break;
+			yield return pattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number.")]
+		private static IEnumerator<RantAction> NotNth(Sandbox sb, int interval, RantAction pattern)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration % interval == 0) yield break;
+			yield return pattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount.")]
+		private static IEnumerator<RantAction> NotNthO(Sandbox sb, int interval, int offset, RantAction pattern)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) == 0) yield break;
+			yield return pattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Sets a pattern that will run before the next block.")]
+		private static void Start(Sandbox sb, RantAction beforePattern)
+		{
+			sb.CurrentBlockAttribs.Start = beforePattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Sets a pattern that will run after the next block.")]
+		private static void End(Sandbox sb, RantAction endPattern)
+		{
+			sb.CurrentBlockAttribs.End = endPattern;
+		}
+
+		[RantFunction]
+		[RantDescription("Instructs Rant not to consume the block attributes after they are used.")]
+		private static void Persist(Sandbox sb, AttribPersistence persistence)
+		{
+			sb.CurrentBlockAttribs.Persistence = persistence;
+		}
 	}
 }

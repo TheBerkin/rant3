@@ -64,8 +64,9 @@ namespace Rant.Engine.Syntax
 			int next = -1;
 			int reps = attribs.RepEach ? _items.Count : attribs.Repetitons;
 			var block = new BlockState(attribs.Repetitons);
-
 			double weightSum = _constantWeightSum;
+
+			if (attribs.Start != null) yield return attribs.Start;
 
 			if (_weighted && attribs.Sync == null)
 			{
@@ -73,7 +74,7 @@ namespace Rant.Engine.Syntax
 				{
 					sb.AddOutputWriter();
 					yield return dw.Item2;
-					var strWeight = sb.PopOutput().MainValue;
+					var strWeight = sb.Return().MainValue;
 					if (!Double.TryParse(strWeight, out _weights[dw.Item1]))
 						throw new RantRuntimeException(sb.Pattern, dw.Item2.Range,
 							$"Dynamic weight returned invalid weight value: '{strWeight}'");
@@ -122,6 +123,8 @@ namespace Rant.Engine.Syntax
 				if (attribs.After != null) yield return attribs.After;
 			}
 			sb.Blocks.Pop();
+
+			if (attribs.End != null) yield return attribs.End;
 		}
 	}
 }

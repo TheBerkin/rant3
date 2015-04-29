@@ -37,7 +37,7 @@ namespace Rant.Engine.Syntax
 					case RantParameterType.String:
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						args[i] = sb.PopOutput().MainValue;
+						args[i] = sb.Return().MainValue;
 						break;
 
 					// Numbers are evaluated, verified, and converted
@@ -45,7 +45,7 @@ namespace Rant.Engine.Syntax
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						var strNum = sb.PopOutput().MainValue;
+						var strNum = sb.Return().MainValue;
 						if (!Double.TryParse(strNum, out d))
 						{
 							d = 0;
@@ -61,7 +61,7 @@ namespace Rant.Engine.Syntax
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						var strMode = sb.PopOutput().MainValue;
+						var strMode = sb.Return().MainValue;
 						object value;
 						if (!Util.TryParseEnum(_funcInfo.Parameters[i].NativeType, strMode, out value))
 						{
@@ -77,7 +77,7 @@ namespace Rant.Engine.Syntax
 						sb.AddOutputWriter();
 						yield return _argActions[i];
 						long flags = 0;
-						var strFlags = sb.PopOutput().MainValue;
+						var strFlags = sb.Return().MainValue;
 						object value;
 						foreach(var flag in strFlags.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries))
 						{

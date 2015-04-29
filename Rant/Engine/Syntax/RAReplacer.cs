@@ -25,7 +25,7 @@ namespace Rant.Engine.Syntax
 		{
 			sb.AddOutputWriter();
 			yield return _sourceAction;
-			var input = sb.PopOutput().MainValue;
+			var input = sb.Return().MainValue;
 			var matches = _regex.Matches(input);
 			int start = 0;
 			foreach (Match match in matches)
@@ -33,7 +33,7 @@ namespace Rant.Engine.Syntax
 				sb.RegexMatches.Push(match);
 				sb.AddOutputWriter();
 				yield return _matchEvalAction;
-				var result = sb.PopOutput().MainValue;
+				var result = sb.Return().MainValue;
                 sb.Print(input.Substring(start, match.Index - start));
 				sb.Print(result);
                 sb.RegexMatches.Pop();

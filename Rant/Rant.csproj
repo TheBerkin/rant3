@@ -76,6 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Constructs\AttribPersistence.cs" />
+    <Compile Include="Engine\Constructs\BlockManager.cs" />
     <Compile Include="Engine\Constructs\SyncManager.cs" />
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
