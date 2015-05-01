@@ -24,7 +24,7 @@ namespace Rave.DicDoc
 		{
 			Console.WriteLine("Working...");
 
-			var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+			var args = Environment.GetCommandLineArgs().Skip(2).ToArray();
 			var dicDir = args.Length == 0 ? Environment.CurrentDirectory : args[0];
 
 			GenerateDictionary(dicDir);
