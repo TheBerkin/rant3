@@ -81,6 +81,7 @@
     <Compile Include="Engine\Constructs\SyncManager.cs" />
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\RantFunctionGroup.cs" />
     <Compile Include="Engine\Syntax\RADefineSubroutine.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />
     <Compile Include="Engine\Syntax\RAFunction.cs" />

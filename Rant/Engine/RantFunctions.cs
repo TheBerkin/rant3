@@ -16,8 +16,10 @@ namespace Rant.Engine
 	internal static class RantFunctions
 	{
 		private static bool Loaded = false;
-		private static readonly Dictionary<string, RantFunctionInfo> FunctionTable = 
-			new Dictionary<string, RantFunctionInfo>(StringComparer.InvariantCultureIgnoreCase);
+		private static readonly Dictionary<string, RantFunctionGroup> FunctionTable = 
+			new Dictionary<string, RantFunctionGroup>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly Dictionary<string, string> AliasTable = 
+            new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase); 
 
 		static RantFunctions()
 		{
@@ -35,25 +37,52 @@ namespace Rant.Engine
 				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
 				var descAttr = method.GetCustomAttributes().OfType<RantDescriptionAttribute>().FirstOrDefault();
 				var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
-				if (Util.ValidateName(name)) FunctionTable[name] = info;
+				if (Util.ValidateName(name)) RegisterFunction(info);
 				foreach(var alias in attr.Aliases.Where(Util.ValidateName))
-					FunctionTable[alias] = info;
+					RegisterAlias(alias, info.Name);
 			}
 			Loaded = true;
 		}
 
-		public static bool FunctionExists(string name) => FunctionTable.ContainsKey(name);
+	    private static void RegisterAlias(string alias, string funcName)
+	    {
+	        AliasTable[alias] = funcName;
+	    }
 
-		public static IEnumerable<string> GetFunctionNames() => FunctionTable.Select(item => item.Key);
+	    private static string ResolveAlias(string alias)
+	    {
+	        string name;
+	        return AliasTable.TryGetValue(alias, out name) ? name : alias;
+	    }
 
-		public static string GetFunctionDescription(string funcName) => GetFunction(funcName)?.Description ?? String.Empty;
+        private static void RegisterFunction(RantFunctionInfo func)
+	    {
+	        RantFunctionGroup group;
+	        if (!FunctionTable.TryGetValue(func.Name, out group))
+	            group = FunctionTable[func.Name] = new RantFunctionGroup(func.Name);
+            group.Add(func);
+	    }
 
-		public static RantFunctionInfo GetFunction(string name)
+		public static bool FunctionExists(string name) => 
+            AliasTable.ContainsKey(name) || FunctionTable.ContainsKey(name);
+
+		public static IEnumerable<string> GetFunctionNames() => 
+            FunctionTable.Select(item => item.Key);
+
+        public static IEnumerable<string> GetFunctionNamesAndAliases() => 
+            FunctionTable.Select(item => item.Key).Concat(AliasTable.Keys);
+
+        public static string GetFunctionDescription(string funcName, int paramc) => 
+            GetFunctionGroup(funcName)?.GetFunction(paramc)?.Description ?? String.Empty;
+
+		public static RantFunctionGroup GetFunctionGroup(string name)
 		{
-			RantFunctionInfo func;
-			if (!FunctionTable.TryGetValue(name, out func)) return null;
-			return func;
+		    RantFunctionGroup group;
+			return !FunctionTable.TryGetValue(ResolveAlias(name), out group) ? null : group;
 		}
+
+	    public static RantFunctionInfo GetFunction(string name, int paramc) =>
+	        GetFunctionGroup(name)?.GetFunction(paramc);
 
 		[RantFunction("num", "n")]
 		[RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
@@ -66,7 +95,7 @@ namespace Rant.Engine
 			sb.Print(sb.RNG.Next(min, max + 1));
 		}
 
-		[RantFunction("tonum")]
+		[RantFunction("num")]
 		[RantDescription("Formats an input string using the current number format settings and prints the result.")]
 		private static void Number(Sandbox sb, string input)
 		{

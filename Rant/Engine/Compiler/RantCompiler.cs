@@ -16,7 +16,7 @@ namespace Rant.Engine.Compiler
 		private readonly string _sourceName;
 		//private readonly IEnumerable<Token<R>> _tokens;
 		private readonly TokenReader _reader;
-		private readonly Stack<RantFunctionInfo> _funcCalls = new Stack<RantFunctionInfo>();
+		private readonly Stack<RantFunctionGroup> _funcCalls = new Stack<RantFunctionGroup>();
 		private readonly Stack<Regex> _regexes = new Stack<Regex>();
 		private readonly Stack<RASubroutine> _subroutines = new Stack<RASubroutine>();
 		private Query _query;
@@ -116,20 +116,20 @@ namespace Rant.Engine.Compiler
 								case R.Text:
 									{
 										string name = tagToken.Value;
-										var func = RantFunctions.GetFunction(name);
-										if (func == null)
+										var group = RantFunctions.GetFunctionGroup(name);
+										if (group == null)
 											SyntaxError(tagToken, $"Unknown function: '{name}'");
 										var argList = new List<RantAction>();
 										if (_reader.TakeLoose(R.Colon))
 										{
-											_funcCalls.Push(func);
+											_funcCalls.Push(group);
 											actions.Add(Read(ReadType.FuncArgs, token));
 										}
 										else
 										{
 											var end = _reader.Read(R.RightSquare);
-											VerifyArgCount(func, 0, token, end);
-											actions.Add(new RAFunction(Stringe.Range(token, end), func, argList));
+											actions.Add(new RAFunction(Stringe.Range(token, end),
+                                                GetFunctionInfo(group, 0, token, end), argList));
 										}
 										break;
 									}
@@ -219,10 +219,8 @@ namespace Rant.Engine.Compiler
 									return new RASequence(sequences, token);
 								case ReadType.FuncArgs:
 									{
-										var func = _funcCalls.Pop();
-										VerifyArgCount(func, sequences.Count, fromToken, token);
-										// TODO: Add support for function overloads
-										return new RAFunction(Stringe.Range(fromToken, token), func, sequences);
+										return new RAFunction(Stringe.Range(fromToken, token), 
+                                            GetFunctionInfo(_funcCalls.Pop(), sequences.Count, fromToken, token), sequences);
 									}
 								case ReadType.ReplacerArgs:
 									if (sequences.Count != 2)
@@ -556,11 +554,12 @@ namespace Rant.Engine.Compiler
 			}
 		}
 
-		private void VerifyArgCount(RantFunctionInfo func, int argc, Stringe from, Stringe to)
+		private RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
 		{
-			if (argc != func.Parameters.Length)
-				throw new RantCompilerException(_sourceName, Stringe.Range(from, to),
-					$"The function '{func.Name}' requires '{func.Parameters.Length}' argument(s).");
+		    RantFunctionInfo func = group.GetFunction(argc);
+            if (func == null)
+                SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} argument(s).");
+		    return func;
 		}
 
 		private void Unexpected(Stringe token)

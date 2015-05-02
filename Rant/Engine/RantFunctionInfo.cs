@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 using Rant.Engine.Delegates;
 using Rant.IO;
@@ -21,6 +22,7 @@ namespace Rant.Engine
 
 		public string Name { get; }
 		public string Description { get; }
+        public bool HasParamArray { get; }
 
 		public RantFunctionInfo(string name, string description, MethodInfo method)
 		{
@@ -42,7 +44,10 @@ namespace Rant.Engine
 			{
 				// Resolve Rant parameter type from .NET type
 				type = parameters[i].ParameterType;
-				if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
+			    if (type.IsArray && i == parameters.Length - 1)
+			        type = type.GetElementType();
+
+			    if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
 				{
 					rantType = RantParameterType.Pattern;
 				}
@@ -66,7 +71,8 @@ namespace Rant.Engine
 				}
 
 				// Create Rant parameter
-				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType);
+				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType,
+                    HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttribute<ParamArrayAttribute>() != null));
 			}
 			_delegate = Witchcraft.Create(method);
 			Name = name;
@@ -82,5 +88,20 @@ namespace Rant.Engine
 		{
 			yield break;
 		}
+
+	    public override string ToString()
+	    {
+	        var sb = new StringBuilder();
+	        sb.Append('[').Append(Name);
+	        for (int i = 0; i < Parameters.Length; i++)
+	        {
+	            sb.Append(i == 0 ? ':' : ';').Append(' ');
+	            sb.Append(Parameters[i].Name);
+	            if (i == Parameters.Length - 1 && Parameters[i].IsParams)
+	                sb.Append("...");
+	        }
+	        sb.Append(']');
+	        return sb.ToString();
+	    }
 	}
 }

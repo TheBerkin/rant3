@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rant.Engine.Syntax
 {
@@ -19,14 +20,24 @@ namespace Rant.Engine.Syntax
 			_argc = argActions.Count;
 		}
 
+	    private RantParameter GetParameter(int index)
+	    {
+	        if (index >= _funcInfo.Parameters.Length - 1 && _funcInfo.HasParamArray)
+	            return _funcInfo.Parameters[_funcInfo.Parameters.Length - 1];
+	        return _funcInfo.Parameters[index];
+	    }
+
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			// Convert arguments to their native types
+		    int paramc = _funcInfo.Parameters.Length;
 			var args = new object[_argc];
 			double d;
+		    RantParameter p;
 			for (int i = 0; i < _argc; i++)
 			{
-				switch (_funcInfo.Parameters[i].RantType)
+			    p = GetParameter(i);
+				switch (p.RantType)
 				{
 					// Patterns are passed right to the method
 					case RantParameterType.Pattern:
@@ -52,7 +63,7 @@ namespace Rant.Engine.Syntax
 							int n;
 							if (Util.ParseInt(strNum, out n)) d = n;
 						}
-						args[i] = Convert.ChangeType(d, _funcInfo.Parameters[i].NativeType);
+						args[i] = Convert.ChangeType(d, p.NativeType);
 						break;
 					}
 
@@ -63,7 +74,7 @@ namespace Rant.Engine.Syntax
 						yield return _argActions[i];
 						var strMode = sb.Return().MainValue;
 						object value;
-						if (!Util.TryParseEnum(_funcInfo.Parameters[i].NativeType, strMode, out value))
+						if (!Util.TryParseEnum(p.NativeType, strMode, out value))
 						{
 							throw new RantRuntimeException(sb.Pattern, _argActions[i].Range,
 								$"Unknown mode value '{strMode}'.");
@@ -71,9 +82,11 @@ namespace Rant.Engine.Syntax
 						args[i] = value;
 						break;
 					}
+
+                    // Flags are parsed from strings to enum members and combined with OR.
 					case RantParameterType.Flags:
 					{
-						var enumType = _funcInfo.Parameters[i].NativeType;
+						var enumType = p.NativeType;
 						sb.AddOutputWriter();
 						yield return _argActions[i];
 						long flags = 0;
@@ -92,8 +105,21 @@ namespace Rant.Engine.Syntax
 				}
 			}
 
-			// Invoke the function
-			var requester = _funcInfo.Invoke(sb, args);
+            // Invoke the function
+		    IEnumerator<RantAction> requester;
+		    if (_funcInfo.HasParamArray)
+		    {
+		        int required = paramc - 1;
+		        int parrayCount = _argc - required;
+		        var parray = Array.CreateInstance(_funcInfo.Parameters[required].NativeType, parrayCount);
+                Array.Copy(args, required, parray, 0, parrayCount);
+		        requester = _funcInfo.Invoke(sb, args.Take(required).Concat(new[] { parray }).ToArray());
+		    }
+		    else
+		    {
+                requester = _funcInfo.Invoke(sb, args);
+            }
+
 			while (requester.MoveNext())
 			{
 				yield return requester.Current;

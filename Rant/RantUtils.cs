@@ -25,11 +25,12 @@ namespace Rant
 		/// <returns></returns>
 		public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
 
-		/// <summary>
-		/// Returns the description for the function with the specified name.
-		/// </summary>
-		/// <param name="functionName">The name of the function to get the description for.</param>
-		/// <returns></returns>
-		public static string GetFunctionDescription(string functionName) => RantFunctions.GetFunctionDescription(functionName);
+	    /// <summary>
+	    /// Returns the description for the function with the specified name.
+	    /// </summary>
+	    /// <param name="functionName">The name of the function to get the description for.</param>
+	    /// <param name="argc">The number of arguments in the overload to get the description for.</param>
+	    /// <returns></returns>
+	    public static string GetFunctionDescription(string functionName, int argc) => RantFunctions.GetFunctionDescription(functionName, argc);
 	}
 }

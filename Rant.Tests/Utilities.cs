@@ -15,7 +15,7 @@ namespace Rant.Tests
 		[Test]
 		public void FunctionDescription()
 		{
-			Assert.AreEqual("Sets the repetition count for the next block.", RantUtils.GetFunctionDescription("rep"));
+			Assert.AreEqual("Sets the repetition count for the next block.", RantUtils.GetFunctionDescription("rep", 1));
 		}
 	}
 }
