@@ -538,6 +538,8 @@ namespace Rant.Engine.Compiler
 							break;
 						}
 					default:
+						if (type == ReadType.QueryCarrier)
+							SyntaxError(token, "Expected query carrier.");
 						actions.Add(new RAText(token));
 						break;
 				}
