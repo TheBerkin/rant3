@@ -1,7 +1,5 @@
-#Rant
-
 <p align="center">
-<img src="http://i.imgur.com/s7RUclL.png" alt="Rant logo"></img>
+<img src="http://i.imgur.com/97uHeew.png" alt="Rant logo"></img>
 </p>
 
 <p align="center">
