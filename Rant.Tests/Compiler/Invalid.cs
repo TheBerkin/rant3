@@ -86,6 +86,17 @@ namespace Rant.Tests.Compiler
 	        RantPattern.FromString(@"<noun::!A::@B>");
 	    }
 
+	    [TestCase(".")]
+        [TestCase(")")]
+        [TestCase("FOO")]
+        [TestCase("?!")]
+        [TestCase("<noun>")]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void InvalidCarrierComponent(string carrier)
+	    {
+	        RantPattern.FromString($"<noun::{carrier}>");
+	    }
+
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void InvalidCarrierDelete()
