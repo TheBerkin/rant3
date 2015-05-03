@@ -77,6 +77,30 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Reads a stringe from the current position to the next occurrence of the specified character. If no match is found, it reads to the end.
+        /// </summary>
+        /// <param name="value">The character to stop at.</param>
+        /// <returns></returns>
+	    public Stringe ReadUntil(char value)
+	    {
+	        int start = _pos;
+	        while (_pos < _stringe.Length && _stringe[_pos] != value) _pos++;
+	        return _stringe.Substringe(start, _pos - start);
+	    }
+
+        /// <summary>
+        /// Reads a stringe from the current position to the next occurrence of any of the specified characters. If no match is found, it reads to the end.
+        /// </summary>
+        /// <param name="values">The characters to stop at.</param>
+        /// <returns></returns>
+        public Stringe ReadUntilAny(params char[] values)
+        {
+            int start = _pos;
+            while (_pos < _stringe.Length && !values.Any(c => _stringe[_pos] == c)) _pos++;
+            return _stringe.Substringe(start, _pos - start);
+        }
+
+        /// <summary>
         /// Indicates whether the specified character occurs at the reader's current position, and consumes it.
         /// </summary>
         /// <param name="value">The character to test for.</param>
