@@ -289,7 +289,7 @@ namespace Rant.Engine.Compiler
 						{
 							Stringe name = null;
 							if (_reader.PeekToken().ID != R.DoubleColon)
-								name = _reader.ReadLoose(R.Text);
+								name = _reader.ReadLoose(R.Text, "table name");
 							if (name != null && (string.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
 								SyntaxError(token, "Invalid table name in query.");
 							_query = new Query
@@ -312,7 +312,7 @@ namespace Rant.Engine.Compiler
 					case R.Subtype:
 						{
 							if (type != ReadType.Query) goto default;
-							var subtype = _reader.ReadLoose(R.Text);
+							var subtype = _reader.ReadLoose(R.Text, "subtype");
 							_query.Subtype = subtype.Value;
 						}
 						break;
@@ -324,7 +324,7 @@ namespace Rant.Engine.Compiler
 							if (_query.Exclusive && negative)
 								throw new RantCompilerException(_sourceName, token,
 									"You can't define a negative class filter in an exclusive query.");
-							var className = _reader.ReadLoose(R.Text);
+							var className = _reader.ReadLoose(R.Text, "class name");
 							_query.ClassFilter.AddRuleSwitch(new ClassFilterRule(className.Value, !negative));
 						}
 						break;
@@ -435,7 +435,7 @@ namespace Rant.Engine.Compiler
 					case R.Equal:
 						{
 							if (type != ReadType.QueryCarrier) goto default;
-							var name = _reader.ReadLoose(R.Text);
+							var name = _reader.ReadLoose(R.Text, "carrier match identifier");
 							_query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
 						}
 						break;
@@ -475,7 +475,7 @@ namespace Rant.Engine.Compiler
 								if (componentType == CarrierComponent.Relational)
 									componentType = CarrierComponent.MatchRelational;
 							}
-							var name = _reader.ReadLoose(R.Text).Value;
+							var name = _reader.ReadLoose(R.Text, "carrier association identifier").Value;
 							_query.Carrier.AddComponent(componentType, name);
 						}
 						break;
@@ -489,7 +489,7 @@ namespace Rant.Engine.Compiler
 								match = true;
 								_reader.ReadToken();
 							}
-							var name = _reader.ReadLoose(R.Text).Value;
+							var name = _reader.ReadLoose(R.Text, "carrier unique identifier").Value;
 							var componentType = (match ? CarrierComponent.MatchUnique : CarrierComponent.Unique);
 							_query.Carrier.AddComponent(componentType, name);
 						}
@@ -498,7 +498,7 @@ namespace Rant.Engine.Compiler
 					case R.Ampersand:
 						{
 							if (type != ReadType.QueryCarrier) goto default;
-							var name = _reader.ReadLoose(R.Text).Value;
+							var name = _reader.ReadLoose(R.Text, "carrier rhyme identifier").Value;
 							_query.Carrier.AddComponent(CarrierComponent.Rhyme, name);
 						}
 						break;
