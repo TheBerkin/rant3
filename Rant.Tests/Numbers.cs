@@ -30,28 +30,28 @@ namespace Rant.Tests
         [Test]
         public void Hex8()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad;2][tonum:8] [tonum:15] [tonum:55] [tonum:128] [tonum:255]").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad;2][n:8] [n:15] [n:55] [n:128] [n:255]").MainValue,
                 "08 0F 37 80 FF");
         }
 
         [Test]
         public void Hex16()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad;4][tonum:12] [tonum:64] [tonum:456] [tonum:5000] [tonum:65535]").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][digits:pad;4][n:12] [n:64] [n:456] [n:5000] [n:65535]").MainValue,
                 "000C 0040 01C8 1388 FFFF");
         }
 
         [Test]
         public void Hex16BigEndian()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:hex][endian:big][digits:pad;4][tonum:12] [tonum:64] [tonum:456] [tonum:5000] [tonum:65535]").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:hex][endian:big][digits:pad;4][n:12] [n:64] [n:456] [n:5000] [n:65535]").MainValue,
                 "0C00 4000 C801 8813 FFFF");
         }
 
         [Test]
         public void DigitGrouping()
         {
-            Assert.AreEqual(rant.Do(@"[numfmt:group-commas][tonum:1000] [tonum:10000] [tonum:32768] [tonum:300000] [tonum:1000000]").MainValue,
+            Assert.AreEqual(rant.Do(@"[numfmt:group-commas][n:1000] [n:10000] [n:32768] [n:300000] [n:1000000]").MainValue,
                 "1,000 10,000 32,768 300,000 1,000,000");
         }
 
