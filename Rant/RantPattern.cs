@@ -48,23 +48,27 @@ namespace Rant
         /// Compiles a pattern from the specified string.
         /// </summary>
         /// <param name="code">The code to compile.</param>
+        /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
         /// <returns></returns>
         public static RantPattern FromString(string code) => new RantPattern("Source", RantPatternSource.String, code);
 
-		/// <summary>
-		/// Compiles a pattern from a string with the specified name.
-		/// </summary>
-		/// <param name="name">The name to give the source.</param>
-		/// <param name="code">The code to compile.</param>
-		/// <returns></returns>
-		public static RantPattern FromString(string name, string code) => new RantPattern(name, RantPatternSource.String, code);
+        /// <summary>
+        /// Compiles a pattern from a string with the specified name.
+        /// </summary>
+        /// <param name="name">The name to give the source.</param>
+        /// <param name="code">The code to compile.</param>
+        /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
+        /// <returns></returns>
+        public static RantPattern FromString(string name, string code) => new RantPattern(name, RantPatternSource.String, code);
 
-		/// <summary>
-		/// Loads the file located at the specified path and compiles a pattern from its contents.
-		/// </summary>
-		/// <param name="path">The path to the file to load.</param>
-		/// <returns></returns>
-		public static RantPattern FromFile(string path) => new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
+        /// <summary>
+        /// Loads the file located at the specified path and compiles a pattern from its contents.
+        /// </summary>
+        /// <param name="path">The path to the file to load.</param>
+        /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Thrown if the file cannot be found.</exception>
+        /// <returns></returns>
+        public static RantPattern FromFile(string path) => new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
 
 		/// <summary>
 		/// Returns a string describing the pattern.

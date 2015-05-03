@@ -11,11 +11,6 @@ namespace Rant.Vocabulary
     /// </summary>
     public sealed partial class RantDictionaryTable
     {
-        /// <summary>
-        /// The current version number of the table format.
-        /// </summary>
-        public const int Version = 3;
-
         internal const string MissingTerm = "[?]";
 
         private readonly string _name;

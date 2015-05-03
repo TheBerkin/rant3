@@ -19,20 +19,15 @@ namespace Rant.Vocabulary
         public static RantDictionaryTable FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
         {
             var name = "";
-            var version = Version;
             string[] subtypes = { "default" };
-
             bool header = true;
-
             bool nsfw = false;
 
             var scopedClassSet = new HashSet<string>();
-
             RantDictionaryEntry entry = null;
-
             var entries = new List<RantDictionaryEntry>();
 
-            foreach (var token in DicLexer.Tokenize(File.ReadAllText(path)))
+            foreach (var token in DicLexer.Tokenize(path, File.ReadAllText(path)))
             {
                 switch (token.ID)
                 {
@@ -53,20 +48,8 @@ namespace Rant.Vocabulary
                                     if (!header) LoadError(path, token, "The #subs directive may only be used in the file header.");
                                     subtypes = parts.Skip(1).Select(s => s.Trim().ToLower()).ToArray();
                                     break;
-                                case "version":
+                                case "version": // Kept here for backwards-compatability
                                     if (!header) LoadError(path, token, "The #version directive may only be used in the file header.");
-                                    if (parts.Length != 2)
-                                    {
-                                        LoadError(path, token, "The #version directive requires a value.");
-                                    }
-                                    if (!int.TryParse(parts[1], out version))
-                                    {
-                                        LoadError(path, token, $"Invalid version number '{parts[1]}'");
-                                    }
-                                    if (version > Version)
-                                    {
-                                        LoadError(path, token, $"Unsupported file version '{version}'");
-                                    }
                                     break;
                                 case "nsfw":
                                     nsfw = true;
@@ -81,15 +64,11 @@ namespace Rant.Vocabulary
                                         {
                                             case "add":
                                                 foreach (var cl in parts.Skip(2))
-                                                {
                                                     scopedClassSet.Add(cl.ToLower());
-                                                }
                                                 break;
                                             case "remove":
                                                 foreach (var cl in parts.Skip(2))
-                                                {
                                                     scopedClassSet.Remove(cl.ToLower());
-                                                }
                                                 break;
                                         }
                                     }
@@ -100,11 +79,10 @@ namespace Rant.Vocabulary
                     case DicTokenType.Entry:
                         {
                             if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
-                            if (Util.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
+                            if (Util.IsNullOrWhiteSpace(name))
+                                LoadError(path, token, "Missing dictionary name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
-                            {
                                 LoadError(path, token, "Encountered empty dictionary entry.");
-                            }
                             header = false;
                             entry = new RantDictionaryEntry(token.Value.Split('/').Select(s => s.Trim()).ToArray(), scopedClassSet, nsfw);
                             entries.Add(entry);
@@ -113,11 +91,10 @@ namespace Rant.Vocabulary
                     case DicTokenType.DiffEntry:
                         {
                             if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
-                            if (Util.IsNullOrWhiteSpace(name)) LoadError(path, token, "Missing dictionary name before entry list.");
+                            if (Util.IsNullOrWhiteSpace(name))
+                                LoadError(path, token, "Missing dictionary name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
-                            {
                                 LoadError(path, token, "Encountered empty dictionary entry.");
-                            }
                             header = false;
                             string first = null;
                             entry = new RantDictionaryEntry(token.Value.Split('/')
@@ -151,9 +128,7 @@ namespace Rant.Vocabulary
                                         if (parts.Length != 2) LoadError(path, token, "'weight' property expected a value.");
                                         int weight;
                                         if (!Int32.TryParse(parts[1], out weight))
-                                        {
                                             LoadError(path, token, "Invalid weight value: '" + parts[1] + "'");
-                                        }
                                         entry.Weight = weight;
                                     }
                                     break;
@@ -165,14 +140,10 @@ namespace Rant.Vocabulary
                                                 .Select(s => s.Trim())
                                                 .ToArray();
                                         if (subtypes.Length != pron.Length)
-                                        {
                                             LoadError(path, token, "Pronunciation list length must match subtype count.");
-                                        }
 
                                         for (int i = 0; i < entry.Terms.Length; i++)
-                                        {
                                             entry.Terms[i].Pronunciation = pron[i];
-                                        }
                                     }
                                     break;
                             }
@@ -185,7 +156,7 @@ namespace Rant.Vocabulary
 
         private static void LoadError(string file, Stringe data, string message)
         {
-            throw new InvalidDataException(String.Format("({0}, Line {1}): {2}", Path.GetFileName(file), data.Line, message));
+            throw new InvalidDataException($"({Path.GetFileName(file)}, Line {data.Line}): {message}");
         }
     }
 }

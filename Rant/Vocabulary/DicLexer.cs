@@ -8,7 +8,7 @@ namespace Rant.Vocabulary
 {
     internal static class DicLexer
     {
-        public static IEnumerable<Token<DicTokenType>> Tokenize(string data)
+        public static IEnumerable<Token<DicTokenType>> Tokenize(string source, string data)
         {
             var reader = new StringeReader(data);
             Chare currentChar;
@@ -34,7 +34,7 @@ namespace Rant.Vocabulary
                         yield return new Token<DicTokenType>(DicTokenType.Property, ReadRestOfLine(reader).Trim());
                     break;
                     default:
-                        throw new InvalidDataException($"(Line {currentChar.Line}, Col {currentChar.Column}) Unexpected token: '{currentChar}'.");
+                        throw new InvalidDataException($"{source}: (Line {currentChar.Line}, Col {currentChar.Column}) Unexpected token: '{currentChar}'.");
                 }
             }
             yield return new Token<DicTokenType>(DicTokenType.EOF, "");

@@ -18,7 +18,6 @@ namespace Rant.Vocabulary
         {
             using (var writer = new StreamWriter(path))
             {
-                writer.WriteLine("#version {0}", Version);
                 writer.WriteLine("#name {0}", Name);
                 writer.WriteLine("#subs {0}", Subtypes.Aggregate((c, n) => c + " " + n));
                 writer.WriteLine();
