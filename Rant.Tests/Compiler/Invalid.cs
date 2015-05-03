@@ -79,6 +79,13 @@ namespace Rant.Tests.Compiler
 			RantPattern.FromString(@"<noun->");
 		}
 
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void TooManyCarrierOperators()
+	    {
+	        RantPattern.FromString(@"<noun::!A::@B>");
+	    }
+
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void InvalidCarrierDelete()
