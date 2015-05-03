@@ -1,3 +1,5 @@
+#Rant
+
 <p align="center">
 <img src="http://i.imgur.com/s7RUclL.png" alt="Rant logo"></img>
 </p>
