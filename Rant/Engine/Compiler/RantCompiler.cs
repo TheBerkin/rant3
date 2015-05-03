@@ -426,6 +426,8 @@ namespace Rant.Engine.Compiler
 					// query carriers
 					case R.DoubleColon:
 						{
+							if (type == ReadType.QueryCarrier)
+								SyntaxError(token, "Unexpected carrier operator.");
 							if (type != ReadType.Query) goto default;
 							return Read(ReadType.QueryCarrier, token);
 						}
