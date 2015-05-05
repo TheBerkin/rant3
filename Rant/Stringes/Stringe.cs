@@ -13,8 +13,6 @@ namespace Rant.Stringes
         private readonly Stref _stref;
         private readonly int _offset;
         private readonly int _length;
-        private readonly int _line;
-        private readonly int _column;
         private string _substring;
 
         // Used to cache requested metadata so that we don't have a bunch of unused fields
@@ -141,12 +139,12 @@ namespace Rant.Stringes
         /// <summary>
         /// The 1-based line number at which the stringe begins.
         /// </summary>
-        public int Line => _line;
+        public int Line => _stref.Chares[_offset].Line;
 
         /// <summary>
         /// The 1-based column at which the stringe begins.
         /// </summary>
-        public int Column => _column;
+        public int Column => _stref.Chares[_offset].Column;
 
         /// <summary>
         /// The index at which the stringe ends in the string.
@@ -181,12 +179,10 @@ namespace Rant.Stringes
         /// <param name="value">The string to turn into a stringe.</param>
         public Stringe(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
-            _stref = new Stref(value);
+            if (value == null) throw new ArgumentNullException(nameof(value));
+            _stref = new Stref(this, value);
             _offset = 0;
             _length = value.Length;
-            _line = 1;
-            _column = 1;
             _substring = null;
         }
 
@@ -230,8 +226,6 @@ namespace Rant.Stringes
             _stref = value._stref;
             _offset = value._offset;
             _length = value._length;
-            _line = value._line;
-            _column = value._column;
             _offset = value._offset;
             _substring = value._substring;
         }
@@ -242,38 +236,6 @@ namespace Rant.Stringes
             _offset = parent._offset + relativeOffset;
             _length = length;
             _substring = null;
-
-            // Calculate line/col
-            _line = parent._line;
-            _column = parent._column;
-
-            // If the offset is to the left, the line/col is already calculated. Fetch it from the Chare cache.
-            if (relativeOffset < 0)
-            {
-                _line = _stref.Chares[_offset].Line;
-                _column = _stref.Chares[_offset].Column;
-                return;
-            }
-
-            if (relativeOffset == 0) return; // Do nothing if the offset is the same
-
-            int aOffset;
-
-            for (int i = 0; i < relativeOffset; i++)
-            {
-                aOffset = parent._offset + i;
-                if (_stref.String[aOffset] == '\n')
-                {
-                    _line++;
-                    _column = 1;
-                }
-                else if (_stref.Bases[i]) // Advance column only for non-combining characters
-                {
-                    _column++;
-                }
-                if (_stref.Chares[aOffset] == null)
-                    _stref.Chares[aOffset] = new Chare(parent, _stref.String[aOffset], aOffset, _line, _column);
-            }
         }
 
         /// <summary>
@@ -760,7 +722,7 @@ namespace Rant.Stringes
             public readonly Chare[] Chares;
             public readonly bool[] Bases;
 
-            public Stref(string str)
+            public Stref(Stringe stringe, string str)
             {
                 String = str;
                 Chares = new Chare[str.Length];
@@ -769,6 +731,22 @@ namespace Rant.Stringes
                 while (elems.MoveNext())
                 {
                     Bases[elems.ElementIndex] = true;
+                }
+                var length = str.Length;
+                int line = 1;
+                int col = 1;
+                for (int i = 0; i < length; i++)
+                {
+                    if (str[i] == '\n')
+                    {
+                        line++;
+                        col = 1;
+                    }
+                    else if (Bases[i]) // Advance column only for non-combining characters
+                    {
+                        col++;
+                    }
+                    Chares[i] = new Chare(stringe, str[i], i, line, col);
                 }
             }
         }
