@@ -116,5 +116,11 @@ namespace Rant.Vocabulary
         /// Indicates if the entry is marked as "Not Safe For Work."
         /// </summary>
         public bool NSFW => _nsfw;
+
+        /// <summary>
+        /// Returns a string representation of the current RantDictionaryEntry instance.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => _terms.Any() ? _terms[0].Value : "???";
     }
 }

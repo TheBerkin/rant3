@@ -20,6 +20,7 @@ namespace Rant.Vocabulary
             {
                 writer.WriteLine("#name {0}", Name);
                 writer.WriteLine("#subs {0}", Subtypes.Aggregate((c, n) => c + " " + n));
+                // TODO: Export types for tables
                 writer.WriteLine();
 
                 var entriesClean = GetEntries().Where(entry => !entry.NSFW);

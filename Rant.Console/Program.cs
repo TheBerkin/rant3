@@ -41,9 +41,10 @@ namespace RantConsole
                 if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH, RantEngine.DefaultNsfwFilter);
                 if (!String.IsNullOrEmpty(PKG_PATH)) rant.LoadPackage(PKG_PATH);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine($"Failed to load content: {ex}");
+                ForegroundColor = ConsoleColor.Cyan;
+                WriteLine($"Dictionary load error: {e.Message}");
             }
 
             rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
@@ -76,92 +77,94 @@ namespace RantConsole
 
         static void PrintOutput(RantEngine engine, string source, bool isFile = false)
         {
-	        try
-	        {
-				var sw = new Stopwatch();
+            try
+            {
+                var sw = new Stopwatch();
 
-		        sw.Start();
-				var pattern = isFile
-			        ? RantPattern.FromFile(source)
-			        : RantPattern.FromString(source);
-		        sw.Stop();
-		        var compileTime = sw.Elapsed;
-				
-				sw.Restart();
-		        var output = USE_SEED
-					? engine.Do(pattern, SEED, 0, PATTERN_TIMEOUT)
-					: engine.Do(pattern, 0, PATTERN_TIMEOUT);
-		        sw.Stop();
+                sw.Start();
+                var pattern = isFile
+                    ? RantPattern.FromFile(source)
+                    : RantPattern.FromString(source);
+                sw.Stop();
+                var compileTime = sw.Elapsed;
 
-		        var runTime = sw.Elapsed;
+                sw.Restart();
+                var output = USE_SEED
+                    ? engine.Do(pattern, SEED, 0, PATTERN_TIMEOUT)
+                    : engine.Do(pattern, 0, PATTERN_TIMEOUT);
+                sw.Stop();
 
-				bool writeToFile = !String.IsNullOrEmpty(Property("out"));
-				foreach (var chan in output)
-				{
-					if (chan.Name != "main")
-					{
-						if (Flag("main")) continue;
-						if (!writeToFile)
-						{
-							ForegroundColor = ConsoleColor.DarkCyan;
-							WriteLine($"{chan.Name} ({chan.Visiblity}):");
-							ResetColor();
-						}
-					}
-					ForegroundColor = ConsoleColor.Green;
-					if (chan.Length > 0)
-					{
-						if (pattern.Type == RantPatternSource.File && writeToFile)
-						{
-							var path = Property("out");
-							File.WriteAllText(Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)
-								+ (chan.Name != "main" ? $".{chan.Name}" : "" + "." + Path.GetExtension(path))), chan.Value);
-						}
-						else
-						{
-							WriteLine(chan.Value);
-						}
-					}
-					else if (!writeToFile)
-					{
-						ForegroundColor = ConsoleColor.DarkGray;
-						if (pattern.Type != RantPatternSource.File) WriteLine("[Empty]");
-					}
-					ResetColor();
-					WriteLine();
-				}
+                var runTime = sw.Elapsed;
 
-				if ((pattern.Type != RantPatternSource.File || Flag("wait")) && !Flag("nostats"))
-				{
-					PrintStats(
-						new Stat("Seed", 
-						$"{output.Seed:X16}{(output.BaseGeneration != 0 ? ":" + output.BaseGeneration : String.Empty)}"),
-						new Stat("Compile Time", compileTime.ToString("c")),
-						new Stat("Run Time", runTime.ToString("c"))
-						);
-					WriteLine();
-				}
-			}
+                bool writeToFile = !String.IsNullOrEmpty(Property("out"));
+                foreach (var chan in output)
+                {
+                    if (chan.Name != "main")
+                    {
+                        if (Flag("main")) continue;
+                        if (!writeToFile)
+                        {
+                            ForegroundColor = ConsoleColor.DarkCyan;
+                            WriteLine($"{chan.Name} ({chan.Visiblity}):");
+                            ResetColor();
+                        }
+                    }
+                    ForegroundColor = ConsoleColor.Green;
+                    if (chan.Length > 0)
+                    {
+                        if (pattern.Type == RantPatternSource.File && writeToFile)
+                        {
+                            var path = Property("out");
+                            File.WriteAllText(
+                                Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)
+                                                                          +
+                                                                          (chan.Name != "main"
+                                                                              ? $".{chan.Name}"
+                                                                              : "" + "." + Path.GetExtension(path))),
+                                chan.Value);
+                        }
+                        else
+                        {
+                            WriteLine(chan.Value);
+                        }
+                    }
+                    else if (!writeToFile)
+                    {
+                        ForegroundColor = ConsoleColor.DarkGray;
+                        if (pattern.Type != RantPatternSource.File) WriteLine("[Empty]");
+                    }
+                    ResetColor();
+                    WriteLine();
+                }
+
+                if ((pattern.Type != RantPatternSource.File || Flag("wait")) && !Flag("nostats"))
+                {
+                    PrintStats(
+                        new Stat("Seed",
+                            $"{output.Seed:X16}{(output.BaseGeneration != 0 ? ":" + output.BaseGeneration : String.Empty)}"),
+                        new Stat("Compile Time", compileTime.ToString("c")),
+                        new Stat("Run Time", runTime.ToString("c"))
+                        );
+                    WriteLine();
+                }
+            }
 #if !DEBUG
-	        catch (Exception e)
-	        {
-		        if (e is RantRuntimeException)
-		        {
-			        ForegroundColor = ConsoleColor.Red;
-			        WriteLine($"Runtime error: {e.Message}");
-		        }
-		        else if (e is RantCompilerException)
-		        {
-			        ForegroundColor = ConsoleColor.Yellow;
-			        WriteLine($"Compiler error: {e.Message}");
-		        }
-		        else
-		        {
-			        WriteLine(e.ToString()); // Print the whole stack trace if it isn't a Rant error
-		        }
-	        }
+            catch (RantRuntimeException e)
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine($"Runtime error: {e.Message}");
+            }
+            catch (RantCompilerException e)
+            {
+                ForegroundColor = ConsoleColor.Yellow;
+                WriteLine($"Compiler error: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                WriteLine(e.ToString()); // Print the whole stack trace if it isn't a Rant error
+            }
 #endif
-	        finally
+            finally
 	        {
 				ResetColor();
 			}

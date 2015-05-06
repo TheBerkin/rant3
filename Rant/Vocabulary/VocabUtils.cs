@@ -1,12 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Rant.Vocabulary
 {
     internal static class VocabUtils
     {
         private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
+
+        public static IEnumerable<string> GetArgs(string argString)
+        {
+            if (argString.Length == 0) yield break;
+            bool escape = false;
+            bool scope = false;
+            bool scopeUsed = false;
+            int length = argString.Length;
+            int i = 0;
+            var sb = new StringBuilder();
+            do
+            {
+                if (i >= length || (Char.IsWhiteSpace(argString[i]) && !scope))
+                {
+                    if (sb.Length == 0 && !scopeUsed) continue;
+                    yield return sb.ToString();
+                    sb.Length = 0;
+                    scopeUsed = false;
+                }
+                else if (!escape && argString[i] == '\\')
+                {
+                    escape = true;
+                }
+                else if (escape)
+                {
+                    sb.Append(argString[i]);
+                    escape = false;
+                }
+                else if (argString[i] == '"')
+                {
+                    scope = !scope;
+                    scopeUsed = true;
+                }
+                else
+                {
+                    sb.Append(argString[i]);
+                }
+            } while (i++ <= length);
+        } 
 
         public static string GetString(string str)
         {
