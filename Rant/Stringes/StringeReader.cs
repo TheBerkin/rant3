@@ -217,7 +217,8 @@ namespace Rant.Stringes
         public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
         {
             if (String.IsNullOrEmpty(value)) return false;
-            return _stringe.IndexOf(value, _pos, strcmp) == _pos;
+            return _pos + value.Length <= _stringe.Length 
+                && String.Equals(_stringe.Substringe(_pos, value.Length).Value, value, strcmp);
         }
 
         /// <summary>
