@@ -25,7 +25,7 @@ namespace Rant.Engine.Compiler
 		{
 			_sourceName = sourceName;
 			_source = source;
-			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(source.ToStringe()));
+			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
 		}
 
 		private enum ReadType

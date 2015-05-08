@@ -86,6 +86,27 @@ namespace Rant.Tests.Compiler
 	        RantPattern.FromString(@"<noun::!A::@B>");
 	    }
 
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void MissingQuantifierComma()
+	    {
+	        RantPattern.FromString(@"\123a");
+	    }
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void UnterminatedConstantLiteral()
+	    {
+	        RantPattern.FromString("\"");
+	    }
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void UnterminatedRegex()
+	    {
+	        RantPattern.FromString("`");
+	    }
+
 	    [TestCase(".")]
         [TestCase(")")]
         [TestCase("FOO")]

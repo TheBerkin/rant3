@@ -78,7 +78,8 @@ namespace Rant.Engine.Compiler
                         if (!reader.Eat('\\')) return false;
                         if (reader.EatWhile(Char.IsDigit))
                         {
-                            if (!reader.Eat(',')) return false; // TODO: Create compiler error here
+                            if (!reader.Eat(','))
+                                throw new RantCompilerException(reader.Origin, reader.Stringe.Substringe(reader.Position, 1), "Expected ',' after quantifier.");
                         }
                         if (reader.Eat('u'))
                         {   
@@ -101,12 +102,14 @@ namespace Rant.Engine.Compiler
                     reader =>
                     {
                         if (!reader.Eat('`')) return false;
+                        var token = reader.Stringe.Substringe(reader.Position - 1, 1);
                         while (!reader.EndOfStringe)
                         {
                             reader.EatAll("\\`");
                             if (reader.ReadChare() == '`') break;
                         }
-                        if (reader.EndOfStringe) return false; // TODO: Create compiler error here
+                        if (reader.EndOfStringe) 
+                            throw new RantCompilerException(reader.Origin, token, "Unterminated regular expression.");
                         reader.Eat('i');
                         return true;
                     }, R.Regex
@@ -115,13 +118,14 @@ namespace Rant.Engine.Compiler
                 {
                     reader =>
                     {
-                        if (!reader.IsNext('"')) return false;
+                        if (!reader.Eat('"')) return false;
+                        var token = reader.Stringe.Substringe(reader.Position - 1, 1);
                         while (!reader.EndOfStringe)
                         {
                             reader.EatAll("\"\"");
                             if (reader.ReadChare() == '"') return true;
                         }
-                        return false; // TODO: Create compiler error here
+                        throw new RantCompilerException(reader.Origin, token, "Unterminated constant literal.");
                     }, R.ConstantLiteral
                 },
                 {"[", R.LeftSquare}, {"]", R.RightSquare},
@@ -165,11 +169,15 @@ namespace Rant.Engine.Compiler
         /// <summary>
         /// Generates beautiful tokens.
         /// </summary>
+        /// <param name="name">The source name of the input.</param>
         /// <param name="input">The input string to tokenize.</param>
         /// <returns></returns>
-        public static IEnumerable<Token<R>> GenerateTokens(Stringe input)
+        public static IEnumerable<Token<R>> GenerateTokens(string name, Stringe input)
         {
-            var reader = new StringeReader(input);
+            var reader = new StringeReader(input)
+            {
+                Origin = name
+            };
             while (!reader.EndOfStringe)
             {
                 yield return reader.ReadToken(Rules);

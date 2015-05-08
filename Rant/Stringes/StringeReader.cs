@@ -13,6 +13,16 @@ namespace Rant.Stringes
         private int _pos;
 
         /// <summary>
+        /// Gets or sets a string describing where the stringe originated from. Used for exception messages.
+        /// </summary>
+	    public string Origin { get; set; } = String.Empty;
+
+        /// <summary>
+        /// The stringe being read by the current instance.
+        /// </summary>
+	    public Stringe Stringe => _stringe;
+
+        /// <summary>
         /// Creates a new StringeReader instance using the specified string as input.
         /// </summary>
         /// <param name="value">The string to use as input. This will be converted to a root-level stringe.</param>
