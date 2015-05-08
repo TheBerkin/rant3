@@ -78,8 +78,10 @@ namespace Rant.Engine.Compiler
                         if (!reader.Eat('\\')) return false;
                         if (reader.EatWhile(Char.IsDigit))
                         {
+                            if (reader.Eat('.')) reader.EatWhile(Char.IsDigit);
+                            reader.EatAny('k', 'M', 'B');
                             if (!reader.Eat(','))
-                                throw new RantCompilerException(reader.Origin, reader.Stringe.Substringe(reader.Position, 1), "Expected ',' after quantifier.");
+                                throw new RantCompilerException(reader.Origin, reader.Stringe.Substringe(reader.Position - 1, 1), "Expected ',' after quantifier.");
                         }
                         if (reader.Eat('u'))
                         {   
