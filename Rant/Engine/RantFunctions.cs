@@ -491,5 +491,29 @@ namespace Rant.Engine
 		{
 			sb.CurrentBlockAttribs.Persistence = persistence;
 		}
+
+	    [RantFunction]
+	    [RantDescription("Loads and runs a pattern from cache or file.")]
+	    private static IEnumerator<RantAction> Import(Sandbox sb, string name)
+	    {
+	        RantAction action;
+
+	        try
+	        {
+	            action = sb.Engine.GetPattern(name).Action;
+	        }
+	        catch (RantCompilerException e)
+	        {
+                throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, 
+                    $"Failed to compile imported pattern '{name}':\n{e.Message}");
+	        }
+	        catch (Exception e)
+	        {
+	            throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, 
+                    $"Failed to import '{name}':\n{e.Message}");
+	        }
+
+	        yield return action;
+	    }
 	}
 }

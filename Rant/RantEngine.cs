@@ -5,6 +5,7 @@ using System.Linq;
 
 using Rant.Engine;
 using Rant.Engine.ObjectModel;
+using Rant.Engine.Syntax;
 using Rant.Formats;
 using Rant.Vocabulary;
 
@@ -35,8 +36,20 @@ namespace Rant
         internal readonly ObjectTable Objects = new ObjectTable();
 
         private readonly NsfwFilter _filter = DefaultNsfwFilter;
-        private Dictionary<string, RantPattern> PackagePatterns;
+        private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
 		private IRantDictionary _dictionary;
+
+        /// <summary>
+        /// Returns a pattern with the specified name from the engine's cache. If the pattern doesn't exist, it is loaded from file.
+        /// </summary>
+        /// <param name="name">The name or path of the pattern to retrieve.</param>
+        /// <returns></returns>
+        internal RantPattern GetPattern(string name)
+        {
+            RantPattern pattern;
+            if (_patternCache.TryGetValue(name, out pattern)) return pattern;
+            return _patternCache[name] = RantPattern.FromFile(name);
+        }
 
 		/// <summary>
 		/// Accesses global variables.
@@ -125,8 +138,8 @@ namespace Rant
         /// <returns></returns>
         public bool PatternExists(string patternName)
         {
-            if (PackagePatterns == null) return false;
-            return PackagePatterns.ContainsKey(patternName);
+            if (_patternCache == null) return false;
+            return _patternCache.ContainsKey(patternName);
         }
 
         /// <summary>
@@ -143,10 +156,8 @@ namespace Rant
 
             if (patterns.Any())
             {
-                PackagePatterns = PackagePatterns ?? new Dictionary<string, RantPattern>();
-
                 foreach (var pattern in patterns)
-                    PackagePatterns[pattern.Name] = pattern;
+                    _patternCache[pattern.Name] = pattern;
             }
 
             if (tables.Any())
@@ -187,10 +198,8 @@ namespace Rant
 
             if (patterns.Any())
             {
-                PackagePatterns = PackagePatterns ?? new Dictionary<string, RantPattern>();
-
                 foreach (var pattern in patterns)
-                    PackagePatterns[pattern.Name] = pattern;
+                    _patternCache[pattern.Name] = pattern;
             }
 
             if (tables.Any())
@@ -358,7 +367,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, PackagePatterns[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
         }
 
         /// <summary>
@@ -374,7 +383,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, PackagePatterns[patternName], new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit), timeout);
         }
 
         /// <summary>
@@ -390,7 +399,7 @@ namespace Rant
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, PackagePatterns[patternName], rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit), timeout);
         }
         #endregion
 

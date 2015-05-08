@@ -98,6 +98,11 @@ namespace Rant.Engine
 		/// </summary>
 		public SyncManager SyncManager => _syncManager;
 
+        /// <summary>
+        /// Gets the current RantAction being executed.
+        /// </summary>
+        public RantAction CurrentAction { get; private set; }
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_engine = engine;
@@ -188,6 +193,7 @@ namespace Rant.Engine
 			sw.Start();
 
 			// Push the AST root
+		    CurrentAction = _pattern.Action;
 			callStack.Push(_pattern.Action.Run(this));
 
 			top:
@@ -208,6 +214,7 @@ namespace Rant.Engine
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 
 					// Push child node onto stack and start over
+				    CurrentAction = action.Current;
 					callStack.Push(action.Current.Run(this));
 					goto top;
 				}
