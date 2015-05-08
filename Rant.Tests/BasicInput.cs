@@ -9,37 +9,37 @@ namespace Rant.Tests
         [Test]
         public void RawText()
         {
-            Assert.AreEqual(rant.Do(@"Hello world").MainValue, "Hello world");
+            Assert.AreEqual("Hello world", rant.Do(@"Hello world").MainValue);
         }
 
         [Test]
         public void BlockText()
         {
-            Assert.AreEqual(rant.Do(@"{Hello} world").MainValue, "Hello world");
+            Assert.AreEqual("Hello world", rant.Do(@"{Hello} world").MainValue);
         }
 
         [Test]
         public void Blackspace()
         {
-            Assert.AreEqual(rant.Do("A\n  B\nC  \n  D  ").MainValue, "ABCD");
+            Assert.AreEqual("ABCD", rant.Do("A\n  B\nC  \n  D  ").MainValue);
         }
 
         [Test]
         public void Comments()
         {
-            Assert.AreEqual(rant.Do("#This is a comment.\nHello world # This is another comment.").MainValue, "Hello world");
+            Assert.AreEqual("Hello world", rant.Do("#This is a comment.\nHello world # This is another comment.").MainValue);
         }
 
         [Test]
         public void BlockTextWithBlackspace()
         {
-            Assert.AreEqual(rant.Do(@"{  Hello  } world").MainValue, "Hello world");
+            Assert.AreEqual("Hello world", rant.Do(@"{  Hello  } world").MainValue);
         }
 
         [Test]
         public void EscapeSequences()
         {
-            Assert.AreEqual(rant.Do(@"\[Lorem ipsum\]").MainValue, "[Lorem ipsum]");
+            Assert.AreEqual("[Lorem ipsum]", rant.Do(@"\[Lorem ipsum\]").MainValue);
         }
 
 		[Test]
@@ -57,13 +57,13 @@ namespace Rant.Tests
 		[Test]
         public void QuantifiedEscapeSequence()
         {
-            Assert.AreEqual(rant.Do(@"\24,=").MainValue, "========================");
+            Assert.AreEqual("========================", rant.Do(@"\24,=").MainValue);
         }
 
         [Test]
         public void Whitespace()
         {
-            Assert.AreEqual(rant.Do(@"  { \s \s \4,s  }   ").MainValue, "        ");
+            Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s  }   ").MainValue);
         }
     }
 }

@@ -112,6 +112,24 @@ namespace Rant.Stringes
             return true;
         }
 
+	    public bool EatExactlyWhere(Func<char, bool> predicate, int count)
+	    {
+            if (EndOfStringe || !predicate(PeekChare().Character)) return false;
+	        int oldPos = _pos;
+	        int n = 0;
+            do
+            {
+                _pos++;
+                n++;
+            } while (!EndOfStringe && predicate(PeekChare().Character) && n < count);
+	        if (n < count)
+	        {
+	            _pos = oldPos;
+	            return false;
+	        }
+            return true;
+        }
+
         public bool EatAll(char value)
         {
             if (PeekChare() != value) return false;
@@ -119,6 +137,27 @@ namespace Rant.Stringes
             {
                 _pos++;
             } while (PeekChare() == value);
+            return true;
+        }
+
+	    public bool EatAny(params char[] values)
+	    {
+	        if (!EndOfStringe && values.Any(c => _stringe[_pos].Character == c))
+	        {
+	            _pos++;
+	            return true;
+	        }
+	        return false;
+	    }
+
+	    public bool EatAll(params char[] values)
+	    {
+	        if (EndOfStringe) return false;
+	        if (!values.Any(c => _stringe[_pos].Character == c)) return false;
+            do
+            {
+                _pos++;
+            } while (values.Any(c => _stringe[_pos].Character == c));
             return true;
         }
 
@@ -209,6 +248,13 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Indicates whether any of the specified characters occur at the reader's current position.
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <returns></returns>
+	    public bool IsNext(params char[] chars) => !EndOfStringe && chars.Any(c => _stringe[_pos].Character == c);
+
+        /// <summary>
         /// Indicates whether the specified string occurs at the reader's current position.
         /// </summary>
         /// <param name="value">The string to test for.</param>
@@ -264,12 +310,26 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Returns a boolean value indicating whether the previous character matches the specified character.
+        /// </summary>
+        /// <param name="c">The character to test for.</param>
+        /// <returns></returns>
+	    public bool WasLast(char c) => _pos > 0 && _stringe[_pos - 1].Character == c;
+
+	    /// <summary>
+        /// Returns a boolean value indicating whether the previous character matches any of the specified characters.
+        /// </summary>
+        /// <param name="chars">The characters to test for.</param>
+        /// <returns></returns>
+        public bool WasLast(params char[] chars) => _pos > 0 && chars.Any(c => _stringe[_pos - 1].Character == c);
+
+	    /// <summary>
         /// Reads the next token from the current position, then advances the position past it.
         /// </summary>
         /// <typeparam name="T">The token identifier type to use.</typeparam>
         /// <param name="rules">The lexer to use.</param>
         /// <returns></returns>
-        
+
         public Token<T> ReadToken<T>(Lexer<T> rules) where T : struct
         {
             readStart:
@@ -367,14 +427,24 @@ namespace Rant.Stringes
                 if (rules.FunctionList.Any())
                 {
                     int origPos = _pos;
-
+                    
                     foreach (var fn in rules.FunctionList)
                     {
                         if (fn.Item1(this))
                         {
+                            // Return undefined token if present
+                            if (captureUndef && u < origPos)
+                            {
+                                _pos = origPos;
+                                if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                                return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                    rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, origPos)));
+                            }
+
                             if (rules.IgnoreRules.Contains(fn.Item2)) goto readStart;
                             return new Token<T>(fn.Item2, _stringe.Slice(origPos, _pos));
                         }
+
                         // Reset for next function
                         _pos = origPos;
                     }

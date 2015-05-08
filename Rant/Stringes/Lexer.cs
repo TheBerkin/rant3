@@ -92,7 +92,7 @@ namespace Rant.Stringes
 		/// <param name="endTokenValue">The value string to assign to the end token.</param>
 		public void AddEndToken(T endTokenId, string endTokenValue)
 		{
-			if (endTokenValue == null) throw new ArgumentNullException("endTokenValue");
+			if (endTokenValue == null) throw new ArgumentNullException(nameof(endTokenValue));
 			if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
 			_endToken = _.Create(endTokenValue, endTokenId);
 		}
@@ -133,7 +133,7 @@ namespace Rant.Stringes
         public void Add(string[] symbols, T value, SymbolPriority priority = SymbolPriority.Last)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            if (symbols == null) throw new ArgumentNullException("symbols");
+            if (symbols == null) throw new ArgumentNullException(nameof(symbols));
             if (symbols.Length == 0) throw new ArgumentException("Tried to use an empty symbol array.");
             foreach (var s in symbols)
             {
@@ -170,7 +170,7 @@ namespace Rant.Stringes
         public void Add(string[] symbols, T value, bool ignoreCase, SymbolPriority priority = SymbolPriority.Last)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            if (symbols == null) throw new ArgumentNullException("symbols");
+            if (symbols == null) throw new ArgumentNullException(nameof(symbols));
             if (symbols.Length == 0) throw new ArgumentException("Tried to use an empty symbol array.");
             foreach (var s in symbols)
             {
@@ -190,7 +190,7 @@ namespace Rant.Stringes
         public void Add(Regex regex, T value, int priority = DefaultPriority)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            if (regex == null) throw new ArgumentNullException("regex");
+            if (regex == null) throw new ArgumentNullException(nameof(regex));
             if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists.");
             
             _regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
@@ -205,8 +205,8 @@ namespace Rant.Stringes
         public void Add(Regex regex, Func<Match, T> generator, int priority = DefaultPriority)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            if (regex == null) throw new ArgumentNullException("regex");
-            if (generator == null) throw new ArgumentNullException("generator");
+            if (regex == null) throw new ArgumentNullException(nameof(regex));
+            if (generator == null) throw new ArgumentNullException(nameof(generator));
             if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists."); 
             _regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
         }
@@ -220,7 +220,7 @@ namespace Rant.Stringes
         public void Add(Func<StringeReader, bool> func, T value, int priority = DefaultPriority)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-            if (func == null) throw new ArgumentNullException("func");
+            if (func == null) throw new ArgumentNullException(nameof(func));
             _functions.Add(_.Create(func, value, priority));
         }
 
@@ -255,7 +255,7 @@ namespace Rant.Stringes
             _listNormal = _listNormal.OrderByDescending(t => t.Item1.Length).ToList();
             _listHigh = _listHigh.OrderByDescending(t => t.Item1.Length).ToList();
             _regexes = _regexes.OrderByDescending(r => r.Item3).ToList();
-            _functions = _functions.OrderByDescending(t => t.Item2).ToList();
+            _functions = _functions.OrderByDescending(t => t.Item3).ToList();
             _sorted = true;
         }
 

@@ -53,7 +53,7 @@ namespace RantConsole
             {
                 try
                 {
-                    PrintOutput(rant, FILE);                
+                    PrintOutput(rant, File.ReadAllText(FILE));                
                 }
                 catch (Exception ex)
                 {

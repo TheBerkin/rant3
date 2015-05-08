@@ -21,7 +21,6 @@ namespace Rant.Engine.Syntax
 			{'b', (sb, c) => sb.Print(new string('\b', c))},
 			{'f', (sb, c) => sb.Print(new string('\f', c))},
 			{'v', (sb, c) => sb.Print(new string('\v', c))},
-			{'0', (sb, c) => sb.Print(new string('\0', c))},
 			{'s', (sb, c) => sb.Print(new string(' ', c))},
 			{'d', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(48, 58)), c)},
 			{'D', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(49, 58)), c)},
