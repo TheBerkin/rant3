@@ -10,6 +10,11 @@ namespace Rant.Vocabulary
 	{
 		private readonly List<ClassFilterRule[]> _items = new List<ClassFilterRule[]>();
 
+        /// <summary>
+        /// Gets a boolean value indicating whether there are any rules added to the current ClassFilter instance.
+        /// </summary>
+	    public bool IsEmpty => _items.Count == 0;
+
 		/// <summary>
 		/// Adds a single-class rule to the filter.
 		/// </summary>

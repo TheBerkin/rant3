@@ -320,12 +320,17 @@ namespace Rant.Engine.Compiler
 					case R.Hyphen:
 						{
 							if (type != ReadType.Query) goto default;
-							bool negative = _reader.Take(R.Exclamation);
-							if (_query.Exclusive && negative)
-								throw new RantCompilerException(_sourceName, token,
-									"You can't define a negative class filter in an exclusive query.");
-							var className = _reader.ReadLoose(R.Text, "class name");
-							_query.ClassFilter.AddRuleSwitch(new ClassFilterRule(className.Value, !negative));
+						    var filterParts = new List<ClassFilterRule>();
+						    do
+						    {
+                                bool negative = _reader.Take(R.Exclamation);
+                                if (_query.Exclusive && negative)
+                                    throw new RantCompilerException(_sourceName, token,
+                                        "You can't define a negative class filter in an exclusive query.");
+                                var className = _reader.ReadLoose(R.Text, "class name");
+						        filterParts.Add(new ClassFilterRule(className.Value, !negative));
+						    } while (_reader.TakeLoose(R.Pipe));
+							_query.ClassFilter.AddRuleSwitch(filterParts.ToArray());
 						}
 						break;
 					// query regex filters

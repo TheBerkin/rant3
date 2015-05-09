@@ -9,6 +9,12 @@ namespace Rant.Vocabulary
     {
         private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
 
+        public static RantDictionaryEntry PickEntry(this IEnumerable<RantDictionaryEntry> enumerable, RNG rng)
+        {
+            var array = enumerable as RantDictionaryEntry[] ?? enumerable.ToArray();
+            return array[rng.Next(array.Length)];
+        }
+
         public static IEnumerable<string> GetArgs(string argString)
         {
             if (argString.Length == 0) yield break;
