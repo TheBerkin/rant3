@@ -137,7 +137,7 @@ namespace Rant.Engine
 			[RantDescription("The number of times to repeat the next block.")]
 			int times)
 		{
-			sb.CurrentBlockAttribs.Repetitons = times;
+			sb.CurrentBlockAttribs.Repetitions = times;
 		}
 
 		[RantFunction]
@@ -159,7 +159,7 @@ namespace Rant.Engine
 		[RantFunction("rs")]
 		private static void RepSep(Sandbox sb, int times, RantAction separator)
 		{
-			sb.CurrentBlockAttribs.Repetitons = times;
+			sb.CurrentBlockAttribs.Repetitions = times;
 			sb.CurrentBlockAttribs.Separator = separator;
 		}
 

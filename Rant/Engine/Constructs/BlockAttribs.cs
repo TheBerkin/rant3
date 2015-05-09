@@ -6,7 +6,7 @@ namespace Rant.Engine.Constructs
     {
 	    private int _reps;
 
-	    public int Repetitons
+	    public int Repetitions
 	    {
 		    get { return _reps; }
 		    set
@@ -32,7 +32,7 @@ namespace Rant.Engine.Constructs
 
 	    public void SetDefaults()
 	    {
-			Repetitons = 1;
+			Repetitions = 1;
 		    RepEach = false;
 			Chance = 100;
 			Separator = null;

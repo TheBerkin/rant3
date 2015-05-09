@@ -62,8 +62,8 @@ namespace Rant.Engine.Syntax
 		{
 			var attribs = sb.NextAttribs();
 			int next = -1;
-			int reps = attribs.RepEach ? _items.Count : attribs.Repetitons;
-			var block = new BlockState(attribs.Repetitons);
+			int reps = attribs.RepEach ? _items.Count : attribs.Repetitions;
+			var block = new BlockState(attribs.Repetitions);
 			double weightSum = _constantWeightSum;
 
 			if (attribs.Start != null) yield return attribs.Start;
