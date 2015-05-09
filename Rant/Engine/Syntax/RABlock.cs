@@ -125,6 +125,13 @@ namespace Rant.Engine.Syntax
 			sb.Blocks.Pop();
 
 			if (attribs.End != null) yield return attribs.End;
+
+            switch (attribs.Persistence)
+            {
+                case AttribPersistence.Outer:
+                    sb.RestoreAttribs();
+                    break;
+            }
 		}
 	}
 }
