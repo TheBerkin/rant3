@@ -41,5 +41,33 @@ namespace Rant.Tests
 			Assert.AreEqual("0, 1, 2, 3",
 				rant.Do(@"[depth], {[depth]}, {{[depth]}}, {{{[depth]}}}").MainValue);
 		}
-	}
+
+        [Test]
+        public void PersistenceOn()
+        {
+            Assert.AreEqual("aaabbb",
+                rant.Do(@"[persist:on][r:3]{a}{b}").MainValue);
+        }
+
+        [Test]
+        public void PersistenceOff()
+        {
+            Assert.AreEqual("aaab",
+                rant.Do(@"[persist:off][r:3]{a}{b}").MainValue);
+        }
+
+        [Test]
+        public void PersistenceOnce()
+        {
+            Assert.AreEqual("aaabbbc",
+                rant.Do(@"[persist:once][r:3]{a}{b}{c}").MainValue);
+        }
+
+        [Test]
+        public void PersistenceOuter()
+        {
+            Assert.AreEqual("ababab",
+                rant.Do(@"[persist:outer][r:3]{{a}{b}}").MainValue);
+        }
+    }
 }
