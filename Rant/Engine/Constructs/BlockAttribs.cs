@@ -24,7 +24,6 @@ namespace Rant.Engine.Constructs
         public Synchronizer Sync { get; set; }
 		public int Chance { get; set; }
 		public AttribPersistence Persistence { get; set; }
-        public bool Keeping { get; set; }
 
         public BlockAttribs()
         {
@@ -43,7 +42,6 @@ namespace Rant.Engine.Constructs
 		    Start = null;
 		    End = null;
 		    Persistence = AttribPersistence.Off;
-            Keeping = false;
 	    }
 
 		/// <summary>

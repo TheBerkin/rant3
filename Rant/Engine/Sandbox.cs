@@ -33,8 +33,8 @@ namespace Rant.Engine
 		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
 		private readonly SyncManager _syncManager;
 
-		private BlockAttribs _blockAttribs = new BlockAttribs();
-        private Stack<BlockAttribs> _storedAttribs;
+		private BlockAttribs _newAttribs = new BlockAttribs();
+        private BlockManager _blockManager;
 		private int _quoteLevel = 0;
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace Rant.Engine
 		/// <summary>
 		/// Gets the currently set block attributes. 
 		/// </summary>
-		public BlockAttribs CurrentBlockAttribs => _blockAttribs;
+		public BlockAttribs CurrentBlockAttribs => _newAttribs;
 
 		/// <summary>
 		/// Gets the format used by the interpreter.
@@ -121,7 +121,7 @@ namespace Rant.Engine
 			_queryState = new QueryState();
 			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
 			_syncManager = new SyncManager(this);
-            _storedAttribs = new Stack<BlockAttribs>();
+            _blockManager = new BlockManager();
 		}
 
 		/// <summary>
@@ -172,41 +172,30 @@ namespace Rant.Engine
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
 		/// </summary>
 		/// <returns></returns>
-		public BlockAttribs NextAttribs()
+		public BlockAttribs NextAttribs(RABlock block)
 		{
-			var ba = _blockAttribs;
-			switch (ba.Persistence)
-			{
-				case AttribPersistence.Off: // consume the attribs after being retrieved
-					_blockAttribs = new BlockAttribs();
-					break;
+            BlockAttribs attribs = _newAttribs;
 
-                case AttribPersistence.On: // keep the current attribs AKA don't do anything to it
+            _blockManager.Add(attribs, block);
+            _blockManager.SetPrevAttribs(attribs);
+            
+            switch (attribs.Persistence)
+            {
+                case AttribPersistence.Off:
+                    _newAttribs = new BlockAttribs();
                     break;
 
-                case AttribPersistence.Once: // keeps the attribs once
-                    if (_blockAttribs.Keeping)
-                    {
-                        _blockAttribs = new BlockAttribs();
-                        break;
-                    }
-
-                    _blockAttribs.Keeping = true;
+                case AttribPersistence.On:
+                    _newAttribs = new BlockAttribs();
                     break;
 
-                case AttribPersistence.Outer: // store the attribs away and consume them
-                    _storedAttribs.Push(_blockAttribs);
-                    _blockAttribs = new BlockAttribs();
+                case AttribPersistence.Once:
+                    _newAttribs = _blockManager.GetPrevious(1);
                     break;
+            }
 
-			}
-			return ba;
+            return attribs;
 		}
-
-        public void RestoreAttribs()
-        {
-            _blockAttribs = _storedAttribs.Pop();
-        }
 
 		public RantOutput Run(double timeout)
 		{

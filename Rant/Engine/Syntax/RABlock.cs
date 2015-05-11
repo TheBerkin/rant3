@@ -58,9 +58,9 @@ namespace Rant.Engine.Syntax
 			}
 		}
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+        public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			var attribs = sb.NextAttribs();
+			var attribs = sb.NextAttribs(this);
 			int next = -1;
 			int reps = attribs.RepEach ? _items.Count : attribs.Repetitions;
 			var block = new BlockState(attribs.Repetitions);
@@ -125,13 +125,6 @@ namespace Rant.Engine.Syntax
 			sb.Blocks.Pop();
 
 			if (attribs.End != null) yield return attribs.End;
-
-            switch (attribs.Persistence)
-            {
-                case AttribPersistence.Outer:
-                    sb.RestoreAttribs();
-                    break;
-            }
 		}
 	}
 }
