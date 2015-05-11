@@ -112,7 +112,28 @@ namespace Rant.Engine
 			}
 		}
 
-		[RantFunction]
+        [RantFunction("numfmt")]
+        private static IEnumerator<RantAction> NumberFormatRange(Sandbox sb, NumberFormat format, RantAction rangeAction)
+        {
+            var oldChannelMap = sb.CurrentOutput.GetActive()
+                .ToDictionary(ch => ch.Name, ch => ch.NumberFormatter.NumberFormat);
+
+            foreach (var channel in sb.CurrentOutput.GetActive())
+            {
+                channel.NumberFormatter.NumberFormat = format;
+            }
+
+            yield return rangeAction;
+
+            NumberFormat fmt;
+            foreach (var channel in sb.CurrentOutput.GetActive())
+            {
+                if (!oldChannelMap.TryGetValue(channel.Name, out fmt)) continue;
+                channel.NumberFormatter.NumberFormat = fmt;
+            }
+        }
+
+        [RantFunction]
 		private static void Digits(Sandbox sb, BinaryFormat format, int digits)
 		{
 			foreach (var channel in sb.CurrentOutput.GetActive())
