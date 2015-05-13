@@ -206,7 +206,7 @@ namespace Rant.Engine
 		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
 		private static void Chance(Sandbox sb, 
 			[RantDescription("The percent probability that the next block will execute.")]
-			int chance)
+			double chance)
 		{
 			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 		}

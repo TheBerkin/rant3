@@ -22,7 +22,7 @@ namespace Rant.Engine.Constructs
         public RantAction After { get; set; }
 		public RantAction End { get; set; }
         public Synchronizer Sync { get; set; }
-		public int Chance { get; set; }
+		public double Chance { get; set; }
 		public AttribPersistence Persistence { get; set; }
 
         public BlockAttribs()
@@ -52,7 +52,7 @@ namespace Rant.Engine.Constructs
 		/// <returns></returns>
 		public int NextIndex(int blockItemCount, RNG rng)
 	    {
-			if (Chance < 100 && rng.Next(0, 100) > Chance)
+			if (Chance < 100 && rng.NextDouble(0, 100) > Chance)
 			{
 				return -1; // Skip the block
 			}
