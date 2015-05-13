@@ -219,6 +219,112 @@ namespace Rant.Engine
 			sb.CurrentOutput.SetCase(textCase);
 		}
 
+	    [RantFunction]
+	    [RantDescription("Infers the capitalization of a given string and sets the capitalization mode to match it.")]
+	    private static void CapsInfer(Sandbox sb, string sample)
+	    {
+	        var output = sb.CurrentOutput;
+	        if (String.IsNullOrEmpty(sample))
+	        {
+	            output.SetCase(Formatters.Case.None);
+	            return;
+	        }
+	        var words = sample.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+	        if (words.Length == 1)
+	        {
+	            var word = words[0];
+	            if (word.Length == 1)
+	            {
+	                if (Char.IsUpper(word[0]))
+	                {
+	                    output.SetCase(Formatters.Case.First);
+	                }
+	                else
+	                {
+	                    output.SetCase(Formatters.Case.None);
+	                }
+	            }
+	            else if (Util.IsUppercase(word))
+	            {
+	                output.SetCase(Formatters.Case.Upper);
+	            }
+                else if (Char.IsUpper(word.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
+                {
+                    output.SetCase(Formatters.Case.First);
+                }
+                else
+                {
+                    output.SetCase(Formatters.Case.None);
+                }
+            }
+	        else
+	        {
+                // No letters? Forget it.
+	            if (!sample.Any(Char.IsLetter))
+	            {
+	                output.SetCase(Formatters.Case.None);
+	                return;
+	            }
+
+                // Is all-caps?
+	            if (Util.IsUppercase(sample))
+	            {
+	                output.SetCase(Formatters.Case.Upper);
+	                return;
+	            }
+                
+                var sentences = sample.Split(new[] { '.', '?', '!' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(str => str.Trim())
+                    .Where(str =>
+                    !String.IsNullOrEmpty(str)
+                     && !Char.IsDigit(str[0])).ToArray();
+
+                // All words capitalized?
+                var lwords = words.Where(w => Char.IsLetter(w[0])).ToArray();
+	            if (lwords.Any() && (sentences.Length == 1 || sentences.Any(s => s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length > 1)))
+	            {
+	                if (lwords.All(lw => Char.IsUpper(lw[0])))
+	                {
+                        output.SetCase(Formatters.Case.Word);
+	                    return;
+	                }
+
+	                if (lwords.All(lw => Char.IsLower(lw[0]) == sb.Format.Excludes(lw)))
+	                {
+	                    output.SetCase(Formatters.Case.Title);
+	                    return;
+	                }
+	            }
+
+	            // All sentences capitalized?
+                bool all = true;
+	            bool none = true;
+	            foreach (var sentence in sentences)
+	            {
+	                bool isCapitalized = Char.IsUpper(sentence.SkipWhile(c => !Char.IsLetter(c)).FirstOrDefault());
+	                all = all && isCapitalized;
+	                none = none && !isCapitalized;
+	            }
+
+	            if (sentences.Length > 1 && all)
+	            {
+	                output.SetCase(Formatters.Case.Sentence);
+	            }
+                else if (none)
+                {
+                    output.SetCase(Formatters.Case.Lower);
+                }
+                else if (Char.IsUpper(sample.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
+                {
+                    output.SetCase(Formatters.Case.First);
+                }
+                else
+                {
+                    output.SetCase(Formatters.Case.None);
+                }
+	        }
+	    }
+
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the first.")]
 		private static IEnumerator<RantAction> First(Sandbox sb, RantAction action)

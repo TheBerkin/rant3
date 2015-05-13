@@ -13,6 +13,28 @@ namespace Rant.Engine
 	{
 		private static readonly Dictionary<Type, HashSet<string>> _enumTable = new Dictionary<Type, HashSet<string>>();
 
+	    public static bool IsUppercase(string sample)
+	    {
+            // All-caps?
+	        if (!sample.Where(Char.IsLetter).All(Char.IsUpper)) return false;
+
+            int longest = 0;
+            int curLength = 0;
+            for (int i = 0; i < sample.Length; i++)
+            {
+                if (Char.IsUpper(sample[i]))
+                {
+                    if (++curLength > longest) longest++;
+                }
+                else
+                {
+                    curLength = 0;
+                }
+            }
+
+	        return longest > 1;
+	    }
+
 		private static void CacheEnum(Type type)
 		{
 			if (!type.IsEnum || _enumTable.ContainsKey(type)) return;
