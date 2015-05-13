@@ -10,38 +10,38 @@ namespace Rant.Tests
         [Test]
         public void Uppercase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:upper]hello world").MainValue, "HELLO WORLD");
+            Assert.AreEqual(rant.Do(@"[caps:upper]hello world").Main, "HELLO WORLD");
         }
 
         [Test]
         public void Lowercase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:lower]HeLlO wOrLd").MainValue, "hello world");
+            Assert.AreEqual(rant.Do(@"[caps:lower]HeLlO wOrLd").Main, "hello world");
         }
 
         [Test]
         public void TitleCase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:title]this is a title").MainValue, "This Is a Title");
+            Assert.AreEqual(rant.Do(@"[caps:title]this is a title").Main, "This Is a Title");
         }
 
         [Test]
         public void SentenceCase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:sentence]this is a sentence. this is another sentence.").MainValue,
+            Assert.AreEqual(rant.Do(@"[caps:sentence]this is a sentence. this is another sentence.").Main,
                 "This is a sentence. This is another sentence.");
         }
 
         [Test]
         public void FirstCase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:first]hello world").MainValue, "Hello world");
+            Assert.AreEqual(rant.Do(@"[caps:first]hello world").Main, "Hello world");
         }
 
         [Test]
         public void WordCase()
         {
-            Assert.AreEqual(rant.Do(@"[caps:word]hello world").MainValue, "Hello World");
+            Assert.AreEqual(rant.Do(@"[caps:word]hello world").Main, "Hello World");
         }
     }
 }

@@ -430,7 +430,7 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Opens a new output channel with the specified name and visibility.")]
-		private static void Open(Sandbox sb, string channelName, RantChannelVisibility visibility)
+		private static void Open(Sandbox sb, string channelName, ChannelVisibility visibility)
 		{
 			sb.CurrentOutput.OpenChannel(channelName, visibility, sb.Format);
 		}

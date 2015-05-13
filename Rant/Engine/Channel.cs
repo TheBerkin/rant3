@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Rant.Engine;
 using Rant.Engine.Formatters;
 using Rant.Formats;
 using Rant.IO;
 
-namespace Rant
+namespace Rant.Engine
 {
     /// <summary>
     /// Stores output from a pattern channel.
     /// </summary>
-    public sealed class RantChannel
+    internal sealed class Channel
     {
         internal const int InitialBufferSize = 512;
 
@@ -38,7 +37,7 @@ namespace Rant
         /// <summary>
         /// The visibility of the channel.
         /// </summary>
-        public RantChannelVisibility Visiblity { get; internal set; }
+        public ChannelVisibility Visiblity { get; internal set; }
 
         internal OutputFormatter OutputFormatter => _outputFormatter;
 
@@ -50,7 +49,7 @@ namespace Rant
             set { _format = value; }
         }
 
-        internal RantChannel(string name, RantChannelVisibility visibility, RantFormat format, Limit limit)
+        internal Channel(string name, ChannelVisibility visibility, RantFormat format, Limit limit)
         {
             Name = name;
             Visiblity = visibility;

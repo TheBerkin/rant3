@@ -5,7 +5,6 @@ using System.Linq;
 
 using Rant.Engine;
 using Rant.Engine.ObjectModel;
-using Rant.Engine.Syntax;
 using Rant.Formats;
 using Rant.Vocabulary;
 
@@ -16,17 +15,26 @@ namespace Rant
     /// </summary>
     public sealed class RantEngine
     {
-	    static RantEngine()
+        private static int _maxStackSize = 64;
+        private static readonly RNG Seeds = new RNG();
+
+        static RantEngine()
 	    {
 		    RantFunctions.Load();
 	    }
 
-		private static readonly RNG Seeds = new RNG();
-
-		/// <summary>
-		/// The maximum stack size allowed for a pattern.
-		/// </summary>
-		public static int MaxStackSize = 64;
+        /// <summary>
+        /// Gets or sets the maximum stack size allowed for a pattern.
+        /// </summary>
+        public static int MaxStackSize
+        {
+            get { return _maxStackSize; }
+            set
+            {
+                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), "Value must be greater than zero.");
+                _maxStackSize = value;
+            }
+        }
 
         /// <summary>
         /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
@@ -80,7 +88,7 @@ namespace Rant
             get { return _dictionary; }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _dictionary = value;
             }
         }
@@ -248,10 +256,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
-        }
+        public RantOutput Do(string input, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
 
         /// <summary>
         /// Loads the file located at the specified path and executes it, returning the resulting output.
@@ -260,10 +266,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
-        }
+        public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
 
         /// <summary>
         /// Compiles the specified string into a pattern, executes it using a custom seed, and returns the resulting output.
@@ -273,10 +277,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
-        }
+        public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
 
         /// <summary>
         /// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
@@ -286,10 +288,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
-        }
+        public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
 
         /// <summary>
         /// Compiles the specified string into a pattern, executes it using a custom RNG, and returns the resulting output.
@@ -299,10 +299,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit), timeout);
-        }
+        public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit), timeout);
 
         /// <summary>
         /// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
@@ -312,10 +310,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit), timeout);
-        }
+        public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit), timeout);
 
         /// <summary>
         /// Executes the specified pattern and returns the resulting output.
@@ -324,10 +320,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
-        }
+        public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
 
         /// <summary>
         /// Executes the specified pattern using a custom seed and returns the resulting output.
@@ -337,10 +331,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, input, new RNG(seed), charLimit), timeout);
-        }
+        public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, input, new RNG(seed), charLimit), timeout);
 
         /// <summary>
         /// Executes the specified pattern using a custom random number generator and returns the resulting output.
@@ -350,10 +342,8 @@ namespace Rant
         /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
         /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
         /// <returns></returns>
-        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1)
-        {
-            return RunVM(new Sandbox(this, input, rng, charLimit), timeout);
-        }
+        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1) => 
+            RunVM(new Sandbox(this, input, rng, charLimit), timeout);
 
         /// <summary>
         /// Executes a pattern that has been loaded from a package and returns the resulting output.

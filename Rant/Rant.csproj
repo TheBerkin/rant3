@@ -111,6 +111,7 @@
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Stringes\Lexer.cs" />
     <Compile Include="Stringes\StringeUtils.cs" />
@@ -154,9 +155,9 @@
     <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
-    <Compile Include="RantChannel.cs" />
+    <Compile Include="Engine\Channel.cs" />
     <Compile Include="Engine\ChannelWriter.cs" />
-    <Compile Include="RantChannelVisibility.cs" />
+    <Compile Include="Engine\ChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
     <Compile Include="Engine\Formatters\Numerals.cs" />

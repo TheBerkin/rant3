@@ -156,7 +156,7 @@ namespace Rant.Engine
 
 		public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
 
-		public RantOutput Return() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop().Channels);
+		public RantOutput Return() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop());
 
 		public void IncreaseQuote() => _quoteLevel++;
 

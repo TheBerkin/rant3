@@ -30,7 +30,7 @@ namespace Rant.Engine.Syntax
 					sb.AddOutputWriter();
 					yield return Arguments[i];
 					var output = sb.Return();
-					args[parameters[i]] = new RAText(_name, output.MainValue);
+					args[parameters[i]] = new RAText(_name, output.Main);
 				}
 				else
 					args[parameters[i]] = Arguments[i];

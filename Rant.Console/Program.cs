@@ -16,27 +16,27 @@ namespace RantConsole
     class Program
     {
         public const double PATTERN_TIMEOUT = 10.0;
-	    public static readonly string FILE = Property("file");
-	    public static readonly string DIC_PATH = Property("dict");
-	    public static readonly string PKG_PATH = Property("package");
-	    public static readonly long SEED;
-	    public static readonly bool USE_SEED;
+        public static readonly string FILE = Property("file");
+        public static readonly string DIC_PATH = Property("dict");
+        public static readonly string PKG_PATH = Property("package");
+        public static readonly long SEED;
+        public static readonly bool USE_SEED;
 
-	    static Program()
-	    {
-			USE_SEED = Int64.TryParse(Property("seed"), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out SEED);
-		}
+        static Program()
+        {
+            USE_SEED = Int64.TryParse(Property("seed"), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out SEED);
+        }
 
         static void Main(string[] args)
         {
-            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;  
+            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
             RantEngine.DefaultNsfwFilter = Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow;
             var rant = new RantEngine();
 
-			try
+            try
             {
                 if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH, RantEngine.DefaultNsfwFilter);
                 if (!String.IsNullOrEmpty(PKG_PATH)) rant.LoadPackage(PKG_PATH);
@@ -48,12 +48,12 @@ namespace RantConsole
             }
 
             rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
-			
-			if (!String.IsNullOrEmpty(FILE))
+
+            if (!String.IsNullOrEmpty(FILE))
             {
                 try
                 {
-                    PrintOutput(rant, File.ReadAllText(FILE));                
+                    PrintOutput(rant, File.ReadAllText(FILE));
                 }
                 catch (Exception ex)
                 {
@@ -66,12 +66,12 @@ namespace RantConsole
                 return;
             }
 
-			while (true)
+            while (true)
             {
                 ForegroundColor = Flag("nsfw") ? ConsoleColor.DarkRed : ConsoleColor.Gray;
                 Write("RANT> "); // real number symbol
-	            ForegroundColor = ConsoleColor.White;
-	            PrintOutput(rant, ReadLine());
+                ForegroundColor = ConsoleColor.White;
+                PrintOutput(rant, ReadLine());
             }
         }
 
@@ -105,22 +105,22 @@ namespace RantConsole
                         if (!writeToFile)
                         {
                             ForegroundColor = ConsoleColor.DarkCyan;
-                            WriteLine($"{chan.Name} ({chan.Visiblity}):");
+                            WriteLine($"{chan.Name}:");
                             ResetColor();
                         }
                     }
                     ForegroundColor = ConsoleColor.Green;
-                    if (chan.Length > 0)
+                    if (chan.Value.Length > 0)
                     {
                         if (pattern.Type == RantPatternSource.File && writeToFile)
                         {
                             var path = Property("out");
                             File.WriteAllText(
-                                Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)
-                                                                          +
-                                                                          (chan.Name != "main"
-                                                                              ? $".{chan.Name}"
-                                                                              : "" + "." + Path.GetExtension(path))),
+                                Path.Combine(Path.GetDirectoryName(path),
+                                Path.GetFileNameWithoutExtension(path) +
+                                (chan.Name != "main"
+                                    ? $".{chan.Name}"
+                                    : "" + "." + Path.GetExtension(path))),
                                 chan.Value);
                         }
                         else
@@ -165,35 +165,35 @@ namespace RantConsole
             }
 #endif
             finally
-	        {
-				ResetColor();
-			}
+            {
+                ResetColor();
+            }
         }
 
-	    static void PrintStats(params Stat[] stats)
-	    {
-		    int alignment = stats.Max(s => s.Name.Length);
-		    var fmtString = $"{{0, {alignment}}}: ";
-		    foreach (var stat in stats)
-		    {
-				ForegroundColor = ConsoleColor.DarkGray;
-				Write(fmtString, stat.Name);
-				ForegroundColor = ConsoleColor.DarkMagenta;
-				WriteLine(stat.Value);
-			}
-			ResetColor();
-		}
+        static void PrintStats(params Stat[] stats)
+        {
+            int alignment = stats.Max(s => s.Name.Length);
+            var fmtString = $"{{0, {alignment}}}: ";
+            foreach (var stat in stats)
+            {
+                ForegroundColor = ConsoleColor.DarkGray;
+                Write(fmtString, stat.Name);
+                ForegroundColor = ConsoleColor.DarkMagenta;
+                WriteLine(stat.Value);
+            }
+            ResetColor();
+        }
 
-	    private class Stat
-	    {
-		    public readonly string Name;
-		    public readonly object Value;
+        private class Stat
+        {
+            public readonly string Name;
+            public readonly object Value;
 
-		    public Stat(string name, object value)
-		    {
-			    Name = name;
-			    Value = value;
-		    }
-	    }
+            public Stat(string name, object value)
+            {
+                Name = name;
+                Value = value;
+            }
+        }
     }
 }

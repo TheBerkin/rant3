@@ -74,7 +74,7 @@ namespace Rant.Engine.Syntax
 				{
 					sb.AddOutputWriter();
 					yield return dw.Item2;
-					var strWeight = sb.Return().MainValue;
+					var strWeight = sb.Return().Main;
 					if (!Double.TryParse(strWeight, out _weights[dw.Item1]))
 						throw new RantRuntimeException(sb.Pattern, dw.Item2.Range,
 							$"Dynamic weight returned invalid weight value: '{strWeight}'");

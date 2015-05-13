@@ -9,7 +9,7 @@ namespace Rant.Tests
 		public void NoParamsOutput()
 		{
 			Assert.AreEqual("1 2 3 4 5 6 7 8 9 10", 
-				new RantEngine().Do(@"[$[test]:[r:10][s:\s]{[rn]}][$test]").MainValue);
+				new RantEngine().Do(@"[$[test]:[r:10][s:\s]{[rn]}][$test]").Main);
 		}
 
 		[Test]
@@ -29,21 +29,21 @@ namespace Rant.Tests
 		public void ArgumentsConstant()
 		{
 			Assert.AreEqual("ABC",
-				new RantEngine().Do(@"[$[test: arg1; arg2; arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:A;B;C]").MainValue);
+				new RantEngine().Do(@"[$[test: arg1; arg2; arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:A;B;C]").Main);
 		}
 
 		[Test]
 		public void ArgumentsDynamic()
 		{
 			Assert.AreEqual("{|}",
-				new RantEngine().Do(@"[$[test: arg1; arg2; arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:\{;\|;\}]").MainValue);
+				new RantEngine().Do(@"[$[test: arg1; arg2; arg3]:[arg:arg1][arg:arg2][arg:arg3]][$test:\{;\|;\}]").Main);
 		}
 
 		[Test]
 		public void ArgumentsLazy()
 		{
 			Assert.AreEqual("123",
-				new RantEngine().Do(@"[$[test: @a]:[r:3]{[arg:a]}][$test:[rn]]").MainValue);
+				new RantEngine().Do(@"[$[test: @a]:[r:3]{[arg:a]}][$test:[rn]]").Main);
 		}
 
 		[Test]

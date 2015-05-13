@@ -8,9 +8,9 @@ namespace Rant.Engine
 {
     internal class ChannelWriter
     {
-        private readonly List<RantChannel> _stack;
-        private readonly Dictionary<string, RantChannel> _channels;
-        private readonly RantChannel _main;
+        private readonly List<Channel> _stack;
+        private readonly Dictionary<string, Channel> _channels;
+        private readonly Channel _main;
         private readonly Limit _sizeLimit;
 
         private int _stackSize;
@@ -18,12 +18,12 @@ namespace Rant.Engine
         public ChannelWriter(RantFormat formatStyle, Limit sizeLimit)
         {
             _sizeLimit = sizeLimit;
-            _main = new RantChannel("main", RantChannelVisibility.Public, formatStyle, _sizeLimit);
+            _main = new Channel("main", ChannelVisibility.Public, formatStyle, _sizeLimit);
 
-            _stack = new List<RantChannel> { _main };
+            _stack = new List<Channel> { _main };
             _stackSize = 1;
 
-            _channels = new Dictionary<string, RantChannel>
+            _channels = new Dictionary<string, Channel>
             {
                 { "main", _main }
             };
@@ -55,16 +55,16 @@ namespace Rant.Engine
 
         public string GetOutputFor(string channelName)
         {
-            RantChannel channel;
+            Channel channel;
             return !_channels.TryGetValue(channelName, out channel) ? "" : channel.Value;
         }
 
-        public void OpenChannel(string channelName, RantChannelVisibility visibility, RantFormat formatStyle)
+        public void OpenChannel(string channelName, ChannelVisibility visibility, RantFormat formatStyle)
         {   
-            RantChannel ch;
+            Channel ch;
             if (!_channels.TryGetValue(channelName, out ch))
             {
-                ch = new RantChannel(channelName, visibility, formatStyle, _sizeLimit);
+                ch = new Channel(channelName, visibility, formatStyle, _sizeLimit);
                 _channels[channelName] = ch;
             }
 
@@ -81,7 +81,7 @@ namespace Rant.Engine
         {
             if (channelName == "main") return;
 
-            RantChannel ch;
+            Channel ch;
             if (!_channels.TryGetValue(channelName, out ch)) return;
             _stack.Remove(ch);
             _stackSize--;
@@ -95,9 +95,9 @@ namespace Rant.Engine
             }
         }
 
-        public Dictionary<RantChannel, Case> GetCurrentCases()
+        public Dictionary<Channel, Case> GetCurrentCases()
         {
-            var table = new Dictionary<RantChannel, Case>();
+            var table = new Dictionary<Channel, Case>();
             foreach (var ch in GetActive())
             {
                 table[ch] = ch.OutputFormatter.Case;
@@ -123,28 +123,28 @@ namespace Rant.Engine
 			}
 		}
 
-		public IEnumerable<RantChannel> GetActive()
+		public IEnumerable<Channel> GetActive()
         {
-            var lastVisibility = RantChannelVisibility.Public;
+            var lastVisibility = ChannelVisibility.Public;
             bool p = false;
 
             for (int i = _stackSize - 1; i >= 0; i--)
             {
                 switch (_stack[i].Visiblity)
                 {
-                    case RantChannelVisibility.Public:
-                        if (lastVisibility == RantChannelVisibility.Internal)
+                    case ChannelVisibility.Public:
+                        if (lastVisibility == ChannelVisibility.Internal)
                         {
                             if (p) yield return _main;
                             yield break;
                         }
                         p = true;
                         break;
-                    case RantChannelVisibility.Private:
+                    case ChannelVisibility.Private:
                         yield return _stack[i];
                         if (p) yield return _main;
                         yield break;
-                    case RantChannelVisibility.Internal:
+                    case ChannelVisibility.Internal:
                         break;
                 }
 
@@ -153,6 +153,6 @@ namespace Rant.Engine
             }
         }
 
-        public Dictionary<string, RantChannel> Channels => _channels;
+        public Dictionary<string, Channel> Channels => _channels;
     }
 }

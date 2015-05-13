@@ -17,13 +17,13 @@ namespace Rant.Tests
         public void ReplacerOverflow()
         {
 			Assert.AreEqual("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 
-				rant.Do(@"[`x`:[r:64]{x};y]").MainValue);
+				rant.Do(@"[`x`:[r:64]{x};y]").Main);
         }
 
         [Test]
         public void ReplacerNoMatches()
         {
-			Assert.AreEqual("TestString", rant.Do(@"[`\s`:TestString;]").MainValue);
+			Assert.AreEqual("TestString", rant.Do(@"[`\s`:TestString;]").Main);
         }
 
         [Test]
