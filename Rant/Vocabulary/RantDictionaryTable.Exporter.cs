@@ -20,20 +20,12 @@ namespace Rant.Vocabulary
             {
                 writer.WriteLine("#name {0}", Name);
                 writer.WriteLine("#subs {0}", Subtypes.Aggregate((c, n) => c + " " + n));
+                foreach (var hiddenClass in _hidden)
+                    writer.WriteLine($"#hidden {hiddenClass}");
                 // TODO: Export types for tables
                 writer.WriteLine();
 
-                var entriesClean = GetEntries().Where(entry => !entry.NSFW);
-                var entriesDirty = GetEntries().Where(entry => entry.NSFW);
-
-                WriteEntries(writer, entriesClean, useDiffmark);
-                if (entriesDirty.Any())
-                {
-                    writer.WriteLine();
-                    writer.WriteLine("#nsfw");
-                    writer.WriteLine();
-                    WriteEntries(writer, entriesDirty, useDiffmark);
-                }
+                WriteEntries(writer, _entries, useDiffmark);
             }
         }
 

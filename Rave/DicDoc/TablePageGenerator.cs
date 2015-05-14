@@ -236,7 +236,7 @@ namespace Rave.DicDoc
                     }
                     
 
-                    if (e.NSFW) notes.Add("NSFW");
+                    if (e.ContainsClass("nsfw")) notes.Add("NSFW");
 
                     GenerateUL(writer, notes);
 

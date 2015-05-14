@@ -54,7 +54,7 @@ namespace Rave.DicSort
 
 		private static void ProcessDicFile(string path)
 		{
-			var table = RantDictionaryTable.FromFile(path, NsfwFilter.Allow);
+			var table = RantDictionaryTable.FromFile(path);
 			table.Save(path, Flag("diff"));
 		}
 	}

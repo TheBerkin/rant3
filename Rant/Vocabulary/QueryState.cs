@@ -7,9 +7,9 @@ using Rant.Engine;
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Maintains state information necessary for query synchronization (e.g. rhyming, uniqueness, matching).
+    /// Maintains state information used by queries.
     /// </summary>
-    public sealed class QueryState
+    internal sealed class QueryState
     {
         /// <summary>
         /// Distinct carrier table.

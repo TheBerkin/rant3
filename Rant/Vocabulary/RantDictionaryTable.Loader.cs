@@ -14,20 +14,19 @@ namespace Rant.Vocabulary
         /// Loads a RantDictionary from the file at the specified path.
         /// </summary>
         /// <param name="path">The path to the file to load.</param>
-        /// <param name="nsfwFilter">Specifies whether to allow or disallow NSFW entries.</param>
         /// <returns></returns>
-        public static RantDictionaryTable FromFile(string path, NsfwFilter nsfwFilter = NsfwFilter.Disallow)
+        public static RantDictionaryTable FromFile(string path)
         {
             var name = "";
             string[] subtypes = { "default" };
             bool header = true;
-            bool nsfw = false;
 
             var scopedClassSet = new HashSet<string>();
             RantDictionaryEntry entry = null;
             var entries = new List<RantDictionaryEntry>();
             var entryStringes = new List<Stringe>();
             var types = new Dictionary<string, EntryTypeDef>();
+            var hiddenClasses = new HashSet<string> { "nsfw" };
 
             foreach (var token in DicLexer.Tokenize(path, File.ReadAllText(path)))
             {
@@ -55,11 +54,15 @@ namespace Rant.Vocabulary
                                 case "version": // Kept here for backwards-compatability
                                     if (!header) LoadError(path, token, "The #version directive may only be used in the file header.");
                                     break;
+                                case "hidden":
+                                    if (!header) LoadError(path, token, "The #hidden directive may only be used in the file header.");
+                                    if (Util.ValidateName(args[0])) hiddenClasses.Add(args[0]);
+                                    break;
                                 case "nsfw":
-                                    nsfw = true;
+                                    scopedClassSet.Add("nsfw");
                                     break;
                                 case "sfw":
-                                    nsfw = false;
+                                    scopedClassSet.Remove("nsfw");
                                     break;
                                 case "class":
                                     {
@@ -90,20 +93,18 @@ namespace Rant.Vocabulary
                         break;
                     case DicTokenType.Entry:
                         {
-                            if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
                             if (Util.IsNullOrWhiteSpace(name))
                                 LoadError(path, token, "Missing dictionary name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
                                 LoadError(path, token, "Encountered empty dictionary entry.");
                             header = false;
-                            entry = new RantDictionaryEntry(token.Value.Split('/').Select(s => s.Trim()).ToArray(), scopedClassSet, nsfw);
+                            entry = new RantDictionaryEntry(token.Value.Split('/').Select(s => s.Trim()).ToArray(), scopedClassSet);
                             entries.Add(entry);
                             entryStringes.Add(token);
                         }
                         break;
                     case DicTokenType.DiffEntry:
                         {
-                            if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
                             if (Util.IsNullOrWhiteSpace(name))
                                 LoadError(path, token, "Missing dictionary name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
@@ -115,14 +116,13 @@ namespace Rant.Vocabulary
                                 {
                                     if (i > 0) return Diff.Mark(first, s);
                                     return first = s.Trim();
-                                }).ToArray(), scopedClassSet, nsfw);
+                                }).ToArray(), scopedClassSet);
                             entries.Add(entry);
                             entryStringes.Add(token);
                         }
                         break;
                     case DicTokenType.Property:
                         {
-                            if (nsfwFilter == NsfwFilter.Disallow && nsfw) continue;
                             var parts = token.Value.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
                             if (!parts.Any()) LoadError(path, token, "Empty property field.");
                             switch (parts[0].ToLower())
@@ -195,7 +195,7 @@ namespace Rant.Vocabulary
                 }
             }
 
-            return new RantDictionaryTable(name, subtypes, entries);
+            return new RantDictionaryTable(name, subtypes, entries, hiddenClasses);
         }
 
         private static void LoadError(string file, Stringe data, string message)

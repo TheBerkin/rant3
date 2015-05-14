@@ -115,7 +115,7 @@ namespace Rant
                         {
                             writer
                                 .Write(entry.Weight)
-                                .Write(entry.NSFW)
+                                .Write(false) // Used to be the NSFW field, will use for something else in the future!
                                 .Write(entry.Terms.Length);
 
                             for (int i = 0; i < entry.Terms.Length; i++)
@@ -177,7 +177,7 @@ namespace Rant
                     for (int j = 0; j < numEntries; j++)
                     {
                         int weight = reader.ReadInt32();
-                        bool nsfw = reader.ReadBoolean();
+                        bool flags = reader.ReadBoolean(); // unused
                         int numTerms = reader.ReadInt32();
                         var terms = new RantDictionaryTerm[numTerms];
 
@@ -190,7 +190,7 @@ namespace Rant
 
                         var classes = reader.ReadStringArray();
 
-                        entries[j] = new RantDictionaryEntry(terms, classes, nsfw, weight);
+                        entries[j] = new RantDictionaryEntry(terms, classes, weight);
                     }
 
                     pkg.AddTable(new RantDictionaryTable(name, subs, entries));

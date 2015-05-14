@@ -64,7 +64,7 @@ namespace Rave.Packer
 			foreach (var path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
 			{
 				Console.WriteLine("+ " + path);
-				var table = RantDictionaryTable.FromFile(path, NsfwFilter.Allow);
+				var table = RantDictionaryTable.FromFile(path);
 				package.AddTable(table);
 			}
 		}

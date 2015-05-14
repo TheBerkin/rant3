@@ -150,10 +150,8 @@
     <Compile Include="Engine\Constructs\BlockAttribs.cs" />
     <Compile Include="Formats\IndefiniteArticles.cs" />
     <Compile Include="Formats\IndefiniteArticleRules.cs" />
-    <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="RantRuntimeException.cs" />
-    <Compile Include="Vocabulary\NsfwFilter.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
     <Compile Include="Engine\Channel.cs" />
     <Compile Include="Engine\ChannelWriter.cs" />

@@ -1,15 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using Rant.Engine;
 
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Represents a Rant dictionary. This is the default dictionary type used by Rant.
+    /// Represents a Rant dictionary.
     /// </summary>
-    public sealed class RantDictionary : IRantDictionary
+    public sealed class RantDictionary
     {
-        private readonly Dictionary<string, RantDictionaryTable> _tables;
+        private readonly Dictionary<string, RantDictionaryTable> _tables = new Dictionary<string, RantDictionaryTable>();
+        private readonly HashSet<string> _exposedClasses = new HashSet<string>();
+
+        /// <summary>
+        /// Creates a new RantDictionary object that contains no tables.
+        /// </summary>
+        public RantDictionary()
+        {
+        }
 
         /// <summary>
         /// Creates a new RantDictionary object from the specified dictionary collection.
@@ -35,6 +46,33 @@ namespace Rant.Vocabulary
                 }
             }
         }
+
+        /// <summary>
+        /// Exposes a hidden class to query results.
+        /// </summary>
+        /// <param name="hiddenClassName">The name of the hidden class to expose.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void IncludeHiddenClass(string hiddenClassName)
+        {
+            if (hiddenClassName == null) throw new ArgumentNullException(nameof(hiddenClassName));
+            if (Util.ValidateName(hiddenClassName)) _exposedClasses.Add(hiddenClassName);
+        }
+
+        /// <summary>
+        /// Unexposes a hidden class from query results.
+        /// </summary>
+        /// <param name="hiddenClassName">The name of the hidden class to unexpose.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void ExcludeHiddenClass(string hiddenClassName)
+        {
+            if (hiddenClassName == null) throw new ArgumentNullException(nameof(hiddenClassName));
+            _exposedClasses.Remove(hiddenClassName);
+        }
+
+        /// <summary>
+        /// Gets all currently exposed hidden classes.
+        /// </summary>
+        public IEnumerable<string> IncludedHiddenClasses => _exposedClasses.AsEnumerable();
 
         /// <summary>
         /// Adds a new RantDictionaryTable object to the collection.
@@ -67,12 +105,11 @@ namespace Rant.Vocabulary
         /// Loads all dictionary (.dic) files from the specified directory and returns a Dictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directory">The directory from which to load dictionaries.</param>
-        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
         /// <param name="mergeBehavior">The merging strategy to employ.</param>
         /// <returns></returns>
-        public static RantDictionary FromDirectory(string directory, NsfwFilter filter, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+        public static RantDictionary FromDirectory(string directory, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
-            return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(file => RantDictionaryTable.FromFile(file, filter)).ToList(), mergeBehavior);
+            return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList(), mergeBehavior);
         }
 
         /// <summary>
@@ -82,7 +119,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public static RantDictionary FromMultiDirectory(params string[] directories)
         {
-            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file)));
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(RantDictionaryTable.FromFile));
         }
 
         /// <summary>
@@ -93,19 +130,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public static RantDictionary FromMultiDirectory(string[] directories, TableMergeBehavior mergeBehavior)
         {
-            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file)), mergeBehavior);
-        }
-
-        /// <summary>
-        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
-        /// </summary>
-        /// <param name="directories">The directories from which to load dictionaries.</param>
-        /// <param name="filter">Indicates whether dictionary entries marked with the #nsfw flag should be loaded.</param>
-        /// <param name="mergeBehavior">The merging strategy to employ.</param>
-        /// <returns></returns>
-        public static RantDictionary FromMultiDirectory(string[] directories, NsfwFilter filter, TableMergeBehavior mergeBehavior)
-        {
-            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(file => RantDictionaryTable.FromFile(file, filter)), mergeBehavior);
+            return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(RantDictionaryTable.FromFile), mergeBehavior);
         }
 
         /// <summary>
@@ -115,12 +140,12 @@ namespace Rant.Vocabulary
         /// <param name="query">The search criteria to use.</param>
         /// <param name="syncState">The state object to use for carrier synchronization.</param>
         /// <returns></returns>
-        public string Query(RNG rng, Query query, QueryState syncState)
+        internal string Query(RNG rng, Query query, QueryState syncState)
         {
             RantDictionaryTable table;
             return !_tables.TryGetValue(query.Name, out table) 
                 ? "[Missing Table]" 
-                : table.Query(rng, query, syncState);
+                : table.Query(this, rng, query, syncState);
         }
     }
 }

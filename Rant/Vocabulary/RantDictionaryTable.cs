@@ -15,6 +15,7 @@ namespace Rant.Vocabulary
 
         private readonly string _name;
         private readonly string[] _subtypes;
+        private readonly HashSet<string> _hidden = new HashSet<string>(); 
         private RantDictionaryEntry[] _entries;
 
         /// <summary>
@@ -26,18 +27,16 @@ namespace Rant.Vocabulary
         public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries)
         {
             if (!Util.ValidateName(name))
-            {
                 throw new FormatException($"Invalid table name: '{name}'");
-            }
 
             if (!subtypes.All(Util.ValidateName))
-            {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
-            }
+                throw new FormatException("Invalid subtype name(s): " +
+                                          String.Join(", ",
+                                              subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
 
             _subtypes = subtypes;
             _name = name;
-            _entries = entries.ToArray();
+            _entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
         }
 
         /// <summary>
@@ -46,21 +45,23 @@ namespace Rant.Vocabulary
         /// <param name="name">the name of the table.</param>
         /// <param name="subtypes">The subtype names.</param>
         /// <param name="entries">The entries to add to the table.</param>
-        public RantDictionaryTable(string name, string[] subtypes, RantDictionaryEntry[] entries)
+        public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries, IEnumerable<string> hiddenClasses)
         {
+            if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));
             if (!Util.ValidateName(name))
-            {
                 throw new FormatException($"Invalid table name: '{name}'");
-            }
-			
+
             if (!subtypes.All(Util.ValidateName))
-            {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
-            }
+                throw new FormatException("Invalid subtype name(s): " +
+                                          String.Join(", ",
+                                              subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
+
+
 
             _subtypes = subtypes;
             _name = name;
-            _entries = entries;
+            _entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
+            foreach (var hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
         }
 
         /// <summary>
@@ -135,7 +136,7 @@ namespace Rant.Vocabulary
             return true;
         }
 
-        internal string Query(RNG rng, Query query, QueryState syncState)
+        internal string Query(RantDictionary dictionary, RNG rng, Query query, QueryState syncState)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Bad Subtype]";
@@ -144,7 +145,14 @@ namespace Rant.Vocabulary
                 ? _entries 
                 : _entries.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
-			if (query.RegexFilters.Any())
+            if (_hidden.Any())
+            {
+                var hide = _hidden.Where(hc => !query.ClassFilter.AllowsClass(hc))
+                    .Except(dictionary.IncludedHiddenClasses);
+                pool = pool.Where(e => !hide.Any(e.ContainsClass));
+            }
+
+            if (query.RegexFilters.Any())
                 pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
             if (query.SyllablePredicate != null)

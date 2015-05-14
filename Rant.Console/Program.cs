@@ -33,12 +33,11 @@ namespace RantConsole
 
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
-            RantEngine.DefaultNsfwFilter = Flag("nsfw") ? NsfwFilter.Allow : NsfwFilter.Disallow;
             var rant = new RantEngine();
 
             try
             {
-                if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH, RantEngine.DefaultNsfwFilter);
+                if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
                 if (!String.IsNullOrEmpty(PKG_PATH)) rant.LoadPackage(PKG_PATH);
             }
             catch (Exception e)
@@ -46,6 +45,8 @@ namespace RantConsole
                 ForegroundColor = ConsoleColor.Cyan;
                 WriteLine($"Dictionary load error: {e.Message}");
             }
+
+            if (Flag("nsfw")) rant.Dictionary.IncludeHiddenClass("nsfw");
 
             rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
 

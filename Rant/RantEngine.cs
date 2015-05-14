@@ -35,17 +35,11 @@ namespace Rant
                 _maxStackSize = value;
             }
         }
-
-        /// <summary>
-        /// The default NSFW filtering option to apply when creating Engine objects that load vocabulary from a directory.
-        /// </summary>
-        public static NsfwFilter DefaultNsfwFilter = NsfwFilter.Disallow;
         
         internal readonly ObjectTable Objects = new ObjectTable();
-
-        private readonly NsfwFilter _filter = DefaultNsfwFilter;
+        
         private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
-		private IRantDictionary _dictionary;
+		private RantDictionary _dictionary = new RantDictionary();
 
         /// <summary>
         /// Returns a pattern with the specified name from the engine's cache. If the pattern doesn't exist, it is loaded from file.
@@ -83,7 +77,7 @@ namespace Rant
         /// <summary>
         /// The vocabulary associated with this instance.
         /// </summary>
-        public IRantDictionary Dictionary
+        public RantDictionary Dictionary
         {
             get { return _dictionary; }
             set
@@ -94,7 +88,7 @@ namespace Rant
         }
 
         /// <summary>
-        /// Creates a new RantEngine object with no vocabulary.
+        /// Creates a new RantEngine object without a dictionary.
         /// </summary>
         public RantEngine()
         {
@@ -103,40 +97,22 @@ namespace Rant
         /// <summary>
         /// Creates a new RantEngine object that loads vocabulary from the specified path.
         /// </summary>
-        /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
-        public RantEngine(string vocabularyPath)
+        /// <param name="dictionaryPath">The path to the dictionary files to load.</param>
+        public RantEngine(string dictionaryPath)
         {
-            LoadVocab(vocabularyPath);
-        }
-
-        /// <summary>
-        /// Creates a new RantEngine object that loads vocabulary from a path according to the specified filtering option.
-        /// </summary>
-        /// <param name="vocabularyPath">The path to the dictionary files to load.</param>
-        /// <param name="filter">The filtering option to apply when loading the files.</param>
-        public RantEngine(string vocabularyPath, NsfwFilter filter)
-        {
-            _filter = filter;
-            LoadVocab(vocabularyPath);
+            if (!String.IsNullOrEmpty(dictionaryPath))
+            {
+                _dictionary = RantDictionary.FromDirectory(dictionaryPath);
+            }
         }
 
         /// <summary>
         /// Creates a new RantEngine object with the specified vocabulary.
         /// </summary>
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
-        public RantEngine(IRantDictionary dictionary)
+        public RantEngine(RantDictionary dictionary)
         {
             _dictionary = dictionary;
-        }
-
-        private void LoadVocab(string path)
-        {
-            if (_dictionary != null) return;
-
-            if (!String.IsNullOrEmpty(path))
-            {
-                _dictionary = RantDictionary.FromDirectory(path, _filter);
-            }
         }
 
         /// <summary>
@@ -146,8 +122,7 @@ namespace Rant
         /// <returns></returns>
         public bool PatternExists(string patternName)
         {
-            if (_patternCache == null) return false;
-            return _patternCache.ContainsKey(patternName);
+            return _patternCache != null && _patternCache.ContainsKey(patternName);
         }
 
         /// <summary>

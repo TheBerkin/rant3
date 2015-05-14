@@ -46,5 +46,13 @@ namespace Rant.Vocabulary
 					&& entry.GetClasses().All(c => _items.Any(item => item.Any(rule => rule.ShouldMatch && rule.Class == c)))
 				: !_items.Any() || _items.All(set => set.Any(rule => entry.ContainsClass(rule.Class) == rule.ShouldMatch));
 		}
+
+        /// <summary>
+        /// Returns a boolean value indicating whether the specified class is explicitly allowed by the current ClassFilter.
+        /// </summary>
+        /// <param name="className">The class to test.</param>
+        /// <returns></returns>
+	    public bool AllowsClass(string className) => 
+            _items.Any(item => item.Any(rule => (rule.Class == className) && rule.ShouldMatch));
 	}
 }

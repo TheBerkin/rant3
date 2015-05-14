@@ -12,7 +12,6 @@ namespace Rant.Vocabulary
         private readonly HashSet<string> _classes;
         private readonly HashSet<string> _optionalClasses;
         private int _weight;
-        private readonly bool _nsfw;
 
         /// <summary>
         /// Creates a new RantDictionaryEntry object from the specified data.
@@ -21,8 +20,8 @@ namespace Rant.Vocabulary
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
         /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
-        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
-            : this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, nsfw, weight)
+        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, int weight = 1)
+            : this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, weight)
         {
         }
 
@@ -33,7 +32,7 @@ namespace Rant.Vocabulary
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
         /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
-        public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
+        public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, int weight = 1)
         {
             _terms = terms;
             _classes = new HashSet<string>();
@@ -52,7 +51,6 @@ namespace Rant.Vocabulary
                 }
             }
             _weight = weight;
-            _nsfw = nsfw;
         }
 
         /// <summary>
@@ -111,11 +109,6 @@ namespace Rant.Vocabulary
             get { return _weight; }
             set { _weight = value; }
         }
-
-        /// <summary>
-        /// Indicates if the entry is marked as "Not Safe For Work."
-        /// </summary>
-        public bool NSFW => _nsfw;
 
         /// <summary>
         /// Returns a string representation of the current RantDictionaryEntry instance.

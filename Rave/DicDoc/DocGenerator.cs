@@ -36,7 +36,7 @@ namespace Rave.DicDoc
 		{
 			Console.WriteLine("Loading tables...");
 			var tablePaths = Directory.GetFiles(dicDir, "*.dic");
-			var tables = tablePaths.Select(path => RantDictionaryTable.FromFile(path, NsfwFilter.Allow)).ToArray();
+			var tables = tablePaths.Select(RantDictionaryTable.FromFile).ToArray();
 
 			if (tables.Length == 0)
 			{
