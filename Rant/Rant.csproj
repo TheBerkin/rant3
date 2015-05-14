@@ -129,7 +129,6 @@
     <Compile Include="RantPackage.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Constructs\Comparison.cs" />
-    <Compile Include="Engine\Compiler\Delimiters.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
     <Compile Include="Vocabulary\ClassFilter.cs" />

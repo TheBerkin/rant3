@@ -18,12 +18,9 @@ namespace Rave.DicDoc
 
             // Get all the classes
             var tableClasses = new HashSet<string>();
-            foreach (var entry in table.GetEntries())
+            foreach (var entryClass in table.GetEntries().SelectMany(entry => entry.GetClasses()))
             {
-                foreach (var entryClass in entry.GetClasses())
-                {
-                    tableClasses.Add(entryClass);
-                }
+                tableClasses.Add(entryClass);
             }
 
             var text = new StringWriter();
@@ -64,12 +61,8 @@ namespace Rave.DicDoc
                 writer.RenderBeginTag(HtmlTextWriterTag.B);
                 writer.WriteEncodedText(table.Name);
                 writer.RenderEndTag(); // </b>
-                writer.WriteEncodedText(" table ("
-                    + Path.GetFileName(filename)
-                    + ") contains "
-                    + entryCount + (entryCount == 1 ? " entry" : " entries ")
-                    + " and " + tableClasses.Count + (tableClasses.Count == 1 ? " class" : " classes")
-                    + ".");
+                writer.WriteEncodedText(
+                    $" table ({Path.GetFileName(filename)}) contains {entryCount} {(entryCount == 1 ? " entry" : " entries")} and {tableClasses.Count} {(tableClasses.Count == 1 ? " class" : " classes")}.");
                 writer.RenderEndTag(); // </p>
 
                 // Subtypes
@@ -245,9 +238,9 @@ namespace Rave.DicDoc
                             }
                         });
                     }
-                    else
+                    else if (otherClasses.Any())
                     {
-                        if (otherClasses.Any()) notes.Add(html =>
+                        notes.Add(html =>
                         {
                             html.WriteEncodedText("Classes: ");
                             var classes = otherClasses.ToArray();
