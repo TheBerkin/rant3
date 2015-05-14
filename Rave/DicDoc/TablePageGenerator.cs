@@ -9,7 +9,9 @@ using Rant.Vocabulary;
 namespace Rave.DicDoc
 {
 	public static class PageGenerator
-    {
+	{
+	    private delegate void HtmlGenFunc(HtmlTextWriter writer);
+
         public static string GenerateTablePage(RantDictionaryTable table, string filename)
         {
             int entryCount = table.GetEntries().Count();
@@ -216,27 +218,53 @@ namespace Rave.DicDoc
                     writer.RenderEndTag();
 
                     // Notes
-                    var notes = new List<string>();
+                    var notes = new List<HtmlGenFunc>();
                     var otherClasses = e.GetClasses().Where(cl => cl != tableClass);
 
                     if (e.Terms.All(t => t.PronunciationParts.Length > 0))
-                        notes.Add("Full pronunciation");
+                        notes.Add(html => html.WriteEncodedText("Full pronunciation"));
                     else if (e.Terms.Any(t => t.PronunciationParts.Length > 0))
-                        notes.Add("Partial pronunciation");
+                        notes.Add(html => html.WriteEncodedText("Partial pronunciation"));
 
-                    if (e.Weight != 1) notes.Add("Weight: " + e.Weight);
+                    if (e.Weight != 1) notes.Add(html => html.WriteEncodedText("Weight: " + e.Weight));
 
                     if (all && e.GetClasses().Any())
                     {
-                        notes.Add("Classes: " + String.Join(", ", e.GetClasses()));
+                        notes.Add(html =>
+                        {
+                            html.WriteEncodedText("Classes: ");
+                            var classes = e.GetClasses().ToArray();
+                            for (int i = 0; i < classes.Length; i++)
+                            {
+                                if (i > 0) html.WriteEncodedText(", ");
+
+                                html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
+                                html.RenderBeginTag(HtmlTextWriterTag.A);
+                                html.WriteEncodedText(classes[i]);
+                                html.RenderEndTag();
+                            }
+                        });
                     }
                     else
                     {
-                        if (otherClasses.Any()) notes.Add("Other classes: " + String.Join(", ", otherClasses));
+                        if (otherClasses.Any()) notes.Add(html =>
+                        {
+                            html.WriteEncodedText("Classes: ");
+                            var classes = otherClasses.ToArray();
+                            for (int i = 0; i < classes.Length; i++)
+                            {
+                                if (i > 0) html.WriteEncodedText(", ");
+
+                                html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
+                                html.RenderBeginTag(HtmlTextWriterTag.A);
+                                html.WriteEncodedText(classes[i]);
+                                html.RenderEndTag();
+                            }
+                        });
                     }
                     
 
-                    if (e.ContainsClass("nsfw")) notes.Add("NSFW");
+                    if (e.ContainsClass("nsfw")) notes.Add(html => html.WriteEncodedText("NSFW"));
 
                     GenerateUL(writer, notes);
 
@@ -251,7 +279,7 @@ namespace Rave.DicDoc
             return text.ToString();
         }
 
-        private static void GenerateUL(HtmlTextWriter writer, IEnumerable<string> items)
+        private static void GenerateUL(HtmlTextWriter writer, IEnumerable<HtmlGenFunc> items)
         {
             if (items == null || !items.Any()) return;
 
@@ -260,7 +288,7 @@ namespace Rave.DicDoc
             foreach (var item in items)
             {
                 writer.RenderBeginTag(HtmlTextWriterTag.Li);
-                writer.WriteEncodedText(item);
+                item(writer);
                 writer.RenderEndTag();
             }
 
