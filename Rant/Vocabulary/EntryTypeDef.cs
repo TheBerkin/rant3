@@ -6,7 +6,6 @@ namespace Rant.Vocabulary
     internal class EntryTypeDef
     {
         private readonly HashSet<string> _classes;
-        private readonly HashSet<string> _testTable = new HashSet<string>(); 
 
         public string Name { get; }
 
@@ -27,12 +26,7 @@ namespace Rant.Vocabulary
         public bool Test(RantDictionaryEntry entry)
         {
             if (!EntryTypeDefFilter.Test(Filter, entry)) return true;
-            _testTable.Clear();
-            foreach (var c in entry.GetClasses().Where(IsValidValue))
-            {
-                if (_testTable.Add(c) && _testTable.Any()) return false;
-            }
-            return true;
+            return entry.GetClasses().Where(IsValidValue).Count() == 1;
         }
     }
 }

@@ -88,7 +88,7 @@
     <Compile Include="Engine\Delegates\Witchcraft.cs" />
     <Compile Include="Engine\RantParameter.cs" />
     <Compile Include="Engine\RantParameterType.cs" />
-    <Compile Include="Engine\RantFunctionAttribute.cs" />
+    <Compile Include="Engine\Metadata\RantFunctionAttribute.cs" />
     <Compile Include="Engine\RantFunctionInfo.cs" />
     <Compile Include="Engine\RantFunctions.cs" />
     <Compile Include="Engine\Sandbox.cs" />
