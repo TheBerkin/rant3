@@ -14,34 +14,29 @@ namespace Rant
     /// </summary>
     public sealed class RantPattern
     {
-        private readonly string _code;
-	    private readonly RantAction _action;
-        private readonly RantPatternSource _type;
-        private readonly string _name;
-
         /// <summary>
         /// The name of the source code.
         /// </summary>
-        public string Name => _name;
+        public string Name { get; }
 
-		/// <summary>
+        /// <summary>
 		/// Describes the origin of the pattern.
 		/// </summary>
-		public RantPatternSource Type => _type;
+		public RantPatternSource Type { get; }
 
-		/// <summary>
+        /// <summary>
 		/// The code contained in the pattern.
 		/// </summary>
-		public string Code => _code;
+		public string Code { get; }
 
-	    internal RantAction Action => _action;
+        internal RantAction Action { get; }
 
         internal RantPattern(string name, RantPatternSource type, string code)
         {
-            _name = name;
-            _type = type;
-            _code = code;
-	        _action = RantCompiler.Compile(name, code);
+            Name = name;
+            Type = type;
+            Code = code;
+	        Action = RantCompiler.Compile(name, code);
         }
 
         /// <summary>

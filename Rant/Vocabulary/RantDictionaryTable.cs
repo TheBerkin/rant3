@@ -45,6 +45,7 @@ namespace Rant.Vocabulary
         /// <param name="name">the name of the table.</param>
         /// <param name="subtypes">The subtype names.</param>
         /// <param name="entries">The entries to add to the table.</param>
+        /// <param name="hiddenClasses">The classes to hide.</param>
         public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries, IEnumerable<string> hiddenClasses)
         {
             if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));

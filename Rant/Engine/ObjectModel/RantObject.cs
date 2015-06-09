@@ -63,6 +63,10 @@ namespace Rant.Engine.ObjectModel
 		{
 		}
 
+        /// <summary>
+        /// Creates a new RantObject instance with a list value.
+        /// </summary>
+        /// <param name="list">The list to assign to the object.</param>
 		public RantObject(List<RantObject> list)
 		{
 			if (list == null) return;
@@ -70,12 +74,20 @@ namespace Rant.Engine.ObjectModel
 			_list = list;
 		}
 
+        /// <summary>
+        /// Creates a new RantObject instance with a boolean value.
+        /// </summary>
+        /// <param name="boolean">The boolean value to assign to the object.</param>
 		public RantObject(bool boolean)
 		{
 			Type = RantObjectType.Boolean;
 			_boolean = boolean;
 		}
 
+        /// <summary>
+        /// Creates a new RantObject instance with a string value.
+        /// </summary>
+        /// <param name="str">The string to assign to the object.</param>
 		public RantObject(string str)
 		{
 			if (str == null) return;
@@ -83,6 +95,10 @@ namespace Rant.Engine.ObjectModel
 			_string = str;
 		}
 
+        /// <summary>
+        /// Creates a new RantObject instance with a decimal number value.
+        /// </summary>
+        /// <param name="num">The number to assign to the object.</param>
 		public RantObject(double num)
 		{
 			Type = RantObjectType.Number;
@@ -95,6 +111,10 @@ namespace Rant.Engine.ObjectModel
 			_action = action;
 		}
 
+        /// <summary>
+        /// Creates a new RantObject instance from the specified object.
+        /// </summary>
+        /// <param name="obj">The value to assign to the object.</param>
 		public RantObject(object obj)
 		{
 			if (obj == null) return;
@@ -135,6 +155,11 @@ namespace Rant.Engine.ObjectModel
 			}
 		}
 
+        /// <summary>
+        /// Converts the current object to a RantObject of the specified type and returns it.
+        /// </summary>
+        /// <param name="type">The object type to convert to.</param>
+        /// <returns></returns>
 		public RantObject ConvertTo(RantObjectType type)
 		{
 			if (Type == type) return Clone();
@@ -216,6 +241,10 @@ namespace Rant.Engine.ObjectModel
 			return No;
 		}
 
+        /// <summary>
+        /// Returns another RantObject instance with the exact same value as the current instance.
+        /// </summary>
+        /// <returns></returns>
 		public RantObject Clone()
 		{
 			return new RantObject
@@ -230,6 +259,12 @@ namespace Rant.Engine.ObjectModel
 			};
 		}
 
+        /// <summary>
+        /// Returns the sum of two RantObjects.
+        /// </summary>
+        /// <param name="a">The first object.</param>
+        /// <param name="b">The second object.</param>
+        /// <returns></returns>
 		public static RantObject operator +(RantObject a, RantObject b)
 		{
 			switch (a.Type)	// TODO: Cover all cases
@@ -259,6 +294,12 @@ namespace Rant.Engine.ObjectModel
 			return No;
 		}
 
+        /// <summary>
+        /// Subtracts a RantObject from another.
+        /// </summary>
+        /// <param name="a">The object to subtract from.</param>
+        /// <param name="b">The object to subtract.</param>
+        /// <returns></returns>
 		public static RantObject operator -(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -277,6 +318,12 @@ namespace Rant.Engine.ObjectModel
 			return No;
 		}
 
+        /// <summary>
+        /// Returns the product of two RantObjects.
+        /// </summary>
+        /// <param name="a">The first object.</param>
+        /// <param name="b">The second object.</param>
+        /// <returns></returns>
 		public static RantObject operator *(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -312,6 +359,12 @@ namespace Rant.Engine.ObjectModel
 			return No;
 		}
 
+        /// <summary>
+        /// Divides one RantObject by another.
+        /// </summary>
+        /// <param name="a">The object to divide.</param>
+        /// <param name="b">The object to divide by.</param>
+        /// <returns></returns>
 		public static RantObject operator /(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -330,6 +383,10 @@ namespace Rant.Engine.ObjectModel
 			return No;
 		}
 
+        /// <summary>
+        /// Returns a string representation of the current RantObject.
+        /// </summary>
+        /// <returns></returns>
 		public override string ToString()
 		{
 			switch (Type)
