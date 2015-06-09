@@ -1,5 +1,5 @@
 <p align="center">
-<img src="http://i.imgur.com/89akIsl.png" alt="Rant logo"></img>
+<img src="http://i.imgur.com/QB3TNYq.png" alt="Rant logo"></img>
 </p>
 
 <p align="center">
@@ -127,3 +127,5 @@ See [rantlang.github.io](http://rantlang.github.io) for full documentation of th
 If you like Rant, you may also like these other, Rant-related projects:
 * [**RIDE**](http://github.com/RantLang/RIDE): The official (and highly WIP) Rant IDE
 * [**Rantionary**](http://github.com/TheBerkin/Rantionary): The official Rant dictionary
+
+:squirrel:
