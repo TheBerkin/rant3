@@ -223,7 +223,9 @@ namespace Rant.Engine
 
 	    [RantFunction]
 	    [RantDescription("Infers the capitalization of a given string and sets the capitalization mode to match it.")]
-	    private static void CapsInfer(Sandbox sb, string sample)
+	    private static void CapsInfer(Sandbox sb, 
+            [RantDescription("A string that is capitalized in the format to be set.")]
+            string sample)
 	    {
 	        var output = sb.CurrentOutput;
 	        if (String.IsNullOrEmpty(sample))
@@ -329,7 +331,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the first.")]
-		private static IEnumerator<RantAction> First(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> First(Sandbox sb, 
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration == 1) yield return action;
@@ -337,7 +341,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
-		private static IEnumerator<RantAction> NotFirst(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> NotFirst(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration > 1) yield return action;
@@ -345,7 +351,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the last.")]
-		private static IEnumerator<RantAction> Last(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> Last(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -354,7 +362,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
-		private static IEnumerator<RantAction> NotLast(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> NotLast(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -363,7 +373,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
-		private static IEnumerator<RantAction> Middle(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> Middle(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -372,7 +384,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
-		private static IEnumerator<RantAction> Ends(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> Ends(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -446,7 +460,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an odd number.")]
-		private static IEnumerator<RantAction> Odd(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> Odd(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 != 0) yield return action;
@@ -454,7 +470,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an even number.")]
-		private static IEnumerator<RantAction> Even(Sandbox sb, RantAction action)
+		private static IEnumerator<RantAction> Even(Sandbox sb,
+            [RantDescription("The pattern to run when the condition is met.")]
+            RantAction action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
@@ -462,7 +480,9 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Returns the specified argument from the current subroutine.")]
-		private static IEnumerator<RantAction> Arg(Sandbox sb, string name)
+		private static IEnumerator<RantAction> Arg(Sandbox sb,
+            [RantDescription("The name of the argument to retrieve.")]
+            string name)
 		{
 			if (!sb.SubroutineArgs.Any()) yield break;
 			var args = sb.SubroutineArgs.Peek();
@@ -471,63 +491,82 @@ namespace Rant.Engine
 		}
 
 		[RantFunction]
-		private static void Match(Sandbox sb)
+        [RantDescription("Retrieves and prints the current match string of the active replacer.")]
+        private static void Match(Sandbox sb)
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Value);
 		}
 
 		[RantFunction]
-		private static void Group(Sandbox sb, string groupName)
+        [RantDescription("Retrieves and prints the specified group value of the current match from the active replacer.")]
+        private static void Group(Sandbox sb, string groupName)
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Groups[groupName].Value);
 		}
 
 		[RantFunction]
-		private static void Rhyme(Sandbox sb, RhymeFlags flags)
+        [RantDescription("Sets the current rhyming mode for queries.")]
+        private static void Rhyme(Sandbox sb,
+            [RantDescription("The rhyme types to use.")]
+            RhymeFlags flags)
 		{
 			sb.QueryState.Rhymer.AllowedRhymes = flags;
 		}
 
 		[RantFunction("sync", "x")]
 		[RantDescription("Creates and applies a synchronizer with the specified name and type.")]
-		private static void Sync(Sandbox sb, string name, SyncType type)
+		private static void Sync(Sandbox sb,
+            [RantDescription("The name of the synchronizer.")]
+            string name,
+            [RantDescription("The synchronization type to use.")]
+            SyncType type)
 		{
 			sb.SyncManager.Create(name, type, true);
 		}
 
 		[RantFunction("xpin")]
 		[RantDescription("Pins a synchronizer.")]
-		private static void SyncPin(Sandbox sb, string name)
+		private static void SyncPin(Sandbox sb,
+            [RantDescription("The name of the synchronizer to pin.")]
+            string name)
 		{
 			sb.SyncManager.SetPinned(name, true);
 		}
 
 		[RantFunction("xunpin")]
 		[RantDescription("Pins a synchronizer.")]
-		private static void SyncUnpin(Sandbox sb, string name)
+		private static void SyncUnpin(Sandbox sb,
+            [RantDescription("The name of the synchronizer to unpin.")]
+            string name)
 		{
 			sb.SyncManager.SetPinned(name, false);
 		}
 
 		[RantFunction("xstep")]
 		[RantDescription("Iterates a synchronizer.")]
-		private static void SyncStep(Sandbox sb, string name)
+		private static void SyncStep(Sandbox sb,
+            [RantDescription("The name of the synchronizer to iterate.")]
+            string name)
 		{
 			sb.SyncManager.Step(name);
 		}
 
 		[RantFunction("xreset")]
-		[RantDescription("Resets a synchronizer.")]
-		private static void SyncReset(Sandbox sb, string name)
+		[RantDescription("Resets a synchronizer to its initial state.")]
+		private static void SyncReset(Sandbox sb,
+            [RantDescription("The name of the synchronizer to reset.")]
+            string name)
 		{
 			sb.SyncManager.Reset(name);
 		}
 
 		[RantFunction("quote", "q")]
 		[RantDescription("Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
-		private static IEnumerator<RantAction> Quote(Sandbox sb, RantAction quoteAction)
+		private static IEnumerator<RantAction> Quote(Sandbox sb,
+            [RantDescription("The pattern to run whose output will be surrounded in quotes.")]
+            RantAction quoteAction)
 		{
 			sb.IncreaseQuote();
 			sb.PrintOpeningQuote();
@@ -538,28 +577,40 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Opens a new output channel with the specified name and visibility.")]
-		private static void Open(Sandbox sb, string channelName, ChannelVisibility visibility)
+		private static void Open(Sandbox sb,
+            [RantDescription("The name of the channel to open.")]
+            string channelName,
+            [RantDescription("The visibility to assign to the channel.")]
+            ChannelVisibility visibility)
 		{
 			sb.CurrentOutput.OpenChannel(channelName, visibility, sb.Format);
 		}
 
 		[RantFunction]
 		[RantDescription("Closes the output channel with the specified name.")]
-		private static void Close(Sandbox sb, string channelName)
+		private static void Close(Sandbox sb,
+            [RantDescription("The name of the channel to close.")]
+            string channelName)
 		{
 			sb.CurrentOutput.CloseChannel(channelName);
 		}
 
 		[RantFunction("target", "t")]
 		[RantDescription("Places a target with the specified name at the current write position.")]
-		private static void Target(Sandbox sb, string targetName)
+		private static void Target(Sandbox sb,
+            [RantDescription("The name of the target.")]
+            string targetName)
 		{
 			sb.CurrentOutput.CreateTarget(targetName);
 		}
 
 		[RantFunction]
 		[RantDescription("Writes a string to the specified target.")]
-		private static void Send(Sandbox sb, string targetName, string value)
+		private static void Send(Sandbox sb,
+            [RantDescription("The name of the target to send to.")]
+            string targetName,
+            [RantDescription("The string to send to the target.")]
+            string value)
 		{
 			sb.CurrentOutput.WriteToTarget(targetName, value);
 		}
@@ -623,7 +674,9 @@ namespace Rant.Engine
 
 	    [RantFunction]
 	    [RantDescription("Loads and runs a pattern from cache or file.")]
-	    private static IEnumerator<RantAction> Import(Sandbox sb, string name)
+	    private static IEnumerator<RantAction> Import(Sandbox sb,
+            [RantDescription("The name or path of the pattern to load.")]
+            string name)
 	    {
 	        RantAction action;
 
