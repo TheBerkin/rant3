@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Engine;
+using Rant.Engine.Metadata;
 
 namespace Rant
 {
@@ -24,6 +25,12 @@ namespace Rant
 		/// </summary>
 		/// <returns></returns>
 		public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
+
+        /// <summary>
+        /// Enumerates the available functions.
+        /// </summary>
+        /// <returns></returns>
+	    public static IEnumerable<IRantFunctionGroup> GetFunctions() => RantFunctions.GetFunctions();
 
 	    /// <summary>
 	    /// Returns the description for the function with the specified name.

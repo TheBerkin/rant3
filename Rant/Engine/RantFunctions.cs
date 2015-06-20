@@ -66,6 +66,8 @@ namespace Rant.Engine
 		public static bool FunctionExists(string name) => 
             AliasTable.ContainsKey(name) || FunctionTable.ContainsKey(name);
 
+	    public static IEnumerable<IRantFunctionGroup> GetFunctions() => FunctionTable.Select(item => item.Value); 
+
 		public static IEnumerable<string> GetFunctionNames() => 
             FunctionTable.Select(item => item.Key);
 

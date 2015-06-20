@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using Rant.Engine.Metadata;
 using Rant.Engine.Delegates;
 using Rant.IO;
 
@@ -13,7 +14,7 @@ namespace Rant.Engine
 	/// <summary>
 	/// Contains information for associating a delegate with a Rant function.
 	/// </summary>
-	internal class RantFunctionInfo
+	internal class RantFunctionInfo : IRantFunction
 	{
 		private readonly Witchcraft _delegate;
 		private readonly RantParameter[] _params;
@@ -23,6 +24,10 @@ namespace Rant.Engine
 		public string Name { get; }
 		public string Description { get; }
         public bool HasParamArray { get; }
+
+	    public int ParamCount => _params.Length;
+
+	    public IEnumerable<IRantParameter> GetParameters() => _params; 
 
 		public RantFunctionInfo(string name, string description, MethodInfo method)
 		{
@@ -70,9 +75,15 @@ namespace Rant.Engine
 					throw new ArgumentException($"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
 				}
 
+                // If there is a [RantDescription] attribute on the parameter, retrieve its value. Default to empty string if there isn't one.
+                string paramDescription = parameters[i].GetCustomAttributes<RantDescriptionAttribute>().FirstOrDefault()?.Description ?? "";
+
 				// Create Rant parameter
 				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType,
-                    HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttribute<ParamArrayAttribute>() != null));
+                    HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttribute<ParamArrayAttribute>() != null))
+                {
+                    Description = paramDescription
+                };
 			}
 			_delegate = Witchcraft.Create(method);
 			Name = name;

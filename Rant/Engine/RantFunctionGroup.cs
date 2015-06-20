@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using Rant.Engine.Metadata;
 
 namespace Rant.Engine
 {
-    internal class RantFunctionGroup
+    internal class RantFunctionGroup : IRantFunctionGroup
     {
         private readonly Dictionary<int, RantFunctionInfo> _functions = new Dictionary<int, RantFunctionInfo>();
         private RantFunctionInfo _paramsArrayFunc = null;
 
         public string Name { get; }
+
+        public IEnumerable<IRantFunction> Overloads => _functions.Select(fn => fn.Value); 
 
         public RantFunctionGroup(string name)
         {
