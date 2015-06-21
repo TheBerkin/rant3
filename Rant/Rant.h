@@ -47,6 +47,6 @@ RANTAPI RANTSTR __cdecl RantGetMainValue(RANTOUTPUT output);
 
 RANTAPI RANTSTR* __cdecl RantGetOutputChannelNames(RANTOUTPUT output, int* count);
 
-RANTAPI RANTSTR RantGetOutputValue(RANTOUTPUT output, RANTSTR channelName);
+RANTAPI RANTSTR __cdecl RantGetOutputValue(RANTOUTPUT output, RANTSTR channelName);
 
 RANTAPI RANTRESULT __cdecl RantLoadPackage(RANTCONTEXT context, RANTSTR packagePath);
