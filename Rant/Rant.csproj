@@ -272,6 +272,7 @@
     <Content Include="Rant License.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Rant.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
