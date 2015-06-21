@@ -71,7 +71,6 @@ namespace Rant.Unmanaged
         {
             var names = output.Value.Select(e => e.Name).ToArray();
             count = names.Length;
-            GC.KeepAlive(names);
             return names;
         }
 
