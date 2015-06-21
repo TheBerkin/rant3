@@ -3,23 +3,17 @@ using System.Runtime.InteropServices;
 
 namespace Rant.Unmanaged
 {
-    internal static class Unmanaged
-    {
-        public static Unmanaged<T> Make<T>(T value) => new Unmanaged<T>(value);
-    }
-
-    internal sealed class Unmanaged<T> : IDisposable
+    internal class UnmanagedPattern : IDisposable
     {
         private GCHandle _handle;
         private bool _disposed;
+        public RantPattern Pattern { get; }
 
-        public T Value { get; }
-
-        public Unmanaged(T value)
+        public UnmanagedPattern(RantPattern pattern)
         {
-            Value = value;
+            Pattern = pattern;
             _handle = GCHandle.Alloc(this);
-        } 
+        }
 
         public void Dispose()
         {

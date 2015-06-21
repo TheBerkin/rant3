@@ -220,7 +220,8 @@
     <Compile Include="Unmanaged\ErrorCode.cs" />
     <Compile Include="Unmanaged\Exports.cs" />
     <Compile Include="Unmanaged\PatternOptions.cs" />
-    <Compile Include="Unmanaged\Unmanaged.cs" />
+    <Compile Include="Unmanaged\UnmanagedOutput.cs" />
+    <Compile Include="Unmanaged\UnmanagedPattern.cs" />
     <Compile Include="Unmanaged\UnmanagedRantContext.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
     <Compile Include="Engine\Constructs\Comparison.cs" />

@@ -28,54 +28,54 @@ namespace Rant.Unmanaged
         public static ErrorCode LoadEngine(UnmanagedRantContext context, string dictionaryPath) => context.Run(() => context.Rant = new RantEngine(dictionaryPath));
 
         [DllExport("RantCompilePatternString", CallingConvention.Cdecl)]
-        public static ErrorCode CompilePatternString(UnmanagedRantContext context, string patternString, out Unmanaged<RantPattern> patternCompiled)
+        public static ErrorCode CompilePatternString(UnmanagedRantContext context, string patternString, out UnmanagedPattern patternCompiled)
         {
             RantPattern pattern = null;
             context.Run(() => pattern = RantPattern.FromString(patternString));
-            patternCompiled = Unmanaged.Make(pattern);
+            patternCompiled = new UnmanagedPattern(pattern);
             return context.LastErrorCode;
         }
 
         [DllExport("RantCompilePatternFile", CallingConvention.Cdecl)]
-        public static ErrorCode CompilePatternFile(UnmanagedRantContext context, string patternPath, out Unmanaged<RantPattern> patternCompiled)
+        public static ErrorCode CompilePatternFile(UnmanagedRantContext context, string patternPath, out UnmanagedPattern patternCompiled)
         {
             RantPattern pattern = null;
             context.Run(() => pattern = RantPattern.FromFile(patternPath));
-            patternCompiled = Unmanaged.Make(pattern);
+            patternCompiled = new UnmanagedPattern(pattern);
             return context.LastErrorCode;
         }
 
         [DllExport("RantRunPattern", CallingConvention.Cdecl)]
-        public static ErrorCode RunPattern(UnmanagedRantContext context, Unmanaged<RantPattern> pattern, PatternOptions options, out Unmanaged<RantOutput> output)
+        public static ErrorCode RunPattern(UnmanagedRantContext context, UnmanagedPattern pattern, PatternOptions options, out UnmanagedOutput output)
         {
             RantOutput o = null;
-            context.Run(() => o = context.Rant.Do(pattern.Value, options.CharLimit, options.Timeout));
-            output = Unmanaged.Make(o);
+            context.Run(() => o = context.Rant.Do(pattern.Pattern, options.CharLimit, options.Timeout));
+            output = new UnmanagedOutput(o);
             return context.LastErrorCode;
         }
 
         [DllExport("RantRunPatternSeed", CallingConvention.Cdecl)]
-        public static ErrorCode RunPatternSeed(UnmanagedRantContext context, Unmanaged<RantPattern> pattern, PatternOptions options, long seed, out Unmanaged<RantOutput> output)
+        public static ErrorCode RunPatternSeed(UnmanagedRantContext context, UnmanagedPattern pattern, PatternOptions options, long seed, out UnmanagedOutput output)
         {
             RantOutput o = null;
-            context.Run(() => o = context.Rant.Do(pattern.Value, seed, options.CharLimit, options.Timeout));
-            output = Unmanaged.Make(o);
+            context.Run(() => o = context.Rant.Do(pattern.Pattern, seed, options.CharLimit, options.Timeout));
+            output = new UnmanagedOutput(o);
             return context.LastErrorCode;
         }
 
         [DllExport("RantGetMainValue", CallingConvention.Cdecl)]
-        public static string GetMainValue(Unmanaged<RantOutput> output) => output?.Value?.Main;
+        public static string GetMainValue(UnmanagedOutput output) => output?.Output?.Main;
 
         [DllExport("RantGetOutputChannelNames", CallingConvention.Cdecl)]
-        public static string[] GetOutputChannelNames(Unmanaged<RantOutput> output, out int count)
+        public static string[] GetOutputChannelNames(UnmanagedOutput output, out int count)
         {
-            var names = output.Value.Select(e => e.Name).ToArray();
+            var names = output.Output.Select(e => e.Name).ToArray();
             count = names.Length;
             return names;
         }
 
         [DllExport("RantGetOutputValue", CallingConvention.Cdecl)]
-        public static string GetOutputValue(Unmanaged<RantOutput> output, string channelName) => output?.Value?[channelName];
+        public static string GetOutputValue(UnmanagedOutput output, string channelName) => output?.Output?[channelName];
 
         [DllExport("RantLoadPackage", CallingConvention.Cdecl)]
         public static ErrorCode LoadPackage(UnmanagedRantContext context, string packagePath) => context.Run(() => context.Rant.LoadPackage(packagePath));
