@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Rant.Unmanaged
 {
-    internal class UnmanagedRantContext
+    internal class UnmanagedRantContext : IDisposable
     {
+        private GCHandle _handle;
+        private bool _disposed;
+
         public RantEngine Rant { get; set; }
 
         public string LastErrorMessage { get; private set; } = "";
@@ -12,6 +16,7 @@ namespace Rant.Unmanaged
 
         public UnmanagedRantContext()
         {
+            _handle = GCHandle.Alloc(this);
         }
 
         public ErrorCode Run(Action func)
@@ -38,6 +43,13 @@ namespace Rant.Unmanaged
                 LastErrorCode = ErrorCode.OtherError;
             }
             return LastErrorCode;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _handle.Free();
+            _disposed = true;
         }
     }
 }
