@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define RANTAPI extern "C" __declspec(dllimport)
+#define RANTAPI(result) extern "C" __declspec(dllimport) result __cdecl
 
 typedef void* RANTCONTEXT;
 typedef void* RANTPATTERN;
@@ -23,30 +23,30 @@ struct RANTOPTIONS
 	double Timeout;
 };
 
-RANTAPI RANTCONTEXT __cdecl RantCreateContext();
+RANTAPI(RANTCONTEXT) RantCreateContext();
 
-RANTAPI void __cdecl RantReleaseContext(RANTCONTEXT context);
+RANTAPI(void) RantReleaseContext(RANTCONTEXT context);
 
-RANTAPI RANTRESULT __cdecl RantGetLastError(RANTCONTEXT context);
+RANTAPI(RANTRESULT) RantGetLastError(RANTCONTEXT context);
 
-RANTAPI const char* __cdecl RantGetLastErrorMessage(RANTCONTEXT context);
+RANTAPI(RANTSTR) RantGetLastErrorMessage(RANTCONTEXT context);
 
-RANTAPI RANTRESULT __cdecl RantLoadEngine(RANTCONTEXT context, RANTSTR dictionaryPath);
+RANTAPI(RANTRESULT) RantLoadEngine(RANTCONTEXT context, RANTSTR dictionaryPath);
 
-RANTAPI bool __cdecl RantIsEngineLoaded(RANTCONTEXT context);
+RANTAPI(bool) RantIsEngineLoaded(RANTCONTEXT context);
 
-RANTAPI RANTRESULT __cdecl RantCompilePatternString(RANTCONTEXT context, RANTSTR patternString, RANTPATTERN* patternCompiled);
+RANTAPI(RANTRESULT) RantCompilePatternString(RANTCONTEXT context, RANTSTR patternString, RANTPATTERN* patternCompiled);
 
-RANTAPI RANTRESULT __cdecl RantCompilePatternFile(RANTCONTEXT context, RANTSTR patternPath, RANTPATTERN* patternCompiled);
+RANTAPI(RANTRESULT) RantCompilePatternFile(RANTCONTEXT context, RANTSTR patternPath, RANTPATTERN* patternCompiled);
 
-RANTAPI RANTRESULT __cdecl RantRunPattern(RANTCONTEXT context, RANTPATTERN pattern, RANTOPTIONS options, RANTOUTPUT* output);
+RANTAPI(RANTRESULT) RantRunPattern(RANTCONTEXT context, RANTPATTERN pattern, RANTOPTIONS options, RANTOUTPUT* output);
 
-RANTAPI RANTRESULT __cdecl RantRunPatternSeed(RANTCONTEXT context, RANTPATTERN pattern, RANTOPTIONS options, int64_t seed, RANTOUTPUT* output);
+RANTAPI(RANTRESULT) RantRunPatternSeed(RANTCONTEXT context, RANTPATTERN pattern, RANTOPTIONS options, int64_t seed, RANTOUTPUT* output);
 
-RANTAPI RANTSTR __cdecl RantGetMainValue(RANTOUTPUT output);
+RANTAPI(RANTSTR) RantGetMainValue(RANTOUTPUT output);
 
-RANTAPI RANTSTR* __cdecl RantGetOutputChannelNames(RANTOUTPUT output, int* count);
+RANTAPI(RANTSTR*) RantGetOutputChannelNames(RANTOUTPUT output, int* count);
 
-RANTAPI RANTSTR __cdecl RantGetOutputValue(RANTOUTPUT output, RANTSTR channelName);
+RANTAPI(RANTSTR) RantGetOutputValue(RANTOUTPUT output, RANTSTR channelName);
 
-RANTAPI RANTRESULT __cdecl RantLoadPackage(RANTCONTEXT context, RANTSTR packagePath);
+RANTAPI(RANTRESULT) RantLoadPackage(RANTCONTEXT context, RANTSTR packagePath);
