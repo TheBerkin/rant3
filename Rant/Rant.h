@@ -1,11 +1,12 @@
-﻿#include <stdint.h>
+#include <stdint.h>
 
-#define RANTAPI __declspec(dllimport)
+#define RANTAPI extern "C" __declspec(dllimport)
 
-typedef void* RANTCONTEXT
-typedef void* RANTPATTERN
-typedef void* RANTOUTPUT
-typedef int RANTRESULT
+
+typedef void* RANTCONTEXT;
+typedef void* RANTPATTERN;
+typedef void* RANTOUTPUT;
+typedef int RANTRESULT;
 
 #define RANT_OK 0
 #define RANT_COMPILE_ERROR 1
@@ -16,11 +17,11 @@ struct RANTOPTIONS
 {
 	int32_t CharLimit;
 	double Timeout;
-}
+};
 
 RANTAPI RANTCONTEXT __cdecl RantCreateContext();
 
-RANTAPI void RantReleaseContext __cdecl RantReleaseContext(RANTCONTEXT context);
+RANTAPI void __cdecl RantReleaseContext(RANTCONTEXT context);
 
 RANTAPI RANTRESULT __cdecl RantGetLastError(RANTCONTEXT context);
 
