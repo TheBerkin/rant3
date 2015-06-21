@@ -10,6 +10,9 @@ namespace Rant.Unmanaged
         [DllExport("RantCreateContext", CallingConvention.Cdecl)]
         public static UnmanagedRantContext CreateContext() => new UnmanagedRantContext();
 
+        [DllExport("RantReleaseContext", CallingConvention.Cdecl)]
+        public static void ReleaseContext(UnmanagedRantContext context) => context.Dispose();
+
         [DllExport("RantGetLastError", CallingConvention.Cdecl)]
         public static ErrorCode GetLastError(UnmanagedRantContext context) => context.LastErrorCode;
 
