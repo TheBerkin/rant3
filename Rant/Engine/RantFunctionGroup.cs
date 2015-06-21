@@ -13,7 +13,7 @@ namespace Rant.Engine
 
         public string Name { get; }
 
-        public IEnumerable<IRantFunction> Overloads => _functions.Select(fn => fn.Value); 
+        public IEnumerable<IRantFunction> Overloads => _functions.Select(fn => fn.Value as IRantFunction); 
 
         public RantFunctionGroup(string name)
         {

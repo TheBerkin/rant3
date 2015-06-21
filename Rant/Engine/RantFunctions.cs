@@ -32,10 +32,10 @@ namespace Rant.Engine
 			foreach (var method in typeof(RantFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
 			{
 				if (!method.IsStatic) continue;
-				var attr = method.GetCustomAttributes().OfType<RantFunctionAttribute>().FirstOrDefault();
+				var attr = method.GetCustomAttributes(typeof(RantFunctionAttribute), false).FirstOrDefault() as RantFunctionAttribute;
 				if (attr == null) continue;
 				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
-				var descAttr = method.GetCustomAttributes().OfType<RantDescriptionAttribute>().FirstOrDefault();
+				var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute;
 				var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
 				if (Util.ValidateName(name)) RegisterFunction(info);
 				foreach(var alias in attr.Aliases.Where(Util.ValidateName))
@@ -66,7 +66,7 @@ namespace Rant.Engine
 		public static bool FunctionExists(string name) => 
             AliasTable.ContainsKey(name) || FunctionTable.ContainsKey(name);
 
-	    public static IEnumerable<IRantFunctionGroup> GetFunctions() => FunctionTable.Select(item => item.Value); 
+	    public static IEnumerable<IRantFunctionGroup> GetFunctions() => FunctionTable.Select(item => item.Value as IRantFunctionGroup); 
 
 		public static IEnumerable<string> GetFunctionNames() => 
             FunctionTable.Select(item => item.Key);

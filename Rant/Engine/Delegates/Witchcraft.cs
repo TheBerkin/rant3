@@ -5,10 +5,32 @@ using System.Reflection;
 
 namespace Rant.Engine.Delegates
 {
-	/// <summary>
-	/// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
-	/// </summary>
-	internal abstract class Witchcraft
+    internal delegate TResult XFunc<out TResult>();
+    internal delegate TResult XFunc<in A, out TResult>(A a);
+    internal delegate TResult XFunc<in A, in B, out TResult>(A a, B b);
+    internal delegate TResult XFunc<in A, in B, in C, out TResult>(A a, B b, C c);
+    internal delegate TResult XFunc<in A, in B, in C, in D, out TResult>(A a, B b, C c, D d);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, out TResult>(A a, B b, C c, D d, E e);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, out TResult>(A a, B b, C c, D d, E e, F f);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(A a, B b, C c, D d, E e, F f, G g);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+    internal delegate void XAction();
+    internal delegate void XAction<in A>(A a);
+    internal delegate void XAction<in A, in B>(A a, B b);
+    internal delegate void XAction<in A, in B, in C>(A a, B b, C c);
+    internal delegate void XAction<in A, in B, in C, in D>(A a, B b, C c, D d);
+    internal delegate void XAction<in A, in B, in C, in D, in E>(A a, B b, C c, D d, E e);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F>(A a, B b, C c, D d, E e, F f);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G>(A a, B b, C c, D d, E e, F f, G g);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H>(A a, B b, C c, D d, E e, F f, G g, H h);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+    /// <summary>
+    /// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
+    /// </summary>
+    internal abstract class Witchcraft
 	{
 		private static readonly Type[] _funcTypes;
 		private static readonly Type[] _voidTypes;
@@ -73,12 +95,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftNoParams : Witchcraft
 	{
-		private readonly Func<Sandbox, object> _func;
+		private readonly XFunc<Sandbox, object> _func;
 
 		public WitchcraftNoParams(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, object>), methodInfo);
+			_func = (XFunc<Sandbox, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) => _func(sb);
@@ -86,12 +108,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftNoParamsVoid : WitchcraftVoid
 	{
-		private readonly Action<Sandbox> _func;
+		private readonly XAction<Sandbox> _func;
 
 		public WitchcraftNoParamsVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox>), methodInfo);
+			_func = (XAction<Sandbox>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -103,12 +125,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, object> _func;
+		private readonly XFunc<Sandbox, A, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) => _func(sb, (A)args[0]);
@@ -116,12 +138,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A> _func;
+		private readonly XAction<Sandbox, A> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A>), methodInfo);
+			_func = (XAction<Sandbox, A>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -133,12 +155,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, object> _func;
+		private readonly XFunc<Sandbox, A, B, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -147,12 +169,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B> _func;
+		private readonly XAction<Sandbox, A, B> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B>), methodInfo);
+			_func = (XAction<Sandbox, A, B>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -164,12 +186,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -178,12 +200,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C> _func;
+		private readonly XAction<Sandbox, A, B, C> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -195,12 +217,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C, D> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, D, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, D, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, D, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, D, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, D, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -209,12 +231,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C, D> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C, D> _func;
+		private readonly XAction<Sandbox, A, B, C, D> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C, D>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C, D>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C, D>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -226,12 +248,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C, D, E> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, D, E, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, D, E, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, D, E, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, D, E, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, D, E, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -241,12 +263,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C, D, E> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C, D, E> _func;
+		private readonly XAction<Sandbox, A, B, C, D, E> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C, D, E>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C, D, E>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C, D, E>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -259,12 +281,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C, D, E, F> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, D, E, F, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, D, E, F, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, D, E, F, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -274,12 +296,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C, D, E, F> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C, D, E, F> _func;
+		private readonly XAction<Sandbox, A, B, C, D, E, F> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C, D, E, F>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C, D, E, F>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C, D, E, F>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -292,12 +314,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C, D, E, F, G> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, G, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, D, E, F, G, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, G, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, G, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, D, E, F, G, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, D, E, F, G, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -307,12 +329,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C, D, E, F, G> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C, D, E, F, G> _func;
+		private readonly XAction<Sandbox, A, B, C, D, E, F, G> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C, D, E, F, G>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F, G>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C, D, E, F, G>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C, D, E, F, G>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)
@@ -325,12 +347,12 @@ namespace Rant.Engine.Delegates
 
 	internal class Witchcraft<A, B, C, D, E, F, G, H> : Witchcraft
 	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, G, H, object> _func;
+		private readonly XFunc<Sandbox, A, B, C, D, E, F, G, H, object> _func;
 
 		public Witchcraft(MethodInfo methodInfo)
 		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, G, H, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, G, H, object>), methodInfo);
+			_func = (XFunc<Sandbox, A, B, C, D, E, F, G, H, object>)Delegate.CreateDelegate(
+				typeof(XFunc<Sandbox, A, B, C, D, E, F, G, H, object>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args) =>
@@ -340,12 +362,12 @@ namespace Rant.Engine.Delegates
 
 	internal class WitchcraftVoid<A, B, C, D, E, F, G, H> : WitchcraftVoid
 	{
-		private readonly Action<Sandbox, A, B, C, D, E, F, G, H> _func;
+		private readonly XAction<Sandbox, A, B, C, D, E, F, G, H> _func;
 
 		public WitchcraftVoid(MethodInfo methodInfo)
 		{
-			_func = (Action<Sandbox, A, B, C, D, E, F, G, H>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F, G, H>), methodInfo);
+			_func = (XAction<Sandbox, A, B, C, D, E, F, G, H>)Delegate.CreateDelegate(
+				typeof(XAction<Sandbox, A, B, C, D, E, F, G, H>), methodInfo);
 		}
 
 		public override object Invoke(Sandbox sb, object[] args)

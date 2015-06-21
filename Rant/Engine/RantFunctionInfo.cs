@@ -62,7 +62,7 @@ namespace Rant.Engine
 				}
 				else if (type.IsEnum)
 				{
-					rantType = type.GetCustomAttributes(typeof(FlagsAttribute)).Any()
+					rantType = type.GetCustomAttributes(typeof(FlagsAttribute), false).Any()
 						? RantParameterType.Flags
 						: RantParameterType.Mode;
 				}
@@ -76,11 +76,11 @@ namespace Rant.Engine
 				}
 
                 // If there is a [RantDescription] attribute on the parameter, retrieve its value. Default to empty string if there isn't one.
-                string paramDescription = parameters[i].GetCustomAttributes<RantDescriptionAttribute>().FirstOrDefault()?.Description ?? "";
+                string paramDescription = (parameters[i].GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute)?.Description ?? "";
 
 				// Create Rant parameter
 				_params[i - 1] = new RantParameter(parameters[i].Name, type, rantType,
-                    HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttribute<ParamArrayAttribute>() != null))
+                    HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).FirstOrDefault() != null))
                 {
                     Description = paramDescription
                 };
