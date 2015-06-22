@@ -2,6 +2,8 @@
 // To use, simply reference the Rant.lib and Rant.dll files in your project and include this header.
 // Make sure you compile Rant under x86 or x64, depending on your system.
 
+#pragma once
+
 #include <stdint.h>
 
 #define RANTAPI(result) extern "C" __declspec(dllimport) result __cdecl
