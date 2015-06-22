@@ -27,6 +27,10 @@ RANTAPI(RANTCONTEXT) RantCreateContext();
 
 RANTAPI(void) RantReleaseContext(RANTCONTEXT context);
 
+RANTAPI(void) RantReleasePattern(RANTPATTERN pattern);
+
+RANTAPI(void) RantReleaseOutput(RANTOUTPUT output);
+
 RANTAPI(RANTRESULT) RantGetLastError(RANTCONTEXT context);
 
 RANTAPI(RANTSTR) RantGetLastErrorMessage(RANTCONTEXT context);

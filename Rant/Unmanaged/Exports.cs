@@ -18,6 +18,12 @@ namespace Rant.Unmanaged
         [DllExport("RantReleaseContext", CallingConvention.Cdecl)]
         public static void ReleaseContext(UnmanagedRantContext context) => context.Dispose();
 
+        [DllExport("RantReleasePattern", CallingConvention.Cdecl)]
+        public static void ReleasePattern(UnmanagedPattern pattern) => pattern.Dispose();
+
+        [DllExport("RantReleaseOutput", CallingConvention.Cdecl)]
+        public static void ReleaseOutput(UnmanagedOutput output) => output.Dispose();
+
         [DllExport("RantGetLastError", CallingConvention.Cdecl)]
         public static ErrorCode GetLastError(UnmanagedRantContext context) => context.LastErrorCode;
 
