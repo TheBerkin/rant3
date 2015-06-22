@@ -85,6 +85,11 @@ namespace Rant.Vocabulary
         public string Name => _name;
 
         /// <summary>
+        /// Gets the hidden classes of the table.
+        /// </summary>
+        public IEnumerable<string> HiddenClasses => _hidden; 
+
+        /// <summary>
         /// The number of entries stored in the table.
         /// </summary>
         public int EntryCount => _entries.Length;
