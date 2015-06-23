@@ -103,14 +103,19 @@ namespace Rant.Engine
 
 		[RantFunction("num")]
 		[RantDescription("Formats an input string using the current number format settings and prints the result.")]
-		private static void Number(Sandbox sb, string input)
+		private static void Number(Sandbox sb, 
+            [RantDescription("The string to convert into a number.")]
+            string input)
 		{
 			double number;
 			sb.Print(double.TryParse(input, out number) ? number : 0);
 		}
 
 		[RantFunction("numfmt")]
-		private static void NumberFormat(Sandbox sb, NumberFormat format)
+        [RantDescription("Sets the current number formatting mode.")]
+		private static void NumberFormat(Sandbox sb, 
+            [RantDescription("The number format to use.")]
+            NumberFormat format)
 		{
 			foreach (var channel in sb.CurrentOutput.GetActive())
 			{
@@ -119,7 +124,12 @@ namespace Rant.Engine
 		}
 
         [RantFunction("numfmt")]
-        private static IEnumerator<RantAction> NumberFormatRange(Sandbox sb, NumberFormat format, RantAction rangeAction)
+        [RantDescription("Runs the specified pattern under a specific number formatting mode.")]
+        private static IEnumerator<RantAction> NumberFormatRange(Sandbox sb,
+            [RantDescription("The number format to use.")]
+            NumberFormat format, 
+            [RantDescription("The pattern to run.")]
+            RantAction rangeAction)
         {
             var oldChannelMap = sb.CurrentOutput.GetActive()
                 .ToDictionary(ch => ch.Name, ch => ch.NumberFormatter.NumberFormat);
@@ -140,7 +150,12 @@ namespace Rant.Engine
         }
 
         [RantFunction]
-		private static void Digits(Sandbox sb, BinaryFormat format, int digits)
+        [RantDescription("Specifies the current digit formatting mode for numbers.")]
+		private static void Digits(Sandbox sb, 
+            [RantDescription("The digit format to use.")]
+            BinaryFormat format, 
+            [RantDescription("The digit count to associate with the mode.")]
+            int digits)
 		{
 			foreach (var channel in sb.CurrentOutput.GetActive())
 			{
@@ -150,7 +165,10 @@ namespace Rant.Engine
 		}
 
 		[RantFunction]
-		private static void Endian(Sandbox sb, Endianness endianness)
+        [RantDescription("Sets the current endianness for hex and binary formatted numbers.")]
+		private static void Endian(Sandbox sb, 
+            [RantDescription("The endianness to use.")]
+            Endianness endianness)
 		{
 			foreach (var channel in sb.CurrentOutput.GetActive())
 			{
@@ -178,13 +196,18 @@ namespace Rant.Engine
 		[RantDescription("Sets the separator pattern for the next block.")]
 		private static void Sep(Sandbox sb, 
 			[RantDescription("The separator pattern to run between iterations of the next block.")]
-			RantAction separatorAction)
+			RantAction separator)
 		{
-			sb.CurrentBlockAttribs.Separator = separatorAction;
+			sb.CurrentBlockAttribs.Separator = separator;
 		}
 
 		[RantFunction("rs")]
-		private static void RepSep(Sandbox sb, int times, RantAction separator)
+        [RantDescription("Sets the repetitions and separator for the next block. A combination of rep and sep.")]
+		private static void RepSep(Sandbox sb,
+            [RantDescription("The number of times to repeat the next block.")]
+            int times,
+            [RantDescription("The separator pattern to run between iterations of the next block.")]
+            RantAction separator)
 		{
 			sb.CurrentBlockAttribs.Repetitions = times;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -220,7 +243,9 @@ namespace Rant.Engine
 
 		[RantFunction("case", "caps")]
 		[RantDescription("Changes the capitalization mode for all open channels.")]
-		private static void Case(Sandbox sb, Case textCase)
+		private static void Case(Sandbox sb, 
+            [RantDescription("The capitalization mode to use.")]
+            Case textCase)
 		{
 			sb.CurrentOutput.SetCase(textCase);
 		}
@@ -504,7 +529,9 @@ namespace Rant.Engine
 
 		[RantFunction]
         [RantDescription("Retrieves and prints the specified group value of the current match from the active replacer.")]
-        private static void Group(Sandbox sb, string groupName)
+        private static void Group(Sandbox sb, 
+            [RantDescription("The name of the match group whose value will be retrieved.")]
+            string groupName)
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Groups[groupName].Value);
@@ -621,7 +648,11 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
-		private static IEnumerator<RantAction> Nth(Sandbox sb, int interval, RantAction pattern)
+		private static IEnumerator<RantAction> Nth(Sandbox sb, 
+            [RantDescription("The current iteration must be a multiple of this number to satisfy the condition.")]
+            int interval, 
+            [RantDescription("The pattern to run when the condition is satisfied.")]
+            RantAction pattern)
 		{
 			if(!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval != 0) yield break;
@@ -657,14 +688,18 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run before the next block.")]
-		private static void Start(Sandbox sb, RantAction beforePattern)
+		private static void Start(Sandbox sb, 
+            [RantDescription("The pattern to run before the next block.")]
+            RantAction beforePattern)
 		{
 			sb.CurrentBlockAttribs.Start = beforePattern;
 		}
 
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run after the next block.")]
-		private static void End(Sandbox sb, RantAction endPattern)
+		private static void End(Sandbox sb, 
+            [RantDescription("The pattern to run after the next block.")]
+            RantAction endPattern)
 		{
 			sb.CurrentBlockAttribs.End = endPattern;
 		}
