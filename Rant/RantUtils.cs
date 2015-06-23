@@ -34,6 +34,12 @@ namespace Rant
 		public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
 
         /// <summary>
+        /// Enumerates all function names and their aliases.
+        /// </summary>
+        /// <returns></returns>
+	    public static IEnumerable<string> GetFunctionNamesAndAliases() => RantFunctions.GetFunctionNamesAndAliases(); 
+
+        /// <summary>
         /// Enumerates the available functions.
         /// </summary>
         /// <returns></returns>
