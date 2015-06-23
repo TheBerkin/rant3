@@ -39,5 +39,12 @@ namespace Rant
 	    /// <param name="argc">The number of arguments in the overload to get the description for.</param>
 	    /// <returns></returns>
 	    public static string GetFunctionDescription(string functionName, int argc) => RantFunctions.GetFunctionDescription(functionName, argc);
+        
+        /// <summary>
+        /// Enumerates the aliases assigned to the specified function name.
+        /// </summary>
+        /// <param name="functionName">The function name to retrieve aliases for.</param>
+        /// <returns></returns>
+	    public static IEnumerable<string> GetFunctionAliases(string functionName) => RantFunctions.GetAliases(functionName);
 	}
 }

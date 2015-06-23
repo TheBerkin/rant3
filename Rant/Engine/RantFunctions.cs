@@ -44,6 +44,10 @@ namespace Rant.Engine
 			Loaded = true;
 		}
 
+	    public static IEnumerable<string> GetAliases(string funcName) =>
+	        AliasTable.Where(pair => String.Equals(funcName, pair.Value, StringComparison.InvariantCultureIgnoreCase))
+	            .Select(pair => pair.Key);
+
 	    private static void RegisterAlias(string alias, string funcName)
 	    {
 	        AliasTable[alias] = funcName;
