@@ -21,8 +21,8 @@ typedef const char* RANTSTR;
 
 struct RANTOPTIONS
 {
-	int32_t CharLimit;
 	double Timeout;
+	int32_t CharLimit;
 };
 
 RANTAPI(RANTCONTEXT) RantCreateContext();
