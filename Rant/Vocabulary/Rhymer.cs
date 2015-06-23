@@ -1,22 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rant.Engine.Metadata;
 
 namespace Rant.Vocabulary
 {
     internal class Rhymer
     {
-	    private static readonly char[] _vowels = { 'a', 'e', 'i', 'o', 'u', 'y' };
+        private static readonly char[] _vowels = { 'a', 'e', 'i', 'o', 'u', 'y' };
         private static readonly char[] _vowelSounds = { 'A', 'i', 'I', 'E', 'e', '3', '{', 'V', 'O', 'U', 'u', '^' };
 
-	    public RhymeFlags AllowedRhymes { get; set; }
+        public RhymeFlags AllowedRhymes { get; set; }
 
-	    public Rhymer()
-	    {
-		    AllowedRhymes = RhymeFlags.Perfect;
-	    }
+        public Rhymer()
+        {
+            AllowedRhymes = RhymeFlags.Perfect;
+        }
 
-	    private bool IsEnabled(RhymeFlags flags) => (AllowedRhymes & flags) == flags;
+        private bool IsEnabled(RhymeFlags flags) => (AllowedRhymes & flags) == flags;
 
         public bool Rhyme(RantDictionaryTerm term1, RantDictionaryTerm term2)
         {
@@ -166,16 +167,24 @@ namespace Rant.Vocabulary
         }
     }
 
-	[Flags]
+    [Flags]
     internal enum RhymeFlags : byte
     {
-        Perfect =		0x01,
-        Weak =			0x02,
-        Syllabic =		0x04,
-        Semirhyme =		0x08,
-        Forced =		0x10,
-        SlantRhyme =	0x20,
-        Pararhyme =		0x40,
-        Alliteration =	0x80
+        [RantDescription("Everything after the first stressed vowel matches in pronunciation (picky / icky).")]
+        Perfect = 0x01,
+        [RantDescription("The penultimate syllable is stressed and the final syllable rhymes (coffin / raisin).")]
+        Weak = 0x02,
+        [RantDescription("The final syllable rhymes (senator / otter).")]
+        Syllabic = 0x04,
+        [RantDescription("The words would rhyme if not for the final syllable (broom / broomstick).")]
+        Semirhyme = 0x08,
+        [RantDescription("The words might rhyme if you really pushed it.")]
+        Forced = 0x10,
+        [RantDescription("The ending consonants are the same (rant / ant).")]
+        SlantRhyme = 0x20,
+        [RantDescription("All the consonants match (tuna / teen).")]
+        Pararhyme = 0x40,
+        [RantDescription("All consonants up to the first vowel rhyme (dog / dude).")]
+        Alliteration = 0x80
     }
 }
