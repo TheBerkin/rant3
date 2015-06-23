@@ -168,9 +168,11 @@
     <Compile Include="Engine\Constructs\SyncManager.cs" />
     <Compile Include="Engine\Metadata\IRantFunction.cs" />
     <Compile Include="Engine\Metadata\IRantFunctionGroup.cs" />
+    <Compile Include="Engine\Metadata\IRantModeValue.cs" />
     <Compile Include="Engine\Metadata\IRantParameter.cs" />
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\Metadata\RantModeValue.cs" />
     <Compile Include="Engine\RantFunctionGroup.cs" />
     <Compile Include="Engine\Syntax\RADefineSubroutine.cs" />
     <Compile Include="Engine\Syntax\RAEscape.cs" />

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 using Rant.Engine.Metadata;
 
@@ -11,8 +13,17 @@ namespace Rant.Engine
 		public string Name { get; private set; }
         public bool IsParams { get; private set; }
         public string Description { get; set; }
+	    public IEnumerable<IRantModeValue> GetEnumValues()
+	    {
+	        if (!NativeType.IsEnum) yield break;
+	        foreach (var value in Enum.GetNames(NativeType))
+	        {
+                yield return new RantModeValue(Util.CamelToSnake(value), 
+                    (NativeType.GetMember(value)[0].GetCustomAttribute(typeof(RantDescriptionAttribute)) as RantDescriptionAttribute)?.Description ?? String.Empty);
+	        }
+	    }
 
-		public RantParameter(string name, Type nativeType, RantParameterType rantType, bool isParams = false)
+	    public RantParameter(string name, Type nativeType, RantParameterType rantType, bool isParams = false)
 		{
 			Name = name;
 			NativeType = nativeType;

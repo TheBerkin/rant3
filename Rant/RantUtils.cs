@@ -20,6 +20,13 @@ namespace Rant
 			return RantFunctions.FunctionExists(functionName);
 		}
 
+        /// <summary>
+        /// Returns the function with the specified name. The return value will be null if the function is not found.
+        /// </summary>
+        /// <param name="functionName">The name of the function to retrieve.</param>
+        /// <returns></returns>
+	    public static IRantFunctionGroup GetFunction(string functionName) => RantFunctions.GetFunctionGroup(functionName);
+
 		/// <summary>
 		/// Enumerates the names of all available Rant functions.
 		/// </summary>
