@@ -567,7 +567,7 @@ namespace Rant.Engine
 		}
 
 		[RantFunction("xunpin")]
-		[RantDescription("Pins a synchronizer.")]
+		[RantDescription("Unpins a synchronizer.")]
 		private static void SyncUnpin(Sandbox sb,
             [RantDescription("The name of the synchronizer to unpin.")]
             string name)
@@ -649,7 +649,7 @@ namespace Rant.Engine
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
 		private static IEnumerator<RantAction> Nth(Sandbox sb, 
-            [RantDescription("The current iteration must be a multiple of this number to satisfy the condition.")]
+            [RantDescription("The interval at which the pattern should be run.")]
             int interval, 
             [RantDescription("The pattern to run when the condition is satisfied.")]
             RantAction pattern)
@@ -661,7 +661,13 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number offset by a specific amount.")]
-		private static IEnumerator<RantAction> NthO(Sandbox sb, int interval, int offset, RantAction pattern)
+		private static IEnumerator<RantAction> NthO(Sandbox sb, 
+            [RantDescription("The interval at which the pattern should be run.")]
+            int interval, 
+            [RantDescription("The number of iterations to offset the interval by.")]
+            int offset, 
+            [RantDescription("The pattern to run when the condition is satisfied.")]
+            RantAction pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) != 0) yield break;
@@ -670,7 +676,11 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number.")]
-		private static IEnumerator<RantAction> NotNth(Sandbox sb, int interval, RantAction pattern)
+		private static IEnumerator<RantAction> NotNth(Sandbox sb, 
+            [RantDescription("The interval at which the pattern should not be run.")]
+            int interval, 
+            [RantDescription("The pattern to run when the condition is satisfied.")]
+            RantAction pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval == 0) yield break;
@@ -679,7 +689,13 @@ namespace Rant.Engine
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount.")]
-		private static IEnumerator<RantAction> NotNthO(Sandbox sb, int interval, int offset, RantAction pattern)
+		private static IEnumerator<RantAction> NotNthO(Sandbox sb, 
+            [RantDescription("The interval at which the pattern should not be run.")]
+            int interval, 
+            [RantDescription("The number of iterations to offset the interval by.")]
+            int offset, 
+            [RantDescription("The pattern to run when the condition is satisfied.")]
+            RantAction pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) == 0) yield break;

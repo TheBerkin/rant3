@@ -36,7 +36,7 @@ namespace Rant.Engine.Delegates
 		private static readonly Type[] _voidTypes;
 
 		static Witchcraft()
-		{
+		{   
 			var ass = Assembly.GetAssembly(typeof(Witchcraft));
 			var lstFuncTypes = new List<Type>();
 			var lstVoidTypes = new List<Type>();
