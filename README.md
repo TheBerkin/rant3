@@ -27,6 +27,8 @@ Rant is a language for procedurally generating text. It combines a markup langua
 * Probability modifiers
 * Loops, conditionals, and subroutines
 * Package loader for easy resource management
+* Unmanaged function exports for use in C/C++ applications *(Windows only, sorry!)*
+* Compatible with Unity
 * **And a whole lot more!**
 
 ##Examples

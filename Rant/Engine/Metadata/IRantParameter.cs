@@ -1,4 +1,6 @@
-﻿namespace Rant.Engine.Metadata
+﻿using System.Collections.Generic;
+
+namespace Rant.Engine.Metadata
 {
     /// <summary>
     /// Provides access to metadata for a Rant function parameter.
@@ -24,5 +26,11 @@
         /// Gets the description for the parameter.
         /// </summary>
         string Description { get; }
+
+        /// <summary>
+        /// Enumerates all possible values for flag and mode parameters.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IRantModeValue> GetEnumValues();
     }
 }

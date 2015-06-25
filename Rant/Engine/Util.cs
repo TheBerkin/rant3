@@ -46,7 +46,7 @@ namespace Rant.Engine
 			value = null;
 			if (!enumType.IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");
 			CacheEnum(enumType);
-			var name = NameToCamel(modeString.Trim());
+			var name = SnakeToCamel(modeString.Trim());
             var cache = _enumTable[enumType];
 			if (!cache.Contains(name)) return false;
 			value = Enum.Parse(enumType, name, true);
@@ -179,7 +179,7 @@ namespace Rant.Engine
 			return Convert.ToChar(rng.Next(ranges.Current.Item1, ranges.Current.Item2 + 1));
 		}
 
-		public static string NameToCamel(string name)
+		public static string SnakeToCamel(string name)
 		{
 			if (String.IsNullOrEmpty(name)) return name;
 			var sb = new StringBuilder();
@@ -200,6 +200,27 @@ namespace Rant.Engine
 			}
 			return sb.ToString();
 		}
+
+	    public static string CamelToSnake(string camelName)
+	    {
+            var name = camelName.Trim();
+            if (Util.IsNullOrWhiteSpace(name)) return name;
+	        if (name.Length == 1) return name.ToLower();
+            var sb = new StringBuilder();
+	        bool a, b;
+	        bool last = false;
+	        for (int i = 0; i < name.Length - 1; i++)
+	        {
+	            a = Char.IsUpper(name[i]);
+	            b = Char.IsUpper(name[i + 1]);
+	            if ((last && a && !b)) sb.Append('-');
+	            sb.Append(Char.ToLower(name[i]));
+	            if (!a && b) sb.Append('-');
+	            last = a;
+	        }
+            sb.Append(Char.ToLower(name[name.Length - 1]));
+            return sb.ToString();
+	    }
 
 		public static Regex ParseRegex(string regexLiteral)
 		{

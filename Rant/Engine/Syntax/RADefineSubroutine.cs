@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
+using Rant.Engine.ObjectModel;
 using Rant.Stringes;
 
 namespace Rant.Engine.Syntax
@@ -18,7 +15,7 @@ namespace Rant.Engine.Syntax
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			sb.Objects[Name] = new ObjectModel.RantObject(this);
+			sb.Objects[Name] = new RantObject(this);
 			yield break;
 		}
 	}

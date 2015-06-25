@@ -85,7 +85,7 @@ namespace Rant.Vocabulary
                                         if (!header) LoadError(path, token, "The #type directive may only be used in the file header.");
                                         if (args.Length != 3) LoadError(path, token, "#type directive requires 3 arguments.");
                                         types.Add(args[0], new EntryTypeDef(args[0], args[1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries),
-                                            String.IsNullOrWhiteSpace(args[2]) ? null : new EntryTypeDefFilter(args[2])));
+                                            Util.IsNullOrWhiteSpace(args[2]) ? null : new EntryTypeDefFilter(args[2])));
                                     }
                                     break;
                             }

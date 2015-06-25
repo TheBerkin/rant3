@@ -297,7 +297,7 @@ namespace Rant.Engine.Compiler
 							Stringe name = null;
 							if (_reader.PeekToken().ID != R.DoubleColon)
 								name = _reader.ReadLoose(R.Text, "table name");
-							if (name != null && (string.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
+							if (name != null && (Util.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
 								SyntaxError(token, "Invalid table name in query.");
 							_query = new Query
 							{

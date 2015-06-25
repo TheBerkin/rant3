@@ -5,13 +5,11 @@ namespace Rant.Engine
 {
     internal static class Extensions
     {
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong RotL(this ulong data, int times)
         {
             return (data << (times % 64)) | (data >> (64 - (times % 64)));
         }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
 		public static ulong RotR(this ulong data, int times)
         {
             return (data >> (times % 64)) | (data << (64 - (times % 64)));

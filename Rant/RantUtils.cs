@@ -20,11 +20,24 @@ namespace Rant
 			return RantFunctions.FunctionExists(functionName);
 		}
 
+        /// <summary>
+        /// Returns the function with the specified name. The return value will be null if the function is not found.
+        /// </summary>
+        /// <param name="functionName">The name of the function to retrieve.</param>
+        /// <returns></returns>
+	    public static IRantFunctionGroup GetFunction(string functionName) => RantFunctions.GetFunctionGroup(functionName);
+
 		/// <summary>
 		/// Enumerates the names of all available Rant functions.
 		/// </summary>
 		/// <returns></returns>
 		public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
+
+        /// <summary>
+        /// Enumerates all function names and their aliases.
+        /// </summary>
+        /// <returns></returns>
+	    public static IEnumerable<string> GetFunctionNamesAndAliases() => RantFunctions.GetFunctionNamesAndAliases(); 
 
         /// <summary>
         /// Enumerates the available functions.
@@ -39,5 +52,12 @@ namespace Rant
 	    /// <param name="argc">The number of arguments in the overload to get the description for.</param>
 	    /// <returns></returns>
 	    public static string GetFunctionDescription(string functionName, int argc) => RantFunctions.GetFunctionDescription(functionName, argc);
+        
+        /// <summary>
+        /// Enumerates the aliases assigned to the specified function name.
+        /// </summary>
+        /// <param name="functionName">The function name to retrieve aliases for.</param>
+        /// <returns></returns>
+	    public static IEnumerable<string> GetFunctionAliases(string functionName) => RantFunctions.GetAliases(functionName);
 	}
 }

@@ -48,8 +48,6 @@ namespace RantConsole
 
             if (Flag("nsfw")) rant.Dictionary.IncludeHiddenClass("nsfw");
 
-            rant.AddHook("load", hArgs => hArgs.Length != 1 ? "" : rant.DoFile(hArgs[0]));
-
             if (!String.IsNullOrEmpty(FILE))
             {
                 try

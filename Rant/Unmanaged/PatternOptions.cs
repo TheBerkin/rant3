@@ -5,7 +5,7 @@ namespace Rant.Unmanaged
     [StructLayout(LayoutKind.Sequential)]
     internal struct PatternOptions
     {
-        public int CharLimit;
         public double Timeout;
+        public int CharLimit;
     }
 }

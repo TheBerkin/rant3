@@ -15,7 +15,7 @@ namespace Rant
     /// </summary>
     public sealed class RantPackage
     {
-        private const string Magic = "rpkg";
+        private const string Magic = "RPKG";
 
         private HashSet<RantPattern> _patterns;
         private HashSet<RantDictionaryTable> _tables;
@@ -109,7 +109,8 @@ namespace Rant
                         writer
                         .Write(table.Name)
                         .Write(table.Subtypes)
-                        .Write(table.EntryCount);
+                        .Write(table.EntryCount)
+                        .Write(table.HiddenClasses.ToArray());
 
                         foreach (var entry in table.GetEntries())
                         {
@@ -172,6 +173,7 @@ namespace Rant
                     var name = reader.ReadString();
                     var subs = reader.ReadStringArray();
                     int numEntries = reader.ReadInt32();
+                    var hiddenClasses = reader.ReadStringArray();
                     var entries = new RantDictionaryEntry[numEntries];
 
                     for (int j = 0; j < numEntries; j++)
@@ -193,7 +195,7 @@ namespace Rant
                         entries[j] = new RantDictionaryEntry(terms, classes, weight);
                     }
 
-                    pkg.AddTable(new RantDictionaryTable(name, subs, entries));
+                    pkg.AddTable(new RantDictionaryTable(name, subs, entries, hiddenClasses));
                 }
 
                 return pkg;

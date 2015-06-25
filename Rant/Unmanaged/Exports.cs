@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using RGiesecke.DllExport;
@@ -10,6 +11,19 @@ namespace Rant.Unmanaged
         [DllExport("RantCreateContext", CallingConvention.Cdecl)]
         public static UnmanagedRantContext CreateContext() => new UnmanagedRantContext();
 
+        [DllExport("RantIsEngineLoaded", CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static bool IsEngineLoaded(UnmanagedRantContext context) => context.Rant != null;
+
+        [DllExport("RantReleaseContext", CallingConvention.Cdecl)]
+        public static void ReleaseContext(UnmanagedRantContext context) => context.Dispose();
+
+        [DllExport("RantReleasePattern", CallingConvention.Cdecl)]
+        public static void ReleasePattern(UnmanagedPattern pattern) => pattern.Dispose();
+
+        [DllExport("RantReleaseOutput", CallingConvention.Cdecl)]
+        public static void ReleaseOutput(UnmanagedOutput output) => output.Dispose();
+
         [DllExport("RantGetLastError", CallingConvention.Cdecl)]
         public static ErrorCode GetLastError(UnmanagedRantContext context) => context.LastErrorCode;
 
@@ -20,43 +34,54 @@ namespace Rant.Unmanaged
         public static ErrorCode LoadEngine(UnmanagedRantContext context, string dictionaryPath) => context.Run(() => context.Rant = new RantEngine(dictionaryPath));
 
         [DllExport("RantCompilePatternString", CallingConvention.Cdecl)]
-        public static ErrorCode CompilePatternString(UnmanagedRantContext context, string patternString, out RantPattern patternCompiled)
+        public static ErrorCode CompilePatternString(UnmanagedRantContext context, string patternString, out UnmanagedPattern patternCompiled)
         {
             RantPattern pattern = null;
             context.Run(() => pattern = RantPattern.FromString(patternString));
-            patternCompiled = pattern;
+            patternCompiled = new UnmanagedPattern(pattern);
             return context.LastErrorCode;
         }
 
         [DllExport("RantCompilePatternFile", CallingConvention.Cdecl)]
-        public static ErrorCode CompilePatternFile(UnmanagedRantContext context, string patternPath, out RantPattern patternCompiled)
+        public static ErrorCode CompilePatternFile(UnmanagedRantContext context, string patternPath, out UnmanagedPattern patternCompiled)
         {
             RantPattern pattern = null;
             context.Run(() => pattern = RantPattern.FromFile(patternPath));
-            patternCompiled = pattern;
+            patternCompiled = new UnmanagedPattern(pattern);
             return context.LastErrorCode;
         }
 
         [DllExport("RantRunPattern", CallingConvention.Cdecl)]
-        public static ErrorCode RunPattern(UnmanagedRantContext context, RantPattern pattern, PatternOptions options, out RantOutput output)
+        public static ErrorCode RunPattern(UnmanagedRantContext context, UnmanagedPattern pattern, PatternOptions options, out UnmanagedOutput output)
         {
             RantOutput o = null;
-            context.Run(() => o = context.Rant.Do(pattern, options.CharLimit, options.Timeout));
-            output = o;
+            context.Run(() => o = context.Rant.Do(pattern.Pattern, options.CharLimit, options.Timeout));
+            output = new UnmanagedOutput(o);
             return context.LastErrorCode;
         }
 
         [DllExport("RantRunPatternSeed", CallingConvention.Cdecl)]
-        public static ErrorCode RunPatternSeed(UnmanagedRantContext context, RantPattern pattern, PatternOptions options, long seed, out RantOutput output)
+        public static ErrorCode RunPatternSeed(UnmanagedRantContext context, UnmanagedPattern pattern, PatternOptions options, long seed, out UnmanagedOutput output)
         {
             RantOutput o = null;
-            context.Run(() => o = context.Rant.Do(pattern, seed, options.CharLimit, options.Timeout));
-            output = o;
+            context.Run(() => o = context.Rant.Do(pattern.Pattern, seed, options.CharLimit, options.Timeout));
+            output = new UnmanagedOutput(o);
             return context.LastErrorCode;
         }
 
         [DllExport("RantGetMainValue", CallingConvention.Cdecl)]
-        public static string GetMainValue(RantOutput output) => output?.Main;
+        public static string GetMainValue(UnmanagedOutput output) => output?.Output?.Main;
+
+        [DllExport("RantGetOutputChannelNames", CallingConvention.Cdecl)]
+        public static string[] GetOutputChannelNames(UnmanagedOutput output, out int count)
+        {
+            var names = output.Output.Select(e => e.Name).ToArray();
+            count = names.Length;
+            return names;
+        }
+
+        [DllExport("RantGetOutputValue", CallingConvention.Cdecl)]
+        public static string GetOutputValue(UnmanagedOutput output, string channelName) => output?.Output?[channelName];
 
         [DllExport("RantLoadPackage", CallingConvention.Cdecl)]
         public static ErrorCode LoadPackage(UnmanagedRantContext context, string packagePath) => context.Run(() => context.Rant.LoadPackage(packagePath));
