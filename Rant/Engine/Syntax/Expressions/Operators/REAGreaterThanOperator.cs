@@ -6,8 +6,6 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 {
 	internal class REAGreaterThanOperator : REAInfixOperator
 	{
-		public int Precedence = 0;
-
 		private bool _orEqual = false;
 
 		public REAGreaterThanOperator(Stringe origin, bool orEqual = false)
@@ -15,7 +13,8 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 		{
 			Type = ActionValueType.Boolean;
 			_orEqual = orEqual;
-		}
+            Precedence = 0;
+        }
 
 		public override object GetValue(Sandbox sb)
 		{

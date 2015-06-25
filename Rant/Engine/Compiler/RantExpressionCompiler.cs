@@ -97,7 +97,7 @@ namespace Rant.Engine.Compiler
 						throw new RantCompilerException(_sourceName, token, "Unexpected end of file.");
 					case R.LeftSquare:
 						{
-                            if (!actions.Any() || type == ExpressionReadType.VariableValue || type == ExpressionReadType.List)
+                            if ((!actions.Any() && type == ExpressionReadType.VariableValue) || type == ExpressionReadType.List)
                             {
                                 actions.Add((Read(ExpressionReadType.List) as RAExpression).Group);
                                 goto done;
@@ -185,6 +185,8 @@ namespace Rant.Engine.Compiler
 						{
 							var body = Read(ExpressionReadType.ExpressionBlock);
 							actions.Add(body as RantExpressionAction);
+                            if (type == ExpressionReadType.FunctionBody)
+                                goto done;
 							break;
 						}
 						Unexpected(token);
@@ -240,6 +242,8 @@ namespace Rant.Engine.Compiler
 						// numbers
 						if (char.IsDigit(token.Value[0]))
 						{
+                            if (actions.Any() && actions.Last() is REANumber)
+                                Unexpected(token);
 							double number;
 							if (!ReadNumber(token, out number))
 								SyntaxError(token, "Invalid number: " + token.Value);
@@ -304,12 +308,18 @@ namespace Rant.Engine.Compiler
 										_reader.Read(R.LeftParen, "if statement param");
 										var val = Read(ExpressionReadType.ExpressionGroup) as RAExpression;
 										var body = Read(ExpressionReadType.FunctionBody) as RAExpression;
-										actions.Add(new REAIfStatement(token, val.Group, body.Group));
+                                        RantExpressionAction elseBody = null;
+                                        if (!_reader.End && _reader.PeekLooseToken().Value == "else")
+                                        {
+                                            _reader.ReadLooseToken();
+                                            elseBody = (Read(ExpressionReadType.FunctionBody) as RAExpression).Group;
+                                        }
+										actions.Add(new REAIfStatement(token, val.Group, body.Group, elseBody));
 									}
 									break;
 								case "return":
 									{
-										if (type != ExpressionReadType.ExpressionBlock && type != ExpressionReadType.FunctionBody)
+										if (type != ExpressionReadType.ExpressionBlock && type != ExpressionReadType.FunctionBody && type != ExpressionReadType.Expression)
 											Unexpected(token);
                                         RantExpressionAction expr = null;
                                         if (_reader.PeekLooseToken().ID != R.Semicolon)
@@ -377,7 +387,7 @@ namespace Rant.Engine.Compiler
 					case R.Comma:
 						if (type == ExpressionReadType.KeyValueObjectValue)
 							return new REAGroup(actions, token);
-						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue || type == ExpressionReadType.List)
+						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue || type == ExpressionReadType.List || type == ExpressionReadType.Expression)
 						{
 							actions.Add(new REAArgumentSeperator(token));
 							break;
@@ -464,30 +474,32 @@ namespace Rant.Engine.Compiler
 				}
 			}
 
-			done:
+            done:
 
-			if (actions.Any(x => x is REAArgumentSeperator) && 
-				(type == ExpressionReadType.ExpressionGroup || 
-				type == ExpressionReadType.VariableValue || type == ExpressionReadType.List))
-			{
-				// lists
-				List<RantExpressionAction> listActions = new List<RantExpressionAction>();
-				RantExpressionAction lastItem = null;
-				foreach (RantExpressionAction reAction in actions)
-				{
-					if (reAction is REAArgumentSeperator)
-					{
-						listActions.Add(lastItem);
-						lastItem = null;
-					}
-					else
-						lastItem = reAction;
-				}
-				listActions.Add(lastItem);
-				var list = new REAList(actions.First().Range, listActions, type != ExpressionReadType.List);
+            if (actions.Any(x => x is REAArgumentSeperator) &&
+                (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.Expression ||
+                type == ExpressionReadType.VariableValue || type == ExpressionReadType.List))
+            {
+                // lists
+                List<RantExpressionAction> listActions = new List<RantExpressionAction>();
+                RantExpressionAction lastItem = null;
+                foreach (RantExpressionAction reAction in actions)
+                {
+                    if (reAction is REAArgumentSeperator)
+                    {
+                        listActions.Add(lastItem);
+                        lastItem = null;
+                    }
+                    else
+                        lastItem = reAction;
+                }
+                listActions.Add(lastItem);
+                var list = new REAList(actions.First().Range, listActions, type != ExpressionReadType.List);
                 actions.Clear();
-				actions.Add(list);
-			}
+                actions.Add(list);
+            }
+            else if(actions.Where(x => x is REAArgumentSeperator).Any())
+                Unexpected(actions.Where(x => x is REAArgumentSeperator).First().Range);
 
 			switch (type)
 			{

@@ -25,7 +25,17 @@ namespace Rant.Tests.Expressions
 			Assert.AreNotEqual(value, result);
         }
 
-		[Test]
+        [Test]
+        [TestCase("<noun>")]
+        public void ReturnPatternStrings(string value)
+        {
+            var result = rant.Do($"[@ $\"{value}\" ]").Main;
+            Assert.NotNull(result);
+            Assert.GreaterOrEqual(result.Length, 2);
+            Assert.AreNotEqual(value, result);
+        }
+
+        [Test]
 		public void Concatenation()
 		{
 			Assert.AreEqual("test string", rant.Do("[@ \"test\" ~ \" string\" ]").Main);

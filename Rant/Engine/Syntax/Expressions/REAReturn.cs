@@ -8,13 +8,9 @@ namespace Rant.Engine.Syntax.Expressions
 	{
 		private RantExpressionAction _returnValue;
 
-        public bool HasReturnValue = false;
-
 		public REAReturn(Stringe origin, RantExpressionAction value)
 			: base(origin)
 		{
-            if (value == null)
-                HasReturnValue = false;
 			_returnValue = value;
 		}
 

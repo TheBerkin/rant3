@@ -42,7 +42,7 @@ namespace Rant.Engine.Syntax.Expressions
                 name = sb.ScriptObjectStack.Pop().ToString();
             }
             else
-                yield break;
+                throw new RantRuntimeException(sb.Pattern, Range, "Invalid property name.");
             yield return _object;
             var obj = sb.ScriptObjectStack.Pop();
             if (RichardFunctions.HasProperty(obj.GetType(), name))
@@ -65,6 +65,8 @@ namespace Rant.Engine.Syntax.Expressions
                 var rObject = obj as REAObject;
                 if (rObject.Values.ContainsKey(name))
                     yield return rObject.Values[name];
+                else
+                    sb.ScriptObjectStack.Push(new RantObject());
             }
             else if (obj is string)
             {
@@ -75,7 +77,11 @@ namespace Rant.Engine.Syntax.Expressions
                     throw new RantRuntimeException(sb.Pattern, Range, "String character access is out of bounds.");
                 sb.ScriptObjectStack.Push((obj as string)[index].ToString());
             }
-			yield break;
+            else
+                sb.ScriptObjectStack.Push(new RantObject());
+            if (obj == null || (obj is RantObject && (obj as RantObject).Value == null))
+                throw new RantRuntimeException(sb.Pattern, Range, "Cannot access property of null object.");
+            yield break;
 		}
 	}
 }

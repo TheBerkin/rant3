@@ -28,7 +28,7 @@ namespace Rant.Engine.Syntax.Expressions
 			var op = Actions
 				.Where(x => x is REAInfixOperator && (x as REAInfixOperator).LeftSide == null && (x as REAInfixOperator).RightSide == null)
 				.OrderBy(x => (x as REAInfixOperator).Precedence)
-				.Last() as REAInfixOperator;
+				.First() as REAInfixOperator;
 			var index = Actions.IndexOf(op);
 			if (index - 1 >= 0)
 				op.LeftSide = Actions[index - 1];

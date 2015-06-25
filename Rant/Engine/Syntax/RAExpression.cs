@@ -39,6 +39,10 @@ namespace Rant.Engine.Syntax
                     }
                     yield return new RABlock(list.Range, actions.ToArray());
                 }
+                else if (obj is REAPatternString)
+                    yield return (obj as REAPatternString).Pattern.Action;
+                else if (obj is bool)
+                    sb.Print((bool)obj ? "yes" : "no");
                 else
                     sb.Print(obj);
             }

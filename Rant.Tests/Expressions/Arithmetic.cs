@@ -18,6 +18,7 @@ namespace Rant.Tests.Expressions
 		}
 
 		[Test]
+        [TestCase("(1 + 2) * 3 + 4", "13")]
 		[TestCase("2 + 2 / 2", "3")]
 		[TestCase("(2 + 2) / 2", "2")]
 		public void OrderOfOperations(string expr, string result)

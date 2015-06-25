@@ -74,7 +74,7 @@
     <Compile Include="Expressions\Functions.cs" />
     <Compile Include="Expressions\Invalid.cs" />
     <Compile Include="Expressions\Lists.cs" />
-    <Compile Include="Expressions\StdLib\Console.cs" />
+    <Compile Include="Expressions\StdLib\Output.cs" />
     <Compile Include="Expressions\StdLib\Lists.cs" />
     <Compile Include="Expressions\StdLib\Math.cs" />
     <Compile Include="Expressions\StdLib\Strings.cs" />

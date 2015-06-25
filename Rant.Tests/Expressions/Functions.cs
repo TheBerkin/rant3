@@ -48,5 +48,11 @@ namespace Rant.Tests.Expressions
         {
             Assert.AreEqual("8", rant.Do("[@ x = function(a, b) { a - b; }; x(10, 2) ]").Main);
         }
+
+        [Test]
+        public void LambdaInGroup()
+        {
+            Assert.AreEqual("By golly, it worked!", rant.Do("[@ (() => { return \"By golly, it worked!\"; })(); ]").Main);
+        }
     }
 }

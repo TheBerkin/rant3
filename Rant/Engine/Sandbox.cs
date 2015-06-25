@@ -296,16 +296,15 @@ namespace Rant.Engine
                     // same thing as the processing for break
                     // todo: abstract this, DRY
                     while (
-                        callStack.Any() &&
-                        (callStack.Peek().Current is RantExpressionAction) &&
-                        !(callStack.Peek().Current as RantExpressionAction).Returnable)
+                        actionStack.Any() &&
+                        (actionStack.Peek() is RantExpressionAction) &&
+                        !(actionStack.Peek() as RantExpressionAction).Returnable)
                     {
                         actionStack.Pop();
                         callStack.Pop();
                     }
 
-                    if (!callStack.Any() || !(callStack.Peek().Current is RantExpressionAction))
-                        throw new RantRuntimeException(Pattern, (lastAction as REAReturn).Range, "Nothing to break from.");
+                    // if we're not returning from anything, we've returned ourself from the Richard scope
                     goto top;
                 }
 

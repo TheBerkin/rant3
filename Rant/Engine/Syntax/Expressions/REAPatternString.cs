@@ -39,6 +39,8 @@ namespace Rant.Engine.Syntax.Expressions
 
 		public RantAction Execute(Sandbox sb)
 		{
+            if (_pattern == null)
+                CreatePattern();
 			return new REAString(sb.EvalPattern(sb.LastTimeout, _pattern).Main, Range);
 		}
 

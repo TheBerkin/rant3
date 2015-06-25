@@ -294,15 +294,15 @@ namespace Rant.Engine
         Global Objects
         */
 
-        [RichardGlobalObject("Console", "print")]
+        [RichardGlobalObject("Output", "print")]
         [RichardPropertyArgument("object", "any", Description = "The object to print.")]
         [RantDescription("Prints the provided object, cast to a string.")]
-        private static IEnumerator<RantExpressionAction> ConsolePrint(Sandbox sb)
+        private static IEnumerator<RantExpressionAction> OutputPrint(Sandbox sb)
         {
-            yield return new REANativeFunction(sb.CurrentAction.Range, 1, ConsolePrintInner);
+            yield return new REANativeFunction(sb.CurrentAction.Range, 1, OutputPrintInner);
         }
 
-        private static IEnumerator<RantExpressionAction> ConsolePrintInner(RantObject that, Sandbox sb, object[] args)
+        private static IEnumerator<RantExpressionAction> OutputPrintInner(RantObject that, Sandbox sb, object[] args)
         {
             var obj = args[0];
             sb.Print(obj);

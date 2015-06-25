@@ -6,13 +6,12 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 {
 	internal class REAConcatOperator : REAInfixOperator
 	{
-		public int Precedence = 1;
-
 		public REAConcatOperator(Stringe origin)
 			: base(origin)
 		{
 			Type = ActionValueType.Null;
-		}
+            Precedence = 1;
+        }
 
 		public override object GetValue(Sandbox sb)
 		{

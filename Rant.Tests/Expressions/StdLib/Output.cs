@@ -3,14 +3,14 @@
 namespace Rant.Tests.Expressions.StdLib
 {
     [TestFixture]
-    public class Console
+    public class Output
     {
         private readonly RantEngine rant = new RantEngine();
 
         [Test]
-        public void ConsolePrint()
+        public void OutputPrint()
         {
-            Assert.AreEqual("test string", rant.Do("[@ Console.print(\"test string\") ]").Main);
+            Assert.AreEqual("test string", rant.Do("[@ Output.print(\"test string\") ]").Main);
         }
     }
 }

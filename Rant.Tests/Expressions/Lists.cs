@@ -30,7 +30,13 @@ namespace Rant.Tests.Expressions
         public void ListAsBlock()
         {
             string[] possibleResults = new string[] { "1", "2", "3", "4" };
-            Assert.GreaterOrEqual(possibleResults.ToList().IndexOf(rant.Do("[@ x = 1, 2, 3, 4; x ]").Main), 0);
+            Assert.GreaterOrEqual(possibleResults.ToList().IndexOf(rant.Do("[@ 1, 2, 3, 4 ]").Main), 0);
+        }
+
+        [Test]
+        public void ListInitializer()
+        {
+            Assert.AreEqual("12", rant.Do("[@ x = list 12; x.length ]").Main);
         }
     }
 }

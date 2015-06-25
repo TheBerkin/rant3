@@ -11,7 +11,7 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 
 		public Func<double, double, double> Operation;
 
-		public readonly int Precedence = 0;
+	    internal int Precedence = 0;
 
 		private Stringe Origin;
 
