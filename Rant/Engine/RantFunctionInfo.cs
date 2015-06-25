@@ -52,28 +52,32 @@ namespace Rant.Engine
 			    if (type.IsArray && i == parameters.Length - 1)
 			        type = type.GetElementType();
 
-			    if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
-				{
-					rantType = RantParameterType.Pattern;
-				}
-				else if (type == typeof(string))
-				{
-					rantType = RantParameterType.String;
-				}
-				else if (type.IsEnum)
-				{
-					rantType = type.GetCustomAttributes(typeof(FlagsAttribute)).Any()
-						? RantParameterType.Flags
-						: RantParameterType.Mode;
-				}
-				else if (IOUtil.IsNumericType(type))
-				{
-					rantType = RantParameterType.Number;
-				}
-				else
-				{
-					throw new ArgumentException($"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
-				}
+                if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
+                {
+                    rantType = RantParameterType.Pattern;
+                }
+                else if (type == typeof(string))
+                {
+                    rantType = RantParameterType.String;
+                }
+                else if (type.IsEnum)
+                {
+                    rantType = type.GetCustomAttributes(typeof(FlagsAttribute)).Any()
+                        ? RantParameterType.Flags
+                        : RantParameterType.Mode;
+                }
+                else if (IOUtil.IsNumericType(type))
+                {
+                    rantType = RantParameterType.Number;
+                }
+                else if (type == typeof(ObjectModel.RantObject))
+                {
+                    rantType = RantParameterType.RantObject;
+                }
+                else
+                {
+                    throw new ArgumentException($"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
+                }
 
                 // If there is a [RantDescription] attribute on the parameter, retrieve its value. Default to empty string if there isn't one.
                 string paramDescription = parameters[i].GetCustomAttributes<RantDescriptionAttribute>().FirstOrDefault()?.Description ?? "";

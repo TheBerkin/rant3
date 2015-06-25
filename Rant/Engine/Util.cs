@@ -90,6 +90,34 @@ namespace Rant.Engine
 			}
 		}
 
+		public static bool ParseDouble(string value, out double number)
+		{
+			number = 0;
+			if (IsNullOrWhiteSpace(value)) return false;
+			value = value.Trim();
+			if (!Char.IsLetter(value[value.Length - 1]))
+				return Double.TryParse(value, out number);
+			char power = value[value.Length - 1];
+			value = value.Substring(0, value.Length - 1);
+			if (IsNullOrWhiteSpace(value)) return false;
+			double n;
+			if (!Double.TryParse(value, out n)) return false;
+			switch (power)
+			{
+				case 'k': // Thousand
+					number = (int)(n * 1000);
+					return true;
+				case 'M': // Million
+					number = (int)(n * 1000000);
+					return true;
+				case 'B': // Billion
+					number = (int)(n * 1000000000);
+					return true;
+				default:
+					return false;
+			}
+		}
+
 		public static bool BooleanRep(string input)
 		{
 			if (IsNullOrWhiteSpace(input)) return false;

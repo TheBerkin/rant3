@@ -51,10 +51,18 @@ namespace Rant.Engine.ObjectModel
                 }
                 else
                 {
-                    if (!_locals.ContainsKey(name)) _scopes[_level - 1].Add(name);
+					if (_table.Globals.ContainsKey(name))
+						_table.Globals[name] = value;
+					if (!_locals.ContainsKey(name))
+						_scopes[_level - 1].Add(name);
                     _locals[name] = value;
                 }
             }
+        }
+
+        public void RemoveLocal(string name)
+        {
+            _locals.Remove(name);
         }
 
         public void EnterScope()
@@ -74,6 +82,14 @@ namespace Rant.Engine.ObjectModel
                 _locals.Remove(name);
             }
             garbage.Clear();
+        }
+
+        public void Clear()
+        {
+            _locals.Clear();
+            _scopes.Clear();
+            _level = 0;
+            _table.Globals.Clear();
         }
     }
 }

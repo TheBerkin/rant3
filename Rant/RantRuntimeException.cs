@@ -12,11 +12,11 @@ namespace Rant
     /// </summary>
     public sealed class RantRuntimeException : Exception
     {
-        private readonly int _line;
-        private readonly int _col;
-        private readonly int _index;
-        private readonly string _source;
-        private readonly int _length;
+        private int _line;
+        private int _col;
+        private int _index;
+        private string _source;
+        private int _length;
 
         /// <summary>
         /// The line on which the error occurred.
@@ -42,6 +42,14 @@ namespace Rant
         /// The source of the error.
         /// </summary>
         public string Code => _source;
+
+        internal void SetToken(Stringe token)
+        {
+            _line = token.Line;
+            _col = token.Column;
+            _index = token.Offset;
+            _length = token.Length;
+        }
 
         internal RantRuntimeException(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.") 
             : base((token != null ? ($"({source.Name} @ Ln {token.Line}, Col {token.Column}): ") : "") + message)

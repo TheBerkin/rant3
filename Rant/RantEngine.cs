@@ -21,6 +21,7 @@ namespace Rant
         static RantEngine()
 	    {
 		    RantFunctions.Load();
+            RichardFunctions.Load();
 	    }
 
         /// <summary>

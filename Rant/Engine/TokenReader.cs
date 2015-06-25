@@ -33,6 +33,17 @@ namespace Rant.Engine
 
 	    public Token<R> PrevToken => _pos == 0 ? null : _tokens[_pos - 1];
 
+		public Token<R> PrevLooseToken
+		{
+			get
+			{
+				if (_pos == 0) return null;
+				int tempPos = _pos - 1;
+				while (tempPos > 0 && _tokens[tempPos].ID == R.Whitespace)
+					tempPos--;
+				return _tokens[tempPos].ID != R.Whitespace ? _tokens[tempPos] : null;
+			}
+		}
 
 	    public Token<R> ReadToken()
         {
@@ -46,6 +57,16 @@ namespace Rant.Engine
             if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
             return _tokens[_pos];
         }
+
+		public Token<R> PeekLooseToken()
+		{
+			if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
+			int pos = _pos;
+			SkipSpace();
+			var token = _tokens[_pos];
+			_pos = pos;
+			return token;
+		}
 
 	    public R PeekType() => End ? R.EOF : _tokens[_pos].ID;
 

@@ -24,6 +24,10 @@
         /// <summary>
         /// Parameter uses combinable flags.
         /// </summary>
-        Flags
+        Flags,
+        /// <summary>
+        /// Parameter is a RantObject.
+        /// </summary>
+        RantObject
     }
 }

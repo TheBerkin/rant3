@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
 using Rant.Vocabulary;
+using Rant.Engine.Syntax.Expressions;
 using Rant.Engine.Syntax;
 using Rant.Engine.Constructs;
 using Rant.Formats;
@@ -32,6 +33,8 @@ namespace Rant.Engine
 		private readonly QueryState _queryState;
 		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
 		private readonly SyncManager _syncManager;
+		private readonly Stack<object> _scriptObjectStack;
+        private readonly Stopwatch _stopwatch;
 
 		private BlockAttribs _newAttribs = new BlockAttribs();
         private BlockManager _blockManager;
@@ -104,6 +107,13 @@ namespace Rant.Engine
         /// </summary>
         public RantAction CurrentAction { get; private set; }
 
+		/// <summary>
+		/// Gets the last used timeout.
+		/// </summary>
+		public double LastTimeout { get; internal set; }
+
+		public Stack<object> ScriptObjectStack => _scriptObjectStack;
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_engine = engine;
@@ -122,6 +132,8 @@ namespace Rant.Engine
 			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
 			_syncManager = new SyncManager(this);
             _blockManager = new BlockManager();
+			_scriptObjectStack = new Stack<object>();
+            _stopwatch = new Stopwatch();
 		}
 
 		/// <summary>
@@ -197,19 +209,36 @@ namespace Rant.Engine
             return attribs;
 		}
 
-		public RantOutput Run(double timeout)
+		public RantOutput EvalPattern(double timeout, RantPattern pattern)
 		{
+			_outputs.Push(new ChannelWriter(_format, _sizeLimit));
+			return Run(timeout, pattern);
+		}
+
+		public RantOutput Run(double timeout, RantPattern pattern = null)
+		{
+			if (pattern == null)
+				pattern = _pattern;
+			LastTimeout = timeout;
+
+            _scriptObjectStack.Clear();
+            _objects.Clear();
+
 			var callStack = new Stack<IEnumerator<RantAction>>();
+			var actionStack = new Stack<RantAction>();
 			IEnumerator<RantAction> action;
 
 			long timeoutMS = (long)(timeout * 1000);
 			bool timed = timeoutMS > 0;
-			var sw = new Stopwatch();
-			sw.Start();
+            bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
+
+            if (!_stopwatch.IsRunning)
+                _stopwatch.Restart();
 
 			// Push the AST root
-		    CurrentAction = _pattern.Action;
-			callStack.Push(_pattern.Action.Run(this));
+		    CurrentAction = pattern.Action;
+			actionStack.Push(CurrentAction);
+			callStack.Push(pattern.Action.Run(this));
 
 			top:
 			while (callStack.Any())
@@ -220,25 +249,74 @@ namespace Rant.Engine
 				// Execute the node until it runs out of children
 				while (action.MoveNext())
 				{
-					if (timed && sw.ElapsedMilliseconds >= timeoutMS)
-						throw new RantRuntimeException(_pattern, action.Current.Range,
+					if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
+						throw new RantRuntimeException(pattern, action.Current.Range,
 							$"The pattern has timed out ({timeout}s).");
 
 					if (callStack.Count >= RantEngine.MaxStackSize)
-						throw new RantRuntimeException(_pattern, action.Current.Range,
+						throw new RantRuntimeException(pattern, action.Current.Range,
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+
+                    // i'm sorry to put this here but it's the only way to do it!!
+                    if (action.Current is REABreak)
+                    {
+                        // move back up the call stack until we pass something "breakable"
+                        while (
+                            callStack.Any() &&
+                            (callStack.Peek().Current is RantExpressionAction) &&
+                            !(callStack.Peek().Current as RantExpressionAction).Breakable)
+                        {
+                            actionStack.Pop();
+                            callStack.Pop();
+                        }
+                        // there was nothing to break from
+                        if (!callStack.Any() || !(callStack.Peek().Current is RantExpressionAction))
+                            throw new RantRuntimeException(Pattern, (action.Current as REABreak).Range, "Nothing to break from.");
+                        goto top;
+                    }
 
 					// Push child node onto stack and start over
 				    CurrentAction = action.Current;
+					actionStack.Push(CurrentAction);
 					callStack.Push(action.Current.Run(this));
 					goto top;
 				}
+				var lastAction = actionStack.Peek();
+				// Special processing for scripts
+				if (lastAction is RantExpressionAction)
+				{
+					var val = (lastAction as RantExpressionAction).GetValue(this);
+					if(val != null)
+						_scriptObjectStack.Push(val);
+				}
+                // i also wish this could be moved to somewhere else 
+                // but someone else figure out how to do that for me
+                if (lastAction is REAReturn)
+                {
+                    // same thing as the processing for break
+                    // todo: abstract this, DRY
+                    while (
+                        callStack.Any() &&
+                        (callStack.Peek().Current is RantExpressionAction) &&
+                        !(callStack.Peek().Current as RantExpressionAction).Returnable)
+                    {
+                        actionStack.Pop();
+                        callStack.Pop();
+                    }
+
+                    if (!callStack.Any() || !(callStack.Peek().Current is RantExpressionAction))
+                        throw new RantRuntimeException(Pattern, (lastAction as REAReturn).Range, "Nothing to break from.");
+                    goto top;
+                }
+
 
 				// Remove node once finished
 				callStack.Pop();
+                actionStack.Pop();
 			}
 
-			sw.Stop();
+            if(!stopwatchAlreadyRunning)
+			    _stopwatch.Stop();
 
 			return Return();
 		}

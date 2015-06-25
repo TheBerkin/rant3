@@ -20,12 +20,14 @@ namespace Rant.Engine.Compiler
 		private readonly Stack<Regex> _regexes = new Stack<Regex>();
 		private readonly Stack<RASubroutine> _subroutines = new Stack<RASubroutine>();
 		private Query _query;
+		private readonly RantExpressionCompiler _expressionCompiler;
 
 		private RantCompiler(string sourceName, string source)
 		{
 			_sourceName = sourceName;
 			_source = source;
 			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
+			_expressionCompiler = new RantExpressionCompiler(sourceName, source, _reader);
 		}
 
 		private enum ReadType
@@ -145,6 +147,11 @@ namespace Rant.Engine.Compiler
 										}
 										_reader.ReadLoose(R.Colon);
 										actions.Add(Read(ReadType.ReplacerArgs, token));
+										break;
+									}
+								case R.At:
+									{
+										actions.Add(_expressionCompiler.Read());
 										break;
 									}
 								case R.Dollar:

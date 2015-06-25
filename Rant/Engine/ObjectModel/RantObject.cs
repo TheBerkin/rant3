@@ -26,7 +26,7 @@ namespace Rant.Engine.ObjectModel
 		/// <summary>
 		/// The type of the object.
 		/// </summary>
-		public RantObjectType Type { get; private set; } = RantObjectType.No;
+		public RantObjectType Type { get; internal set; } = RantObjectType.No;
 
 		/// <summary>
 		/// The value of the object.
@@ -392,7 +392,7 @@ namespace Rant.Engine.ObjectModel
 			switch (Type)
 			{
 				case RantObjectType.Boolean:
-					return _boolean.ToString();
+					return _boolean ? "yes" : "no";
 				case RantObjectType.String:
 					return _string;
 				case RantObjectType.No:
@@ -400,7 +400,7 @@ namespace Rant.Engine.ObjectModel
 				case RantObjectType.Number:
 					return _number.ToString();
 				case RantObjectType.Pattern:
-					return $"$'{_pattern.Code}'";
+					return $"$\"{_pattern.Code}\"";
 				case RantObjectType.List:
 					{
 						var sb = new StringBuilder();
@@ -416,7 +416,7 @@ namespace Rant.Engine.ObjectModel
 						return sb.ToString();
 					}
 			}
-			return "?";
+			return Value.ToString();
 		}
 
 		private static bool IsNumber(object value)

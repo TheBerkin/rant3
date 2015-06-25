@@ -5,354 +5,376 @@ using System.Reflection;
 
 namespace Rant.Engine.Delegates
 {
-	/// <summary>
-	/// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
-	/// </summary>
-	internal abstract class Witchcraft
-	{
-		private static readonly Type[] _funcTypes;
-		private static readonly Type[] _voidTypes;
+    internal delegate TResult XFunc<out TResult>();
+    internal delegate TResult XFunc<in A, out TResult>(A a);
+    internal delegate TResult XFunc<in A, in B, out TResult>(A a, B b);
+    internal delegate TResult XFunc<in A, in B, in C, out TResult>(A a, B b, C c);
+    internal delegate TResult XFunc<in A, in B, in C, in D, out TResult>(A a, B b, C c, D d);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, out TResult>(A a, B b, C c, D d, E e);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, out TResult>(A a, B b, C c, D d, E e, F f);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(A a, B b, C c, D d, E e, F f, G g);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h);
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
-		static Witchcraft()
-		{
-			var ass = Assembly.GetAssembly(typeof(Witchcraft));
-			var lstFuncTypes = new List<Type>();
-			var lstVoidTypes = new List<Type>();
-			foreach (var type in ass.GetTypes().Where(t => t.IsSubclassOf(typeof(Witchcraft)) && t.IsGenericTypeDefinition))
-			{
-				if (type.IsSubclassOf(typeof(WitchcraftVoid)))
-				{
-					lstVoidTypes.Add(type);
-				}
-				else
-				{
-					lstFuncTypes.Add(type);
-				}
-			}
+    internal delegate void XAction();
+    internal delegate void XAction<in A>(A a);
+    internal delegate void XAction<in A, in B>(A a, B b);
+    internal delegate void XAction<in A, in B, in C>(A a, B b, C c);
+    internal delegate void XAction<in A, in B, in C, in D>(A a, B b, C c, D d);
+    internal delegate void XAction<in A, in B, in C, in D, in E>(A a, B b, C c, D d, E e);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F>(A a, B b, C c, D d, E e, F f);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G>(A a, B b, C c, D d, E e, F f, G g);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H>(A a, B b, C c, D d, E e, F f, G g, H h);
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
-			_funcTypes = lstFuncTypes.OrderBy(t => t.GetGenericArguments().Length).ToArray();
-			_voidTypes = lstVoidTypes.OrderBy(t => t.GetGenericArguments().Length).ToArray();
-		}
+    /// <summary>
+    /// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
+    /// </summary>
+    internal abstract class Witchcraft
+    {
+        private static readonly Type[] _funcTypes;
+        private static readonly Type[] _voidTypes;
 
-		public static Witchcraft Create(MethodInfo methodInfo)
-		{
-			bool isVoid = methodInfo.ReturnType == typeof(void);
-			var types = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
-			if (types.Length == 0 || types[0] != typeof(Sandbox))
-				throw new ArgumentException("Method must have a Sandbox parameter come first.", nameof(methodInfo));
+        static Witchcraft()
+        {
+            var ass = Assembly.GetAssembly(typeof(Witchcraft));
+            var lstFuncTypes = new List<Type>();
+            var lstVoidTypes = new List<Type>();
+            foreach (var type in ass.GetTypes().Where(t => t.IsSubclassOf(typeof(Witchcraft)) && t.IsGenericTypeDefinition))
+            {
+                if (type.IsSubclassOf(typeof(WitchcraftVoid)))
+                {
+                    lstVoidTypes.Add(type);
+                }
+                else
+                {
+                    lstFuncTypes.Add(type);
+                }
+            }
 
-			var argTypes = types.Skip(1).ToArray();
-			if (argTypes.Length >= _funcTypes.Length)
-				throw new ArgumentException($"Methods with {types.Length} argument(s) are not currently supported.");
+            _funcTypes = lstFuncTypes.OrderBy(t => t.GetGenericArguments().Length).ToArray();
+            _voidTypes = lstVoidTypes.OrderBy(t => t.GetGenericArguments().Length).ToArray();
+        }
 
-			if (argTypes.Length == 0)
-			{
-				if (isVoid)
-				{
-					return new WitchcraftNoParamsVoid(methodInfo);
-				}
-				else
-				{
-					return new WitchcraftNoParams(methodInfo);
-				}
-			}
+        public static Witchcraft Create(MethodInfo methodInfo)
+        {
+            bool isVoid = methodInfo.ReturnType == typeof(void);
+            var types = methodInfo.GetParameters().Select(p => p.ParameterType).ToArray();
+            if (types.Length == 0 || types[0] != typeof(Sandbox))
+                throw new ArgumentException("Method must have a Sandbox parameter come first.", nameof(methodInfo));
 
-			Type type = isVoid
-				? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes)
-				: _funcTypes[argTypes.Length - 1].MakeGenericType(argTypes);
+            var argTypes = types.Skip(1).ToArray();
+            if (argTypes.Length >= _funcTypes.Length)
+                throw new ArgumentException($"Methods with {types.Length} argument(s) are not currently supported.");
 
-			return (Witchcraft)Activator.CreateInstance(type, methodInfo);
-		}
+            if (argTypes.Length == 0)
+            {
+                if (isVoid)
+                {
+                    return new WitchcraftNoParamsVoid(methodInfo);
+                }
+                else
+                {
+                    return new WitchcraftNoParams(methodInfo);
+                }
+            }
 
-		public abstract object Invoke(Sandbox sb, object[] args);
-	}
+            Type type = isVoid
+                ? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes)
+                : _funcTypes[argTypes.Length - 1].MakeGenericType(argTypes);
 
-	internal abstract class WitchcraftVoid : Witchcraft
-	{
-	}
+            return (Witchcraft)Activator.CreateInstance(type, methodInfo);
+        }
 
-	internal class WitchcraftNoParams : Witchcraft
-	{
-		private readonly Func<Sandbox, object> _func;
+        public abstract object Invoke(Sandbox sb, object[] args);
+    }
 
-		public WitchcraftNoParams(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, object>), methodInfo);
-		}
+    internal abstract class WitchcraftVoid : Witchcraft
+    {
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) => _func(sb);
-	}
+    internal class WitchcraftNoParams : Witchcraft
+    {
+        private readonly XFunc<Sandbox, object> _func;
 
-	internal class WitchcraftNoParamsVoid : WitchcraftVoid
-	{
-		private readonly Action<Sandbox> _func;
+        public WitchcraftNoParams(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, object>), methodInfo);
+        }
 
-		public WitchcraftNoParamsVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) => _func(sb);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb);
-			return null;
-		}
-	}
+    internal class WitchcraftNoParamsVoid : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox> _func;
 
-	internal class Witchcraft<A> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, object> _func;
+        public WitchcraftNoParamsVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) => _func(sb, (A)args[0]);
-	}
+    internal class Witchcraft<A> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, object> _func;
 
-	internal class WitchcraftVoid<A> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) => _func(sb, (A)args[0]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A> _func;
 
-	internal class Witchcraft<A, B> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1]);
-	}
+    internal class Witchcraft<A, B> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, object> _func;
 
-	internal class WitchcraftVoid<A, B> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B> _func;
 
-	internal class Witchcraft<A, B, C> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2]);
-	}
+    internal class Witchcraft<A, B, C> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, object> _func;
 
-	internal class WitchcraftVoid<A, B, C> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C> _func;
 
-	internal class Witchcraft<A, B, C, D> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, D, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, D, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3]);
-	}
+    internal class Witchcraft<A, B, C, D> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, D, object> _func;
 
-	internal class WitchcraftVoid<A, B, C, D> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C, D> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, D, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, D, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C, D>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C, D> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C, D> _func;
 
-	internal class Witchcraft<A, B, C, D, E> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, D, E, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C, D>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C, D>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, D, E, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4]);
-	}
+    internal class Witchcraft<A, B, C, D, E> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, D, E, object> _func;
 
-	internal class WitchcraftVoid<A, B, C, D, E> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C, D, E> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, D, E, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, D, E, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C, D, E>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C, D, E> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C, D, E> _func;
 
-	internal class Witchcraft<A, B, C, D, E, F> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C, D, E>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C, D, E>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5]);
-	}
+    internal class Witchcraft<A, B, C, D, E, F> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, D, E, F, object> _func;
 
-	internal class WitchcraftVoid<A, B, C, D, E, F> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C, D, E, F> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, D, E, F, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, D, E, F, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C, D, E, F>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C, D, E, F> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C, D, E, F> _func;
 
-	internal class Witchcraft<A, B, C, D, E, F, G> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, G, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C, D, E, F>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C, D, E, F>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, G, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, G, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5], (G)args[6]);
-	}
+    internal class Witchcraft<A, B, C, D, E, F, G> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, D, E, F, G, object> _func;
 
-	internal class WitchcraftVoid<A, B, C, D, E, F, G> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C, D, E, F, G> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, D, E, F, G, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, D, E, F, G, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C, D, E, F, G>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F, G>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5], (G)args[6]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5], (G)args[6]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C, D, E, F, G> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C, D, E, F, G> _func;
 
-	internal class Witchcraft<A, B, C, D, E, F, G, H> : Witchcraft
-	{
-		private readonly Func<Sandbox, A, B, C, D, E, F, G, H, object> _func;
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C, D, E, F, G>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C, D, E, F, G>), methodInfo);
+        }
 
-		public Witchcraft(MethodInfo methodInfo)
-		{
-			_func = (Func<Sandbox, A, B, C, D, E, F, G, H, object>)Delegate.CreateDelegate(
-				typeof(Func<Sandbox, A, B, C, D, E, F, G, H, object>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5], (G)args[6]);
+            return null;
+        }
+    }
 
-		public override object Invoke(Sandbox sb, object[] args) =>
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5], (G)args[6], (H)args[7]);
-	}
+    internal class Witchcraft<A, B, C, D, E, F, G, H> : Witchcraft
+    {
+        private readonly XFunc<Sandbox, A, B, C, D, E, F, G, H, object> _func;
 
-	internal class WitchcraftVoid<A, B, C, D, E, F, G, H> : WitchcraftVoid
-	{
-		private readonly Action<Sandbox, A, B, C, D, E, F, G, H> _func;
+        public Witchcraft(MethodInfo methodInfo)
+        {
+            _func = (XFunc<Sandbox, A, B, C, D, E, F, G, H, object>)Delegate.CreateDelegate(
+                typeof(XFunc<Sandbox, A, B, C, D, E, F, G, H, object>), methodInfo);
+        }
 
-		public WitchcraftVoid(MethodInfo methodInfo)
-		{
-			_func = (Action<Sandbox, A, B, C, D, E, F, G, H>)Delegate.CreateDelegate(
-				typeof(Action<Sandbox, A, B, C, D, E, F, G, H>), methodInfo);
-		}
+        public override object Invoke(Sandbox sb, object[] args) =>
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5], (G)args[6], (H)args[7]);
+    }
 
-		public override object Invoke(Sandbox sb, object[] args)
-		{
-			_func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
-				(E)args[4], (F)args[5], (G)args[6], (H)args[7]);
-			return null;
-		}
-	}
+    internal class WitchcraftVoid<A, B, C, D, E, F, G, H> : WitchcraftVoid
+    {
+        private readonly XAction<Sandbox, A, B, C, D, E, F, G, H> _func;
+
+        public WitchcraftVoid(MethodInfo methodInfo)
+        {
+            _func = (XAction<Sandbox, A, B, C, D, E, F, G, H>)Delegate.CreateDelegate(
+                typeof(XAction<Sandbox, A, B, C, D, E, F, G, H>), methodInfo);
+        }
+
+        public override object Invoke(Sandbox sb, object[] args)
+        {
+            _func(sb, (A)args[0], (B)args[1], (C)args[2], (D)args[3],
+                (E)args[4], (F)args[5], (G)args[6], (H)args[7]);
+            return null;
+        }
+    }
 }

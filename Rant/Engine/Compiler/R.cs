@@ -250,6 +250,10 @@
         /// <summary>
         /// End of file.
         /// </summary>
-        EOF
+        EOF,
+		/// <summary>
+		/// Tilde (~)
+		/// </summary>
+		Tilde
     }
 }
