@@ -42,7 +42,7 @@ namespace Rant.Engine.Syntax
                 else if (obj is REAPatternString)
                     yield return (obj as REAPatternString).Pattern.Action;
                 else if (obj is bool)
-                    sb.Print((bool)obj ? "yes" : "no");
+                    sb.Print((bool)obj ? "true" : "false");
                 else
                     sb.Print(obj);
             }

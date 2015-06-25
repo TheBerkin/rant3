@@ -392,7 +392,7 @@ namespace Rant.Engine.ObjectModel
 			switch (Type)
 			{
 				case RantObjectType.Boolean:
-					return _boolean ? "yes" : "no";
+					return _boolean ? "true" : "false";
 				case RantObjectType.String:
 					return _string;
 				case RantObjectType.No:
