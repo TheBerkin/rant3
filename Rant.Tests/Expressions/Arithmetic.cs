@@ -81,5 +81,17 @@ namespace Rant.Tests.Expressions
         {
             Assert.AreEqual("4", rant.Do("[@ x = 5; --x; x ]").Main);
         }
+
+        [Test]
+        public void BooleanAndOperator()
+        {
+            Assert.AreEqual("true", rant.Do("[@ true && true ]").Main);
+        }
+
+        [Test]
+        public void BooleanOrOperator()
+        {
+            Assert.AreEqual("true", rant.Do("[@ false || true ]").Main);
+        }
     }
 }

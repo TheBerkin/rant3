@@ -179,6 +179,8 @@
     <Compile Include="Engine\RantFunctionGroup.cs" />
     <Compile Include="Engine\RichardFunctions.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAAdditionOperator.cs" />
+    <Compile Include="Engine\Syntax\Expressions\Operators\REABooleanAndOperator.cs" />
+    <Compile Include="Engine\Syntax\Expressions\Operators\REABooleanOrOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAConcatOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\READivisionOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAEqualityOperator.cs" />

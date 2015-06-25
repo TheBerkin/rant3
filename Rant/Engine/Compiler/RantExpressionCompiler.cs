@@ -532,6 +532,26 @@ namespace Rant.Engine.Compiler
                     case R.Undefined:
                         actions.Add(new REAUndefined(token));
                         break;
+                    case R.Ampersand:
+                        // boolean AND
+                        if (!_reader.End && _reader.PeekType() == R.Ampersand)
+                        {
+                            _reader.ReadToken();
+                            actions.Add(new REABooleanAndOperator(token));
+                            break;
+                        }
+                        Unexpected(token);
+                        break;
+                    case R.Pipe:
+                        // boolean OR
+                        if (!_reader.End && _reader.PeekType() == R.Pipe)
+                        {
+                            _reader.ReadToken();
+                            actions.Add(new REABooleanOrOperator(token));
+                            break;
+                        }
+                        Unexpected(token);
+                        break;
 					default:
 						Unexpected(token);
 						break;
