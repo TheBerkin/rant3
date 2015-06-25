@@ -13,7 +13,7 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 		{
 			Type = ActionValueType.Boolean;
 			_orEqual = orEqual;
-            Precedence = 0;
+            Precedence = 15;
         }
 
 		public override object GetValue(Sandbox sb)

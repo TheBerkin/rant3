@@ -35,7 +35,7 @@ namespace Rant.Tests.Expressions
         [Test]
         public void VariableScoping()
         {
-            Assert.AreEqual("no", rant.Do("[@ { x = 4; } x ]").Main);
+            Assert.AreEqual("???", rant.Do("[@ { x = 4; } x ]").Main);
         }
 
         [Test]
@@ -56,6 +56,9 @@ namespace Rant.Tests.Expressions
 
         [Test]
         [TestCase("<", "5", "2 + 5", "true")]
+        [TestCase(">", "5 + 2", "7 + 4", "false")]
+        [TestCase("<=", "5", "2 + 5", "true")]
+        [TestCase(">=", "5 + 2", "7 + 4", "false")]
         public void ComparisonRightAssociative(string op, string x, string y, string result)
         {
             Assert.AreEqual(result, rant.Do($"[@ {x} {op} {y} ]").Main);
