@@ -48,7 +48,11 @@ namespace Rant.Engine.Compiler
             /// <summary>
             /// A list is expected.
             /// </summary>
-            List
+            List,
+            /// <summary>
+            /// A boolean value to invert is expected.
+            /// </summary>
+            InvertValue
 		}
 
 		private string _sourceName, _source;
@@ -90,13 +94,17 @@ namespace Rant.Engine.Compiler
 			while (!_reader.End)
 			{
                 if (_hitEndOfExpr) goto done;
-                token = _reader.ReadLooseToken();
+                token = _reader.ReadToken();
 
 				switch (token.ID)
 				{
 					case R.EOF:
 						throw new RantCompilerException(_sourceName, token, "Unexpected end of file.");
-					case R.LeftSquare:
+                    case R.Whitespace:
+                        if (type == ExpressionReadType.InvertValue)
+                            goto done;
+                        break;
+                    case R.LeftSquare:
 						{
                             if ((!actions.Any() && type == ExpressionReadType.VariableValue) || type == ExpressionReadType.List)
                             {
@@ -374,11 +382,36 @@ namespace Rant.Engine.Compiler
 						break;
 					// binary number operators
 					case R.Plus:
+                        // increment operator
+                        if (!_reader.End && _reader.PeekType() == R.Plus)
+                        {
+                            _reader.ReadToken();
+                            if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
+                            {
+                                var varName = _reader.ReadLooseToken();
+                                actions.Add(new REAPrefixIncDec(token) { RightSide = new REAVariable(varName) });
+                                break;
+                            }
+                            Unexpected(token);
+                        }
 						actions.Add(new REAAdditionOperator(token));
 						break;
 					case R.Hyphen:
-						// could be negative sign on number - is there a digit directly following this?
-						if (char.IsDigit(_reader.PeekToken().Value[0]) && _reader.PrevToken.ID != R.Whitespace)
+                        // decrement operator
+                        if (!_reader.End && _reader.PeekType() == R.Hyphen)
+                        {
+                            _reader.ReadToken();
+                            if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
+                            {
+                                var varName = _reader.ReadLooseToken();
+                                actions.Add(new REAPrefixIncDec(token) { Increment = false, RightSide = new REAVariable(varName) });
+                                break;
+                            }
+                            Unexpected(token);
+                        }
+
+                        // could be negative sign on number - is there a digit directly following this?
+                        if (char.IsDigit(_reader.PeekToken().Value[0]) && _reader.PrevToken.ID != R.Whitespace)
 						{
 							double number;
 							if (!ReadNumber(token, out number))
@@ -434,10 +467,25 @@ namespace Rant.Engine.Compiler
 							actions.Add(new REAGreaterThanOperator(token, false));
 						break;
                     case R.Exclamation:
-                        if (_reader.PeekToken().ID == R.Equal)
+                        if (!_reader.End && _reader.PeekToken().ID == R.Equal)
                         {
                             _reader.ReadToken();
                             actions.Add(new REAInequalityOperator(token));
+                            break;
+                        }
+                        // invert operator maybe
+                        if (!_reader.End && (_reader.PeekLooseToken().ID == R.LeftParen || _reader.PeekLooseToken().ID == R.Text))
+                        {
+                            RantExpressionAction rightSide = null;
+                            if (_reader.PeekLooseToken().ID == R.LeftParen)
+                            {
+                                _reader.ReadLooseToken();
+                                rightSide = (Read(ExpressionReadType.ExpressionGroup) as RAExpression).Group;
+                                actions.Add(new REAPrefixInvert(token) { RightSide = rightSide });
+                                break;
+                            }
+                            rightSide = (Read(ExpressionReadType.InvertValue) as RAExpression).Group;
+                            actions.Add(new REAPrefixInvert(token) { RightSide = rightSide });
                             break;
                         }
                         Unexpected(token);
@@ -525,6 +573,7 @@ namespace Rant.Engine.Compiler
 				case ExpressionReadType.BracketValue:
                 case ExpressionReadType.FunctionBody:
                 case ExpressionReadType.List:
+                case ExpressionReadType.InvertValue:
 					return new RAExpression(actions, token);
 				default:
 					throw new RantCompilerException(_sourceName, token, "Unexpected end of expression.");

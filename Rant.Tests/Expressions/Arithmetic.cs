@@ -63,5 +63,23 @@ namespace Rant.Tests.Expressions
         {
             Assert.AreEqual(result, rant.Do($"[@ {x} {op} {y} ]").Main);
         }
-	}
+
+        [Test]
+        public void InverseOperator()
+        {
+            Assert.AreEqual("false", rant.Do("[@ !(true) ]").Main);
+        }
+
+        [Test]
+        public void IncrementOperator()
+        {
+            Assert.AreEqual("6", rant.Do("[@ x = 5; ++x; x ]").Main);
+        }
+
+        [Test]
+        public void DecrementOperator()
+        {
+            Assert.AreEqual("4", rant.Do("[@ x = 5; --x; x ]").Main);
+        }
+    }
 }
