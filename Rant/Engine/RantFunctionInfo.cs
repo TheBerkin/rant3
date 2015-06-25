@@ -70,6 +70,10 @@ namespace Rant.Engine
                 {
                     rantType = RantParameterType.Number;
                 }
+                else if (type == typeof(ObjectModel.RantObject))
+                {
+                    rantType = RantParameterType.RantObject;
+                }
                 else
                 {
                     throw new ArgumentException($"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
