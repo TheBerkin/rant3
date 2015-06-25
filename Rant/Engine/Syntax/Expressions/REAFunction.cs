@@ -11,6 +11,8 @@ namespace Rant.Engine.Syntax.Expressions
 		private RantExpressionAction _body;
 		private string[] _argNames;
 
+        public int ArgCount => _argNames.Length;
+
 		public REAFunction(Stringe origin, RantExpressionAction body, REAGroup args)
 			: base(origin)
 		{

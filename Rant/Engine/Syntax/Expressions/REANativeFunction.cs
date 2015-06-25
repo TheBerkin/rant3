@@ -11,6 +11,8 @@ namespace Rant.Engine.Syntax.Expressions
         public RantObject That;
         private Func<RantObject, Sandbox, object[], IEnumerator<RantExpressionAction>> _function;
 
+        public int ArgCount => _argCount;
+
         public REANativeFunction(Stringe token, int argCount, Func<RantObject, Sandbox, object[], IEnumerator<RantExpressionAction>> function)
             : base(token)
         {

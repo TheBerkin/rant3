@@ -51,6 +51,9 @@ namespace Rant.Engine.Syntax.Expressions
 			}
             if (func is REAFunction)
             {
+                var expectedCount = (func as REAFunction).ArgCount;
+                if (expectedCount != _argValues.Length)
+                    throw new RantRuntimeException(sb.Pattern, Range, $"Function expected {expectedCount} arguments, got {_argValues.Length}.");
                 foreach (RantExpressionAction argAction in _argValues)
                     yield return argAction;
                 var iterator = (func as REAFunction).Execute(sb);
@@ -67,6 +70,9 @@ namespace Rant.Engine.Syntax.Expressions
             }
             else if (func is REANativeFunction)
             {
+                var expectedCount = (func as REANativeFunction).ArgCount;
+                if (expectedCount != _argValues.Length)
+                    throw new RantRuntimeException(sb.Pattern, Range, $"Native function expected {expectedCount} arguments, got {_argValues.Length}.");
                 foreach (RantExpressionAction argAction in _argValues)
                     yield return argAction;
                 var iterator = (func as REANativeFunction).Execute(sb);

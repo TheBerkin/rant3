@@ -6,12 +6,32 @@ namespace Rant.Tests.Expressions
 	{
 		private readonly RantEngine rant = new RantEngine();
 
-		[Test]
-		// this was causing a huge amount of recursion for some reason
-		public void SemicolonRecursion()
-		{
-			rant.Do(@"[@ test = 1; test; ]");
-			Assert.Pass();
-		}
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void BlockAsVariable()
+        {
+            rant.Do("[@ x = { 2 } ]");
+        }
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void IfStatementAsVariable()
+        {
+            rant.Do("[@ x = if(true) { 2 } ]");
+        }
+
+        [Test]
+        [ExpectedException(typeof(RantRuntimeException))]
+        public void WrongNumberOfArgs()
+        {
+            rant.Do("[@ x = function(a, b) { }; x(2) ]");
+        }
+
+        [Test]
+        [ExpectedException(typeof(RantRuntimeException))]
+        public void WrongNumberOfArgsNative()
+        {
+            rant.Do("[@ Output.print(2, 3) ]");
+        }
 	}
 }
