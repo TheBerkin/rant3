@@ -71,15 +71,27 @@ namespace Rant.Tests.Expressions
         }
 
         [Test]
-        public void IncrementOperator()
+        public void PrefixIncrementOperator()
         {
             Assert.AreEqual("6", rant.Do("[@ x = 5; ++x; x ]").Main);
         }
 
         [Test]
-        public void DecrementOperator()
+        public void PrefixDecrementOperator()
         {
             Assert.AreEqual("4", rant.Do("[@ x = 5; --x; x ]").Main);
+        }
+
+        [Test]
+        public void PostfixIncrementOperator()
+        {
+            Assert.AreEqual("6", rant.Do("[@ x = 5; x++ ]").Main);
+        }
+
+        [Test]
+        public void PostfixDecrementOperator()
+        {
+            Assert.AreEqual("4", rant.Do("[@ x = 5; x-- ]").Main);
         }
 
         [Test]

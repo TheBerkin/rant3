@@ -386,6 +386,14 @@ namespace Rant.Engine.Compiler
                         if (!_reader.End && _reader.PeekType() == R.Plus)
                         {
                             _reader.ReadToken();
+                            // postfix
+                            if (actions.Last() is REAVariable)
+                            {
+                                var variable = actions.Last();
+                                actions.RemoveAt(actions.Count - 1);
+                                actions.Add(new REAPostfixIncDec(token) { LeftSide = variable });
+                                break;
+                            }
                             if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
                             {
                                 var varName = _reader.ReadLooseToken();
@@ -401,6 +409,14 @@ namespace Rant.Engine.Compiler
                         if (!_reader.End && _reader.PeekType() == R.Hyphen)
                         {
                             _reader.ReadToken();
+                            // postfix
+                            if (actions.Last() is REAVariable)
+                            {
+                                var variable = actions.Last();
+                                actions.RemoveAt(actions.Count - 1);
+                                actions.Add(new REAPostfixIncDec(token) { LeftSide = variable, Increment = false });
+                                break;
+                            }
                             if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
                             {
                                 var varName = _reader.ReadLooseToken();
