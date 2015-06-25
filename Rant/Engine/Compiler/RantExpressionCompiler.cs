@@ -429,6 +429,15 @@ namespace Rant.Engine.Compiler
 						else
 							actions.Add(new REAGreaterThanOperator(token, false));
 						break;
+                    case R.Exclamation:
+                        if (_reader.PeekToken().ID == R.Equal)
+                        {
+                            _reader.ReadToken();
+                            actions.Add(new REAInequalityOperator(token));
+                            break;
+                        }
+                        Unexpected(token);
+                        break;
 					case R.Equal:
 						if (_reader.PeekType() == R.Equal)
 						{
