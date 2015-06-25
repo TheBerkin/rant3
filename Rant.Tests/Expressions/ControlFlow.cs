@@ -10,13 +10,13 @@ namespace Rant.Tests.Expressions
         [Test]
         public void IfStatement()
         {
-            Assert.AreEqual("2", rant.Do("[@ if(yes) 2 ]").Main);
+            Assert.AreEqual("2", rant.Do("[@ if(true) 2 ]").Main);
         }
 
         [Test]
         public void IfElseStatement()
         {
-            Assert.AreEqual("2", rant.Do("[@ if(no) 1; else 2; ]").Main);
+            Assert.AreEqual("2", rant.Do("[@ if(false) 1; else 2; ]").Main);
         }
 
         [Test]

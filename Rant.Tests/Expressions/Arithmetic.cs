@@ -53,5 +53,12 @@ namespace Rant.Tests.Expressions
         {
             Assert.AreEqual(result, rant.Do($"[@ x = 5; x {op}= 5; x ]").Main);
         }
+
+        [Test]
+        [TestCase("<", "5", "2 + 5", "true")]
+        public void ComparisonRightAssociative(string op, string x, string y, string result)
+        {
+            Assert.AreEqual(result, rant.Do($"[@ {x} {op} {y} ]").Main);
+        }
 	}
 }

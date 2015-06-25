@@ -201,6 +201,7 @@
     <Compile Include="Engine\Syntax\Expressions\REAList.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAMaybe.cs" />
     <Compile Include="Engine\Syntax\Expressions\REANativeFunction.cs" />
+    <Compile Include="Engine\Syntax\Expressions\REANull.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAObject.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAObjectKeyValue.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAObjectProperty.cs" />

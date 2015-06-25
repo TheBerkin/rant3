@@ -66,7 +66,8 @@ namespace Rant.Engine.Compiler
 			{
 				"var",
 				"function",
-				"yes",
+				"true",
+                "false",
 				"no",
 				"maybe",
 				"list",
@@ -279,12 +280,15 @@ namespace Rant.Engine.Compiler
 											goto done;
 									}
 									break;
-								case "yes":
+								case "true":
 									actions.Add(new REABoolean(token, true));
 									break;
-								case "no":
+								case "false":
 									actions.Add(new REABoolean(token, false));
 									break;
+                                case "no":
+                                    actions.Add(new REANull(token));
+                                    break;
 								case "maybe":
 									actions.Add(new REAMaybe(token));
 									break;
