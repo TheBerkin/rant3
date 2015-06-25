@@ -209,6 +209,7 @@
     <Compile Include="Engine\Syntax\Expressions\REAPatternString.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAReturn.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAString.cs" />
+    <Compile Include="Engine\Syntax\Expressions\REAUndefined.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAVariable.cs" />
     <Compile Include="Engine\Syntax\Expressions\REAWhile.cs" />
     <Compile Include="Engine\Syntax\RAExpression.cs" />

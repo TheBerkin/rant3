@@ -19,8 +19,10 @@ namespace Rant.Engine.Syntax.Expressions
 		{
             if (RichardFunctions.HasObject(Name))
                 return RichardFunctions.GetObject(Name);
-			if (sb.Objects[Name] == null) return new RantObject();
+			if (sb.Objects[Name] == null) return new RantObject(RantObjectType.Undefined);
 			var obj = sb.Objects[Name];
+            if (obj.Type == RantObjectType.No)
+                return obj;
 			return obj.Value;
 		}
 

@@ -254,6 +254,10 @@
 		/// <summary>
 		/// Tilde (~)
 		/// </summary>
-		Tilde
+		Tilde,
+        /// <summary>
+        /// Undefined (???)
+        /// </summary>
+        Undefined
     }
 }

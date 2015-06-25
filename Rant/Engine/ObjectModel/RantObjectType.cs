@@ -32,6 +32,10 @@
         /// <summary>
         /// Represents a lack of a value.
         /// </summary>
-        No
+        No,
+        /// <summary>
+        /// Represents a lack of any variable at all.
+        /// </summary>
+        Undefined
     }
 }

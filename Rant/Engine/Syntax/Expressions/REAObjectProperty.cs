@@ -50,6 +50,7 @@ namespace Rant.Engine.Syntax.Expressions
                 var enumerator = RichardFunctions.GetProperty(obj.GetType(), name).Invoke(sb, new object[] { new RantObject(obj) });
                 while (enumerator.MoveNext())
                     yield return enumerator.Current;
+                yield break;
             }
             else if (obj is REAList)
             {
@@ -59,14 +60,14 @@ namespace Rant.Engine.Syntax.Expressions
                 if (index > (obj as REAList).Items.Count - 1)
                     throw new RantRuntimeException(sb.Pattern, Range, "List access is out of bounds.");
                 yield return (obj as REAList).Items[index];
+                yield break;
             }
             else if (obj is REAObject)
             {
                 var rObject = obj as REAObject;
                 if (rObject.Values.ContainsKey(name))
                     yield return rObject.Values[name];
-                else
-                    sb.ScriptObjectStack.Push(new RantObject());
+                yield break;
             }
             else if (obj is string)
             {
@@ -76,11 +77,12 @@ namespace Rant.Engine.Syntax.Expressions
                 if ((obj as string).Length <= index)
                     throw new RantRuntimeException(sb.Pattern, Range, "String character access is out of bounds.");
                 sb.ScriptObjectStack.Push((obj as string)[index].ToString());
+                yield break;
             }
-            else
-                sb.ScriptObjectStack.Push(new RantObject());
             if (obj == null || (obj is RantObject && (obj as RantObject).Value == null))
                 throw new RantRuntimeException(sb.Pattern, Range, "Cannot access property of null object.");
+
+            sb.ScriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
             yield break;
 		}
 	}

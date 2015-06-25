@@ -155,6 +155,11 @@ namespace Rant.Engine.ObjectModel
 			}
 		}
 
+        public RantObject(RantObjectType type)
+        {
+            Type = type;
+        }
+
         /// <summary>
         /// Converts the current object to a RantObject of the specified type and returns it.
         /// </summary>
@@ -397,6 +402,8 @@ namespace Rant.Engine.ObjectModel
 					return _string;
 				case RantObjectType.No:
 					return "no";
+                case RantObjectType.Undefined:
+                    return "???";
 				case RantObjectType.Number:
 					return _number.ToString();
 				case RantObjectType.Pattern:

@@ -481,6 +481,9 @@ namespace Rant.Engine.Compiler
                         }
                         Unexpected(token);
 						break;
+                    case R.Undefined:
+                        actions.Add(new REAUndefined(token));
+                        break;
 					default:
 						Unexpected(token);
 						break;
