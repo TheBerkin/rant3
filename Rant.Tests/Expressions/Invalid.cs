@@ -80,7 +80,11 @@ namespace Rant.Tests.Expressions
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void NakedIncrement() => rant.Do(@"[@ ++ ]");
 
-	    [Test]
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void NakedDecrement() => rant.Do(@"[@ -- ]");
+
+        [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void PostIncrementConstant() => rant.Do(@"[@ 1++; ]");
 
@@ -99,5 +103,59 @@ namespace Rant.Tests.Expressions
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
         public void EmptyParentheses() => rant.Do(@"[@ () ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void IncrementNo() => rant.Do(@"[@ no++ ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void IncrementUndefined() => rant.Do(@"[@ ???++ ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void InvokeUndefined() => rant.Do(@"[@ ???(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void UndefinedUndefined() => rant.Do(@"[@ ??? ??? ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void InvokeNo() => rant.Do(@"[@ no(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void InvokeString() => rant.Do(@"[@ ""foobar""(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void InvokeList() => rant.Do(@"[@ (1, 2, 3)(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void InvokeObject() => rant.Do(@"[@ { x:1, y:2, z:3 }(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void AssignToUndefined() => rant.Do(@"[@ ??? = 100; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void AssignToFunctionCall() => rant.Do(@"[@ var func = function() {  }; func() = no; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void AssignToLambda() => rant.Do(@"[@ (() => Output.print(""test"")) = 100; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void IncrementLambda() => rant.Do(@"[@ (() => Output.print(""test""))++; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void LambdaLambda() => rant.Do(@"[@ (() => Output.print(""foo"")) (() => Output.print(""bar"")) ]");
+
+
     }
 }
