@@ -39,5 +39,11 @@ namespace Rant.Tests.Richard
         {
             Assert.AreEqual("12", rant.Do("[@ x = list 12; x.length ]").Main);
         }
+
+        [Test]
+        public void ListEmptyAsBlock()
+        {
+            Assert.AreEqual("", rant.Do(@"[@ [] ]"));
+        }
     }
 }
