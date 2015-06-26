@@ -82,20 +82,21 @@ namespace Rant.Tests.Expressions
       var buffer = """";
       for(var i in lst)
       {
-        buffer ~= accumulator(buffer, lst[i]);
+        buffer = accumulator(buffer, lst[i]);
       }
       return buffer;
     }
   };
   
   return Select.concat(
-    Select.where(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+    Select.where([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
     (x) => { 
       return x % 2 == 0; 
     }),
     (current, next) => {
       if (current.length > 0) current ~= "", "";
       current ~= next;
+      return current;
     });
 }]
 ");

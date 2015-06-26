@@ -11,7 +11,7 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 			: base(origin)
 		{
 			Type = ActionValueType.Boolean;
-            Precedence = 0;
+            Precedence = 15;
         }
 
 		public override object GetValue(Sandbox sb)

@@ -65,9 +65,11 @@ namespace Rant.Engine.Compiler
 		private List<string> _keywords;
         // a hack for VariableValue and FunctionBody going past end of expression
         private bool _hitEndOfExpr = false;
+        private RantCompiler _rantCompiler;
 
-		public RantExpressionCompiler(string sourceName, string source, TokenReader reader)
+		public RantExpressionCompiler(string sourceName, string source, TokenReader reader, RantCompiler parentCompiler)
 		{
+            _rantCompiler = parentCompiler;
 			_sourceName = sourceName;
 			_source = source;
 			_reader = reader;
@@ -111,10 +113,17 @@ namespace Rant.Engine.Compiler
                         break;
                     case R.LeftSquare:
 						{
-                            if ((!actions.Any() && type == ExpressionReadType.VariableValue) || type == ExpressionReadType.List)
+                            if (!actions.Any())
                             {
+                                // empty list initializer
+                                if (!_reader.End && _reader.PeekLooseToken().ID == R.RightSquare)
+                                {
+                                    _reader.ReadLooseToken();
+                                    actions.Add(new REAList(token, new List<RantExpressionAction>(), false));
+                                    break;
+                                }
                                 actions.Add((Read(ExpressionReadType.List) as RAExpression).Group);
-                                goto done;
+                                break;
                             }
 							var val = Read(ExpressionReadType.BracketValue) as RAExpression;
 							var obj = actions.Last();
@@ -186,7 +195,7 @@ namespace Rant.Engine.Compiler
 						}
 						// maybe it's an object with key/values
 						var tempPosition = _reader.Position;
-						if (_reader.PeekLooseToken().ID == R.ConstantLiteral)
+						if (_reader.PeekLooseToken().ID == R.ConstantLiteral || _reader.PeekLooseToken().ID == R.Text)
 						{
 							var firstValue = _reader.ReadLooseToken();
 							// ok, it's an object
@@ -387,8 +396,28 @@ namespace Rant.Engine.Compiler
 							}
 							break;
 						}
-						// just a variable
-						actions.Add(new REAVariable(token));
+                        // object key
+                        if (type == ExpressionReadType.KeyValueObject)
+                        {
+                            var name = token;
+                            _reader.ReadLoose(R.Colon, "key value seperator");
+                            var value = Read(ExpressionReadType.KeyValueObjectValue) as RantExpressionAction;
+                            actions.Add(new REAObjectKeyValue(name, value));
+                            if (_reader.PrevLooseToken.ID == R.RightCurly)
+                            {
+                                List<REAObjectKeyValue> keyValues = new List<REAObjectKeyValue>();
+                                foreach (RantExpressionAction kv in actions)
+                                {
+                                    if (!(kv is REAObjectKeyValue))
+                                        throw new RantCompilerException(_sourceName, token, "Unexpected token in key value object.");
+                                    keyValues.Add(kv as REAObjectKeyValue);
+                                }
+                                return new REAObject(name, keyValues.ToArray());
+                            }
+                            break;
+                        }
+                        // just a variable
+                        actions.Add(new REAVariable(token));
 						break;
 					// binary number operators
 					case R.Plus:
@@ -573,6 +602,9 @@ namespace Rant.Engine.Compiler
                         if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon && _reader.PeekLooseToken().ID != R.RightSquare)
                             Unexpected(_reader.PeekLooseToken());
                         actions.Add(new REAUndefined(token));
+                        break;
+                    case R.Percent:
+                        actions.Add(new REAModuloOperator(token));
                         break;
                     case R.Ampersand:
                         // boolean AND

@@ -186,6 +186,7 @@
     <Compile Include="Engine\Syntax\Expressions\Operators\REAEqualityOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAGreaterThanOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAInequalityOperator.cs" />
+    <Compile Include="Engine\Syntax\Expressions\Operators\REAModuloOperator.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAPostfixIncDec.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAPrefixIncDec.cs" />
     <Compile Include="Engine\Syntax\Expressions\Operators\REAPrefixInvert.cs" />

@@ -12,6 +12,7 @@ namespace Rant.Tests.Expressions
 		[TestCase(5, 1, "-", "4")]
 		[TestCase(4, 2, "*", "8")]
 		[TestCase(8, 4, "/", "2")]
+        [TestCase(9, 2, "%", "1")]
 		public void BasicOperators(int a, int b, string op, string result)
 		{
 			Assert.AreEqual(result, rant.Do($"[@ {a} {op} {b} ]").Main);

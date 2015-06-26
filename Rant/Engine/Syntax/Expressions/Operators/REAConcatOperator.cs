@@ -21,7 +21,7 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 			{
 				var left = (leftVal as string);
 				left += ConvertValue(rightVal, sb);
-				return new REAString(left, LeftSide.Range);
+                return left;
 			}
 			else if (leftVal is REAPatternString)
 			{
