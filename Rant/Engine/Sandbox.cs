@@ -304,6 +304,8 @@ namespace Rant.Engine
                         callStack.Pop();
                     }
 
+                    if (!(lastAction as REAReturn).HasReturnValue)
+                        _scriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
                     // if we're not returning from anything, we've returned ourself from the Richard scope
                     goto top;
                 }

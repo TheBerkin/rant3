@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Rant.Stringes;
 using Rant.Engine.Syntax.Expressions;
 using Rant.Engine.Syntax.Expressions.Operators;
+using Rant.Engine.ObjectModel;
 
 namespace Rant.Engine.Syntax
 {
@@ -43,7 +44,7 @@ namespace Rant.Engine.Syntax
                     yield return (obj as REAPatternString).Pattern.Action;
                 else if (obj is bool)
                     sb.Print((bool)obj ? "true" : "false");
-                else
+                else if(!(obj is RantObject && (obj as RantObject).Type == RantObjectType.Undefined))
                     sb.Print(obj);
             }
 			yield break;

@@ -7,6 +7,7 @@ namespace Rant.Engine.Syntax.Expressions
 	internal class REAReturn : RantExpressionAction
 	{
 		private RantExpressionAction _returnValue;
+        public bool HasReturnValue => _returnValue != null;
 
 		public REAReturn(Stringe origin, RantExpressionAction value)
 			: base(origin)

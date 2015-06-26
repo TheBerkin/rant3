@@ -22,6 +22,12 @@ namespace Rant.Engine.Syntax.Expressions.Operators
                 leftVal = (leftVal as RantObject).Value;
             if (rightVal is RantObject)
                 rightVal = (rightVal as RantObject).Value;
+            if (leftVal == null || rightVal == null)
+            {
+                if (leftVal == null && rightVal == null)
+                    return true;
+                return false;
+            }
 
 			return leftVal.GetHashCode() == rightVal.GetHashCode();
 		}

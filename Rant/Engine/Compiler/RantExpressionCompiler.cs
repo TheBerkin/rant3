@@ -570,7 +570,7 @@ namespace Rant.Engine.Compiler
                         Unexpected(token);
 						break;
                     case R.Undefined:
-                        if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon)
+                        if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon && _reader.PeekLooseToken().ID != R.RightSquare)
                             Unexpected(_reader.PeekLooseToken());
                         actions.Add(new REAUndefined(token));
                         break;

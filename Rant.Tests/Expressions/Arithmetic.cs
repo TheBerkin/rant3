@@ -35,7 +35,7 @@ namespace Rant.Tests.Expressions
         [Test]
         public void VariableScoping()
         {
-            Assert.AreEqual("???", rant.Do("[@ { x = 4; } x ]").Main);
+            Assert.AreEqual("true", rant.Do("[@ { x = 4; } x == ??? ]").Main);
         }
 
         [Test]

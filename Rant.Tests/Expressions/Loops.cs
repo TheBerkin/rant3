@@ -49,6 +49,7 @@ namespace Rant.Tests.Expressions
                 b += temp;
                 i++;
             }
+            return;
         }
         fibonacci(10);
     }
