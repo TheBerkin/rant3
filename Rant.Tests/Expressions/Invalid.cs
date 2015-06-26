@@ -66,7 +66,9 @@ namespace Rant.Tests.Expressions
         [ExpectedException(typeof(RantCompilerException))]
         public void EmptyGroupAsFunction() => rant.Do("[@ ()() ]");
 
-	    public void UnexpectedInfixAfterEquals() => rant.Do(@"[@ var x = * 1; ]");
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void UnexpectedInfixAfterEquals() => rant.Do(@"[@ var x = * 1; ]");
 
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
