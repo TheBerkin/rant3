@@ -64,12 +64,9 @@ namespace Rant.Tests.Expressions
 
         [Test]
         [ExpectedException(typeof(RantRuntimeException))]
-        public void EmptyGroupAsFunction()
-        {
-            rant.Do("[@ ()() ]");
-        }
+        public void EmptyGroupAsFunction() => rant.Do("[@ ()() ]");
 
-        public void UnexpectedInfixAfterEquals() => rant.Do(@"[@ var x = * 1; ]");
+	    public void UnexpectedInfixAfterEquals() => rant.Do(@"[@ var x = * 1; ]");
 
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
@@ -78,5 +75,29 @@ namespace Rant.Tests.Expressions
         [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void AssignmentToKeyword() => rant.Do(@"[@ list = true; ]");
-	}
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void NakedIncrement() => rant.Do(@"[@ ++ ]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void PostIncrementConstant() => rant.Do(@"[@ 1++; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void PreIncrementConstant() => rant.Do(@"[@ ++1; ]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void NumberAsFunctionCall() => rant.Do(@"[@ 1(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void OperatorAsFunctionCall() => rant.Do(@"[@ *(); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyParentheses() => rant.Do(@"[@ () ]");
+    }
 }
