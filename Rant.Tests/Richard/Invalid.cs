@@ -241,5 +241,17 @@ namespace Rant.Tests.Richard
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
         public void DoubleObjectD() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456; wow: 789 }{ foo: 123, bar: 456; wow: 789 }; }]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void MultiUndefinedVariableReturn() => rant.Do(@"[@{ x y }]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void EmptyStringIndexer() => rant.Do(@"[@ ""hello world""[] ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyListIndexer() => rant.Do(@"[@ (1, 2, 3)[] ]");
     }
 }
