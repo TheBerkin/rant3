@@ -13,6 +13,8 @@ namespace Rant.Engine.Syntax.Expressions
 		private Stringe _origin;
         private string _sourceName;
 
+        public int Lines = 0;
+
 		public REAGroup(IEnumerable<RantExpressionAction> actions, Stringe token, string sourceName)
 			: base(token)
 		{
@@ -61,9 +63,9 @@ namespace Rant.Engine.Syntax.Expressions
 			var operators = Actions.Where(x => x is REAInfixOperator).OrderBy(x => (x as REAInfixOperator).Precedence);
 			for (int i = 0; i < operators.Count(); i++)
 				CondenseStep();
-		}
+        }
 
-		public override object GetValue(Sandbox sb)
+        public override object GetValue(Sandbox sb)
 		{
 			return null;
 		}
