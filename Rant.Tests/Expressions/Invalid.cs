@@ -75,6 +75,14 @@ namespace Rant.Tests.Expressions
         public void UnexpectedInfixBeforeEquals() => rant.Do(@"[@ var x + = 1; ]");
 
         [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void UnexpectedPrefixAfterEquals() => rant.Do(@"[@ var x = ++ 1; ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void UnexpectedPrefixBeforeEquals() => rant.Do(@"[@ var x ! = 1; ]");
+
+        [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void AssignmentToKeyword() => rant.Do(@"[@ list = true; ]");
 
