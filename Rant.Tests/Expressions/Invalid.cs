@@ -63,7 +63,7 @@ namespace Rant.Tests.Expressions
 	    public void TooManyEquals() => rant.Do(@"[@ var x = = 1; ]");
 
         [Test]
-        [ExpectedException(typeof(RantRuntimeException))]
+        [ExpectedException(typeof(RantCompilerException))]
         public void EmptyGroupAsFunction() => rant.Do("[@ ()() ]");
 
 	    public void UnexpectedInfixAfterEquals() => rant.Do(@"[@ var x = * 1; ]");

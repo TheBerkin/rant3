@@ -294,6 +294,20 @@ namespace Rant.Engine
         Global Objects
         */
 
+        [RichardGlobalObject("Convert", "toString", Returns = "string")]
+        [RichardPropertyArgument("object", "any", Description = "The object to convert to a string.")]
+        [RantDescription("Converts the specified object to a string.")]
+        private static IEnumerator<RantExpressionAction> ConvertToString(Sandbox sb)
+        {
+            yield return new REANativeFunction(sb.CurrentAction.Range, 1, ConvertToStringInner);
+        }
+
+        private static IEnumerator<RantExpressionAction> ConvertToStringInner(RantObject that, Sandbox sb, object[] args)
+        {
+            sb.ScriptObjectStack.Push(args[0].ToString());
+            yield break;
+        }
+
         [RichardGlobalObject("Output", "print")]
         [RichardPropertyArgument("object", "any", Description = "The object to print.")]
         [RantDescription("Prints the provided object, cast to a string.")]

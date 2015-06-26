@@ -158,14 +158,14 @@ namespace Rant.Engine.Compiler
                                     goto done;
                                 break;
                             }
+                            if (!group.Actions.Any())
+                                Unexpected(token);
                             actions.Add(group);
                         }
 						break;
 					case R.RightParen:
                         if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue)
                         {
-                            if (!actions.Any())
-                                Unexpected(token);
                             return new RAExpression(actions, token, _sourceName);
                         }
 						break;
