@@ -37,6 +37,8 @@ namespace Rant.Engine.Syntax.Expressions.Operators
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
+            if (LeftSide == null || RightSide == null)
+                throw new RantRuntimeException(sb.Pattern, Origin, "Missing part of infix operation.");
 			yield return RightSide;
 			yield return LeftSide;
 			yield break;

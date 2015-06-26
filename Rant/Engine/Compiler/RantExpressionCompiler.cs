@@ -163,7 +163,7 @@ namespace Rant.Engine.Compiler
 						break;
 					case R.RightParen:
 						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue)
-							return new RAExpression(actions, token);
+							return new RAExpression(actions, token, _sourceName);
 						break;
 					case R.LeftCurly:
 						// is it an object? let's find out
@@ -204,7 +204,7 @@ namespace Rant.Engine.Compiler
 						if (type == ExpressionReadType.ExpressionBlock)
 							return new REABlock(token, actions);
 						if (type == ExpressionReadType.KeyValueObjectValue)
-							return new REAGroup(actions, token);
+							return new REAGroup(actions, token, _sourceName);
 						Unexpected(token);
 						break;
 					case R.Semicolon:
@@ -212,7 +212,7 @@ namespace Rant.Engine.Compiler
 							goto done;
 						if (actions.Count == 0)
 							break;
-						var action = new REAGroup(actions.ToList(), token);
+						var action = new REAGroup(actions.ToList(), token, _sourceName);
 						actions.Clear();
 						actions.Add(action);
 						break;
@@ -439,7 +439,7 @@ namespace Rant.Engine.Compiler
 						break;
 					case R.Comma:
 						if (type == ExpressionReadType.KeyValueObjectValue)
-							return new REAGroup(actions, token);
+							return new REAGroup(actions, token, _sourceName);
 						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue || type == ExpressionReadType.List || type == ExpressionReadType.Expression)
 						{
 							actions.Add(new REAArgumentSeperator(token));
@@ -514,10 +514,16 @@ namespace Rant.Engine.Compiler
 							break;
 						}
                         REAInfixOperator op = null;
+                        if (!actions.Any())
+                            SyntaxError(token, "Cannot assign value to nothing.");
                         if (actions.Last() is REAInfixOperator)
                         {
+                            if (_reader.PrevToken.ID == R.Whitespace)
+                                Unexpected(token);
                             op = actions.Last() as REAInfixOperator;
                             actions.RemoveAt(actions.Count - 1);
+                            if (!actions.Any())
+                                Unexpected(token);
                         }
                         // variable assignment
                         if (actions.Last() is REAVariable)
@@ -610,7 +616,7 @@ namespace Rant.Engine.Compiler
                 case ExpressionReadType.FunctionBody:
                 case ExpressionReadType.List:
                 case ExpressionReadType.InvertValue:
-					return new RAExpression(actions, token);
+					return new RAExpression(actions, token, _sourceName);
 				default:
 					throw new RantCompilerException(_sourceName, token, "Unexpected end of expression.");
 			}

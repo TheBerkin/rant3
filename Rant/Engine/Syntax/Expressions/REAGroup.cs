@@ -10,9 +10,10 @@ namespace Rant.Engine.Syntax.Expressions
 	{
 		internal List<RantExpressionAction> Actions;
 
-		private Stringe origin;
+		private Stringe _origin;
+        private string _sourceName;
 
-		public REAGroup(IEnumerable<RantExpressionAction> actions, Stringe token)
+		public REAGroup(IEnumerable<RantExpressionAction> actions, Stringe token, string sourceName)
 			: base(token)
 		{
 			Type = ActionValueType.Number;
@@ -20,8 +21,15 @@ namespace Rant.Engine.Syntax.Expressions
 			if (Actions.Any(x => x is REAConcatOperator))
 				Type = ActionValueType.String;
 			Condense();
-			origin = token;
+			_origin = token;
+            _sourceName = sourceName;
 		}
+
+        private void CheckOperator(REAInfixOperator op)
+        {
+            if (op.LeftSide == null || op.RightSide == null)
+                throw new RantCompilerException(_sourceName, op.Range, "Operator missing left or right hand side.");
+        }
 
 		private void CondenseStep()
 		{
@@ -30,16 +38,21 @@ namespace Rant.Engine.Syntax.Expressions
 				.OrderBy(x => (x as REAInfixOperator).Precedence)
 				.First() as REAInfixOperator;
 			var index = Actions.IndexOf(op);
-			if (index - 1 >= 0)
-				op.LeftSide = Actions[index - 1];
-			if (index + 1 <= Actions.Count - 1)
-				op.RightSide = Actions[index + 1];
-			if (op.LeftSide == null && op.RightSide == null)
-				throw new RantCompilerException(null, origin, "Operator missing left and right sides.");
-			if (op.LeftSide != null)
-				Actions.Remove(op.LeftSide);
-			if (op.RightSide != null)
-				Actions.Remove(op.RightSide);
+            if (index - 1 >= 0)
+            {
+                op.LeftSide = Actions[index - 1];
+                if (op.LeftSide is REAInfixOperator)
+                    CheckOperator(op.LeftSide as REAInfixOperator);
+            }
+            if (index + 1 <= Actions.Count - 1)
+            {
+                op.RightSide = Actions[index + 1];
+                if (op.RightSide is REAInfixOperator)
+                    CheckOperator(op.RightSide as REAInfixOperator);
+            }
+            CheckOperator(op);
+		    Actions.Remove(op.LeftSide);
+		    Actions.Remove(op.RightSide);
 		}
 
 		private void Condense()

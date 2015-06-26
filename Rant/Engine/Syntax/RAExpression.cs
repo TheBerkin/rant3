@@ -11,10 +11,10 @@ namespace Rant.Engine.Syntax
 	{
 		public readonly REAGroup Group;
 
-		public RAExpression(IEnumerable<RantExpressionAction> actions, Stringe token)
+		public RAExpression(IEnumerable<RantExpressionAction> actions, Stringe token, string sourceName)
 			: base(token)
 		{
-			Group = new REAGroup(actions, token);
+			Group = new REAGroup(actions, token, sourceName);
 		}
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
