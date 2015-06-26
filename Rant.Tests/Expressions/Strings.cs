@@ -47,5 +47,22 @@ namespace Rant.Tests.Expressions
 			var result = rant.Do("[@ ($\"[case:upper]test \" ~ \"string\")() ]").Main;
 			Assert.AreEqual("TEST STRING", result);
 		}
+
+	    [Test]
+	    public void StringParameterClone()
+	    {
+	        var output = rant.Do(@"
+[@{
+  var strTestFunc = (a, b) =>
+  {
+    a ~= b;
+  };
+  var str = ""foo"";
+  strTestFunc(str, ""bar"");
+  return str;
+}]
+");
+            Assert.AreEqual("foo", output.Main);
+	    }
 	}
 }
