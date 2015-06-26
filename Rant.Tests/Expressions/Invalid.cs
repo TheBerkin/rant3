@@ -156,6 +156,80 @@ namespace Rant.Tests.Expressions
         [ExpectedException(typeof(RantCompilerException))]
         public void LambdaLambda() => rant.Do(@"[@ (() => Output.print(""foo"")) (() => Output.print(""bar"")) ]");
 
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void UndefinedAsObjectKey() => rant.Do(@"[@{ var invalid = { ???: 123 }; }]");
 
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void MissingObjectKey() => rant.Do(@"[@{ var invalid = { : 123 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectKeyExtraColon() => rant.Do(@"[@{ var invalid = { foo:: 123 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectKeyMissingColon() => rant.Do(@"[@{ var invalid = { foo 123 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectKeyMissingValue() => rant.Do(@"[@{ var invalid = { foo: }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectKeyAllAlone() => rant.Do(@"[@{ var invalid = { foo }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectTooManyValues() => rant.Do(@"[@{ var invalid = { foo: 123 456 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectMissingNeighboringKeyA() => rant.Do(@"[@{ var invalid = { foo: 123, 456, 789 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectMissingNeighboringKeyB() => rant.Do(@"[@{ var invalid = { foo: 123, 456, 789, bar: 123, 456, 789 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectNumericKey() => rant.Do(@"[@{ var invalid = { 123: 456 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectUnexpectedSemicolonA() => rant.Do(@"[@{ var invalid = { foo: 123; bar: 456, wow: 789 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectUnexpectedSemicolonB() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456; wow: 789 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectUnexpectedSemicolonC() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456, wow: 789; }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectNestedBraces() => rant.Do(@"[@{ var invalid = {{ foo: 123, bar: 456, wow: 789 }}; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ObjectExtraEndBrace() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456, wow: 789 }}; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void DoubleObjectA() => rant.Do(@"[@{ var invalid = {}{}; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void DoubleObjectB() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456; wow: 789 }{}; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void DoubleObjectC() => rant.Do(@"[@{ var invalid = {}{ foo: 123, bar: 456; wow: 789 }; }]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void DoubleObjectD() => rant.Do(@"[@{ var invalid = { foo: 123, bar: 456; wow: 789 }{ foo: 123, bar: 456; wow: 789 }; }]");
     }
 }
