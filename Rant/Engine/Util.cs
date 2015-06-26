@@ -49,6 +49,8 @@ namespace Rant.Engine
                 type = "list";
             if (obj is REAFunction)
                 type = "function";
+            if (obj is REAPatternString)
+                type = "pattern string";
             if (obj is bool)
                 type = "bool";
             return type;

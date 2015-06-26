@@ -105,5 +105,11 @@ namespace Rant.Tests.Expressions
         {
             Assert.AreEqual("true", rant.Do("[@ false || true ]").Main);
         }
+
+        [Test]
+        public void SingleLineComments()
+        {
+            Assert.AreEqual(string.Empty, rant.Do("[@ # test \n]").Main);
+        }
     }
 }

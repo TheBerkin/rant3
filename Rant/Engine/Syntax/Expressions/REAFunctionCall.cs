@@ -46,7 +46,10 @@ namespace Rant.Engine.Syntax.Expressions
                 func is REAGroup ||
                 func is REAObjectProperty)
 			{
+                var count = sb.ScriptObjectStack.Count;
 				yield return (func as RantExpressionAction);
+                if (count >= sb.ScriptObjectStack.Count)
+                    throw new RantRuntimeException(sb.Pattern, Range, "Invalid function call target.");
 				func = sb.ScriptObjectStack.Pop();
 			}
             if (func is REAFunction)
