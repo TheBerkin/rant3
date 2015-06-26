@@ -320,19 +320,7 @@ namespace Rant.Engine
         private static IEnumerator<RantExpressionAction> TypeGetInner(RantObject that, Sandbox sb, object[] args)
         {
             var obj = args[0];
-            string type = "no";
-            if (obj is string)
-                type = "string";
-            if (obj is double)
-                type = "number";
-            if (obj is REAObject)
-                type = "object";
-            if (obj is REAList)
-                type = "list";
-            if (obj is REAFunction)
-                type = "function";
-            if (obj is bool)
-                type = "bool";
+            string type = Util.ScriptingObjectType(obj);
             sb.ScriptObjectStack.Push(type);
             yield break;
         }

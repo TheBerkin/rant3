@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine.Compiler;
 using Rant.Stringes;
+using Rant.Engine.Syntax.Expressions;
 
 namespace Rant.Engine
 {
@@ -34,6 +35,24 @@ namespace Rant.Engine
 
 	        return longest > 1;
 	    }
+
+        public static string ScriptingObjectType(object obj)
+        {
+            string type = "no";
+            if (obj is string)
+                type = "string";
+            if (obj is double)
+                type = "number";
+            if (obj is REAObject)
+                type = "object";
+            if (obj is REAList)
+                type = "list";
+            if (obj is REAFunction)
+                type = "function";
+            if (obj is bool)
+                type = "bool";
+            return type;
+        }
 
 		private static void CacheEnum(Type type)
 		{

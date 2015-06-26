@@ -33,5 +33,19 @@ namespace Rant.Tests.Expressions
         {
             rant.Do("[@ Output.print(2, 3) ]");
         }
+
+        [Test]
+        [ExpectedException(typeof(RantRuntimeException))]
+        public void NumberAsFunction()
+        {
+            rant.Do("[@ (2)() ]");
+        }
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void AWholeBunchOfNumbers()
+        {
+            rant.Do("[@ 1 2 2 2 3 3 4 5 6 6 ]");
+        }
 	}
 }

@@ -75,7 +75,11 @@ namespace Rant.Engine.Syntax.Expressions
                 object value = null;
                 if (_value != null)
                 {
+                    var count = sb.ScriptObjectStack.Count;
                     yield return _value;
+                    // no value was created, no value will be assigned
+                    if (count >= sb.ScriptObjectStack.Count)
+                        yield break;
                     value = sb.ScriptObjectStack.Pop();
                     if (Operator != null && sb.Objects[name] != null)
                     {

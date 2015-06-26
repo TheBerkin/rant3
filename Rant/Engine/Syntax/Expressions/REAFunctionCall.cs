@@ -80,7 +80,7 @@ namespace Rant.Engine.Syntax.Expressions
                     yield return iterator.Current;
                 yield break;
             }
-			throw new RantRuntimeException(sb.Pattern, base.Range, "Cannot execute " + func.GetType() + " as function.");
+			throw new RantRuntimeException(sb.Pattern, base.Range, "Cannot execute " + Util.ScriptingObjectType(func) + " as function.");
 		}
 	}
 }
