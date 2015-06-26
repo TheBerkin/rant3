@@ -191,6 +191,12 @@ namespace Rant.Engine.Compiler
 							// empty object
 							_reader.Read(R.RightCurly);
 							actions.Add(new REAObject(token, new REAObjectKeyValue[0]));
+                            if (type == ExpressionReadType.VariableValue)
+                            {
+                                if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon)
+                                    Unexpected(_reader.PeekLooseToken());
+                                goto done;
+                            }
 							break;
 						}
 						// maybe it's an object with key/values
@@ -240,7 +246,9 @@ namespace Rant.Engine.Compiler
 						{
 							var name = token;
 							_reader.ReadLoose(R.Colon, "key value seperator");
-							var value = Read(ExpressionReadType.KeyValueObjectValue) as RantExpressionAction;
+							var value = Read(ExpressionReadType.KeyValueObjectValue) as REAGroup;
+                            if (value.Actions.Count == 0)
+                                SyntaxError(value.Range, "Expected value for key.");
 							actions.Add(new REAObjectKeyValue(name, value));
 							if (_reader.PrevLooseToken.ID == R.RightCurly)
 							{
@@ -401,7 +409,9 @@ namespace Rant.Engine.Compiler
                         {
                             var name = token;
                             _reader.ReadLoose(R.Colon, "key value seperator");
-                            var value = Read(ExpressionReadType.KeyValueObjectValue) as RantExpressionAction;
+                            var value = Read(ExpressionReadType.KeyValueObjectValue) as REAGroup;
+                            if (value.Actions.Count == 0)
+                                SyntaxError(value.Range, "Expected value for key.");
                             actions.Add(new REAObjectKeyValue(name, value));
                             if (_reader.PrevLooseToken.ID == R.RightCurly)
                             {
