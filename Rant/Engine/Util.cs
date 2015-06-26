@@ -53,6 +53,8 @@ namespace Rant.Engine
                 type = "pattern string";
             if (obj is bool)
                 type = "bool";
+            if (obj is ObjectModel.RantObject && (obj as ObjectModel.RantObject).Type == ObjectModel.RantObjectType.Undefined)
+                type = "undefined";
             return type;
         }
 

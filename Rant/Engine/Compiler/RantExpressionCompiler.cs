@@ -162,8 +162,12 @@ namespace Rant.Engine.Compiler
                         }
 						break;
 					case R.RightParen:
-						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue)
-							return new RAExpression(actions, token, _sourceName);
+                        if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue)
+                        {
+                            if (!actions.Any())
+                                Unexpected(token);
+                            return new RAExpression(actions, token, _sourceName);
+                        }
 						break;
 					case R.LeftCurly:
 						// is it an object? let's find out
@@ -387,7 +391,7 @@ namespace Rant.Engine.Compiler
                         {
                             _reader.ReadToken();
                             // postfix
-                            if (actions.Last() is REAVariable)
+                            if (actions.Any() && actions.Last() is REAVariable)
                             {
                                 var variable = actions.Last();
                                 actions.RemoveAt(actions.Count - 1);
@@ -397,6 +401,9 @@ namespace Rant.Engine.Compiler
                             if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
                             {
                                 var varName = _reader.ReadLooseToken();
+                                double dummyNumber = -1;
+                                if (ReadNumber(varName, out dummyNumber))
+                                    SyntaxError(token, "Cannot increment constant.");
                                 actions.Add(new REAPrefixIncDec(token) { RightSide = new REAVariable(varName) });
                                 break;
                             }
@@ -521,6 +528,8 @@ namespace Rant.Engine.Compiler
                             if (_reader.PrevToken.ID == R.Whitespace)
                                 Unexpected(token);
                             op = actions.Last() as REAInfixOperator;
+                            if (op.Type == RantExpressionAction.ActionValueType.Boolean)
+                                Unexpected(token);
                             actions.RemoveAt(actions.Count - 1);
                             if (!actions.Any())
                                 Unexpected(token);
