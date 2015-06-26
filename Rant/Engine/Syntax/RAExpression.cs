@@ -2,9 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using Rant.Stringes;
-using Rant.Engine.Syntax.Expressions;
-using Rant.Engine.Syntax.Expressions.Operators;
 using Rant.Engine.ObjectModel;
+using Rant.Engine.Syntax.Richard;
 
 namespace Rant.Engine.Syntax
 {

@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Engine.Compiler;
+using Rant.Engine.Syntax.Richard;
 using Rant.Stringes;
-using Rant.Engine.Syntax.Expressions;
 
 namespace Rant.Engine
 {

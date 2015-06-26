@@ -4,11 +4,12 @@ using System.Linq;
 using Rant.Engine.Syntax;
 using Rant.Vocabulary;
 using Rant.Stringes;
-using Rant.Engine.Syntax.Expressions;
-using Rant.Engine.Syntax.Expressions.Operators;
 
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
+using Rant.Engine.Syntax.Richard;
+using Rant.Engine.Syntax.Richard.Operators;
 
 namespace Rant.Engine.Compiler
 {
