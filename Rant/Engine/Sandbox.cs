@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 using Rant.Engine.ObjectModel;
 using Rant.Vocabulary;
-using Rant.Engine.Syntax.Expressions;
 using Rant.Engine.Syntax;
 using Rant.Engine.Constructs;
+using Rant.Engine.Syntax.Richard;
 using Rant.Formats;
 
 namespace Rant.Engine

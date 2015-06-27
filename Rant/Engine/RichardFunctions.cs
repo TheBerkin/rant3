@@ -6,9 +6,9 @@ using System.Reflection;
 using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Engine.Metadata;
-using Rant.Engine.Syntax.Expressions;
 using Rant.Engine.ObjectModel;
 using Rant.Engine.Syntax;
+using Rant.Engine.Syntax.Richard;
 using Rant.Vocabulary;
 
 namespace Rant.Engine
