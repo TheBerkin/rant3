@@ -257,5 +257,41 @@ namespace Rant.Tests.Richard
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
         public void EmptyFunctionArgument() => rant.Do(@"[@ Math.atan2(,); ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ListOfEmptyIndexedEmptyLists() => rant.Do(@"[@ [[][], [][], [][]] ]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void EmptyListItemsA() => rant.Do(@"[@ ,,, ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyListItemsB() => rant.Do(@"[@ [,,,] ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyListItemsC() => rant.Do(@"[@ , , , ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyListItemsD() => rant.Do(@"[@ [ , , , ] ]");
+
+	    [Test]
+	    [ExpectedException(typeof(RantCompilerException))]
+	    public void ListWithColon() => rant.Do(@"[@ [ : ] ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void ListAsObject() => rant.Do(@"[@ [ a:1 ] ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyObjectItemsA() => rant.Do(@"[@ {,,,} ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyObjectItemsB() => rant.Do(@"[@ { :, :, :, :} ]");
     }
 }

@@ -102,5 +102,39 @@ namespace Rant.Tests.Richard
 ");
             Assert.AreEqual("2, 4, 6, 8, 10", output.Main);
         }
+
+        [Test]
+        public void BubbleSort()
+        {
+            var output = rant.Do(@"
+[x:_;ordered]
+[repeach][sep:,\s]
+[@{
+  bubbleSort = (lst) =>
+  {
+    var done = false;
+    while (!done)
+    {
+      done = true;
+      var i = 1;
+      while(i < lst.length)
+      {
+        if (lst[i - 1] > lst[i]) 
+        {
+          done = false;
+          var tmp = lst[i - 1];
+          lst[i - 1] = lst[i];
+          lst[i] = tmp;
+        }
+        i++;
+      }
+    }
+    return lst;
+  }
+  return bubbleSort([2, 9, 5, 0, 7, 3, 4, 1, 6, 8]);
+}]
+");
+            Assert.AreEqual("0, 1, 2, 3, 4, 5, 6, 7, 8, 9", output.Main);
+        }
     }
 }
