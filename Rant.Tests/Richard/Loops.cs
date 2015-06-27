@@ -130,11 +130,60 @@ namespace Rant.Tests.Richard
       }
     }
     return lst;
-  }
+  };
   return bubbleSort([2, 9, 5, 0, 7, 3, 4, 1, 6, 8]);
 }]
 ");
             Assert.AreEqual("0, 1, 2, 3, 4, 5, 6, 7, 8, 9", output.Main);
+        }
+
+        [Test]
+        public void Levenshtein()
+        {
+            var output = rant.Do(@"
+[x:_;ordered]
+[repeach][sep:,\s]
+[@{
+  var levenshtein = (str1, str2) =>
+  {
+      var from = (a, b, func) => {
+        while(a <= b)
+        {
+          func(a++);
+        }
+      };
+      var min = (a, b) => {
+        if (a < b) return a;
+        return b;
+      };
+      var m = str1.length;
+      var n = str2.length;
+      var d = [];
+   
+      if (m == 0) return n;
+      if (n == 0) return m;
+   
+      from(0, m, (x) => d[x] = [x]);
+      from(0, n, (x) => d[0][x] = x);
+      
+      from(1, n, (j) => {
+        from(1, m, (i) => {
+          if (str1[i-1] == str2[j-1])
+          {
+            d[i][j] = d[i - 1][j - 1];
+          }
+          else
+          {
+            d[i][j] = min(d[i-1][j], d[i][j-1], d[i-1][j-1]) + 1;
+          }          
+        });
+      });
+      return d[m][n];
+  };
+  return [levenshtein(""hello"", ""hello""), levenshtein(""abc"", ""abb""), levenshtein(""a"", ""aaa""), levenshtein(""foo"", ""bar"")];
+}]
+");
+            Assert.AreEqual("0, 1, 2, 3", output.Main);
         }
     }
 }
