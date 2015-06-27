@@ -152,9 +152,8 @@ namespace Rant.Tests.Richard
           func(a++);
         }
       };
-      var min = (a, b) => {
-        if (a < b) return a;
-        return b;
+      var min = function(a, b) {
+        if (a < b) { return a; } else { return b; }
       };
       var m = str1.length;
       var n = str2.length;

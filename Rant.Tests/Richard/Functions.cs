@@ -60,5 +60,19 @@ namespace Rant.Tests.Richard
         {
             Assert.AreEqual("true", rant.Do(@"[@{var x = 0; var isDefined = (v) => { v != ???; }; isDefined(x)}]").Main);
         }
+
+        [Test]
+        public void FuncTestMinimum()
+        {
+            var output = rant.Do(@"[x:_;ordered][repeach][sep:,\s]
+[@{
+var min = function(a, b) {
+    if (a < b) return a;
+    return b;
+};
+return [min(15, 8), min(4, 10)];
+}]");
+            Assert.AreEqual("8, 4", output.Main);
+        }
     }
 }
