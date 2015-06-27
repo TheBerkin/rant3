@@ -127,6 +127,8 @@ namespace Rant.Engine.Compiler
                                 break;
                             }
 							var val = Read(ExpressionReadType.BracketValue) as RAExpression;
+                            if (val.Group.Actions.Count == 0)
+                                SyntaxError(val.Range, "Expected value in bracket indexer.");
 							var obj = actions.Last();
 							actions.RemoveAt(actions.Count - 1);
 							actions.Add(new REAObjectProperty(token, val.Group, obj));
@@ -159,7 +161,7 @@ namespace Rant.Engine.Compiler
                             {
                                 var last = actions.Last();
                                 actions.Remove(last);
-                                actions.Add(new REAFunctionCall(token, last, group as REAGroup));
+                                actions.Add(new REAFunctionCall(token, last, group as REAGroup, _sourceName));
                                 break;
                             }
                             // could be a function definition
@@ -227,8 +229,11 @@ namespace Rant.Engine.Compiler
 						Unexpected(token);
 						break;
 					case R.RightCurly:
-						if (type == ExpressionReadType.ExpressionBlock)
-							return new REABlock(token, actions);
+                        if (type == ExpressionReadType.ExpressionBlock)
+                        {
+                            var group = new REAGroup(actions, token, _sourceName);
+                            return new REABlock(token, new List<RantExpressionAction>() { group });
+                        }
 						if (type == ExpressionReadType.KeyValueObjectValue)
 							return new REAGroup(actions, token, _sourceName);
 						Unexpected(token);
@@ -427,6 +432,8 @@ namespace Rant.Engine.Compiler
                             }
                             break;
                         }
+                        if (actions.Any() && actions.Last() is REAVariable)
+                            Unexpected(token);
                         // just a variable
                         actions.Add(new REAVariable(token));
 						break;

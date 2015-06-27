@@ -43,7 +43,7 @@ namespace Rant.Tests.Richard
         [Test]
         public void ListEmptyAsBlock()
         {
-            Assert.AreEqual("", rant.Do(@"[@ [] ]"));
+            Assert.AreEqual("", rant.Do(@"[@ [] ]").Main);
         }
     }
 }

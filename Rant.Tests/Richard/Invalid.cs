@@ -253,5 +253,9 @@ namespace Rant.Tests.Richard
         [Test]
         [ExpectedException(typeof(RantCompilerException))]
         public void EmptyListIndexer() => rant.Do(@"[@ (1, 2, 3)[] ]");
+
+        [Test]
+        [ExpectedException(typeof(RantCompilerException))]
+        public void EmptyFunctionArgument() => rant.Do(@"[@ Math.atan2(,); ]");
     }
 }

@@ -58,7 +58,7 @@ namespace Rant.Tests.Richard
         [Test]
         public void FuncTestIsDefined()
         {
-            Assert.AreEqual("true", rant.Do(@"[@{var x = 0; var isDefined = (v) => { v != ??? }; isDefined(x)}]").Main);
+            Assert.AreEqual("true", rant.Do(@"[@{var x = 0; var isDefined = (v) => { v != ???; }; isDefined(x)}]").Main);
         }
     }
 }

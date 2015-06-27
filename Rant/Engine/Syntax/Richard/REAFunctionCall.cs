@@ -9,7 +9,7 @@ namespace Rant.Engine.Syntax.Richard
 		private RantExpressionAction _function;
 		private RantExpressionAction[] _argValues;
 
-		public REAFunctionCall(Stringe token, RantExpressionAction function, REAGroup args)
+		public REAFunctionCall(Stringe token, RantExpressionAction function, REAGroup args, string _sourceName)
 			: base(token)
 		{
 			_function = function;
@@ -20,10 +20,14 @@ namespace Rant.Engine.Syntax.Richard
 				for (var i = 0; i < args.Actions.Count; i++)
 				{
 					var action = args.Actions[i];
-					if (action is REAArgumentSeperator)
-						argValues.Add(lastArg);
-					else
-						lastArg = action;
+                    if (action is REAArgumentSeperator)
+                    {
+                        if (lastArg == null)
+                            throw new RantCompilerException(_sourceName, Range, "Blank argument in function call.");
+                        argValues.Add(lastArg);
+                    }
+                    else
+                        lastArg = action;
 				}
 				argValues.Add(lastArg);
 			}

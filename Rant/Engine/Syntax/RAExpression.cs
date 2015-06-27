@@ -27,6 +27,9 @@ namespace Rant.Engine.Syntax
                 if (obj is REAList)
                 {
                     var list = (obj as REAList);
+                    // don't make a block from a list with zero items
+                    if (list.Items.Count == 0)
+                        yield break;
                     List<RantAction> actions = new List<RantAction>();
                     foreach (RantExpressionAction action in list.Items)
                     {

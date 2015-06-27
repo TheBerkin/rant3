@@ -38,7 +38,10 @@ namespace Rant.Engine.Syntax.Richard
                 name = Name as string;
             else if (Name is RantExpressionAction)
             {
+                var count = sb.ScriptObjectStack.Count;
                 yield return (Name as RantExpressionAction);
+                if (count >= sb.ScriptObjectStack.Count)
+                    throw new RantRuntimeException(sb.Pattern, Range, "Expected value in bracket indexer.");
                 name = sb.ScriptObjectStack.Pop().ToString();
             }
             else
