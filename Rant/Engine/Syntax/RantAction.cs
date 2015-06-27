@@ -8,13 +8,11 @@ namespace Rant.Engine.Syntax
 	/// </summary>
 	internal abstract class RantAction
 	{
-		private readonly Stringe _range;
-
-		public Stringe Range => _range;
+		internal Stringe Range;
 
 		protected RantAction(Stringe range)
 		{
-			_range = range;
+			Range = range;
 		}
 
 		/// <summary>

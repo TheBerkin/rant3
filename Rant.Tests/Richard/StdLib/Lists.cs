@@ -72,5 +72,11 @@ namespace Rant.Tests.Richard.StdLib
         {
             Assert.AreEqual("4", rant.Do("[@ var x = 1, 2, 3, 4, 5; x.remove(3); x.length ]").Main);
         }
+
+        [Test]
+        public void ListFilter()
+        {
+            Assert.AreEqual("2", rant.Do("[@ x = 1,2,3,4,5,6,7,8,9,10; y = x.filter((i) => { return i % 2 == 0; }); y[0] ]").Main);
+        }
     }
 }

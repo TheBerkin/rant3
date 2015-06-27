@@ -69,6 +69,8 @@ namespace Rant.Engine.Syntax.Richard
                 int index = -1;
                 if (!int.TryParse(name, out index))
                     yield break;
+                yield return (obj as REAList);
+                obj = sb.ScriptObjectStack.Pop();
                 if (index > (obj as REAList).Items.Count - 1)
                     throw new RantRuntimeException(sb.Pattern, Range, "List access is out of bounds.");
                 yield return (obj as REAList).Items[index];

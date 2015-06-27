@@ -223,6 +223,41 @@ namespace Rant.Engine
             yield break;
         }
 
+        [RichardProperty("filter", typeof(REAList))]
+        [RantDescription("Filters the items of this list according to the results of a test function.")]
+        [RichardPropertyArgument("test", "function", Description = "The test function which will be called for every item in this list.")]
+        private static IEnumerator<RantAction> ListFilter(Sandbox sb, RantObject that, RantObject test)
+        {
+            if (!(test.Value is REAFunction))
+                throw new RantRuntimeException(sb.Pattern, null, "Test must be a function.");
+            List<RantExpressionAction> filteredObjects = new List<RantExpressionAction>();
+            var testFunction = (test.Value as REAFunction);
+            foreach (RantExpressionAction action in (that.Value as REAList).Items)
+            {
+                var count = sb.ScriptObjectStack.Count;
+                yield return action;
+                object currentObj = null;
+                if (count < sb.ScriptObjectStack.Count)
+                    currentObj = sb.ScriptObjectStack.Peek();
+                count = sb.ScriptObjectStack.Count;
+                if (testFunction.ArgCount != 1)
+                    throw new RantRuntimeException(sb.Pattern, testFunction.Range, "Expected test function to accept only one argument.");
+                var enumerator = testFunction.Execute(sb);
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+                if (count > sb.ScriptObjectStack.Count)
+                    throw new RantRuntimeException(sb.Pattern, testFunction.Range, "Expected boolean value from test function, got nothing.");
+                var testValue = sb.ScriptObjectStack.Pop();
+                if (!(testValue is bool))
+                    throw new RantRuntimeException(sb.Pattern, testFunction.Range, $"Expected boolean value from test function, got {Util.ScriptingObjectType(testValue)}.");
+                var testBool = (bool)testValue;
+                if (testBool)
+                    filteredObjects.Add(new READummy(testFunction.Range, currentObj));
+            }
+            sb.ScriptObjectStack.Push(new REAList(sb.CurrentAction.Range, filteredObjects, false));
+            yield break;
+        }
+
 
         /* 
         Global Objects
@@ -404,6 +439,20 @@ namespace Rant.Engine
             if (!(num is double))
                 throw new RantRuntimeException(sb.Pattern, null, "N must be a number.");
             sb.ScriptObjectStack.Push(Math.Log10((double)num));
+            yield break;
+        }
+
+        [RichardGlobalObject("Math", "pow", Returns = "number")]
+        [RichardPropertyArgument("base", "number", Description = "The base number of the exponent operation.")]
+        [RichardPropertyArgument("exponent", "number", Description = "The exponent that base will be raised to.")]
+        [RantDescription("Raises base to exponent and returns the resulting number.")]
+        private static IEnumerator<RantExpressionAction> MathPow(Sandbox sb, RantObject that, RantObject baseObj, RantObject expObj)
+        {
+            if (baseObj.Type != RantObjectType.Number)
+                throw new RantRuntimeException(sb.Pattern, null, "Base must be a number.");
+            if (expObj.Type != RantObjectType.Number)
+                throw new RantRuntimeException(sb.Pattern, null, "Exponent must be a number.");
+            sb.ScriptObjectStack.Push(Math.Pow((double)baseObj.Value, (double)expObj.Value));
             yield break;
         }
 

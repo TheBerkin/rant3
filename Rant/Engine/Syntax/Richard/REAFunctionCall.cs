@@ -82,6 +82,8 @@ namespace Rant.Engine.Syntax.Richard
                     throw new RantRuntimeException(sb.Pattern, Range, $"Native function expected {expectedCount} arguments, got {_argValues.Length}.");
                 foreach (RantExpressionAction argAction in _argValues)
                     yield return argAction;
+                // we have to set this for reasons
+                (func as REANativeFunction).Range = this.Range;
                 var iterator = (func as REANativeFunction).Execute(sb);
                 while (iterator.MoveNext())
                     yield return iterator.Current;

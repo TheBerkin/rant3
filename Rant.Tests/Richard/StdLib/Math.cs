@@ -28,6 +28,12 @@ namespace Rant.Tests.Richard.StdLib
             Assert.AreEqual(Math.Atan2(1, 4).ToString(), rant.Do("[@ Math.atan2(1, 4) ]").Main);
         }
 
+        [Test]
+        public void MathPow()
+        {
+            Assert.AreEqual("9", rant.Do("[@ Math.pow(3, 2); ]").Main);
+        }
+
         private static readonly Dictionary<string, Func<double, double>> testCases =
             new Dictionary<string, Func<double, double>>()
         {
