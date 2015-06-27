@@ -163,8 +163,8 @@ namespace Rant.Tests.Richard
       if (m == 0) return n;
       if (n == 0) return m;
    
-      from(0, m, (x) => d[x] = [x]);
-      from(0, n, (x) => d[0][x] = x);
+      from(0, m, (x) => d.push(x));
+      from(0, n, (x) => d[0].push(x));
       
       from(1, n, (j) => {
         from(1, m, (i) => {
