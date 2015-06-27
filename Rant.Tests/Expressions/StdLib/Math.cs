@@ -27,12 +27,6 @@ namespace Rant.Tests.Expressions.StdLib
             Assert.AreEqual(Math.Atan2(1, 4).ToString(), rant.Do("[@ Math.atan2(1, 4) ]").Main);
         }
 
-        [Test]
-        public void MathMod()
-        {
-            Assert.AreEqual((5 % 2).ToString(), rant.Do("[@ Math.mod(5, 2) ]").Main);
-        }
-
         private static readonly Dictionary<string, Func<double, double>> testCases =
             new Dictionary<string, Func<double, double>>()
         {

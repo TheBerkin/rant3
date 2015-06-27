@@ -38,20 +38,23 @@ namespace Rant.Engine
 
         public static string ScriptingObjectType(object obj)
         {
+            object val = obj;
+            if (obj is ObjectModel.RantObject)
+                val = (obj as ObjectModel.RantObject).Value;
             string type = "no";
-            if (obj is string)
+            if (val is string)
                 type = "string";
-            if (obj is double)
+            if (val is double)
                 type = "number";
-            if (obj is REAObject)
+            if (val is REAObject)
                 type = "object";
-            if (obj is REAList)
+            if (val is REAList)
                 type = "list";
-            if (obj is REAFunction)
+            if (val is REAFunction)
                 type = "function";
-            if (obj is REAPatternString)
+            if (val is REAPatternString)
                 type = "pattern string";
-            if (obj is bool)
+            if (val is bool)
                 type = "bool";
             if (obj is ObjectModel.RantObject && (obj as ObjectModel.RantObject).Type == ObjectModel.RantObjectType.Undefined)
                 type = "undefined";

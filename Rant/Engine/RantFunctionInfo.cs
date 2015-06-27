@@ -29,6 +29,8 @@ namespace Rant.Engine
 
         public IEnumerable<IRantParameter> GetParameters() => _params;
 
+        public bool TreatAsRichardFunction = false;
+
         public RantFunctionInfo(string name, string description, MethodInfo method)
         {
             // Sanity checks

@@ -47,9 +47,18 @@ namespace Rant.Engine.Syntax.Expressions
             var obj = sb.ScriptObjectStack.Pop();
             if (RichardFunctions.HasProperty(obj.GetType(), name))
             {
-                var enumerator = RichardFunctions.GetProperty(obj.GetType(), name).Invoke(sb, new object[] { new RantObject(obj) });
-                while (enumerator.MoveNext())
-                    yield return enumerator.Current;
+                var prop = RichardFunctions.GetProperty(obj.GetType(), name);
+                // bare property, like string.length
+                if (!prop.TreatAsRichardFunction)
+                {
+                    var enumerator = prop.Invoke(sb, new object[] { new RantObject(obj) });
+                    while (enumerator.MoveNext())
+                        yield return enumerator.Current;
+                }
+                // function property, like list.push()
+                else
+                    // arg count is param count without the "that" property
+                    yield return new REANativeFunction(Range, prop.ParamCount - 1, prop) { That = new RantObject(obj) };
                 yield break;
             }
             else if (obj is REAList)

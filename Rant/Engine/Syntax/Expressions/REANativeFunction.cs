@@ -9,15 +9,15 @@ namespace Rant.Engine.Syntax.Expressions
     {
         private int _argCount;
         public RantObject That;
-        private Func<RantObject, Sandbox, object[], IEnumerator<RantExpressionAction>> _function;
+        private RantFunctionInfo _function;
 
         public int ArgCount => _argCount;
 
-        public REANativeFunction(Stringe token, int argCount, Func<RantObject, Sandbox, object[], IEnumerator<RantExpressionAction>> function)
+        public REANativeFunction(Stringe token, int argCount, RantFunctionInfo info)
             : base(token)
         {
             _argCount = argCount;
-            _function = function;
+            _function = info;
         }
 
         public override object GetValue(Sandbox sb)
@@ -29,15 +29,16 @@ namespace Rant.Engine.Syntax.Expressions
         {
             List<object> args = new List<object>();
             for (var i = 0; i < _argCount; i++)
-                args.Add(sb.ScriptObjectStack.Pop());
+                args.Add(new RantObject(sb.ScriptObjectStack.Pop()));
+            args.Add(That);
             args.Reverse();
-            IEnumerator<RantExpressionAction> iterator = null;
+            IEnumerator<RantAction> iterator = null;
             while (true)
             {
                 try
                 {
                     if(iterator == null)
-                        iterator = _function.Invoke(That, sb, args.ToArray());
+                        iterator = _function.Invoke(sb, args.ToArray());
                     if (!iterator.MoveNext())
                         break;
                 }
@@ -47,7 +48,7 @@ namespace Rant.Engine.Syntax.Expressions
                     e.SetToken(Range);
                     throw e;
                 }
-                yield return iterator.Current;
+                yield return iterator.Current as RantExpressionAction;
             }
         }
 
