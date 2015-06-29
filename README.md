@@ -23,7 +23,7 @@ Rant is a language for procedurally generating text. It combines a markup langua
 * Dictionary queries
 * Automation for capitalization, rhyming, and indefinite articles
 * Multiple output support
-* Object-oriented features
+* Richard, an experimental embedded scripting language
 * Probability modifiers
 * Loops, conditionals, and subroutines
 * Package loader for easy resource management
