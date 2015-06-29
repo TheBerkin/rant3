@@ -15,7 +15,7 @@
 
 ##What is Rant?
 
-Rant is a language for procedurally generating text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for adding rich variations to your text. The ultimate goal of Rant is to augment human creativity with the boundless potential of randomness, helping content producers consider their next ideas as not just static concepts, but seeds of countless possibilities.
+Rant is a language for procedurally generating text, written in C#. It combines a markup language with functional and imperative programming concepts to deliver a powerful, but easy-to-use tool for adding rich variations to your text. The ultimate goal of Rant is to augment your creativity with the boundless potential of randomness, helping you consider your next great idea as not just a static concept, but a seed for countless possibilities.
 
 [berkin.me/rant](http://berkin.me/rant)
 
