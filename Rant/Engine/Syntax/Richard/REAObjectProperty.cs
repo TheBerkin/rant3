@@ -72,8 +72,9 @@ namespace Rant.Engine.Syntax.Richard
                 yield return (obj as REAList);
                 obj = sb.ScriptObjectStack.Pop();
                 if (index > (obj as REAList).Items.Count - 1)
-                    throw new RantRuntimeException(sb.Pattern, Range, "List access is out of bounds.");
-                yield return (obj as REAList).Items[index];
+                    sb.ScriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
+                else
+                    yield return (obj as REAList).Items[index];
                 yield break;
             }
             else if (obj is REAObject)
@@ -89,8 +90,9 @@ namespace Rant.Engine.Syntax.Richard
                 if (!int.TryParse(name, out index))
                     yield break;
                 if ((obj as string).Length <= index)
-                    throw new RantRuntimeException(sb.Pattern, Range, "String character access is out of bounds.");
-                sb.ScriptObjectStack.Push((obj as string)[index].ToString());
+                    sb.ScriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
+                else
+                    sb.ScriptObjectStack.Push((obj as string)[index].ToString());
                 yield break;
             }
             if (obj == null || (obj is RantObject && (obj as RantObject).Value == null))

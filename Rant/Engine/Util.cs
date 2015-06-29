@@ -60,8 +60,19 @@ namespace Rant.Engine
                 type = "undefined";
             return type;
         }
+        
+        public static RantExpressionAction ConvertToAction(Stringe token, object value)
+        {
+            if (value is double)
+                return new REANumber((double)value, token);
+            if (value is string)
+                return new REAString((string)value, token);
+            if (value is bool)
+                return new REABoolean(token, (bool)value);
+            return value as RantExpressionAction;
+        }
 
-		private static void CacheEnum(Type type)
+        private static void CacheEnum(Type type)
 		{
 			if (!type.IsEnum || _enumTable.ContainsKey(type)) return;
 			_enumTable[type] = new HashSet<string>(Enum.GetNames(type));

@@ -46,17 +46,6 @@ namespace Rant.Engine.Syntax.Richard
             return new RantObject(value);
         }
 
-        private RantExpressionAction ConvertToAction(Stringe token, object value)
-        {
-            if (value is double)
-                return new REANumber((double)value, token);
-            if (value is string)
-                return new REAString((string)value, token);
-            if (value is bool)
-                return new REABoolean(token, (bool)value);
-            return value as RantExpressionAction;
-        }
-
         public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			string name = null;
@@ -83,8 +72,8 @@ namespace Rant.Engine.Syntax.Richard
                     value = sb.ScriptObjectStack.Pop();
                     if (Operator != null && sb.Objects[name] != null)
                     {
-                        Operator.LeftSide = ConvertToAction(Range, sb.Objects[name].Value);
-                        Operator.RightSide = ConvertToAction(Range, value);
+                        Operator.LeftSide = Util.ConvertToAction(Range, sb.Objects[name].Value);
+                        Operator.RightSide = Util.ConvertToAction(Range, value);
                         yield return Operator;
                         value = sb.ScriptObjectStack.Pop();
                     }
@@ -102,7 +91,7 @@ namespace Rant.Engine.Syntax.Richard
                     Operator.LeftSide = (obj as REAObject).Values[name];
                     Operator.RightSide = _value;
                     yield return Operator;
-                    value = ConvertToAction(Range, sb.ScriptObjectStack.Pop());
+                    value = Util.ConvertToAction(Range, sb.ScriptObjectStack.Pop());
                 }
                 (obj as REAObject).Values[name] = value;
             }
@@ -112,14 +101,22 @@ namespace Rant.Engine.Syntax.Richard
                 if (!int.TryParse(name, out index))
                     yield break;
                 RantExpressionAction value = _value;
+                yield return _value;
+                value = Util.ConvertToAction(Range, sb.ScriptObjectStack.Pop());
                 if (Operator != null && (obj as REAList).Items[index] != null)
                 {
                     Operator.LeftSide = (obj as REAList).Items[index];
                     Operator.RightSide = _value;
                     yield return Operator;
-                    value = ConvertToAction(Range, sb.ScriptObjectStack.Pop());
+                    value = Util.ConvertToAction(Range, sb.ScriptObjectStack.Pop());
                 }
-                (obj as REAList).Items[index] = value;
+                (obj as REAList).ItemsChanged = true;
+                if ((obj as REAList).InternalItems.Count <= index)
+                    for (var i = (obj as REAList).InternalItems.Count - 1; i < index + 1; i++)
+                        (obj as REAList).InternalItems.Add(null);
+                (obj as REAList).InternalItems[index] = value;
+                yield return (obj as REAList);
+                obj = sb.ScriptObjectStack.Pop();
             }
 			yield break;
 		}

@@ -21,7 +21,7 @@ namespace Rant.Engine.Syntax.Richard.Operators
 
 			if (leftVal is double && rightVal is double)
 				return (_orEqual ? (double)leftVal <= (double)rightVal : (double)leftVal < (double)rightVal);
-			throw new RantRuntimeException(sb.Pattern, Range, "Invalid " + (leftVal is double ? "left hand" : "right hand") + " side of comparison operator.");
+			throw new RantRuntimeException(sb.Pattern, Range, "Invalid " + (leftVal is double ? "right hand" : "left hand") + " side of comparison operator.");
 		}
 	}
 }

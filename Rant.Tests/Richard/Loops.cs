@@ -162,8 +162,8 @@ namespace Rant.Tests.Richard
       if (m == 0) return n;
       if (n == 0) return m;
    
-      from(0, m, (x) => d.push(x));
-      from(0, n, (x) => d[0].push(x));
+      from(0, m, (x) => { d[x] = [x]; });
+      from(0, n, (x) => { d[0][x] = x; });
       
       from(1, n, (j) => {
         from(1, m, (i) => {
@@ -173,7 +173,7 @@ namespace Rant.Tests.Richard
           }
           else
           {
-            d[i][j] = min(d[i-1][j], d[i][j-1], d[i-1][j-1]) + 1;
+            d[i][j] = min(min(d[i-1][j], d[i][j-1]), d[i-1][j-1]) + 1;
           }          
         });
       });

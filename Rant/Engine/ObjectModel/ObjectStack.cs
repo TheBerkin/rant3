@@ -60,11 +60,6 @@ namespace Rant.Engine.ObjectModel
             }
         }
 
-        public void RemoveLocal(string name)
-        {
-            _locals.Remove(name);
-        }
-
         public void EnterScope()
         {
             if (++_level >= _scopes.Count)

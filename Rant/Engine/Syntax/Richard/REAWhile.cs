@@ -33,7 +33,9 @@ namespace Rant.Engine.Syntax.Richard
                     throw new RantRuntimeException(sb.Pattern, Range, "Expected boolean value in while statement.");
                 if (!(bool)result)
                     yield break;
+                sb.Objects.EnterScope();
                 yield return _body;
+                sb.Objects.ExitScope();
             }
         }
     }

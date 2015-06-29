@@ -42,7 +42,6 @@ namespace Rant.Engine.Syntax.Richard
                     sb.Objects.EnterScope();
                     sb.Objects[_indexName] = new ObjectModel.RantObject(i);
                     yield return _body;
-                    sb.Objects.RemoveLocal(_indexName);
                     sb.Objects.ExitScope();
                 }
                 yield break;
@@ -55,7 +54,6 @@ namespace Rant.Engine.Syntax.Richard
                     sb.Objects.EnterScope();
                     sb.Objects[_indexName] = new ObjectModel.RantObject(key);
                     yield return _body;
-                    sb.Objects.RemoveLocal(_indexName);
                     sb.Objects.ExitScope();
                 }
                 yield break;

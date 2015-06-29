@@ -74,25 +74,25 @@ namespace Rant.Tests.Richard
         [Test]
         public void PrefixIncrementOperator()
         {
-            Assert.AreEqual("6", rant.Do("[@ x = 5; ++x; x ]").Main);
+            Assert.AreEqual("6", rant.Do("[@ x = 5; ++x ]").Main);
         }
 
         [Test]
         public void PrefixDecrementOperator()
         {
-            Assert.AreEqual("4", rant.Do("[@ x = 5; --x; x ]").Main);
+            Assert.AreEqual("4", rant.Do("[@ x = 5; --x ]").Main);
         }
 
         [Test]
         public void PostfixIncrementOperator()
         {
-            Assert.AreEqual("6", rant.Do("[@ x = 5; x++ ]").Main);
+            Assert.AreEqual("6", rant.Do("[@ x = 5; x++; x ]").Main);
         }
 
         [Test]
         public void PostfixDecrementOperator()
         {
-            Assert.AreEqual("4", rant.Do("[@ x = 5; x-- ]").Main);
+            Assert.AreEqual("4", rant.Do("[@ x = 5; x--; x ]").Main);
         }
 
         [Test]

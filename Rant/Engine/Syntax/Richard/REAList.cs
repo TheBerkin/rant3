@@ -6,11 +6,25 @@ namespace Rant.Engine.Syntax.Richard
 {
 	internal class REAList : RantExpressionAction
 	{
-        public List<RantExpressionAction> Items;
+        public List<RantExpressionAction> Items
+        {
+            get
+            {
+                return _realItems;
+            }
+            set
+            {
+                _realItems = value;
+                ItemsChanged = true;
+            }
+        }
 
 		public override int GetHashCode() => Items.GetHashCode();
+        public List<RantExpressionAction> InternalItems { get { return _items; } set { _items = value; } }
+        public bool ItemsChanged = false;
 
-		private List<RantExpressionAction> _items;
+        private List<RantExpressionAction> _items;
+        private List<RantExpressionAction> _realItems;
 		private bool _concatSyntax = true;
 
 		public REAList(Stringe origin, List<RantExpressionAction> items, bool concatSyntax = true)
@@ -28,30 +42,26 @@ namespace Rant.Engine.Syntax.Richard
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			if (Items == null)
+			if (Items == null || ItemsChanged)
 			{
-				if (!_concatSyntax)
-					Items = _items;
-				else
+				List<RantExpressionAction> tempItems = new List<RantExpressionAction>();
+				for (var i = 0; i < _items.Count; i++)
 				{
-					List<RantExpressionAction> tempItems = new List<RantExpressionAction>();
-					for (var i = 0; i < _items.Count; i++)
+					var item = _items[i];
+					if (item is RantExpressionAction)
 					{
-						var item = _items[i];
-						if (item is REAVariable)
-						{
-							yield return item;
-							var val = sb.ScriptObjectStack.Pop();
-							if (val is REAList)
-								tempItems.AddRange((val as REAList).Items);
-							else
-								tempItems.Add(item);
-						}
+						yield return item;
+						var val = sb.ScriptObjectStack.Pop();
+						if (val is REAList && _concatSyntax)
+							tempItems.AddRange((val as REAList).Items);
 						else
-							tempItems.Add(item);
+							tempItems.Add(Util.ConvertToAction(item.Range, val));
 					}
-					Items = tempItems;
-				}
+					else
+						tempItems.Add(item);
+                }
+                Items = tempItems;
+                ItemsChanged = false;
 			}
 			yield break;
 		}

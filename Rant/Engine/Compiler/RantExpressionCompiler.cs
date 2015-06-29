@@ -164,7 +164,7 @@ namespace Rant.Engine.Compiler
                                 actions.Add(new REAFunctionCall(token, last, group as REAGroup, _sourceName));
                                 break;
                             }
-                            // could be a function definition
+                            // could be a function definition (lambda)
                             if (_reader.PeekLooseToken().ID == R.Equal)
                             {
                                 _reader.ReadLooseToken();
@@ -172,6 +172,8 @@ namespace Rant.Engine.Compiler
                                 var body = Read(ExpressionReadType.FunctionBody);
                                 actions.Add(new REAFunction(token, (body as RAExpression).Group, group as REAGroup));
                                 if (type == ExpressionReadType.VariableValue)
+                                    goto done;
+                                if (_reader.PrevLooseToken.ID == R.RightParen && type == ExpressionReadType.ExpressionGroup)
                                     goto done;
                                 break;
                             }
@@ -184,7 +186,11 @@ namespace Rant.Engine.Compiler
                         }
 						break;
 					case R.RightParen:
-                        if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue || type == ExpressionReadType.ExpressionGroupNoList)
+                        if (
+                            type == ExpressionReadType.ExpressionGroup || 
+                            type == ExpressionReadType.VariableValue || 
+                            type == ExpressionReadType.ExpressionGroupNoList ||
+                            type == ExpressionReadType.FunctionBody)
                             goto done;
 						break;
 					case R.LeftCurly:
@@ -370,13 +376,15 @@ namespace Rant.Engine.Compiler
                                         if (_reader.PeekLooseToken().ID != R.Semicolon)
                                             expr = (Read(ExpressionReadType.VariableValue) as RAExpression).Group;
                                         actions.Add(new REAReturn(token, expr));
-									}
+                                        if (_reader.PrevLooseToken.ID == R.Semicolon && type == ExpressionReadType.FunctionBody)
+                                            return new RAExpression(actions, token, _sourceName);
+                                    }
 									break;
                                 case "while":
                                     {
                                         if (type != ExpressionReadType.Expression && type != ExpressionReadType.ExpressionBlock)
                                             Unexpected(token);
-                                        _reader.Read(R.LeftParen, "while loop test");
+                                        _reader.ReadLoose(R.LeftParen, "while loop test");
                                         var test = (Read(ExpressionReadType.ExpressionGroupNoList) as RAExpression).Group;
                                         var body = (Read(ExpressionReadType.FunctionBody) as RAExpression).Group;
                                         actions.Add(new REAWhile(token, test, body));
@@ -436,6 +444,8 @@ namespace Rant.Engine.Compiler
                             Unexpected(token);
                         // just a variable
                         actions.Add(new REAVariable(token));
+                        if (type == ExpressionReadType.InvertValue)
+                            return new RAExpression(actions, token, _sourceName);
 						break;
 					// binary number operators
 					case R.Plus:
@@ -487,7 +497,7 @@ namespace Rant.Engine.Compiler
                         }
 
                         // could be negative sign on number - is there a digit directly following this?
-                        if (char.IsDigit(_reader.PeekToken().Value[0]) && _reader.PrevToken.ID != R.Whitespace)
+                        if (!actions.Any() && char.IsDigit(_reader.PeekToken().Value[0]) && _reader.PrevToken.ID != R.Whitespace)
 						{
 							double number;
 							if (!ReadNumber(token, out number))
@@ -609,7 +619,11 @@ namespace Rant.Engine.Compiler
                         {
                             var lastAction = actions.Last() as REAObjectProperty;
                             var value = Read(ExpressionReadType.VariableValue) as RAExpression;
-                            var assignment = new REAObjectPropertyAssignment(lastAction.Range, lastAction.Object, value.Group);
+                            REAObjectPropertyAssignment assignment = null;
+                            if (lastAction.Name is RantExpressionAction)
+                                assignment = new REAObjectPropertyAssignment(lastAction.Range, lastAction.Name as RantExpressionAction, lastAction.Object, value.Group);
+                            else
+                                assignment = new REAObjectPropertyAssignment(lastAction.Range, lastAction.Object, value.Group);
                             assignment.Operator = op;
                             actions.Add(assignment);
                             break;
@@ -652,9 +666,9 @@ namespace Rant.Engine.Compiler
 
             done:
 
-            if (actions.Any(x => x is REAArgumentSeperator) &&
+            if ((actions.Any(x => x is REAArgumentSeperator) &&
                 (type == ExpressionReadType.Expression ||
-                type == ExpressionReadType.VariableValue || type == ExpressionReadType.List))
+                type == ExpressionReadType.VariableValue) || type == ExpressionReadType.List))
             {
                 // lists
                 var list = CreateListFromActions(type, actions);
@@ -688,11 +702,20 @@ namespace Rant.Engine.Compiler
             {
                 if (reAction is REAArgumentSeperator)
                 {
+                    if (lastItem == null)
+                        Unexpected(reAction.Range);
                     listActions.Add(lastItem);
                     lastItem = null;
                 }
                 else
                     lastItem = reAction;
+            }
+            if (lastItem == null)
+            {
+                if (actions.Any() && actions.Where(x => x is REAArgumentSeperator).Any())
+                    Unexpected(actions.Where(x => x is REAArgumentSeperator).Last().Range);
+                else
+                    SyntaxError(actions.First().Range, "Blank item in list.");
             }
             listActions.Add(lastItem);
             return new REAList(actions.First().Range, listActions, type != ExpressionReadType.List);

@@ -257,6 +257,9 @@ namespace Rant.Engine
 						throw new RantRuntimeException(pattern, action.Current.Range,
 							$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 
+                    if (action.Current == null)
+                        break;
+
                     // i'm sorry to put this here but it's the only way to do it!!
                     if (action.Current is REABreak)
                     {

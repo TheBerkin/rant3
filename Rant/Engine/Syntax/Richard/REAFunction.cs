@@ -44,14 +44,18 @@ namespace Rant.Engine.Syntax.Richard
 
 		public IEnumerator<RantAction> Execute(Sandbox sb)
 		{
-			sb.Objects.EnterScope();
+            // save old locals with the same name
+            Dictionary<string, RantObject> oldLocals = new Dictionary<string, RantObject>();
+            for (var i = 0; i < _argNames.Length; i++)
+                oldLocals[_argNames[i]] = sb.Objects[_argNames[i]];
+            sb.Objects.EnterScope();
 			for (var i = 0; i < _argNames.Length; i++)
 				sb.Objects[_argNames[i]] = new RantObject(sb.ScriptObjectStack.Pop());
 			yield return _body;
-            for (var i = 0; i < _argNames.Length; i++)
-                sb.Objects.RemoveLocal(_argNames[i]);
 			sb.Objects.ExitScope();
-			yield break;
+            for (var i = 0; i < _argNames.Length; i++)
+                sb.Objects[_argNames[i]] = oldLocals[_argNames[i]];
+            yield break;
 		}
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)

@@ -128,7 +128,8 @@ namespace Rant.Engine
         [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
         private static IEnumerator<RantAction> ListPush(Sandbox sb, RantObject that, RantObject obj)
         {
-            (that.Value as REAList).Items.Add(new READummy(null, obj.Value));
+            (that.Value as REAList).InternalItems.Add(new READummy(null, obj.Value));
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
@@ -137,7 +138,8 @@ namespace Rant.Engine
         private static IEnumerator<RantAction> ListPop(Sandbox sb, RantObject that)
         {
             var last = (that.Value as REAList).Items.Last();
-            (that.Value as REAList).Items.RemoveAt((that.Value as REAList).Items.Count - 1);
+            (that.Value as REAList).InternalItems.RemoveAt((that.Value as REAList).Items.Count - 1);
+            (that.Value as REAList).ItemsChanged = true;
             yield return last;
         }
 
@@ -146,7 +148,8 @@ namespace Rant.Engine
         [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
         private static IEnumerator<RantAction> ListPushFront(Sandbox sb, RantObject that, RantObject obj)
         {
-            (that.Value as REAList).Items.Insert(0, new READummy(null, obj.Value));
+            (that.Value as REAList).InternalItems.Insert(0, new READummy(null, obj.Value));
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
@@ -155,7 +158,8 @@ namespace Rant.Engine
         private static IEnumerator<RantAction> ListPopFront(Sandbox sb, RantObject that)
         {
             var first = (that.Value as REAList).Items.First();
-            (that.Value as REAList).Items.RemoveAt(0);
+            (that.Value as REAList).InternalItems.RemoveAt(0);
+            (that.Value as REAList).ItemsChanged = true;
             yield return first;
         }
 
@@ -173,10 +177,11 @@ namespace Rant.Engine
         private static IEnumerator<RantAction> ListFill(Sandbox sb, RantObject that, RantObject obj)
         {
             var fillValue = obj.Value;
-            (that.Value as REAList).Items =
+            (that.Value as REAList).InternalItems =
                 (that.Value as REAList).Items.Select(
                     x => (RantExpressionAction)new READummy(null, fillValue)
                 ).ToList();
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
@@ -184,7 +189,8 @@ namespace Rant.Engine
         [RantDescription("Reverses this list in place.")]
         private static IEnumerator<RantAction> ListReverse(Sandbox sb, RantObject that)
         {
-            (that.Value as REAList).Items.Reverse();
+            (that.Value as REAList).InternalItems.Reverse();
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
@@ -193,7 +199,9 @@ namespace Rant.Engine
         [RichardPropertyArgument("seperator", "string", Description = "The string to seperate each item of the list.")]
         private static IEnumerator<RantAction> ListJoin(Sandbox sb, RantObject that, RantObject obj)
         {
-            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (that.Value as REAList).Items));
+            yield return (that.Value as REAList);
+            var list = sb.ScriptObjectStack.Pop();
+            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (list as REAList).Items));
             yield break;
         }
 
@@ -207,7 +215,8 @@ namespace Rant.Engine
             var position = pos.Value;
             if (!(position is double))
                 throw new RantRuntimeException(sb.Pattern, null, "Position must be a number.");
-            (that.Value as REAList).Items.Insert(Convert.ToInt32(position), new READummy(null, obj));
+            (that.Value as REAList).InternalItems.Insert(Convert.ToInt32(position), new READummy(null, obj));
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
@@ -219,7 +228,8 @@ namespace Rant.Engine
             var position = pos.Value;
             if (!(position is double))
                 throw new RantRuntimeException(sb.Pattern, null, "Position must be a number.");
-            (that.Value as REAList).Items.RemoveAt(Convert.ToInt32(position));
+            (that.Value as REAList).InternalItems.RemoveAt(Convert.ToInt32(position));
+            (that.Value as REAList).ItemsChanged = true;
             yield break;
         }
 
