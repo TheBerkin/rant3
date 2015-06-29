@@ -102,7 +102,7 @@ namespace Rant.Vocabulary
         }
 
         /// <summary>
-        /// Loads all dictionary (.dic) files from the specified directory and returns a Dictionary object that contains the loaded data.
+        /// Loads all dictionary (.dic) files from the specified directory and returns a RantDictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directory">The directory from which to load dictionaries.</param>
         /// <param name="mergeBehavior">The merging strategy to employ.</param>
@@ -113,7 +113,7 @@ namespace Rant.Vocabulary
         }
 
         /// <summary>
-        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
+        /// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directories">The directories from which to load dictionaries.</param>
         /// <returns></returns>
@@ -123,7 +123,7 @@ namespace Rant.Vocabulary
         }
 
         /// <summary>
-        /// Loads all dictionary (.dic) files from the specified directories and returns a Dictionary object that contains the loaded data.
+        /// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the loaded data.
         /// </summary>
         /// <param name="directories">The directories from which to load dictionaries.</param>
         /// <param name="mergeBehavior">The merging strategy to employ.</param>
@@ -134,7 +134,7 @@ namespace Rant.Vocabulary
         }
 
         /// <summary>
-        /// Queries the Dictionary according to the specified criteria and returns a random match.
+        /// Queries the RantDictionary according to the specified criteria and returns a random match.
         /// </summary>
         /// <param name="rng">The random number generator to randomize the match with.</param>
         /// <param name="query">The search criteria to use.</param>
