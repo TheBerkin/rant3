@@ -258,5 +258,13 @@ namespace Rant.Engine
 
         
         public bool SkipSpace() => TakeAll(R.Whitespace);
+
+        public Token<R> this[int pos]
+        {
+            get
+            {
+                return _tokens[pos];
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace Rant.Engine.Syntax.Richard
         private RantFunctionInfo _function;
 
         public int ArgCount => _argCount;
+        public RantFunctionInfo Function => _function;
 
         public REANativeFunction(Stringe token, int argCount, RantFunctionInfo info)
             : base(token)

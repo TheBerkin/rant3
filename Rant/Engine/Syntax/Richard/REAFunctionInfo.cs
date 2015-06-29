@@ -10,6 +10,8 @@ namespace Rant.Engine.Syntax.Richard
     {
         RantFunctionInfo _function;
 
+        public RantFunctionInfo Function => _function;
+
         public REAFunctionInfo(Stringe token, RantFunctionInfo function)
              : base(token)
         {

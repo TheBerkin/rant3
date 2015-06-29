@@ -18,8 +18,12 @@ namespace Rant.Engine
     {
         private readonly Witchcraft _delegate;
         private readonly RantParameter[] _params;
+        private readonly ParameterInfo[] _rawParams;
+        private readonly MethodInfo _rawMethod;
 
         public RantParameter[] Parameters => _params;
+
+        public ParameterInfo[] RawParameters => _rawParams;
 
         public string Name { get; }
         public string Description { get; }
@@ -30,12 +34,15 @@ namespace Rant.Engine
         public IEnumerable<IRantParameter> GetParameters() => _params;
 
         public bool TreatAsRichardFunction = false;
+        public MethodInfo RawMethod => _rawMethod;
 
         public RantFunctionInfo(string name, string description, MethodInfo method)
         {
             // Sanity checks
             if (method == null) throw new ArgumentNullException(nameof(method));
             if (!method.IsStatic) throw new ArgumentException($"({method.Name}) Method is not static.");
+
+            _rawMethod = method;
 
             var parameters = method.GetParameters();
             if (!parameters.Any())
@@ -45,6 +52,7 @@ namespace Rant.Engine
 
             // Sort out the parameter types for the function
             _params = new RantParameter[parameters.Length - 1];
+            _rawParams = parameters;
             Type type;
             RantParameterType rantType;
             for (int i = 1; i < parameters.Length; i++)

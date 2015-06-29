@@ -96,6 +96,20 @@ namespace Rant.Engine
             return _globalObjects[name];
         }
 
+        public static IEnumerable<Type> GetPropertyTypes() => _properties.Keys;
+        public static IEnumerable<string> GetProperties(Type type) => _properties[type].Keys;
+        public static RantFunctionInfo GetPropertyFunction(Type type, string name) => _properties[type][name];
+
+        public static IEnumerable<string> GetGlobalObjects() => _globalObjects.Keys;
+        public static IEnumerable<string> GetObjectProperties(string name) => _globalObjects[name].Values.Keys;
+        public static RantFunctionInfo GetObjectProperty(string name, string prop)
+        {
+            var property = _globalObjects[name].Values[prop];
+            if (property is REAFunctionInfo)
+                return (property as REAFunctionInfo).Function;
+            return (property as REANativeFunction).Function;
+        }
+
         // String properties
         [RichardProperty("length", typeof(string), Returns = "number", IsFunction = false)]
         [RantDescription("Returns the length of this string.")]
@@ -125,8 +139,9 @@ namespace Rant.Engine
 
         [RichardProperty("push", typeof(REAList))]
         [RantDescription("Pushes the given item onto the end of this list.")]
-        [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
-        private static IEnumerator<RantAction> ListPush(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantAction> ListPush(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
+            RantObject obj)
         {
             (that.Value as REAList).InternalItems.Add(new READummy(null, obj.Value));
             (that.Value as REAList).ItemsChanged = true;
@@ -145,8 +160,9 @@ namespace Rant.Engine
 
         [RichardProperty("pushFront", typeof(REAList))]
         [RantDescription("Pushes the given item onto the front of this list.")]
-        [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
-        private static IEnumerator<RantAction> ListPushFront(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantAction> ListPushFront(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
+            RantObject obj)
         {
             (that.Value as REAList).InternalItems.Insert(0, new READummy(null, obj.Value));
             (that.Value as REAList).ItemsChanged = true;
@@ -173,8 +189,9 @@ namespace Rant.Engine
 
         [RichardProperty("fill", typeof(REAList))]
         [RantDescription("Fills every item of the list with a specified value.")]
-        [RichardPropertyArgument("value", "any", Description = "The value to fill the list with.")]
-        private static IEnumerator<RantAction> ListFill(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantAction> ListFill(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("value", "any", Description = "The value to fill the list with.")]
+            RantObject obj)
         {
             var fillValue = obj.Value;
             (that.Value as REAList).InternalItems =
@@ -196,8 +213,9 @@ namespace Rant.Engine
 
         [RichardProperty("join", typeof(REAList), Returns = "string")]
         [RantDescription("Returns the list items joined together by a specified string.")]
-        [RichardPropertyArgument("seperator", "string", Description = "The string to seperate each item of the list.")]
-        private static IEnumerator<RantAction> ListJoin(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantAction> ListJoin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("seperator", "string", Description = "The string to seperate each item of the list.")]
+            RantObject obj)
         {
             yield return (that.Value as REAList);
             var list = sb.ScriptObjectStack.Pop();
@@ -207,9 +225,11 @@ namespace Rant.Engine
 
         [RichardProperty("insert", typeof(REAList))]
         [RantDescription("Inserts an item into a specified position in this list.")]
-        [RichardPropertyArgument("item", "any", Description = "The item to insert into this list.")]
-        [RichardPropertyArgument("position", "number", Description = "The position in this list to insert the item into.")]
-        private static IEnumerator<RantAction> ListInsert(Sandbox sb, RantObject that, RantObject item, RantObject pos)
+        private static IEnumerator<RantAction> ListInsert(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("item", "any", Description = "The item to insert into this list.")]
+            RantObject item,
+            [RichardPropertyArgument("position", "number", Description = "The position in this list to insert the item into.")]
+            RantObject pos)
         {
             var obj = item.Value;
             var position = pos.Value;
@@ -222,8 +242,9 @@ namespace Rant.Engine
 
         [RichardProperty("remove", typeof(REAList))]
         [RantDescription("Removes an item from a specified position in this list.")]
-        [RichardPropertyArgument("position", "number", Description = "The position in this list to remove the item from.")]
-        private static IEnumerator<RantAction> ListRemove(Sandbox sb, RantObject that, RantObject pos)
+        private static IEnumerator<RantAction> ListRemove(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("position", "number", Description = "The position in this list to remove the item from.")]
+            RantObject pos)
         {
             var position = pos.Value;
             if (!(position is double))
@@ -235,8 +256,9 @@ namespace Rant.Engine
 
         [RichardProperty("filter", typeof(REAList))]
         [RantDescription("Filters the items of this list according to the results of a test function.")]
-        [RichardPropertyArgument("test", "function", Description = "The test function which will be called for every item in this list.")]
-        private static IEnumerator<RantAction> ListFilter(Sandbox sb, RantObject that, RantObject test)
+        private static IEnumerator<RantAction> ListFilter(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("test", "function", Description = "The test function which will be called for every item in this list.")]
+            RantObject test)
         {
             if (!(test.Value is REAFunction))
                 throw new RantRuntimeException(sb.Pattern, null, "Test must be a function.");
@@ -274,9 +296,10 @@ namespace Rant.Engine
         */
 
         [RichardGlobalObject("Convert", "toString", Returns = "string")]
-        [RichardPropertyArgument("object", "any", Description = "The object to convert to a string.")]
         [RantDescription("Converts the specified object to a string.")]
-        private static IEnumerator<RantExpressionAction> ConvertToString(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> ConvertToString(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("object", "any", Description = "The object to convert to a string.")]
+            RantObject obj)
         {
             sb.ScriptObjectStack.Push(obj.ToString());
             yield break;
@@ -284,18 +307,20 @@ namespace Rant.Engine
 
 
         [RichardGlobalObject("Output", "print")]
-        [RichardPropertyArgument("object", "any", Description = "The object to print.")]
         [RantDescription("Prints the provided object, cast to a string.")]
-        private static IEnumerator<RantExpressionAction> OutputPrint(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> OutputPrint(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("object", "any", Description = "The object to print.")]
+            RantObject obj)
         {
             sb.Print(obj.ToString());
             yield break;
         }
 
         [RichardGlobalObject("Type", "get", Returns = "string")]
-        [RichardPropertyArgument("object", "any", Description = "The object whose type will be returned.")]
         [RantDescription("Checks the type of a provided object and returns it.")]
-        private static IEnumerator<RantExpressionAction> TypeGet(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> TypeGet(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("object", "any", Description = "The object whose type will be returned.")]
+            RantObject obj)
         {
             string type = Util.ScriptingObjectType(obj);
             sb.ScriptObjectStack.Push(type);
@@ -318,9 +343,10 @@ namespace Rant.Engine
             yield break;
         }
         [RichardGlobalObject("Math", "acos", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns acos(n).")]
-        private static IEnumerator<RantExpressionAction> MathAcos(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathAcos(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -330,9 +356,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "asin", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns asin(n).")]
-        private static IEnumerator<RantExpressionAction> MathAsin(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathAsin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -342,9 +369,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "atan", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns atan(n).")]
-        private static IEnumerator<RantExpressionAction> MathAtan(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathAtan(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -353,10 +381,12 @@ namespace Rant.Engine
             yield break;
         }
         [RichardGlobalObject("Math", "atan2", Returns = "number")]
-        [RichardPropertyArgument("y", "number", Description = "The Y value of the atan2 operation.")]
-        [RichardPropertyArgument("x", "number", Description = "The X value of the atan2 operation.")]
         [RantDescription("Returns atan2(n).")]
-        private static IEnumerator<RantExpressionAction> MathAtan2(Sandbox sb, RantObject that, RantObject arg1, RantObject arg2)
+        private static IEnumerator<RantExpressionAction> MathAtan2(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("y", "number", Description = "The Y value of the atan2 operation.")]
+            RantObject arg1,
+            [RichardPropertyArgument("x", "number", Description = "The X value of the atan2 operation.")]
+            RantObject arg2)
         {
             var y = arg1.Value;
             if (!(y is double))
@@ -369,9 +399,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "ceil", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns ceil(n).")]
-        private static IEnumerator<RantExpressionAction> MathCeil(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathCeil(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -381,9 +412,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "cos", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns cos(n).")]
-        private static IEnumerator<RantExpressionAction> MathCos(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathCos(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -393,9 +425,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "cosh", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns cosh(n).")]
-        private static IEnumerator<RantExpressionAction> MathCosh(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathCosh(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -405,9 +438,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "exp", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns exp(n).")]
-        private static IEnumerator<RantExpressionAction> MathExp(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathExp(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -417,9 +451,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "floor", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns floor(n).")]
-        private static IEnumerator<RantExpressionAction> MathFloor(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathFloor(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -429,9 +464,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "log", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns log(n).")]
-        private static IEnumerator<RantExpressionAction> MathLog(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathLog(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -441,9 +477,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "log10", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns log10(n).")]
-        private static IEnumerator<RantExpressionAction> MathLog10(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathLog10(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -453,10 +490,12 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "pow", Returns = "number")]
-        [RichardPropertyArgument("base", "number", Description = "The base number of the exponent operation.")]
-        [RichardPropertyArgument("exponent", "number", Description = "The exponent that base will be raised to.")]
         [RantDescription("Raises base to exponent and returns the resulting number.")]
-        private static IEnumerator<RantExpressionAction> MathPow(Sandbox sb, RantObject that, RantObject baseObj, RantObject expObj)
+        private static IEnumerator<RantExpressionAction> MathPow(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("base", "number", Description = "The base number of the exponent operation.")]
+            RantObject baseObj,
+            [RichardPropertyArgument("exponent", "number", Description = "The exponent that base will be raised to.")]
+            RantObject expObj)
         {
             if (baseObj.Type != RantObjectType.Number)
                 throw new RantRuntimeException(sb.Pattern, null, "Base must be a number.");
@@ -467,9 +506,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "round", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns round(n).")]
-        private static IEnumerator<RantExpressionAction> MathRound(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathRound(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -479,9 +519,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "sin", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns sin(n).")]
-        private static IEnumerator<RantExpressionAction> MathSin(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathSin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -491,9 +532,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "sinh", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns sinh(n).")]
-        private static IEnumerator<RantExpressionAction> MathSinh(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathSinh(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -503,9 +545,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "sqrt", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns sqrt(n).")]
-        private static IEnumerator<RantExpressionAction> MathSqrt(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathSqrt(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -515,9 +558,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "tan", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns tan(n).")]
-        private static IEnumerator<RantExpressionAction> MathTan(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathTan(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -527,9 +571,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "tanh", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns tanh(n).")]
-        private static IEnumerator<RantExpressionAction> MathTanh(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathTanh(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
@@ -539,9 +584,10 @@ namespace Rant.Engine
         }
 
         [RichardGlobalObject("Math", "truncate", Returns = "number")]
-        [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
         [RantDescription("Returns truncate(n).")]
-        private static IEnumerator<RantExpressionAction> MathTruncate(Sandbox sb, RantObject that, RantObject obj)
+        private static IEnumerator<RantExpressionAction> MathTruncate(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
+            RantObject obj)
         {
             var num = obj.Value;
             if (!(num is double))
