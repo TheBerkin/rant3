@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-
-using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
 namespace Rant.Stringes
 {
-    /// <summary>
-    /// Represents a reader that can read data from a stringe.
-    /// </summary>
-    internal sealed class StringeReader
+	/// <summary>
+	/// Represents a reader that can read data from a stringe.
+	/// </summary>
+	internal sealed class StringeReader
     {
         private readonly Stringe _stringe;
         private int _pos;
+
+        /// <summary>
+        /// Gets or sets a string describing where the stringe originated from. Used for exception messages.
+        /// </summary>
+	    public string Origin { get; set; } = String.Empty;
+
+        /// <summary>
+        /// The stringe being read by the current instance.
+        /// </summary>
+	    public Stringe Stringe => _stringe;
 
         /// <summary>
         /// Creates a new StringeReader instance using the specified string as input.
@@ -39,10 +45,7 @@ namespace Rant.Stringes
         /// <summary>
         /// Indicates whether the reader position is at the end of the input string.
         /// </summary>
-        public bool EndOfStringe
-        {
-            get { return _pos >= _stringe.Length; }
-        }
+        public bool EndOfStringe => _pos >= _stringe.Length;
 
         /// <summary>
         /// Reads a charactere from the input and advances the position by one.
@@ -63,6 +66,15 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Returns the next character in the input, but does not consume it. Returns -1 if no more characters can be read.
+        /// </summary>
+        /// <returns></returns>
+        public int PeekChar()
+        {
+            return EndOfStringe ? -1 : _stringe[_pos].Character;
+        }
+
+        /// <summary>
         /// Reads a stringe from the input and advances the position by the number of characters read.
         /// </summary>
         /// <param name="length">The number of characters to read.</param>
@@ -75,14 +87,107 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Reads a stringe from the current position to the next occurrence of the specified character. If no match is found, it reads to the end.
+        /// </summary>
+        /// <param name="value">The character to stop at.</param>
+        /// <returns></returns>
+	    public Stringe ReadUntil(char value)
+	    {
+	        int start = _pos;
+	        while (_pos < _stringe.Length && _stringe[_pos] != value) _pos++;
+	        return _stringe.Substringe(start, _pos - start);
+	    }
+
+        /// <summary>
+        /// Reads a stringe from the current position to the next occurrence of any of the specified characters. If no match is found, it reads to the end.
+        /// </summary>
+        /// <param name="values">The characters to stop at.</param>
+        /// <returns></returns>
+        public Stringe ReadUntilAny(params char[] values)
+        {
+            int start = _pos;
+            while (_pos < _stringe.Length && !values.Any(c => _stringe[_pos] == c)) _pos++;
+            return _stringe.Substringe(start, _pos - start);
+        }
+
+        /// <summary>
         /// Indicates whether the specified character occurs at the reader's current position, and consumes it.
         /// </summary>
         /// <param name="value">The character to test for.</param>
         /// <returns></returns>
         public bool Eat(char value)
         {
-            if (PeekChare() != value) return false;
+            if (EndOfStringe || PeekChare() != value) return false;
             _pos++;
+            return true;
+        }
+
+	    public bool EatExactlyWhere(Func<char, bool> predicate, int count)
+	    {
+            if (EndOfStringe || !predicate(PeekChare().Character)) return false;
+	        int oldPos = _pos;
+	        int n = 0;
+            do
+            {
+                _pos++;
+                n++;
+            } while (!EndOfStringe && predicate(PeekChare().Character) && n < count);
+	        if (n < count)
+	        {
+	            _pos = oldPos;
+	            return false;
+	        }
+            return true;
+        }
+
+        public bool EatAll(char value)
+        {
+            if (PeekChare() != value) return false;
+            do
+            {
+                _pos++;
+            } while (PeekChare() == value);
+            return true;
+        }
+
+	    public bool EatAny(params char[] values)
+	    {
+	        if (!EndOfStringe && values.Any(c => _stringe[_pos].Character == c))
+	        {
+	            _pos++;
+	            return true;
+	        }
+	        return false;
+	    }
+
+	    public bool EatAll(params char[] values)
+	    {
+	        if (EndOfStringe) return false;
+	        if (!values.Any(c => _stringe[_pos].Character == c)) return false;
+            do
+            {
+                _pos++;
+            } while (values.Any(c => _stringe[_pos].Character == c));
+            return true;
+        }
+
+        public bool EatWhile(Func<char, bool> predicate)
+        {
+            if (EndOfStringe || !predicate(PeekChare().Character)) return false;
+            do
+            {
+                _pos++;
+            } while (!EndOfStringe && predicate(PeekChare().Character));
+            return true;
+        }
+
+        public bool EatWhile(Func<Chare, bool> predicate)
+        {
+            if (EndOfStringe || !predicate(PeekChare())) return false;
+            do
+            {
+                _pos++;
+            } while (!EndOfStringe && predicate(PeekChare()));
             return true;
         }
 
@@ -96,6 +201,18 @@ namespace Rant.Stringes
             if (String.IsNullOrEmpty(value)) return false;
             if (_stringe.IndexOf(value, _pos) != _pos) return false;
             _pos += value.Length;
+            return true;
+        }
+
+
+        public bool EatAll(string value)
+        {
+            if (String.IsNullOrEmpty(value)) return false;
+            if (_stringe.IndexOf(value, _pos) != _pos) return false;
+            do
+            {
+                _pos += value.Length;
+            } while (_stringe.IndexOf(value, _pos) == _pos);
             return true;
         }
 
@@ -141,6 +258,13 @@ namespace Rant.Stringes
         }
 
         /// <summary>
+        /// Indicates whether any of the specified characters occur at the reader's current position.
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <returns></returns>
+	    public bool IsNext(params char[] chars) => !EndOfStringe && chars.Any(c => _stringe[_pos].Character == c);
+
+        /// <summary>
         /// Indicates whether the specified string occurs at the reader's current position.
         /// </summary>
         /// <param name="value">The string to test for.</param>
@@ -149,7 +273,8 @@ namespace Rant.Stringes
         public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
         {
             if (String.IsNullOrEmpty(value)) return false;
-            return _stringe.IndexOf(value, _pos, strcmp) == _pos;
+            return _pos + value.Length <= _stringe.Length 
+                && String.Equals(_stringe.Substringe(_pos, value.Length).Value, value, strcmp);
         }
 
         /// <summary>
@@ -184,22 +309,38 @@ namespace Rant.Stringes
         /// Advances the reader position past any immediate white space characters.
         /// </summary>
         
-        public void SkipWhiteSpace()
+        public bool SkipWhiteSpace()
         {
+            int oldPos = _pos;
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
             {
                 _pos++;
             }
+            return _pos > oldPos;
         }
 
         /// <summary>
+        /// Returns a boolean value indicating whether the previous character matches the specified character.
+        /// </summary>
+        /// <param name="c">The character to test for.</param>
+        /// <returns></returns>
+	    public bool WasLast(char c) => _pos > 0 && _stringe[_pos - 1].Character == c;
+
+	    /// <summary>
+        /// Returns a boolean value indicating whether the previous character matches any of the specified characters.
+        /// </summary>
+        /// <param name="chars">The characters to test for.</param>
+        /// <returns></returns>
+        public bool WasLast(params char[] chars) => _pos > 0 && chars.Any(c => _stringe[_pos - 1].Character == c);
+
+	    /// <summary>
         /// Reads the next token from the current position, then advances the position past it.
         /// </summary>
         /// <typeparam name="T">The token identifier type to use.</typeparam>
-        /// <param name="rules">The lexer rules to use.</param>
+        /// <param name="rules">The lexer to use.</param>
         /// <returns></returns>
-        
-        public Token<T> ReadToken<T>(LexerRules<T> rules) where T : struct
+
+        public Token<T> ReadToken<T>(Lexer<T> rules) where T : struct
         {
             readStart:
 
@@ -207,7 +348,7 @@ namespace Rant.Stringes
             {
                 if (rules.EndToken != null && !rules.IgnoreRules.Contains(rules.EndToken.Item2))
                 {
-                    return new Token<T>(rules.EndToken.Item2, _stringe.Substringe(_pos, 0));
+                    return new Token<T>(rules.EndToken.Item2, rules.EndToken.Item1);
                 }
 
                 throw new InvalidOperationException("Unexpected end of input.");
@@ -228,23 +369,27 @@ namespace Rant.Stringes
                     return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
                 }
 
-                // Check high priority symbol rules
-                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
+                if (rules.HasPunctuation(PeekChar()))
                 {
-                    // Return undefined token if present
-                    if (captureUndef && u < _pos)
+                    // Check high priority symbol rules
+                    foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                     {
-                        if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
-                    }
+                        // Return undefined token if present
+                        if (captureUndef && u < _pos)
+                        {
+                            if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                            return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                        }
 
-                    // Return symbol token
-                    var c = _stringe.Substringe(_pos, t.Item1.Length);
-                    _pos += t.Item1.Length;
-                    if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-                    return new Token<T>(t.Item2, c);
+                        // Return symbol token
+                        var c = _stringe.Substringe(_pos, t.Item1.Length);
+                        _pos += t.Item1.Length;
+                        if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
+                        return new Token<T>(t.Item2, c);
+                    }
                 }
-                
+
                 const string tokenGroupName = "value";
 
                 // Check regex rules
@@ -289,21 +434,51 @@ namespace Rant.Stringes
                     }
                 }
 
-                // Check normal priority symbol rules
-                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
+                if (rules.FunctionList.Any())
                 {
-                    // Return undefined token if present
-                    if (captureUndef && u < _pos)
+                    int origPos = _pos;
+                    
+                    foreach (var fn in rules.FunctionList)
                     {
-                        if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
-                    }
+                        if (fn.Item1(this))
+                        {
+                            // Return undefined token if present
+                            if (captureUndef && u < origPos)
+                            {
+                                _pos = origPos;
+                                if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                                return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                    rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, origPos)));
+                            }
 
-                    // Return symbol token
-                    var c = _stringe.Substringe(_pos, t.Item1.Length);
-                    _pos += t.Item1.Length;
-                    if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-                    return new Token<T>(t.Item2, c);
+                            if (rules.IgnoreRules.Contains(fn.Item2)) goto readStart;
+                            return new Token<T>(fn.Item2, _stringe.Slice(origPos, _pos));
+                        }
+
+                        // Reset for next function
+                        _pos = origPos;
+                    }
+                }
+
+                if (rules.HasPunctuation(PeekChar()))
+                {
+                    // Check normal priority symbol rules
+                    foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
+                    {
+                        // Return undefined token if present
+                        if (captureUndef && u < _pos)
+                        {
+                            if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                            return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                        }
+
+                        // Return symbol token
+                        var c = _stringe.Substringe(_pos, t.Item1.Length);
+                        _pos += t.Item1.Length;
+                        if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
+                        return new Token<T>(t.Item2, c);
+                    }
                 }
 
                 _pos++;
@@ -338,9 +513,6 @@ namespace Rant.Stringes
         /// <summary>
         /// The total length, in characters, of the stringe being read.
         /// </summary>
-        public int Length
-        {
-            get { return _stringe.Length; }
-        }
+        public int Length => _stringe.Length;
     }
 }

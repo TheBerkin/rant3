@@ -7,9 +7,9 @@ using Rant.Engine;
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Maintains state information necessary for query synchronization (e.g. rhyming, uniqueness, matching).
+    /// Maintains state information used by queries.
     /// </summary>
-    public sealed class QueryState
+    internal sealed class QueryState
     {
         /// <summary>
         /// Distinct carrier table.
@@ -47,7 +47,7 @@ namespace Rant.Vocabulary
 
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
-            if (carrier == null) return pool.PickWeighted(rng, e => e.Weight);
+            if (carrier == null) return pool.PickEntry(rng);
             
             RantDictionaryEntry result = null;
 
@@ -132,24 +132,26 @@ namespace Rant.Vocabulary
                     pool = pool.Where(e => e.DivergesFrom(result));
             }
 
-            result = pool.PickWeighted(rng, e => e.Weight);
+            result = pool.PickEntry(rng);
 
             // Handle rhyme carrier
-            foreach(var rhyme in carrier.GetCarriers(CarrierComponent.Rhyme))
+            foreach (var rhyme in carrier.GetCarriers(CarrierComponent.Rhyme))
             {
                 _<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
                 if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
                 {
                     result = pool
                         .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
-                        .PickWeighted(rng, e => e.Weight);
+                        .PickEntry(rng);
                     _rhymeTable[rhyme] = _.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
                 }
                 result =
                     pool.Except(rhymeState.Item2)
-                        .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
-                                .PickWeighted(rng, e => e.Weight * (_rhymer.Rhyme(rhymeState.Item1, e.Terms[subtypeIndex]) ? rhymeState.Item1.SyllableCount : 0));
+                        .Where(e =>
+                                !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation) &&
+                                _rhymer.Rhyme(rhymeState.Item1, e.Terms[subtypeIndex]))
+                        .PickEntry(rng);
 
                 if (result != null) rhymeState.Item2.Add(result);
                 break; // Ignore any extra rhyme carriers
@@ -180,5 +182,21 @@ namespace Rant.Vocabulary
 
             return result;
         }
+
+		public void RemoveType(CarrierComponent type, string name)
+		{
+			if (type == CarrierComponent.Rhyme)
+				DeleteRhyme(name);
+			else if (type == CarrierComponent.Unique)
+				DeleteUnique(name);
+			else if (
+				type == CarrierComponent.Associative ||
+				type == CarrierComponent.Relational ||
+				type == CarrierComponent.Dissociative ||
+				type == CarrierComponent.Divergent)
+				DeleteAssociation(name);
+			else
+				DeleteMatch(name);
+		}
     }
 }

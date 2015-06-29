@@ -7,42 +7,62 @@ using Rant.Engine;
 namespace Rant.Vocabulary
 {
     /// <summary>
-    /// Stores a Rant dictionary.
+    /// Represents a named collection of dictionary entries.
     /// </summary>
     public sealed partial class RantDictionaryTable
     {
-        /// <summary>
-        /// The current version number of the dictionary format.
-        /// </summary>
-        public const int Version = 3;
-
         internal const string MissingTerm = "[?]";
 
         private readonly string _name;
         private readonly string[] _subtypes;
+        private readonly HashSet<string> _hidden = new HashSet<string>(); 
         private RantDictionaryEntry[] _entries;
 
         /// <summary>
-        /// Creates a new WordList from the specified data.
+        /// Creates a new RantDictionaryTable with the specified entries.
         /// </summary>
-        /// <param name="name">the name of the list.</param>
+        /// <param name="name">the name of the table.</param>
         /// <param name="subtypes">The subtype names.</param>
-        /// <param name="entries">The words to add to the list.</param>
+        /// <param name="entries">The entries to add to the table.</param>
         public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries)
         {
             if (!Util.ValidateName(name))
-            {
-                throw new FormatException("Invalid dictionary name: '\{name}'");
-            }
+                throw new FormatException($"Invalid table name: '{name}'");
 
             if (!subtypes.All(Util.ValidateName))
-            {
-                throw new FormatException("Invalid subtype name(s): " + String.Join(", ", subtypes.Where(s => !Util.ValidateName(s)).Select(s => "'\{s}'").ToArray()));
-            }
+                throw new FormatException("Invalid subtype name(s): " +
+                                          String.Join(", ",
+                                              subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
 
             _subtypes = subtypes;
             _name = name;
-            _entries = entries.ToArray();
+            _entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
+        }
+
+        /// <summary>
+        /// Creates a new RantDictionaryTable with the specified entries.
+        /// </summary>
+        /// <param name="name">the name of the table.</param>
+        /// <param name="subtypes">The subtype names.</param>
+        /// <param name="entries">The entries to add to the table.</param>
+        /// <param name="hiddenClasses">The classes to hide.</param>
+        public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries, IEnumerable<string> hiddenClasses)
+        {
+            if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));
+            if (!Util.ValidateName(name))
+                throw new FormatException($"Invalid table name: '{name}'");
+
+            if (!subtypes.All(Util.ValidateName))
+                throw new FormatException("Invalid subtype name(s): " +
+                                          String.Join(", ",
+                                              subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
+
+
+
+            _subtypes = subtypes;
+            _name = name;
+            _entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
+            foreach (var hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
         }
 
         /// <summary>
@@ -63,6 +83,16 @@ namespace Rant.Vocabulary
         /// The name of the table.
         /// </summary>
         public string Name => _name;
+
+        /// <summary>
+        /// Gets the hidden classes of the table.
+        /// </summary>
+        public IEnumerable<string> HiddenClasses => _hidden; 
+
+        /// <summary>
+        /// The number of entries stored in the table.
+        /// </summary>
+        public int EntryCount => _entries.Length;
 
         private int GetSubtypeIndex(string subtype)
         {
@@ -112,28 +142,27 @@ namespace Rant.Vocabulary
             return true;
         }
 
-        internal string Query(RNG rng, Query query, QueryState syncState)
+        internal string Query(RantDictionary dictionary, RNG rng, Query query, QueryState syncState)
         {
             var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
             if (index == -1) return "[Bad Subtype]";
 
-            var pool =
-                query.Exclusive
-                    ? _entries.Where(
-                        e => e.GetClasses().Any() == query.ClassFilters.Any()
-                        && e.GetClasses().All(
-                            c => query.ClassFilters.Any(
-                                set => set.Any(
-                                    t => t.Item2 == c))))
-                    : _entries.Where(
-                        e => query.ClassFilters.All(
-                            set => set.Any(
-                                t => t.Item1 == e.ContainsClass(t.Item2))));
+            var pool = query.ClassFilter.IsEmpty
+                ? _entries 
+                : _entries.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
-            pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
+            if (_hidden.Any())
+            {
+                var hide = _hidden.Where(hc => !query.ClassFilter.AllowsClass(hc))
+                    .Except(dictionary.IncludedHiddenClasses);
+                pool = pool.Where(e => !hide.Any(e.ContainsClass));
+            }
+
+            if (query.RegexFilters.Any())
+                pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
 
             if (query.SyllablePredicate != null)
-                pool = pool.Where(e => query.SyllablePredicate(e.Terms[index].SyllableCount));
+                pool = pool.Where(e => query.SyllablePredicate.Test(e.Terms[index].SyllableCount));
 
             if (!pool.Any()) return MissingTerm;
 

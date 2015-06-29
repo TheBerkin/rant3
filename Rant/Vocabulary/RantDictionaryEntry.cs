@@ -11,8 +11,6 @@ namespace Rant.Vocabulary
         private RantDictionaryTerm[] _terms;
         private readonly HashSet<string> _classes;
         private readonly HashSet<string> _optionalClasses;
-        private int _weight;
-        private readonly bool _nsfw;
 
         /// <summary>
         /// Creates a new RantDictionaryEntry object from the specified data.
@@ -20,9 +18,8 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
-        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
-            : this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, nsfw, weight)
+        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, int weight = 1)
+            : this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, weight)
         {
         }
 
@@ -32,8 +29,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        /// <param name="nsfw">Specified if the entry should be marked with a NSFW flag.</param>
-        public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, bool nsfw = false, int weight = 1)
+        public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, int weight = 1)
         {
             _terms = terms;
             _classes = new HashSet<string>();
@@ -51,8 +47,7 @@ namespace Rant.Vocabulary
                     _classes.Add(VocabUtils.GetString(c));
                 }
             }
-            _weight = weight;
-            _nsfw = nsfw;
+            Weight = weight;
         }
 
         /// <summary>
@@ -71,50 +66,67 @@ namespace Rant.Vocabulary
             set { _terms = value ?? new RantDictionaryTerm[0]; }
         }
 
+        /// <summary>
+        /// Returns a collection of classes assigned to the current entry.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> GetClasses()
         {
             foreach (var className in _classes) yield return className;
         }
 
+        /// <summary>
+        /// Returns a collection of the optional classes assigned to the current entry.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> GetOptionalClasses()
         {
             foreach (var className in _optionalClasses) yield return className;
         }
 
+        /// <summary>
+        /// Adds the specified class to the current entry.
+        /// </summary>
+        /// <param name="className">The name of the class.</param>
+        /// <param name="optional">Specifies whether the class is optional in carrier associations.</param>
         public void AddClass(string className, bool optional = false)
         {
             _classes.Add(className);
             if (optional) _optionalClasses.Add(className);
         }
 
+        /// <summary>
+        /// Removes the class with the specified name from the current entry.
+        /// </summary>
+        /// <param name="className">The name of the class to remove.</param>
         public void RemoveClass(string className)
         {
             _classes.Remove(className);
             _optionalClasses.Remove(className);
         }
 
+        /// <summary>
+        /// Returns a boolean valie indicating whether the current entry contains the specified class.
+        /// </summary>
+        /// <param name="className">The class to search for.</param>
+        /// <returns></returns>
         public bool ContainsClass(string className) => _classes.Contains(className);
 
-        public IEnumerable<string> GetRequiredClasses()
-        {
-            foreach(var c in _classes.Except(_optionalClasses))
-            {
-                yield return c;
-            }
-        }
+        /// <summary>
+        /// Returns a collection of required (non-optional) classes assigned to the current entry.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetRequiredClasses() => _classes.Except(_optionalClasses);
 
         /// <summary>
-        /// The weight of the entry.
+        /// Gets the weight value of the entry.
         /// </summary>
-        public int Weight
-        {
-            get { return _weight; }
-            set { _weight = value; }
-        }
+        public int Weight { get; set; }
 
         /// <summary>
-        /// Indicates if the entry is marked as "Not Safe For Work."
+        /// Returns a string representation of the current RantDictionaryEntry instance.
         /// </summary>
-        public bool NSFW => _nsfw;
+        /// <returns></returns>
+        public override string ToString() => _terms.Any() ? _terms[0].Value : "???";
     }
 }

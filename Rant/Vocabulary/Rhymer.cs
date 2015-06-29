@@ -1,36 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rant.Engine.Metadata;
 
 namespace Rant.Vocabulary
 {
     internal class Rhymer
     {
-        private List<RhymeType> _allowedRhymes;
-        private char[] _vowels;
-        private char[] _vowelSounds;
+        private static readonly char[] _vowels = { 'a', 'e', 'i', 'o', 'u', 'y' };
+        private static readonly char[] _vowelSounds = { 'A', 'i', 'I', 'E', 'e', '3', '{', 'V', 'O', 'U', 'u', '^' };
 
-        public RhymeType[] AllowedRhymes
-        {
-            get { return _allowedRhymes.ToArray(); }
-            set { _allowedRhymes = value.ToList(); }
-        }
+        public RhymeFlags AllowedRhymes { get; set; }
 
         public Rhymer()
         {
-            _allowedRhymes = new List<RhymeType>()
-            {
-                RhymeType.Perfect
-            };
-            _vowels = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' };
-            _vowelSounds = new char[] { 'A', 'i', 'I', 'E', 'e', '3',  '{', 'V', 'O', 'U', 'u', '^' };
+            AllowedRhymes = RhymeFlags.Perfect;
         }
+
+        private bool IsEnabled(RhymeFlags flags) => (AllowedRhymes & flags) == flags;
 
         public bool Rhyme(RantDictionaryTerm term1, RantDictionaryTerm term2)
         {
             bool hasStress = term1.Pronunciation.IndexOf('"') > -1 && term2.Pronunciation.IndexOf('"') > -1;
             // syllables after the stress are the same
-            if (_allowedRhymes.Contains(RhymeType.Perfect) && hasStress)
+            if (IsEnabled(RhymeFlags.Perfect) && hasStress)
             {
                 var pron1 = term1.Pronunciation.Substring(term1.Pronunciation.IndexOf('"')).Replace("-", string.Empty);
                 var pron2 = term2.Pronunciation.Substring(term2.Pronunciation.IndexOf('"')).Replace("-", string.Empty);
@@ -39,12 +32,12 @@ namespace Rant.Vocabulary
                 if (pron1 == pron2) return true;
             }
             // last syllables are the same
-            if (_allowedRhymes.Contains(RhymeType.Syllabic))
+            if (IsEnabled(RhymeFlags.Syllabic))
             {
                 if (term1.Syllables.Last() == term2.Syllables.Last()) return true;
             }
             // penultimate syllable is stressed but does not rhyme, last syllable rhymes
-            if (_allowedRhymes.Contains(RhymeType.Weak) && hasStress)
+            if (IsEnabled(RhymeFlags.Weak) && hasStress)
             {
                 if (
                     term1.SyllableCount >= 2 &&
@@ -55,7 +48,7 @@ namespace Rant.Vocabulary
                   )
                     return true;
             }
-            if (_allowedRhymes.Contains(RhymeType.Semirhyme))
+            if (IsEnabled(RhymeFlags.Semirhyme))
             {
                 if (Math.Abs(term1.SyllableCount - term2.SyllableCount) == 1)
                 {
@@ -68,7 +61,7 @@ namespace Rant.Vocabulary
                 }
             }
             // psuedo-sound similar
-            if (_allowedRhymes.Contains(RhymeType.Forced))
+            if (IsEnabled(RhymeFlags.Forced))
             {
                 var distance = LevenshteinDistance(
                     term1.Value.GenerateDoubleMetaphone(),
@@ -78,7 +71,7 @@ namespace Rant.Vocabulary
                     return true;
             }
             // matching final consonants
-            if (_allowedRhymes.Contains(RhymeType.SlantRhyme))
+            if (IsEnabled(RhymeFlags.SlantRhyme))
             {
                 // WE ARE REVERSING THESE STRINGS OK
                 string word1 = new string(term1.Value.Reverse().ToArray());
@@ -87,13 +80,13 @@ namespace Rant.Vocabulary
                     return true;
             }
             // matching first consonants
-            if (_allowedRhymes.Contains(RhymeType.Alliteration))
+            if (IsEnabled(RhymeFlags.Alliteration))
             {
                 if (GetFirstConsonants(term1.Value) == GetFirstConsonants(term2.Value))
                     return true;
             }
             // matching all consonants
-            if (_allowedRhymes.Contains(RhymeType.Pararhyme))
+            if (IsEnabled(RhymeFlags.Pararhyme))
             {
                 if (term1.Value
                     .Where(x => !_vowels.Contains(x))
@@ -174,15 +167,24 @@ namespace Rant.Vocabulary
         }
     }
 
-    internal enum RhymeType
+    [Flags]
+    internal enum RhymeFlags : byte
     {
-        Perfect,
-        Weak,
-        Syllabic,
-        Semirhyme,
-        Forced,
-        SlantRhyme,
-        Pararhyme,
-        Alliteration
+        [RantDescription("Everything after the first stressed vowel matches in pronunciation (picky / icky).")]
+        Perfect = 0x01,
+        [RantDescription("The penultimate syllable is stressed and the final syllable rhymes (coffin / raisin).")]
+        Weak = 0x02,
+        [RantDescription("The final syllable rhymes (senator / otter).")]
+        Syllabic = 0x04,
+        [RantDescription("The words would rhyme if not for the final syllable (broom / broomstick).")]
+        Semirhyme = 0x08,
+        [RantDescription("The words might rhyme if you really pushed it.")]
+        Forced = 0x10,
+        [RantDescription("The ending consonants are the same (rant / ant).")]
+        SlantRhyme = 0x20,
+        [RantDescription("All the consonants match (tuna / teen).")]
+        Pararhyme = 0x40,
+        [RantDescription("All consonants up to the first vowel rhyme (dog / dude).")]
+        Alliteration = 0x80
     }
 }

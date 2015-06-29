@@ -18,20 +18,22 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\MainBuild\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\MainBuild\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Rant.xml</DocumentationFile>
+    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
@@ -56,128 +58,268 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Editor|AnyCPU'">
-    <OutputPath>..\bin\Editor\</OutputPath>
+    <OutputPath>..\bin\EditorBuild\</OutputPath>
     <DefineConstants>TRACE;EDITOR</DefineConstants>
-    <DocumentationFile>..\bin\Rant.xml</DocumentationFile>
+    <DocumentationFile>..\bin\EditorBuild\Rant.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\MainBuild\Unmanaged\x86\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\bin\MainBuild\Unmanaged\x86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|x86'">
+    <OutputPath>bin\x86\Berkin-Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Editor|x86'">
+    <OutputPath>bin\x86\Editor\</OutputPath>
+    <DefineConstants>TRACE;EDITOR</DefineConstants>
+    <DocumentationFile>..\bin\EditorBuild\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\MainBuild\Unmanaged\x64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\bin\MainBuild\Unmanaged\x64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|x64'">
+    <OutputPath>bin\x64\Berkin-Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Editor|x64'">
+    <OutputPath>bin\x64\Editor\</OutputPath>
+    <DefineConstants>TRACE;EDITOR</DefineConstants>
+    <DocumentationFile>..\bin\EditorBuild\Rant.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RGiesecke.DllExport.Metadata">
+      <HintPath>..\packages\UnmanagedExports.1.2.6\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debugger\LineEventArgs.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\AbsExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\BinaryOperatorExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\Expression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\NameExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\NumberExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\PostfixOperatorExpression.cs" />
-    <Compile Include="Engine\Arithmetic\Expressions\PrefixOperatorExpression.cs" />
-    <Compile Include="Engine\Arithmetic\MathLexer.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\GroupParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\BinaryOperatorParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\AbsParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\IInfixParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\IPrefixParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\NameParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\NumberParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\PostfixOperatorParselet.cs" />
-    <Compile Include="Engine\Arithmetic\Parselets\PrefixOperatorParselet.cs" />
-    <Compile Include="Engine\Arithmetic\MathParser.cs" />
-    <Compile Include="Engine\Arithmetic\MathParser.Static.cs" />
-    <Compile Include="Engine\Arithmetic\Precedence.cs" />
-    <Compile Include="Engine\Arithmetic\RMathToken.cs" />
-    <Compile Include="Engine\Block.cs" />
-    <Compile Include="Engine\Blueprints\AltBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\AnyBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\Blueprint.cs" />
-    <Compile Include="Engine\Blueprints\DelegateBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\MetapatternBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\RepeaterBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\ReplacerBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\SubCallBlueprint.cs" />
-    <Compile Include="Engine\Blueprints\FuncTagBlueprint.cs" />
+    <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
+    <Compile Include="Engine\Constructs\AttribPersistence.cs" />
+    <Compile Include="Engine\Constructs\BlockManager.cs" />
+    <Compile Include="Engine\Constructs\SyncManager.cs" />
+    <Compile Include="Engine\Metadata\IRantFunction.cs" />
+    <Compile Include="Engine\Metadata\IRantFunctionGroup.cs" />
+    <Compile Include="Engine\Metadata\IRantModeValue.cs" />
+    <Compile Include="Engine\Metadata\IRantParameter.cs" />
+    <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
+    <Compile Include="Engine\Constructs\BlockState.cs" />
+    <Compile Include="Engine\Metadata\RantModeValue.cs" />
+    <Compile Include="Engine\RantFunctionGroup.cs" />
+    <Compile Include="Engine\RichardFunctions.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAAdditionOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REABooleanAndOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REABooleanOrOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAConcatOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\READivisionOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAEqualityOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAGreaterThanOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAInequalityOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAModuloOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAPostfixIncDec.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAPrefixIncDec.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAPrefixInvert.cs" />
+    <Compile Include="Engine\Syntax\Richard\REABreak.cs" />
+    <Compile Include="Engine\Syntax\Richard\READummy.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAFor.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAFunctionInfo.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAIfStatement.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REALessThanOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAMultiplicationOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REASubtractionOperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAArgumentSeperator.cs" />
+    <Compile Include="Engine\Syntax\Richard\REABlock.cs" />
+    <Compile Include="Engine\Syntax\Richard\REABoolean.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAFunction.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAFunctionCall.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAGroup.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAList.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAMaybe.cs" />
+    <Compile Include="Engine\Syntax\Richard\REANativeFunction.cs" />
+    <Compile Include="Engine\Syntax\Richard\REANull.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAObject.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAObjectKeyValue.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAObjectProperty.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAObjectPropertyAssignment.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAPatternString.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAReturn.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAString.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAUndefined.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAVariable.cs" />
+    <Compile Include="Engine\Syntax\Richard\REAWhile.cs" />
+    <Compile Include="Engine\Syntax\RAExpression.cs" />
+    <Compile Include="Engine\Syntax\Richard\RantExpressionAction.cs" />
+    <Compile Include="Engine\Syntax\Richard\REANumber.cs" />
+    <Compile Include="Engine\Syntax\Richard\Operators\REAInfixOperator.cs" />
+    <Compile Include="Engine\Syntax\RADefineSubroutine.cs" />
+    <Compile Include="Engine\Syntax\RAEscape.cs" />
+    <Compile Include="Engine\Syntax\RAFunction.cs" />
+    <Compile Include="Engine\Delegates\Witchcraft.cs" />
+    <Compile Include="Engine\RantParameter.cs" />
+    <Compile Include="Engine\RantParameterType.cs" />
+    <Compile Include="Engine\Metadata\RantFunctionAttribute.cs" />
+    <Compile Include="Engine\RantFunctionInfo.cs" />
+    <Compile Include="Engine\RantFunctions.cs" />
+    <Compile Include="Engine\Sandbox.cs" />
+    <Compile Include="Engine\Compiler\RantCompiler.cs" />
+    <Compile Include="Engine\Syntax\RABlock.cs" />
+    <Compile Include="Engine\Syntax\RantAction.cs" />
+    <Compile Include="Engine\Syntax\RAQuery.cs" />
+    <Compile Include="Engine\Syntax\RAReplacer.cs" />
+    <Compile Include="Engine\Syntax\RASequence.cs" />
+    <Compile Include="Engine\Syntax\RACallSubroutine.cs" />
+    <Compile Include="Engine\Syntax\RASubroutine.cs" />
+    <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\Formatters\Symbols.cs" />
-    <Compile Include="Engine\Tuple.cs" />
+    <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
+    <Compile Include="Engine\ObjectModel\RantObject.cs" />
+    <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
+    <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
+    <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantOutputEntry.cs" />
+    <Compile Include="RantUtils.cs" />
+    <Compile Include="Stringes\Lexer.cs" />
+    <Compile Include="Stringes\StringeUtils.cs" />
+    <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
-    <Compile Include="Formats\RantSystemFormat.cs" />
     <Compile Include="Formats\RantUserFormat.cs" />
+    <Compile Include="IO\BitField.cs" />
+    <Compile Include="IO\EasyReader.cs" />
+    <Compile Include="IO\EasyWriter.cs" />
+    <Compile Include="IO\Endian.cs" />
+    <Compile Include="IO\EndiannessAttribute.cs" />
+    <Compile Include="IO\IOExtensions.cs" />
+    <Compile Include="IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
+    <Compile Include="RantPackage.cs" />
+    <Compile Include="Unmanaged\ErrorCode.cs" />
+    <Compile Include="Unmanaged\Exports.cs" />
+    <Compile Include="Unmanaged\PatternOptions.cs" />
+    <Compile Include="Unmanaged\UnmanagedOutput.cs" />
+    <Compile Include="Unmanaged\UnmanagedPattern.cs" />
+    <Compile Include="Unmanaged\UnmanagedRantContext.cs" />
     <Compile Include="Vocabulary\Carrier.cs" />
-    <Compile Include="Engine\Comparison.cs" />
-    <Compile Include="Engine\Compiler\Delimiters.cs" />
+    <Compile Include="Engine\Constructs\Comparison.cs" />
     <Compile Include="Engine\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\ClassFilter.cs" />
+    <Compile Include="Vocabulary\ClassFilterRule.cs" />
     <Compile Include="Vocabulary\Diff.cs" />
     <Compile Include="Vocabulary\DoubleMetaphone.cs" />
+    <Compile Include="Vocabulary\EntryTypeDef.cs" />
+    <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
-    <Compile Include="Vocabulary\RangePredicate.cs" />
+    <Compile Include="Vocabulary\Range.cs" />
+    <Compile Include="Vocabulary\RantTableLoadException.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
-    <Compile Include="Engine\BlockAttribs.cs" />
+    <Compile Include="Engine\Constructs\BlockAttribs.cs" />
     <Compile Include="Formats\IndefiniteArticles.cs" />
     <Compile Include="Formats\IndefiniteArticleRules.cs" />
-    <Compile Include="Engine\VM.cs" />
-    <Compile Include="Engine\VM.Markers.cs" />
-    <Compile Include="Engine\VM.Synchronizers.cs" />
-    <Compile Include="Engine\Functions.cs" />
-    <Compile Include="Engine\VM.Parser.cs" />
-    <Compile Include="Vocabulary\IRantDictionary.cs" />
     <Compile Include="Engine\Limit.cs" />
-    <Compile Include="Engine\ParamType.cs" />
-    <Compile Include="RantException.cs" />
-    <Compile Include="Vocabulary\NsfwFilter.cs" />
+    <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Engine\Formatters\Case.cs" />
-    <Compile Include="RantChannel.cs" />
-    <Compile Include="Engine\ChannelStack.cs" />
-    <Compile Include="RantChannelVisibility.cs" />
+    <Compile Include="Engine\Channel.cs" />
+    <Compile Include="Engine\ChannelWriter.cs" />
+    <Compile Include="Engine\ChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
     <Compile Include="Engine\Formatters\Numerals.cs" />
     <Compile Include="Vocabulary\Query.cs" />
-    <Compile Include="Engine\Repeater.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Engine\Compiler\R.cs" />
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternSource.cs" />
-    <Compile Include="Engine\PatternReader.cs" />
-    <Compile Include="Engine\VM.State.cs" />
+    <Compile Include="Engine\TokenReader.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
     <Compile Include="Stringes\Stringe.cs" />
     <Compile Include="Stringes\StringeReader.cs" />
-    <Compile Include="Stringes\Tokens\LexerRules.cs" />
-    <Compile Include="Stringes\Tokens\Token.cs" />
-    <Compile Include="Engine\Subroutine.cs" />
-    <Compile Include="Engine\SubStore.cs" />
-    <Compile Include="Engine\SyncType.cs" />
-    <Compile Include="Engine\Synchronizer.cs" />
-    <Compile Include="Engine\Argument.cs" />
+    <Compile Include="Stringes\Token.cs" />
+    <Compile Include="Engine\Constructs\SyncType.cs" />
+    <Compile Include="Engine\Constructs\Synchronizer.cs" />
     <Compile Include="Engine\Util.cs" />
-    <Compile Include="Engine\VarStore.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
@@ -189,8 +331,19 @@
     <Content Include="Rant License.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Rant.h">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

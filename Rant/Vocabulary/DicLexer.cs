@@ -1,41 +1,48 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 using Rant.Stringes;
-using Rant.Stringes.Tokens;
 
 namespace Rant.Vocabulary
 {
     internal static class DicLexer
     {
-        private const RegexOptions DicRegexOptions = RegexOptions.Compiled;
-
-        private static readonly LexerRules<DicTokenType> Rules;
-
-        static DicLexer()
+        public static IEnumerable<Token<DicTokenType>> Tokenize(string source, string data)
         {
-            Rules = new LexerRules<DicTokenType>
-            {
-                {new Regex(@"\#\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Directive, 2},
-                {new Regex(@"\|\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Property, 2},
-                {new Regex(@"\>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.Entry, 2},
-                {new Regex(@">>\s*(?<value>.*?)[\s\r]*(?=\#|\||\>{1,2}|\@|$)", DicRegexOptions), DicTokenType.DiffEntry, 2},
-                {new Regex(@"\@.*?$", DicRegexOptions | RegexOptions.Multiline), DicTokenType.Ignore, 2},
-                {new Regex(@"\s+"), DicTokenType.Ignore}
-            };
-            Rules.AddEndToken(DicTokenType.EOF);
-            Rules.IgnoreRules.Add(DicTokenType.Ignore);
-        }
-
-        public static IEnumerable<Token<DicTokenType>> Tokenize(string data)
-        {
-            Token<DicTokenType> token;
             var reader = new StringeReader(data);
-            while ((token = reader.ReadToken(Rules)).ID != DicTokenType.EOF)
+            Chare currentChar;
+            while (!reader.EndOfStringe)
             {
-                yield return token;
+                if (char.IsWhiteSpace((currentChar = reader.ReadChare()).Character)) continue;
+                switch (currentChar.Character)
+                {
+                    case '#':
+                        yield return new Token<DicTokenType>(DicTokenType.Directive, ReadRestOfLine(reader).Trim());
+                        break;
+                    case '@':
+                        reader.ReadUntilAny('\n', '\r');
+                        break;
+                    case '>':
+                    {
+                        bool diffmark = reader.Eat('>');
+                        yield return new Token<DicTokenType>(diffmark ? DicTokenType.DiffEntry : DicTokenType.Entry,
+                            ReadRestOfLine(reader, diffmark).Trim());
+                        break;
+                    }
+                    case '|':
+                        yield return new Token<DicTokenType>(DicTokenType.Property, ReadRestOfLine(reader).Trim());
+                    break;
+                    default:
+                        throw new InvalidDataException($"{source}: (Line {currentChar.Line}, Col {currentChar.Column}) Unexpected token: '{currentChar}'.");
+                }
             }
+            yield return new Token<DicTokenType>(DicTokenType.EOF, "");
         }
+
+        private static Stringe ReadRestOfLine(StringeReader reader, bool isDiffmark = false) => isDiffmark
+            ? reader.ReadUntilAny('>', '\n', '\r', '#', '@')
+            : reader.ReadUntilAny('>', '|', '\n', '\r', '#', '@');
     }
 
     internal enum DicTokenType

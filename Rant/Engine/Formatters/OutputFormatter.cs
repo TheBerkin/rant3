@@ -33,24 +33,25 @@ namespace Rant.Engine.Formatters
         {
             if (String.IsNullOrEmpty(input)) return input;
 
-            // Check for special symbols
-            switch (input.ToLowerInvariant())
-            {
-                case SymbolCodes.EnDash:
-                    return Symbols.EnDash;
-                case SymbolCodes.EmDash:
-                    return Symbols.EmDash;
-                case SymbolCodes.Copyright:
-                    return Symbols.Copyright;
-                case SymbolCodes.RegisteredTM:
-                    return Symbols.RegisteredTM;
-                case SymbolCodes.Trademark:
-                    return Symbols.Trademark;
-                case SymbolCodes.Bullet:
-                    return Symbols.Bullet;
-                case SymbolCodes.Eszett:
-                    return Symbols.Eszett;
-            }
+			// Check for special symbols
+			// TODO: Move symbols to a dictionary
+			switch (input.ToLowerInvariant())
+			{
+				case SymbolCodes.EnDash:
+					return Symbols.EnDash;
+				case SymbolCodes.EmDash:
+					return Symbols.EmDash;
+				case SymbolCodes.Copyright:
+					return Symbols.Copyright;
+				case SymbolCodes.RegisteredTM:
+					return Symbols.RegisteredTM;
+				case SymbolCodes.Trademark:
+					return Symbols.Trademark;
+				case SymbolCodes.Bullet:
+					return Symbols.Bullet;
+				case SymbolCodes.Eszett:
+					return Symbols.Eszett;
+			}
 
             switch (Case)
             {
@@ -62,7 +63,7 @@ namespace Rant.Engine.Formatters
                     break;
                 case Case.First:
                     input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    Case = Case.None;
+                    if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) Case = Case.None;
                     break;
                 case Case.Title:
                     if (((options & OutputFormatterOptions.IsArticle) == OutputFormatterOptions.IsArticle || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
@@ -71,7 +72,7 @@ namespace Rant.Engine.Formatters
                         _lastChar == '\0'
                         || Char.IsSeparator(_lastChar)
                         || Char.IsWhiteSpace(_lastChar))
-                                                                 || Char.IsPunctuation(_lastChar)
+                        || Char.IsPunctuation(_lastChar)
                         ? m.Value.ToUpper() : m.Value);
                     break;
                 case Case.Sentence:

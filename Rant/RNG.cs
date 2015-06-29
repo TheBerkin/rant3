@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Rant.Engine;
@@ -291,12 +290,18 @@ namespace Rant
         /// <returns></returns>
         public double NextDouble(double min, double max) => max - min != 0 ? (((int)GetRaw(~Seed, Generation) & Mask32) + NextDouble()) % (max - min) + min : 0;
 
-        /// <summary>
-        /// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
-        /// </summary>
-        /// <returns></returns>
-        
-        public int Next() => (int)NextRaw() & Mask32;
+		/// <summary>
+		/// Returns a random boolean value and advances the generation by 1.
+		/// </summary>
+		/// <returns></returns>
+		public bool NextBoolean() => NextRaw() >= 0;
+
+		/// <summary>
+		/// Calculates a 32-bit, non-negative integer from the next generation and increases the current generation by 1.
+		/// </summary>
+		/// <returns></returns>
+
+		public int Next() => (int)NextRaw() & Mask32;
 
         /// <summary>
         /// Calculates a 32-bit, non-negative integer from the previous generation and decreases the current generation by 1.

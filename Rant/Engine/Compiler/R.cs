@@ -213,6 +213,10 @@
         /// </para>
         /// </summary>
         Plus,
+		/// <summary>
+		/// *
+		/// </summary>
+		Asterisk,
         /// <summary>
         /// *123:
         /// <para>
@@ -228,9 +232,32 @@
         /// (a - b)
         /// </summary>
         RangeLiteral,
+		/// <summary>
+		/// Any decimal number.
+		/// </summary>
+		Number,
+		/// <summary>
+		/// var keyword
+		/// </summary>
+		Var,
+		/// <summary>
+		/// .
+		/// <para>
+		/// Used by queries to denote subtypes.
+		/// </para>
+		/// </summary>
+		Subtype,
         /// <summary>
         /// End of file.
         /// </summary>
-        EOF
+        EOF,
+		/// <summary>
+		/// Tilde (~)
+		/// </summary>
+		Tilde,
+        /// <summary>
+        /// Undefined (???)
+        /// </summary>
+        Undefined
     }
 }
