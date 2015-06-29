@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Rant.Engine.Formatters;
@@ -28,6 +29,8 @@ namespace Rant.Engine
                 { "main", _main }
             };
         }
+
+        public Channel GetActiveChannel() => _stack.Last();
 
         public void CreateTarget(string name)
         {

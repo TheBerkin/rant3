@@ -636,7 +636,7 @@ namespace Rant.Engine
 		}
 
 		[RantFunction]
-		[RantDescription("Writes a string to the specified target.")]
+		[RantDescription("Appends a string to the specified target's contents.")]
 		private static void Send(Sandbox sb,
             [RantDescription("The name of the target to send to.")]
             string targetName,
@@ -646,7 +646,36 @@ namespace Rant.Engine
 			sb.CurrentOutput.WriteToTarget(targetName, value);
 		}
 
-		[RantFunction]
+        [RantFunction]
+        [RantDescription("Overwrites the specified target's contents with the provided value.")]
+        private static void SendOver(Sandbox sb,
+            [RantDescription("The name of the target to send to.")]
+            string targetName,
+            [RantDescription("The string to send to the target.")]
+            string value)
+        {
+            sb.CurrentOutput.WriteToTarget(targetName, value, true);
+        }
+
+        [RantFunction("targetval")]
+        [RantDescription("Prints the current value of the specified target. This function will not spawn a target.")]
+	    private static void GetTargetValue(Sandbox sb,
+            [RantDescription("The name of the target whose value to print.")]
+	        string targetName)
+	    {
+	        sb.Print(sb.CurrentOutput.GetActiveChannel().GetTargetValue(targetName));
+	    }
+
+        [RantFunction("clrt")]
+        [RantDescription("Clears the contents of the specified target.")]
+        private static void ClearTarget(Sandbox sb,
+            [RantDescription("The name of the target to be cleared.")]
+            string targetName)
+        {
+            sb.CurrentOutput.ClearTarget(targetName);
+        }
+
+        [RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
 		private static IEnumerator<RantAction> Nth(Sandbox sb, 
             [RantDescription("The interval at which the pattern should be run.")]

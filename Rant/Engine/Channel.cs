@@ -142,6 +142,16 @@ namespace Rant.Engine
             }
         }
 
+        internal string GetTargetValue(string name)
+        {
+            StringBuilder sb;
+            if (_backPrintPoints.TryGetValue(name, out sb) || _forePrintPoints.TryGetValue(name, out sb))
+            {
+                return sb.ToString();
+            }
+            return String.Empty;
+        }
+
         internal void WriteToTarget(string name, string value, bool overwrite = false)
         {
             StringBuilder sb;
