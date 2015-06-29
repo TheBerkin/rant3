@@ -4,6 +4,7 @@ using System.Linq;
 
 using Rant.Engine;
 using Rant.Engine.Metadata;
+using Rant.Engine.Syntax.Richard;
 
 namespace Rant
 {
