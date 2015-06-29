@@ -17,6 +17,8 @@
 
 Rant is a language for procedurally generating text. It combines a markup language with functional and imperative programming concepts to deliver a concise but powerful tool for adding rich variations to your text. The ultimate goal of Rant is to augment human creativity with the boundless potential of randomness, helping content producers consider their next ideas as not just static concepts, but seeds of countless possibilities.
 
+[berkin.me/rant](http://berkin.me/rant)
+
 ##Features of Rant
 
 * Recursive, weighted branching with customizable selection strategies
@@ -111,19 +113,17 @@ Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/
 
 ##Improve Rant
 If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. You are welcome to help with any of the following:
-* Documentation (wiki/code)
+* Documentation
 * Fixing bugs
 * Optimization
 * New functions
 * New language features
 * Improving old language features
 * New API features
-* Formatting support for other languages
-
-We have a [Trello board](https://trello.com/b/NnvgqGha/rant) where we also track progress on new features and bugfixes.
+* Formatting support for other cultures
 
 ##Learn Rant
-See [rantlang.github.io](http://rantlang.github.io) for full documentation of the API and Rant language, as well as additional example code.
+See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
 
 ##Other projects
 If you like Rant, you may also like these other, Rant-related projects:
