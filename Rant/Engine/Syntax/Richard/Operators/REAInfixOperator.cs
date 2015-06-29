@@ -33,7 +33,9 @@ namespace Rant.Engine.Syntax.Richard.Operators
 				throw new RantRuntimeException(sb.Pattern, Origin, "Left side of infix operation must be a number.");
 			if (!(rightValue is double))
 				throw new RantRuntimeException(sb.Pattern, Origin, "Right side of infix operation must be a number.");
-			return Operation((double)leftValue, (double)rightValue);
+            if (this is READivisionOperator && (double)rightValue == 0)
+                throw new RantRuntimeException(sb.Pattern, Origin, "Cannot divide by zero.");
+            return Operation((double)leftValue, (double)rightValue);
 		}
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)

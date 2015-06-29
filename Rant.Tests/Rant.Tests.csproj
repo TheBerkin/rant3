@@ -80,6 +80,7 @@
     <Compile Include="Richard\StdLib\Lists.cs" />
     <Compile Include="Richard\StdLib\Math.cs" />
     <Compile Include="Richard\StdLib\Strings.cs" />
+    <Compile Include="Richard\StdLib\Target.cs" />
     <Compile Include="Richard\StdLib\Type.cs" />
     <Compile Include="Richard\Strings.cs" />
     <Compile Include="Numbers.cs" />

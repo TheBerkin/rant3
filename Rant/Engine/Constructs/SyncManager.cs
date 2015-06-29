@@ -10,6 +10,8 @@ namespace Rant.Engine.Constructs
 
 		private readonly Sandbox _sb;
 
+        public bool SynchronizerExists(string name) => _syncTable.ContainsKey(name);
+
 		public SyncManager(Sandbox sb)
 		{
 			_sb = sb;
@@ -64,5 +66,13 @@ namespace Rant.Engine.Constructs
 			if (_syncTable.TryGetValue(name, out sync))
 				sync.Reset();
 		}
+
+        public Synchronizer this[string name]
+        {
+            get
+            {
+                return _syncTable[name];
+            }
+        }
 	}
 }

@@ -295,6 +295,177 @@ namespace Rant.Engine
         Global Objects
         */
 
+        [RichardGlobalObject("Target", "get", Returns = "string")]
+        [RantDescription("Returns the value of the target with the specified name, or undefined.")]
+        private static IEnumerator<RantExpressionAction> TargetGet(Sandbox sb, RantObject that, 
+            [RichardPropertyArgument("targetName", "string", Description = "The name of the target that will be returned.")]
+            RantObject obj)
+        {
+            string name = obj.Value as string;
+            if (name == null)
+                throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
+            string result = sb.CurrentOutput.GetActiveChannel().GetTargetValue(name);
+            sb.ScriptObjectStack.Push(result);
+            yield break;
+        }
+
+        [RichardGlobalObject("Target", "send")]
+        [RantDescription("Sends the provided value to the named target.")]
+        private static IEnumerator<RantExpressionAction> TargetSend(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("targetName", "string", Description = "The name of the target to write to.")]
+            RantObject obj1,
+            [RichardPropertyArgument("value", "string", Description = "The value to write to the target.")]
+            RantObject obj2
+        )
+        {
+            string targetName = obj1.Value as string;
+            string value = obj2.Value as string;
+            if (targetName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
+            if (value == null)
+                throw new RantRuntimeException(sb.Pattern, null, "value must be a string.");
+            sb.CurrentOutput.WriteToTarget(targetName, value);
+            yield break;
+        }
+
+        [RichardGlobalObject("Target", "clear")]
+        [RantDescription("Clears the named target.")]
+        private static IEnumerator<RantExpressionAction> TargetClear(Sandbox sb, RantObject that, 
+            [RichardPropertyArgument("targetName", "string", Description = "The target name to clear.")]
+            RantObject obj1)
+        {
+            string targetName = obj1.Value as string;
+            if (targetName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
+            sb.CurrentOutput.ClearTarget(targetName);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "set")]
+        [RantDescription("Creates and applies a synchronizer with the specified name and type.")]
+        private static IEnumerator<RantExpressionAction> SyncSet(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to create.")]
+            RantObject obj1,
+            [RichardPropertyArgument("syncType", "string", Description = "The type of synchronizer to create.")]
+            RantObject obj2)
+        {
+            string syncName = obj1.Value as string;
+            string syncType = obj2.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            if (syncType == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncType must be a string.");
+            object type;
+            Util.TryParseEnum(typeof(SyncType), syncType, out type);
+            sb.SyncManager.Create(syncName, (SyncType)type, true);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "reset")]
+        [RantDescription("Resets the named synchronizer.")]
+        private static IEnumerator<RantExpressionAction> SyncReset(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to reset.")]
+            RantObject obj1)
+        {
+            string syncName = obj1.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            sb.SyncManager.Reset(syncName);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "reseed")]
+        [RantDescription("Reseeds the named synchronizer with a provided seed.")]
+        private static IEnumerator<RantExpressionAction> SyncReseed(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to reseed.")]
+            RantObject obj1,
+            [RichardPropertyArgument("seed", "string", Description = "The value that the synchronizer will be seeded with.")]
+            RantObject obj2)
+        {
+            string syncName = obj1.Value as string;
+            string seed = obj2.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            if (seed == null)
+                throw new RantRuntimeException(sb.Pattern, null, "seed must be a string.");
+            if (!sb.SyncManager.SynchronizerExists(syncName))
+                throw new RantRuntimeException(sb.Pattern, null, "Synchronizer does not exist.");
+            sb.SyncManager[syncName].Reseed(seed);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "pin")]
+        [RantDescription("Pins the named synchronizer.")]
+        private static IEnumerator<RantExpressionAction> SyncPin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to pin.")]
+            RantObject obj1)
+        {
+            string syncName = obj1.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            sb.SyncManager.SetPinned(syncName, true);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "unpin")]
+        [RantDescription("Unpins the named synchronizer.")]
+        private static IEnumerator<RantExpressionAction> SyncUnpin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to unpin.")]
+            RantObject obj1)
+        {
+            string syncName = obj1.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            sb.SyncManager.SetPinned(syncName, false);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "isPinned", Returns = "bool")]
+        [RantDescription("Returns whether or not the named synchronizer is pinned.")]
+        private static IEnumerator<RantExpressionAction> SyncIsPinned(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to check for pinnedness. Pinfulness?")]
+            RantObject obj1)
+        {
+            string syncName = obj1.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            if (!sb.SyncManager.SynchronizerExists(syncName))
+                throw new RantRuntimeException(sb.Pattern, null, "Synchronizer does not exist.");
+            sb.ScriptObjectStack.Push(sb.SyncManager[syncName].Pinned);
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "exists", Returns = "bool")]
+        [RantDescription("Returns whether or not the named synchronizer exists.")]
+        private static IEnumerator<RantExpressionAction> SyncExists(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer whose existence will be checked.")]
+            RantObject obj1)
+        {
+            string syncName = obj1.Value as string;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            sb.ScriptObjectStack.Push(sb.SyncManager.SynchronizerExists(syncName));
+            yield break;
+        }
+
+        [RichardGlobalObject("Sync", "setPinnedState")]
+        [RantDescription("Sets the pinned state of the named synchronizer.")]
+        private static IEnumerator<RantExpressionAction> SyncSetPinnedState(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to set pinned state on.")]
+            RantObject obj1,
+            [RichardPropertyArgument("pinnedState", "bool", Description = "The pinned state that will be assigned to this synchronizer.")]
+            RantObject obj2)
+        {
+            string syncName = obj1.Value as string;
+            object pinnedState = obj2.Value;
+            if (syncName == null)
+                throw new RantRuntimeException(sb.Pattern, null, "syncName must be a string.");
+            if (!(pinnedState is bool))
+                throw new RantRuntimeException(sb.Pattern, null, "pinnedState must be a bool.");
+            sb.SyncManager.SetPinned(syncName, (bool)pinnedState);
+            yield break;
+        }
+
         [RichardGlobalObject("Convert", "toString", Returns = "string")]
         [RantDescription("Converts the specified object to a string.")]
         private static IEnumerator<RantExpressionAction> ConvertToString(Sandbox sb, RantObject that,
@@ -305,6 +476,19 @@ namespace Rant.Engine
             yield break;
         }
 
+        [RichardGlobalObject("Convert", "toNumber", Returns = "number")]
+        [RantDescription("Converts the specified object to a number.")]
+        private static IEnumerator<RantExpressionAction> ConvertToNumber(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("object", "any", Description = "The object to convert to a number.")]
+            RantObject obj)
+        {
+            string val = obj.ToString();
+            double n;
+            if (!Util.ParseDouble(val, out n))
+                sb.ScriptObjectStack.Push(new RantObject());
+            sb.ScriptObjectStack.Push(n);
+            yield break;
+        }
 
         [RichardGlobalObject("Output", "print")]
         [RantDescription("Prints the provided object, cast to a string.")]
@@ -381,7 +565,7 @@ namespace Rant.Engine
             yield break;
         }
         [RichardGlobalObject("Math", "atan2", Returns = "number")]
-        [RantDescription("Returns atan2(n).")]
+        [RantDescription("Returns atan2(y, n).")]
         private static IEnumerator<RantExpressionAction> MathAtan2(Sandbox sb, RantObject that,
             [RichardPropertyArgument("y", "number", Description = "The Y value of the atan2 operation.")]
             RantObject arg1,
@@ -486,6 +670,42 @@ namespace Rant.Engine
             if (!(num is double))
                 throw new RantRuntimeException(sb.Pattern, null, "N must be a number.");
             sb.ScriptObjectStack.Push(Math.Log10((double)num));
+            yield break;
+        }
+
+        [RichardGlobalObject("Math", "max", Returns = "number")]
+        [RantDescription("Returns the largest of the two provided numbers.")]
+        private static IEnumerator<RantExpressionAction> MathMax(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("a", "number")]
+            RantObject arg1,
+            [RichardPropertyArgument("b", "number")]
+            RantObject arg2)
+        {
+            var a = arg1.Value;
+            if (!(a is double))
+                throw new RantRuntimeException(sb.Pattern, null, "A must be a number.");
+            var b = arg2.Value;
+            if (!(b is double))
+                throw new RantRuntimeException(sb.Pattern, null, "B must be a number.");
+            sb.ScriptObjectStack.Push(Math.Max((double)a, (double)b));
+            yield break;
+        }
+
+        [RichardGlobalObject("Math", "min", Returns = "number")]
+        [RantDescription("Returns the smallest of the two provided numbers.")]
+        private static IEnumerator<RantExpressionAction> MathMin(Sandbox sb, RantObject that,
+            [RichardPropertyArgument("a", "number")]
+            RantObject arg1,
+            [RichardPropertyArgument("b", "number")]
+            RantObject arg2)
+        {
+            var a = arg1.Value;
+            if (!(a is double))
+                throw new RantRuntimeException(sb.Pattern, null, "A must be a number.");
+            var b = arg2.Value;
+            if (!(b is double))
+                throw new RantRuntimeException(sb.Pattern, null, "B must be a number.");
+            sb.ScriptObjectStack.Push(Math.Min((double)a, (double)b));
             yield break;
         }
 
