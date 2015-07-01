@@ -114,6 +114,16 @@ namespace Rant.Engine
 
 		public Stack<object> ScriptObjectStack => _scriptObjectStack;
 
+        /// <summary>
+        /// Gets or sets the expected result for the current flag condition.
+        /// </summary>
+        public bool FlagConditionExpectedResult { get; set; }
+
+        /// <summary>
+        /// Gets a collection of the flags currently being used for the flag condition.
+        /// </summary>
+        public HashSet<string> ConditionFlags { get; } = new HashSet<string>(); 
+
 		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
 		{
 			_engine = engine;

@@ -749,8 +749,9 @@ namespace Rant.Engine
 			sb.CurrentBlockAttribs.End = endPattern;
 		}
 
-		[RantFunction]
-		[RantDescription("Instructs Rant not to consume the block attributes after they are used.")]
+        // TODO: Finish [persist].
+        //[RantFunction]
+        [RantDescription("Instructs Rant not to consume the block attributes after they are used.")]
 		private static void Persist(Sandbox sb, AttribPersistence persistence)
 		{
 			sb.CurrentBlockAttribs.Persistence = persistence;
@@ -781,5 +782,90 @@ namespace Rant.Engine
 
 	        yield return action;
 	    }
-	}
+
+	    [RantFunction]
+	    [RantDescription("Defines the specified flags.")]
+	    private static void Define(Sandbox sb, 
+            [RantDescription("The list of flags to define.")]
+            params string[] flags)
+	    {
+	        foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+	        {
+	            sb.Engine.Flags.Add(flag);
+	        }
+	    }
+
+        [RantFunction]
+        [RantDescription("Undefines the specified flags.")]
+        private static void Undef(Sandbox sb, 
+            [RantDescription("The list of flags to undefine.")]
+            params string[] flags)
+        {
+            foreach (var flag in flags)
+            {
+                sb.Engine.Flags.Remove(flag);
+            }
+        }
+
+        [RantFunction]
+        [RantDescription("Toggles the specified flags.")]
+        private static void Toggle(Sandbox sb, params string[] flags)
+        {
+            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            {
+                if (sb.Engine.Flags.Contains(flag))
+                {
+                    sb.Engine.Flags.Remove(flag);
+                }
+                else
+                {
+                    sb.Engine.Flags.Add(flag);
+                }
+            }
+        }
+
+        [RantFunction]
+        [RantDescription("Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are set.")]
+        private static void IfDef(Sandbox sb, params string[] flags)
+        {
+            sb.FlagConditionExpectedResult = true;
+            sb.ConditionFlags.Clear();
+            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            {
+                sb.ConditionFlags.Add(flag);
+            }
+        }
+
+        [RantFunction]
+        [RantDescription("Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are unset.")]
+        private static void IfNDef(Sandbox sb, params string[] flags)
+        {
+            sb.FlagConditionExpectedResult = false;
+            sb.ConditionFlags.Clear();
+            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            {
+                sb.ConditionFlags.Add(flag);
+            }
+        }
+
+	    [RantFunction]
+	    [RantDescription("Executes a pattern if the current flag condition passes.")]
+	    private static IEnumerator<RantAction> Then(Sandbox sb, RantAction conditionPassPattern)
+	    {
+	        if (sb.Engine.Flags.All(flag => sb.ConditionFlags.Contains(flag) == sb.FlagConditionExpectedResult))
+	        {
+	            yield return conditionPassPattern;
+	        }
+	    }
+
+        [RantFunction]
+        [RantDescription("Executes a pattern if the current flag condition fails.")]
+        private static IEnumerator<RantAction> Else(Sandbox sb, RantAction conditionPassPattern)
+        {
+            if (sb.Engine.Flags.Any(flag => sb.ConditionFlags.Contains(flag) != sb.FlagConditionExpectedResult))
+            {
+                yield return conditionPassPattern;
+            }
+        }
+    }
 }
