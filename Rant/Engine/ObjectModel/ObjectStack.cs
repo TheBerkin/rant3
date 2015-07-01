@@ -86,5 +86,7 @@ namespace Rant.Engine.ObjectModel
             _level = 0;
             _table.Globals.Clear();
         }
+
+        public Dictionary<string, RantObject> CurrentLocals => _locals;
     }
 }

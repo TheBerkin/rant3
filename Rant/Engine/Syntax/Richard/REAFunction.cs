@@ -49,7 +49,7 @@ namespace Rant.Engine.Syntax.Richard
             for (var i = 0; i < _argNames.Length; i++)
                 oldLocals[_argNames[i]] = sb.Objects[_argNames[i]];
             sb.Objects.EnterScope();
-			for (var i = 0; i < _argNames.Length; i++)
+            for (var i = 0; i < _argNames.Length; i++)
 				sb.Objects[_argNames[i]] = new RantObject(sb.ScriptObjectStack.Pop());
 			yield return _body;
 			sb.Objects.ExitScope();

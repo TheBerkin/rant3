@@ -184,5 +184,44 @@ namespace Rant.Tests.Richard
 ");
             Assert.AreEqual("0, 1, 2, 3", output.Main);
         }
+
+        [Test]
+        public void EmptyListPrint()
+        {
+            Assert.AreEqual("1", rant.Do(@"
+[@
+  {
+    var lst = [1];
+    lst.pop();
+    for (i in lst)
+    {
+        Output.print(lst[i]);
+    }
+  }
+]
+").Main);
+        }
+
+        [Test]
+        public void ListOfFunctions()
+        {
+            Assert.AreEqual("3123", rant.Do(@"
+[@
+  {
+    var lst = [ ];
+    for (i in [1,2,3])
+    {
+        var j = i;
+        var f = function() { return j;};
+        lst.push(f);
+    }
+    Output.print(lst.length);
+    for (i in lst)
+    {
+        Output.print(lst[i]());
+    }
+  }
+]").Main);
+        }
     }
 }

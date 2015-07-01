@@ -36,7 +36,9 @@ namespace Rant.Engine.Syntax.Richard
                 throw new RantRuntimeException(sb.Pattern, Range, "Provided expression is not a list or object.");
             if (expr is REAList)
             {
-                var items = (expr as REAList).Items;
+                yield return expr as REAList;
+                var list = sb.ScriptObjectStack.Pop() as REAList;
+                var items = (list as REAList).Items;
                 for (var i = 0; i < items.Count; i++)
                 {
                     sb.Objects.EnterScope();
