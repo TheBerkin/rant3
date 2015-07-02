@@ -143,6 +143,7 @@ namespace Rant.Vocabulary
                     result = pool
                         .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
                         .PickEntry(rng);
+                    if (result == null) return null;
                     _rhymeTable[rhyme] = _.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
                 }
@@ -157,7 +158,7 @@ namespace Rant.Vocabulary
                 break; // Ignore any extra rhyme carriers
             }
 
-            if (result == null) return result;
+            if (result == null) return null;
 
             foreach (var a in carrier.GetCarriers(CarrierComponent.Associative))
                 if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
