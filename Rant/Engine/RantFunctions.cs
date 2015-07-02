@@ -860,11 +860,11 @@ namespace Rant.Engine
 
         [RantFunction]
         [RantDescription("Executes a pattern if the current flag condition fails.")]
-        private static IEnumerator<RantAction> Else(Sandbox sb, RantAction conditionPassPattern)
+        private static IEnumerator<RantAction> Else(Sandbox sb, RantAction conditionFailPattern)
         {
             if (sb.Engine.Flags.Any(flag => sb.ConditionFlags.Contains(flag) != sb.FlagConditionExpectedResult))
             {
-                yield return conditionPassPattern;
+                yield return conditionFailPattern;
             }
         }
     }

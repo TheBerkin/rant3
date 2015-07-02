@@ -12,7 +12,7 @@ namespace Rant.Vocabulary
         public static RantDictionaryEntry PickEntry(this IEnumerable<RantDictionaryEntry> enumerable, RNG rng)
         {
             var array = enumerable as RantDictionaryEntry[] ?? enumerable.ToArray();
-            return array[rng.Next(array.Length)];
+            return array.Length > 0 ? array[rng.Next(array.Length)] : null;
         }
 
         public static IEnumerable<string> GetArgs(string argString)
