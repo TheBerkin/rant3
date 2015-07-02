@@ -242,8 +242,11 @@ namespace Rant.Engine
 			bool timed = timeoutMS > 0;
             bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
 
-            if (!_stopwatch.IsRunning)
-                _stopwatch.Restart();
+		    if (!_stopwatch.IsRunning)
+		    {
+		        _stopwatch.Reset();
+		        _stopwatch.Start();
+		    }
 
 			// Push the AST root
 		    CurrentAction = pattern.Action;

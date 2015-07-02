@@ -789,7 +789,7 @@ namespace Rant.Engine
             [RantDescription("The list of flags to define.")]
             params string[] flags)
 	    {
-	        foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+	        foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
 	        {
 	            sb.Engine.Flags.Add(flag);
 	        }
@@ -811,7 +811,7 @@ namespace Rant.Engine
         [RantDescription("Toggles the specified flags.")]
         private static void Toggle(Sandbox sb, params string[] flags)
         {
-            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
             {
                 if (sb.Engine.Flags.Contains(flag))
                 {
@@ -830,7 +830,7 @@ namespace Rant.Engine
         {
             sb.FlagConditionExpectedResult = true;
             sb.ConditionFlags.Clear();
-            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
             {
                 sb.ConditionFlags.Add(flag);
             }
@@ -842,7 +842,7 @@ namespace Rant.Engine
         {
             sb.FlagConditionExpectedResult = false;
             sb.ConditionFlags.Clear();
-            foreach (var flag in flags.Where(f => !String.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+            foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
             {
                 sb.ConditionFlags.Add(flag);
             }

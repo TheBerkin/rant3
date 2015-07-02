@@ -34,13 +34,13 @@ namespace Rant.Engine
             foreach (var method in typeof(RichardFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
             {
                 if (!method.IsStatic) continue;
-                var attr = method.GetCustomAttributes().OfType<RichardProperty>().FirstOrDefault();
+                var attr = method.GetCustomAttributes(typeof(RichardProperty), true).OfType<RichardProperty>().FirstOrDefault();
                 if (attr == null)
                 {
-                    var objectAttr = method.GetCustomAttributes().OfType<RichardGlobalObject>().FirstOrDefault();
+                    var objectAttr = method.GetCustomAttributes(typeof(RichardGlobalObject), true).OfType<RichardGlobalObject>().FirstOrDefault();
                     if (objectAttr == null) continue;
                     var name = String.IsNullOrEmpty(objectAttr.Property) ? method.Name.ToLower() : objectAttr.Property;
-                    var descAttr = method.GetCustomAttributes().OfType<RantDescriptionAttribute>().FirstOrDefault();
+                    var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), true).OfType<RantDescriptionAttribute>().FirstOrDefault();
                     var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
                     info.TreatAsRichardFunction = objectAttr.IsFunction;
                     if (Util.ValidateName(name)) RegisterGlobalObject(objectAttr.Name, objectAttr.Property, info);
@@ -48,7 +48,7 @@ namespace Rant.Engine
                 else
                 {
                     var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
-                    var descAttr = method.GetCustomAttributes().OfType<RantDescriptionAttribute>().FirstOrDefault();
+                    var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), true).OfType<RantDescriptionAttribute>().FirstOrDefault();
                     var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
                     info.TreatAsRichardFunction = attr.IsFunction;
                     if (Util.ValidateName(name)) RegisterProperty(attr.ObjectType, info);
@@ -219,7 +219,7 @@ namespace Rant.Engine
         {
             yield return (that.Value as REAList);
             var list = sb.ScriptObjectStack.Pop();
-            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (list as REAList).Items));
+            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (list as REAList).Items.Select(item => item.ToString()).ToArray()));
             yield break;
         }
 

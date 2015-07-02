@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using Rant.Engine.Metadata;
@@ -19,7 +20,7 @@ namespace Rant.Engine
 	        foreach (var value in Enum.GetNames(NativeType))
 	        {
                 yield return new RantModeValue(Util.CamelToSnake(value), 
-                    (NativeType.GetMember(value)[0].GetCustomAttribute(typeof(RantDescriptionAttribute)) as RantDescriptionAttribute)?.Description ?? String.Empty);
+                    (NativeType.GetMember(value)[0].GetCustomAttributes(typeof(RantDescriptionAttribute), true).First() as RantDescriptionAttribute)?.Description ?? String.Empty);
 	        }
 	    }
 
