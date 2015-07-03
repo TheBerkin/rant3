@@ -73,6 +73,7 @@
     <Compile Include="Richard\Blocks.cs" />
     <Compile Include="Richard\ControlFlow.cs" />
     <Compile Include="Richard\Functions.cs" />
+    <Compile Include="Richard\GlobalObjects.cs" />
     <Compile Include="Richard\Invalid.cs" />
     <Compile Include="Richard\Lists.cs" />
     <Compile Include="Richard\StdLib\Convert.cs" />

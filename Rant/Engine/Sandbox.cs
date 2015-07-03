@@ -232,7 +232,6 @@ namespace Rant.Engine
 			LastTimeout = timeout;
 
             _scriptObjectStack.Clear();
-            _objects.Clear();
 
 			var callStack = new Stack<IEnumerator<RantAction>>();
 			var actionStack = new Stack<RantAction>();
