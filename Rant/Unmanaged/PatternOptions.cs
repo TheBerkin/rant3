@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿#if !UNITY
+
+using System.Runtime.InteropServices;
 
 namespace Rant.Unmanaged
 {
@@ -9,3 +11,5 @@ namespace Rant.Unmanaged
         public int CharLimit;
     }
 }
+
+#endif

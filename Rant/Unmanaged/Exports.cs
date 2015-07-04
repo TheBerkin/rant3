@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !UNITY
+
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -87,3 +89,5 @@ namespace Rant.Unmanaged
         public static ErrorCode LoadPackage(UnmanagedRantContext context, string packagePath) => context.Run(() => context.Rant.LoadPackage(packagePath));
     }
 }
+
+#endif

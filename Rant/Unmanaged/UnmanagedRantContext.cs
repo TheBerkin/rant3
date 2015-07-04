@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !UNITY
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace Rant.Unmanaged
@@ -53,3 +55,5 @@ namespace Rant.Unmanaged
         }
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿namespace Rant.Unmanaged
+﻿#if !UNITY
+
+namespace Rant.Unmanaged
 {
     internal enum ErrorCode
     {
@@ -8,3 +10,5 @@
         OtherError = 3
     }
 }
+
+#endif
