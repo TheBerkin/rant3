@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
@@ -82,7 +81,7 @@ namespace Rant
                 path += ".rantpkg";
             }
 
-            using (var writer = new EasyWriter(new GZipStream(File.Create(path), CompressionMode.Compress)))
+            using (var writer = new EasyWriter(File.Create(path)))
             {
                 // Magic
                 writer.WriteBytes(Encoding.ASCII.GetBytes(Magic));
@@ -140,12 +139,18 @@ namespace Rant
         /// <returns></returns>
         public static RantPackage Load(string path)
         {
-            if (String.IsNullOrEmpty(Path.GetExtension(path)))
-            {
-                path += ".rantpkg";
-            }
+            if (String.IsNullOrEmpty(Path.GetExtension(path))) path += ".rantpkg";
+            return Load(File.Open(path, FileMode.Open));
+        }
 
-            using (var reader = new EasyReader(new GZipStream(File.Open(path, FileMode.Open), CompressionMode.Decompress)))
+        /// <summary>
+        /// Loads a package from the specified stream and returns it as a RantPackage object.
+        /// </summary>
+        /// <param name="source">The stream to load the package data from.</param>
+        /// <returns></returns>
+        public static RantPackage Load(Stream source)
+        {
+            using (var reader = new EasyReader(source))
             {
                 if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != Magic)
                     throw new InvalidDataException("File is corrupt.");
