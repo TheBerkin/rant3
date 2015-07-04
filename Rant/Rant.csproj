@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>Rant-Unity</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
