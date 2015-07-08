@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 
 using Rant.Engine.Compiler;
 using Rant.Engine.Syntax;
-using Rant.Engine.Constructs;
-using Rant.Stringes;
 
 namespace Rant
 {
@@ -15,9 +11,9 @@ namespace Rant
     public sealed class RantPattern
     {
         /// <summary>
-        /// The name of the source code.
+        /// Gets or sets the name of the source code.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
 		/// Describes the origin of the pattern.
@@ -45,7 +41,7 @@ namespace Rant
         /// <param name="code">The code to compile.</param>
         /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
         /// <returns></returns>
-        public static RantPattern FromString(string code) => new RantPattern("Source", RantPatternSource.String, code);
+        public static RantPattern FromString(string code) => new RantPattern("Pattern", RantPatternSource.String, code);
 
         /// <summary>
         /// Compiles a pattern from a string with the specified name.
