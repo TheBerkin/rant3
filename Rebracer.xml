@@ -37,6 +37,7 @@
         <PropertyValue name="NewLines_Keywords_Finally">1</PropertyValue>
         <PropertyValue name="NewLines_ObjectInitializer_EachMember">1</PropertyValue>
         <PropertyValue name="NewLines_QueryExpression_EachClause">1</PropertyValue>
+        <PropertyValue name="RenameTrackingPreview">1</PropertyValue>
         <PropertyValue name="SortUsings_PlaceSystemFirst">0</PropertyValue>
         <PropertyValue name="Space_AfterBasesColon">1</PropertyValue>
         <PropertyValue name="Space_AfterCast">0</PropertyValue>
@@ -118,6 +119,7 @@
         <PropertyValue name="IndentGotoLabels">1</PropertyValue>
         <PropertyValue name="IndentNamespaceContents">true</PropertyValue>
         <PropertyValue name="IndentPreprocessor">2</PropertyValue>
+        <PropertyValue name="IndentationReference">2</PropertyValue>
         <PropertyValue name="NewlineControlBlockBrace">0</PropertyValue>
         <PropertyValue name="NewlineEmptyFunctionCloseBrace">true</PropertyValue>
         <PropertyValue name="NewlineEmptyTypeCloseBrace">true</PropertyValue>
@@ -134,6 +136,7 @@
         <PropertyValue name="PreserveCommentIndentation">false</PropertyValue>
         <PropertyValue name="PreserveInitListSpace">true</PropertyValue>
         <PropertyValue name="PreserveParameterIndentation">false</PropertyValue>
+        <PropertyValue name="RefactorScope">2</PropertyValue>
         <PropertyValue name="RemoveSpaceBeforeSemicolon">true</PropertyValue>
         <PropertyValue name="RenameRenameComments">false</PropertyValue>
         <PropertyValue name="RenameRenameInactive">false</PropertyValue>
@@ -178,6 +181,9 @@
       </ToolsOptionsSubCategory>
       <ToolsOptionsSubCategory name="TypeScript Specific">
         <PropertyValue name="AutomaticallyCompileTypeScriptFilesWhenSavedWhenNoSolution">false</PropertyValue>
+        <PropertyValue name="ES3ForFilesThatAreNotPartOfAProject">false</PropertyValue>
+        <PropertyValue name="ES5ForFilesThatAreNotPartOfAProject">true</PropertyValue>
+        <PropertyValue name="ES6ForFilesThatAreNotPartOfAProject">false</PropertyValue>
         <PropertyValue name="FormatCompletedBlockOnRightCurlyBrace">true</PropertyValue>
         <PropertyValue name="FormatCompletedLineOnEnter">true</PropertyValue>
         <PropertyValue name="FormatCompletedStatementOnSemicolon">true</PropertyValue>
@@ -190,10 +196,13 @@
         <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
+        <PropertyValue name="ShowGruntGulpDialogForAspNet">true</PropertyValue>
         <PropertyValue name="ShowVirtualProjectsInSolutionExplorerWhenNoSolution">true</PropertyValue>
         <PropertyValue name="ShowVirtualProjectsInSolutionExplorerWhenSolutionOpen">false</PropertyValue>
         <PropertyValue name="UseAMDCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
         <PropertyValue name="UseCommonJSCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
+        <PropertyValue name="UseSystemCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
+        <PropertyValue name="UseUMDCodeGenerationForModulesThatAreNotPartOfAProject">false</PropertyValue>
       </ToolsOptionsSubCategory>
       <ToolsOptionsSubCategory name="HTMLX Specific">
         <PropertyValue name="EnableTagNavigator">false</PropertyValue>

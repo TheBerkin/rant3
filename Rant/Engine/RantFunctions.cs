@@ -867,5 +867,12 @@ namespace Rant.Engine
                 yield return conditionFailPattern;
             }
         }
+
+	    [RantFunction]
+	    [RantDescription("Yields the currenty written output.")]
+	    private static void Yield(Sandbox sb)
+	    {
+	        sb.SetYield();
+	    }
     }
 }

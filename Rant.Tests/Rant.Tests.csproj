@@ -90,6 +90,7 @@
     <Compile Include="Queries.cs" />
     <Compile Include="Blocks.cs" />
     <Compile Include="Replacers.cs" />
+    <Compile Include="Serial.cs" />
     <Compile Include="Subroutines.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="Utilities.cs" />
