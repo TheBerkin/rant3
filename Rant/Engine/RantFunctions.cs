@@ -874,5 +874,19 @@ namespace Rant.Engine
 	    {
 	        sb.SetYield();
 	    }
+
+	    [RantFunction]
+	    [RantDescription("Branches the internal RNG according to a seed.")]
+	    private static void Branch(Sandbox sb, string id)
+	    {
+	        sb.RNG.Branch(id.Hash());
+	    }
+
+	    [RantFunction]
+	    [RantDescription("Merges the topmost branch of the internal RNG, if it has been branched at least once.")]
+	    private static void Merge(Sandbox sb)
+	    {
+	        sb.RNG.Merge();
+	    }
     }
 }
