@@ -1,4 +1,6 @@
-﻿namespace Rant
+﻿using Rant.Engine;
+
+namespace Rant
 {
     /// <summary>
     /// Represents the output of a single channel.
@@ -15,10 +17,13 @@
         /// </summary>
         public string Value { get; }
 
-        internal RantOutputEntry(string name, string value)
+        public ChannelVisibility Visiblity { get; }
+
+        internal RantOutputEntry(string name, string value, ChannelVisibility visiblity)
         {
             Name = name;
             Value = value;
+            Visiblity = visiblity;
         }
     }
 }

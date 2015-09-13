@@ -5,7 +5,7 @@ namespace Rant.Engine
     /// <summary>
     /// Provides visibility settings for output channels.
     /// </summary>
-    internal enum ChannelVisibility
+    public enum ChannelVisibility
     {
         /// <summary>
         /// Channel outputs to itself and 'main'.

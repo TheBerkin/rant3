@@ -18,7 +18,9 @@ namespace Rant
         internal RantOutput(long seed, long startingGen, ChannelWriter channels)
         {
             _channelMap = channels.Channels.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
-            _entries = _channelMap.Select(pair => new RantOutputEntry(pair.Key, pair.Value)).ToArray();
+            _entries = channels.Channels.Select(channel => 
+                new RantOutputEntry(channel.Key, channel.Value.Value, channel.Value.Visiblity)
+            ).ToArray();
             Seed = seed;
             BaseGeneration = startingGen;
         }
