@@ -1,6 +1,6 @@
 // LzmaBase.cs
 
-namespace Rant.IO.Compression.Compression.LZMA
+namespace Rant.IO.Compression.LZMA
 {
 	internal abstract class Base
 	{

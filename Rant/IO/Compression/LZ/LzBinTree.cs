@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Rant.IO.Compression.Compression.LZ
+namespace Rant.IO.Compression.LZ
 {
 	public class BinTree : InWindow, IMatchFinder
 	{

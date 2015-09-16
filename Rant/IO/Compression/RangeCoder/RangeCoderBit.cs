@@ -1,6 +1,6 @@
 using System;
 
-namespace Rant.IO.Compression.Compression.RangeCoder
+namespace Rant.IO.Compression.RangeCoder
 {
 	struct BitEncoder
 	{
