@@ -69,6 +69,7 @@
     <Compile Include="Compiler\Invalid.cs" />
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Flags.cs" />
+    <Compile Include="Misc\Bson.cs" />
     <Compile Include="Richard\Arithmetic.cs" />
     <Compile Include="Richard\Blocks.cs" />
     <Compile Include="Richard\ControlFlow.cs" />

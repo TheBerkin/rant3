@@ -465,6 +465,19 @@ namespace Rant.IO
         }
 
         /// <summary>
+        /// Reads a null-terminated string (C-string).
+        /// </summary>
+        /// <returns>The string that was read.</returns>
+        public string ReadCString()
+        {
+            var bytes = new List<byte>();
+            byte c;
+            while((c = ReadByte()) != 0x00)
+                bytes.Add(c);
+            return Encoding.UTF8.GetString(bytes.ToArray());
+        }
+
+        /// <summary>
         /// Reads an array of Unicode strings.
         /// </summary>
         /// <returns></returns>

@@ -93,7 +93,7 @@ namespace Rant.IO
         /// <param name="value">The byte to write.</param>
         public EasyWriter Write(byte value)
         {
-            _stream.Write(new[] { value }, 0, 1);
+            _stream.WriteByte(value);
             return this;
         }
 
@@ -234,11 +234,15 @@ namespace Rant.IO
         /// Writes a Unicode string to the stream.
         /// </summary>
         /// <param name="value">The Unicode string to write.</param>
-        public EasyWriter Write(string value)
+        /// <param name="nullTerminated">Whether or not the string should be written as a C-string.</param>
+        public EasyWriter Write(string value, bool nullTerminated = false)
         {
-            int bytes = Encoding.Unicode.GetByteCount(value);
-            Write(bytes);
-            _stream.Write(Encoding.Unicode.GetBytes(value), 0, bytes);
+            var bytes = Encoding.Unicode.GetBytes(value);
+            if(!nullTerminated)
+                Write(bytes.Length);
+            _stream.Write(bytes, 0, bytes.Length);
+            if (nullTerminated)
+                _stream.WriteByte(0);
             return this;
         }
 
@@ -247,11 +251,14 @@ namespace Rant.IO
         /// </summary>
         /// <param name="value">The string to write to the stream.</param>
         /// <param name="encoding">The encoding to write the string in.</param>
-        public EasyWriter Write(string value, Encoding encoding)
+        public EasyWriter Write(string value, Encoding encoding, bool nullTerminated = false)
         {
-            int bytes = encoding.GetByteCount(value);
-            Write(bytes);
-            _stream.Write(encoding.GetBytes(value), 0, bytes);
+            var bytes = encoding.GetBytes(value);
+            if (!nullTerminated)
+                Write(bytes.Length);
+            _stream.Write(bytes, 0, bytes.Length);
+            if (nullTerminated)
+                _stream.WriteByte(0);
             return this;
         }
 
@@ -312,6 +319,16 @@ namespace Rant.IO
             {
                 Write<T>(item, isNumeric);
             }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes the specified byte array to the stream.
+        /// </summary>
+        /// <param name="value">The byte array to write.</param>
+        public EasyWriter Write(byte[] value)
+        {
+            _stream.Write(value, 0, value.Length);
             return this;
         }
 
