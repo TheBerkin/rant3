@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 
 using Rant.IO;
+using Rant.IO.Bson;
+using Rant.IO.Compression;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -14,10 +16,19 @@ namespace Rant
     /// </summary>
     public sealed class RantPackage
     {
-        private const string Magic = "RPKG";
+        private const string OLD_MAGIC = "RPKG";
+        private const string MAGIC = "RANT";
+        private const byte PACKAGE_VERSION = 2;
 
         private HashSet<RantPattern> _patterns;
         private HashSet<RantDictionaryTable> _tables;
+
+        public string Name = "";
+        public string Namespace = "";
+        public string Description = "";
+        public string[] Tags = new string[] { };
+        public string Version = "";
+        public string[] Authors = new string[] { };
 
         /// <summary>
         /// Adds the specified pattern to the package.
@@ -68,13 +79,98 @@ namespace Rant
             if (_tables == null) yield break;
             foreach (var table in _tables)
                 yield return table;
-        } 
+        }
 
         /// <summary>
         /// Saves the package to the specified file path.
         /// </summary>
         /// <param name="path">The path to the file to create.</param>
-        public void Save(string path)
+        public void Save(
+            string path, 
+            bool compress = true, 
+            BsonStringTableMode stringTableMode = BsonStringTableMode.None)
+        {
+            if (String.IsNullOrEmpty(Path.GetExtension(path)))
+            {
+                path += ".rantpkg";
+            }
+
+            using (var writer = new EasyWriter(File.Create(path)))
+            {
+                var doc = new BsonDocument(stringTableMode);
+                var info = doc.Top["info"] = new BsonItem();
+                info["name"] = new BsonItem(Name);
+                info["namespace"] = new BsonItem(Namespace);
+                info["description"] = new BsonItem(Description);
+                info["tags"] = new BsonItem(Tags);
+                info["version"] = new BsonItem(Version);
+                info["authors"] = new BsonItem(Authors);
+                
+                var patterns = doc.Top["patterns"] = new BsonItem();
+                if(_patterns != null)
+                    foreach(var pattern in _patterns)
+                        patterns[pattern.Name] = new BsonItem(pattern.Code);
+
+                var tables = doc.Top["tables"] = new BsonItem();
+                foreach(var table in _tables)
+                {
+                    var t = tables[table.Name] = new BsonItem();
+                    t["name"] = new BsonItem(table.Name);
+                    t["subs"] = new BsonItem(table.Subtypes);
+                    t["language"] = new BsonItem(table.Language);
+                    t["hidden"] = new BsonItem(table.HiddenClasses.ToArray());
+                    t["hints"] = new BsonItem(0);
+                    var entries = new List<BsonItem>();
+                    foreach(var entry in table.GetEntries())
+                    {
+                        var e = new BsonItem();
+                        if(entry.Weight != 1)
+                            e["weight"] = new BsonItem(entry.Weight);
+                        var requiredClasses = entry.GetRequiredClasses().ToArray();
+                        if(requiredClasses.Length > 0)
+                            e["classes"] = new BsonItem(requiredClasses);
+                        var optionalClasses = entry.GetOptionalClasses().ToArray();
+                        if(optionalClasses.Length > 0)
+                            e["optional_classes"] = new BsonItem();
+                        var terms = new List<BsonItem>();
+                        foreach(var term in entry.Terms)
+                        {
+                            var et = new BsonItem();
+                            et["value"] = new BsonItem(term.Value);
+                            if(term.Pronunciation != "")
+                                et["pron"] = new BsonItem(term.Pronunciation);
+                            terms.Add(et);
+                        }
+                        e["terms"] = new BsonItem(terms.ToArray());
+                        entries.Add(e);
+                    }
+                    t["entries"] = new BsonItem(entries.ToArray());
+                }
+
+                var data = doc.ToByteArray();
+                if (compress)
+                    data = EasyCompressor.Compress(data);
+                writer.Write(Encoding.ASCII.GetBytes("RANT"));
+                writer.Write((uint)2);
+                writer.Write(compress);
+                writer.Write((int)stringTableMode);
+                if (stringTableMode != BsonStringTableMode.None)
+                {
+                    if (compress)
+                        writer.Write(EasyCompressor.Compress(doc.GenerateStringTable()));
+                    else
+                        writer.Write(doc.GenerateStringTable());
+                }
+                writer.Write(data.Length);
+                writer.Write(data);
+            }
+        }
+        
+        /// <summary>
+        /// Saves the package using the old Rant package format to the specified file path.
+        /// </summary>
+        /// <param name="path">The path to the file to create.</param>
+        public void SaveOld(string path)
         {
             if (String.IsNullOrEmpty(Path.GetExtension(path)))
             {
@@ -84,7 +180,7 @@ namespace Rant
             using (var writer = new EasyWriter(File.Create(path)))
             {
                 // Magic
-                writer.WriteBytes(Encoding.ASCII.GetBytes(Magic));
+                writer.WriteBytes(Encoding.ASCII.GetBytes(OLD_MAGIC));
 
                 // Counts
                 writer.Write(_patterns?.Count ?? 0);
@@ -152,59 +248,66 @@ namespace Rant
         {
             using (var reader = new EasyReader(source))
             {
-                if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != Magic)
+                var magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
+                if (magic == OLD_MAGIC)
+                    return LoadOldPackage(reader);
+                else if(magic != MAGIC)
                     throw new InvalidDataException("File is corrupt.");
+                return new RantPackage();
+            }
+        }
 
-                int numPatterns = reader.ReadInt32();
-                int numTables = reader.ReadInt32();
+        private static RantPackage LoadOldPackage(EasyReader reader)
+        {
+            int numPatterns = reader.ReadInt32();
+            int numTables = reader.ReadInt32();
 
-                if (numPatterns < 0 || numTables < 0)
-                    throw new InvalidDataException("File is corrupt.");
+            if (numPatterns < 0 || numTables < 0)
+                throw new InvalidDataException("File is corrupt.");
 
-                var pkg = new RantPackage();
+            var pkg = new RantPackage();
 
-                // Patterns
-                for (int i = 0; i < numPatterns; i++)
+            // Patterns
+            for (int i = 0; i < numPatterns; i++)
+            {
+                var name = reader.ReadString();
+                var code = reader.ReadString();
+
+                pkg.AddPattern(new RantPattern(name, RantPatternSource.String, code));
+            }
+
+            // Tables
+            for (int i = 0; i < numTables; i++)
+            {
+                var name = reader.ReadString();
+                var subs = reader.ReadStringArray();
+                int numEntries = reader.ReadInt32();
+                var hiddenClasses = reader.ReadStringArray();
+                var entries = new RantDictionaryEntry[numEntries];
+
+                for (int j = 0; j < numEntries; j++)
                 {
-                    var name = reader.ReadString();
-                    var code = reader.ReadString();
+                    int weight = reader.ReadInt32();
+                    bool flags = reader.ReadBoolean(); // unused
+                    int numTerms = reader.ReadInt32();
+                    var terms = new RantDictionaryTerm[numTerms];
 
-                    pkg.AddPattern(new RantPattern(name, RantPatternSource.String, code));
-                }
-
-                // Tables
-                for (int i = 0; i < numTables; i++)
-                {
-                    var name = reader.ReadString();
-                    var subs = reader.ReadStringArray();
-                    int numEntries = reader.ReadInt32();
-                    var hiddenClasses = reader.ReadStringArray();
-                    var entries = new RantDictionaryEntry[numEntries];
-
-                    for (int j = 0; j < numEntries; j++)
+                    for (int k = 0; k < numTerms; k++)
                     {
-                        int weight = reader.ReadInt32();
-                        bool flags = reader.ReadBoolean(); // unused
-                        int numTerms = reader.ReadInt32();
-                        var terms = new RantDictionaryTerm[numTerms];
-
-                        for (int k = 0; k < numTerms; k++)
-                        {
-                            var value = reader.ReadString();
-                            var pron = reader.ReadString();
-                            terms[k] = new RantDictionaryTerm(value, pron);
-                        }
-
-                        var classes = reader.ReadStringArray();
-
-                        entries[j] = new RantDictionaryEntry(terms, classes, weight);
+                        var value = reader.ReadString();
+                        var pron = reader.ReadString();
+                        terms[k] = new RantDictionaryTerm(value, pron);
                     }
 
-                    pkg.AddTable(new RantDictionaryTable(name, subs, entries, hiddenClasses));
+                    var classes = reader.ReadStringArray();
+
+                    entries[j] = new RantDictionaryEntry(terms, classes, weight);
                 }
 
-                return pkg;
+                pkg.AddTable(new RantDictionaryTable(name, subs, entries, hiddenClasses));
             }
+
+            return pkg;
         }
     }
 }

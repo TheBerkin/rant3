@@ -14,6 +14,7 @@ namespace Rant.Vocabulary
         internal const string MissingTerm = "[?]";
 
         private readonly string _name;
+        private readonly string _language = "en-US";
         private readonly string[] _subtypes;
         private readonly HashSet<string> _hidden = new HashSet<string>(); 
         private RantDictionaryEntry[] _entries;
@@ -83,6 +84,11 @@ namespace Rant.Vocabulary
         /// The name of the table.
         /// </summary>
         public string Name => _name;
+
+        /// <summary>
+        /// The language of the table (not yet used).
+        /// </summary>
+        public string Language => _language;
 
         /// <summary>
         /// Gets the hidden classes of the table.

@@ -20,6 +20,10 @@ namespace Rave.Packer
 			Console.WriteLine("  rave pack [content-paths...] [-out package-path]");
 			Console.WriteLine("    - Creates a package from the specified directories.");
 			Console.WriteLine("      -out: Specifies the output path for the package.");
+            Console.WriteLine("  general rave pack options:");
+            Console.WriteLine("    -compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
+            Console.WriteLine("    -string-table [mode]: Set the string table mode. 0 = none, 1 = keys, 2 = keys and values.");
+            Console.WriteLine("                          Defaults to none.");
 		}
 
 		public static void Run()
@@ -29,6 +33,16 @@ namespace Rave.Packer
 			var outputPath = Property("out", Path.Combine(
 				Directory.GetParent(Environment.CurrentDirectory).FullName,
 				Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
+            var compress = Property("compression", "true") == "true";
+            var stringTableMode = int.Parse(Property("string-table", "0"));
+            if(stringTableMode < 0 || stringTableMode > 2)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid string table mode.");
+                Console.ResetColor();
+                return;
+            }
+            var modeEnum = (Rant.IO.Bson.BsonStringTableMode)stringTableMode;
 			
 			Console.WriteLine("Packing...");
 
@@ -44,7 +58,8 @@ namespace Rave.Packer
 				}
 			}
 
-			pkg.Save(outputPath);
+            Console.WriteLine(compress ? "Saving and compressing..." : "Saving...");
+			pkg.Save(outputPath, compress, modeEnum);
 
 			Console.WriteLine("\nPackage saved to " + outputPath);
 

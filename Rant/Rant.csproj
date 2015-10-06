@@ -286,7 +286,9 @@
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
     <Compile Include="IO\Bson\BsonDocument.cs" />
     <Compile Include="IO\Bson\BsonItem.cs" />
+    <Compile Include="IO\Bson\BsonStringTableMode.cs" />
     <Compile Include="IO\Compression\CRC.cs" />
+    <Compile Include="IO\Compression\EasyCompressor.cs" />
     <Compile Include="IO\Compression\ICoder.cs" />
     <Compile Include="IO\Compression\LZMA\LzmaBase.cs" />
     <Compile Include="IO\Compression\LZMA\LzmaDecoder.cs" />

@@ -97,7 +97,13 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ComplexTestFile.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
+    <None Include="TestFile.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rant\Rant.csproj">

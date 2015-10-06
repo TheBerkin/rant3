@@ -16,10 +16,11 @@ namespace Rave
 				Help.Print();
 				return;
 			}
-
-			try
+#if !DEBUG
+            try
 			{
-				switch (Command)
+#endif
+                switch (Command)
 				{
 					case "docs":
 						{
@@ -74,7 +75,8 @@ namespace Rave
 						WriteLine($"Unknown command: '{Command}'");
 						break;
 				}
-			}
+#if !DEBUG
+            }
 			catch (Exception ex)
 			{
 				ForegroundColor = ConsoleColor.Red;
@@ -82,6 +84,7 @@ namespace Rave
 				ResetColor();
 				Environment.Exit(1);
 			}
-		}
+#endif
+        }
 	}
 }

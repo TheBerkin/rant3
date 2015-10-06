@@ -69,6 +69,51 @@ namespace Rant.IO.Bson
         }
 
         /// <summary>
+        /// Converts this double to a BsonItem.
+        /// </summary>
+        /// <param name="a">The double to convert.</param>
+        public static implicit operator BsonItem(double a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this string to a BsonItem.
+        /// </summary>
+        /// <param name="a">The string to convert.</param>
+        public static implicit operator BsonItem(string a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this bool to a BsonItem.
+        /// </summary>
+        /// <param name="a">The bool to convert.</param>
+        public static implicit operator BsonItem(bool a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this int to a BsonItem.
+        /// </summary>
+        /// <param name="a">The int to convert.</param>
+        public static implicit operator BsonItem(int a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this long to a BsonItem.
+        /// </summary>
+        /// <param name="a">The long to convert.</param>
+        public static implicit operator BsonItem(long a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
         /// Creates a new empty BsonItem.
         /// </summary>
         public BsonItem()
@@ -126,10 +171,17 @@ namespace Rant.IO.Bson
             if (!type.IsArray) return;
             var arr = (object[])_value;
             _type = 0x04; // array
+            _typeSet = true;
             _objectValues = new Dictionary<string, BsonItem>();
             _value = null;
             for (var i = 0; i < arr.Length; i++)
-                _objectValues[i.ToString()] = new BsonItem(arr[i]);
+            {
+                _objectValues[i.ToString()] = (
+                    arr[i] is BsonItem ?
+                        (BsonItem)arr[i] :
+                        new BsonItem(arr[i])
+                    );
+            }
         }
 
         private void DetermineType()
@@ -142,7 +194,7 @@ namespace Rant.IO.Bson
 
             // i apologize for this if statement
 
-            if (_value is double)
+            if (_value is double || _value is float)
                 _type = 0x01;
             else if (_value is string)
                 _type = 0x02;
