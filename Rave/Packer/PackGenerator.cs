@@ -58,7 +58,10 @@ namespace Rave.Packer
 				}
 			}
 
-            Console.WriteLine(compress ? "Saving and compressing..." : "Saving...");
+            Console.WriteLine("String table mode: " + modeEnum.ToString().Replace("A", " A").Replace("V", " V").ToLower());
+            Console.WriteLine("Compression: " + (compress ? "yes" : "no"));
+
+            Console.WriteLine(compress ? "Compressing and saving..." : "Saving...");
 			pkg.Save(outputPath, compress, modeEnum);
 
 			Console.WriteLine("\nPackage saved to " + outputPath);

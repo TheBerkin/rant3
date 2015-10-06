@@ -147,20 +147,12 @@ namespace Rant
                     t["entries"] = new BsonItem(entries.ToArray());
                 }
 
-                var data = doc.ToByteArray();
+                var data = doc.ToByteArray(stringTableMode != BsonStringTableMode.None);
                 if (compress)
                     data = EasyCompressor.Compress(data);
                 writer.Write(Encoding.ASCII.GetBytes("RANT"));
                 writer.Write((uint)2);
                 writer.Write(compress);
-                writer.Write((int)stringTableMode);
-                if (stringTableMode != BsonStringTableMode.None)
-                {
-                    if (compress)
-                        writer.Write(EasyCompressor.Compress(doc.GenerateStringTable()));
-                    else
-                        writer.Write(doc.GenerateStringTable());
-                }
                 writer.Write(data.Length);
                 writer.Write(data);
             }

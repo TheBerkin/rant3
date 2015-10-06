@@ -16,6 +16,8 @@ namespace Rant.IO.Bson
         private bool _typeSet = false;
         private byte _type = 0;
 
+        public bool IsArray => _type == 0x04;
+
         /// <summary>
         /// The BSON type code of this object. If not explicitly specified, it will guess.
         /// </summary>

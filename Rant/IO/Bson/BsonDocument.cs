@@ -13,6 +13,13 @@ namespace Rant.IO.Bson
     public class BsonDocument
     {
         /// <summary>
+        /// The current string table version.
+        /// At some point we might want to make modifications to the format,
+        /// and we'll want a way to maintain backwards compatibility.
+        /// </summary>
+        public const int STRING_TABLE_VERSION = 1;
+
+        /// <summary>
         /// The top item of this BSON document.
         /// </summary>
         public BsonItem Top;
@@ -55,10 +62,10 @@ namespace Rant.IO.Bson
         /// Returns this document encoded in BSON as a byte array.
         /// </summary>
         /// <returns>This document converted to BSON.</returns>
-        public byte[] ToByteArray()
+        public byte[] ToByteArray(bool includeStringTable = false)
         {
             var stream = new MemoryStream();
-            Write(stream);
+            Write(stream, includeStringTable);
             stream.Close();
             return stream.ToArray();
         }
@@ -82,20 +89,31 @@ namespace Rant.IO.Bson
         /// Writes this BSON document to the specified path.
         /// </summary>
         /// <param name="path">The path to write to.</param>
-        public void Write(string path)
+        public void Write(string path, bool includeStringTable = false)
         {
-            var writer = new EasyWriter(path);
+            var stream = File.Open(path, FileMode.Create);
+            var writer = new EasyWriter(stream);
             Write(writer);
+            writer.Close();
+            stream.Close();
         }
 
         /// <summary>
         /// Writes this document as BSON to the specified stream.
         /// </summary>
         /// <param name="stream">The stream that will be written to.</param>
-        public void Write(Stream stream)
+        public void Write(Stream stream, bool includeStringTable = false)
         {
-            var writer = new EasyWriter(stream);
-            Write(writer);
+            var memoryStream = new MemoryStream();
+            using (var writer = new EasyWriter(memoryStream))
+            {
+                Write(writer);
+            }
+            memoryStream.Close();
+            var bytes = memoryStream.ToArray();
+            var tableWriter = new EasyWriter(stream);
+            WriteStringTable(tableWriter, includeStringTable);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         /// <summary>
@@ -110,12 +128,25 @@ namespace Rant.IO.Bson
             writer.Close();
         }
 
-        private void WriteItem(EasyWriter writer, BsonItem item, string name, bool isTop = false)
+        internal void WriteStringTable(EasyWriter writer, bool include)
+        {
+            writer.Write(include);
+            if (include)
+            {
+                writer.Write((byte)_stringTableMode);
+                writer.Write((byte)STRING_TABLE_VERSION);
+                var stringTableBytes = GenerateStringTable();
+                writer.Write(stringTableBytes.Length);
+                writer.Write(stringTableBytes);
+            }
+        }
+
+        private void WriteItem(EasyWriter writer, BsonItem item, string name, bool isTop = false, bool isArray = false)
         {
             if(!isTop)
             {
                 writer.Write(item.Type);
-                writer.Write(GetKeyName(name), Encoding.UTF8, true);
+                writer.Write(isArray ? name : GetKeyName(name), Encoding.UTF8, true);
             }
 
             if (item.HasValues) // object or array - we need to write a document
@@ -123,7 +154,7 @@ namespace Rant.IO.Bson
                 var stream = new MemoryStream();
                 var vWriter = new EasyWriter(stream);
                 foreach(string key in item.Keys)
-                    WriteItem(vWriter, item[key], key);
+                    WriteItem(vWriter, item[key], key, false, item.IsArray);
                 vWriter.Close();
                 var data = stream.ToArray();
                 // length of data + length of length + null terminator
