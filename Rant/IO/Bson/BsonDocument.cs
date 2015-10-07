@@ -43,7 +43,12 @@ namespace Rant.IO.Bson
             }
         }
 
+        public BsonStringTableMode StringTableMode => _stringTableMode;
+
+        public Dictionary<int, string> ReverseStringTable => _reverseStringTable;
+
         private Dictionary<string, int> _stringTable;
+        private Dictionary<int, string> _reverseStringTable; // for reading
         private int _stringTableIndex = 0;
         private BsonStringTableMode _stringTableMode = BsonStringTableMode.None;
 
@@ -51,10 +56,13 @@ namespace Rant.IO.Bson
         /// Creates an empty BSON document.
         /// <param name="useStringTable">Whether or not to generate and use a string table.</param>
         /// </summary>
-        public BsonDocument(BsonStringTableMode mode = BsonStringTableMode.None)
+        public BsonDocument(
+            BsonStringTableMode mode = BsonStringTableMode.None, 
+            Dictionary<int, string> reverseStringTable = null)
         {
             _stringTableMode = mode;
             _stringTable = new Dictionary<string, int>();
+            _reverseStringTable = reverseStringTable;
             Top = new BsonItem();
         }
         
@@ -242,9 +250,36 @@ namespace Rant.IO.Bson
         /// </summary>
         /// <param name="reader">The reader that will be used to read this document.</param>
         /// <returns>The document that was read.</returns>
-        internal static BsonDocument Read(EasyReader reader)
+        internal static BsonDocument Read(EasyReader reader, BsonDocument parent = null, bool inArray = false)
         {
-            var document = new BsonDocument();
+            var stringTableMode = BsonStringTableMode.None;
+            Dictionary<int, string> stringTable = null;
+            if (parent == null)
+            {
+                var includesStringTable = reader.ReadBoolean();
+                if (includesStringTable)
+                {
+                    stringTable = new Dictionary<int, string>();
+                    stringTableMode = (BsonStringTableMode)reader.ReadByte();
+                    var version = reader.ReadByte();
+                    if (version != STRING_TABLE_VERSION)
+                        throw new InvalidDataException("Unsupported string table version: " + version);
+                    var tableLength = reader.ReadInt32();
+                    var tableEntries = reader.ReadInt32();
+                    for (var i = 0; i < tableEntries; i++)
+                    {
+                        var num = reader.ReadInt32();
+                        var val = reader.ReadString(Encoding.UTF8);
+                        stringTable[num] = val;
+                    }
+                }
+            }
+            else
+            {
+                stringTable = parent.ReverseStringTable;
+                stringTableMode = parent.StringTableMode;
+            }
+            var document = new BsonDocument(stringTableMode, stringTable);
 
             var length = reader.ReadInt32();
             while(!reader.EndOfStream)
@@ -253,6 +288,8 @@ namespace Rant.IO.Bson
                 if (code == 0x00) // end of document
                     break;
                 var name = reader.ReadCString();
+                if (!inArray && document.StringTableMode != BsonStringTableMode.None)
+                    name = document.ReverseStringTable[int.Parse(name)];
                 var data = ReadItem(code, document, reader);
                 document.Top[name] = data;
             }
@@ -269,10 +306,14 @@ namespace Rant.IO.Bson
                     break;
                 case 0x02: // string
                     val = reader.ReadString(Encoding.UTF8).TrimEnd('\x00');
+                    if (document.StringTableMode == BsonStringTableMode.KeysAndValues)
+                        val = document.ReverseStringTable[int.Parse((string)val)];
                     break;
                 case 0x03: // document
+                    val = Read(reader, document).Top;
+                    break;
                 case 0x04: // array
-                    val = Read(reader).Top;
+                    val = Read(reader, document, true).Top;
                     break;
                 case 0x05: // binary
                     var length = reader.ReadInt32();

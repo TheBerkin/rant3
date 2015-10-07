@@ -23,7 +23,9 @@ namespace Rave.Packer
             Console.WriteLine("  general rave pack options:");
             Console.WriteLine("    -compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
             Console.WriteLine("    -string-table [mode]: Set the string table mode. 0 = none, 1 = keys, 2 = keys and values.");
-            Console.WriteLine("                          Defaults to none.");
+            Console.WriteLine("                          Defaults to keys.");
+            Console.WriteLine("    -version [version]: Sets the package version to use. The default (and current version) is 2.");
+            Console.WriteLine("                        Package version 1 does not support string tables or compression.");
 		}
 
 		public static void Run()
@@ -34,11 +36,19 @@ namespace Rave.Packer
 				Directory.GetParent(Environment.CurrentDirectory).FullName,
 				Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
             var compress = Property("compression", "true") == "true";
-            var stringTableMode = int.Parse(Property("string-table", "0"));
+            var stringTableMode = int.Parse(Property("string-table", "1"));
             if(stringTableMode < 0 || stringTableMode > 2)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Invalid string table mode.");
+                Console.ResetColor();
+                return;
+            }
+            var packageVersion = int.Parse(Property("version", "2"));
+            if(packageVersion < 1 || packageVersion > 2)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid package version.");
                 Console.ResetColor();
                 return;
             }
@@ -58,11 +68,20 @@ namespace Rave.Packer
 				}
 			}
 
-            Console.WriteLine("String table mode: " + modeEnum.ToString().Replace("A", " A").Replace("V", " V").ToLower());
-            Console.WriteLine("Compression: " + (compress ? "yes" : "no"));
+            Console.WriteLine("Package version: " + packageVersion);
+            if (packageVersion == 2)
+            {
+                Console.WriteLine("String table mode: " + modeEnum.ToString().Replace("A", " A").Replace("V", " V").ToLower());
+                Console.WriteLine("Compression: " + (compress ? "yes" : "no"));
 
-            Console.WriteLine(compress ? "Compressing and saving..." : "Saving...");
-			pkg.Save(outputPath, compress, modeEnum);
+                Console.WriteLine(compress ? "Compressing and saving..." : "Saving...");
+                pkg.Save(outputPath, compress, modeEnum);
+            }
+            else
+            {
+                Console.WriteLine("Saving...");
+                pkg.SaveOld(outputPath);
+            }
 
 			Console.WriteLine("\nPackage saved to " + outputPath);
 

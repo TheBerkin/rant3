@@ -58,7 +58,7 @@ namespace Rant.IO.Bson
         {
             get { return _value == null; }
         }
-
+        
         /// <summary>
         /// Creates a new BsonItem with the specified value.
         /// </summary>
@@ -68,6 +68,33 @@ namespace Rant.IO.Bson
             _value = value;
             _objectValues = new Dictionary<string, BsonItem>();
             PossiblyCreateArray();
+        }
+
+        /// <summary>
+        /// Converts this BsonItem to a double.
+        /// </summary>
+        /// <param name="a">The BsonItem to convert.</param>
+        public static implicit operator double(BsonItem a)
+        {
+            return (double)a.Value;
+        }
+
+        /// <summary>
+        /// Convers this BsonItem to a string.
+        /// </summary>
+        /// <param name="a">The BsonItem to convert.</param>
+        public static implicit operator string(BsonItem a)
+        {
+            if (a == null)
+                return null;
+            return (string)a.Value;
+        }
+
+        public static explicit operator string[](BsonItem a)
+        {
+            if (a == null)
+                return new string[] { };
+            return a.ToArray().Cast<string>().ToArray();
         }
 
         /// <summary>
@@ -151,7 +178,12 @@ namespace Rant.IO.Bson
         /// <returns>The value of the specified key.</returns>
         public BsonItem this[string key]
         {
-            get { return _objectValues[key]; }
+            get
+            {
+                if (!HasKey(key))
+                    return null;
+                return _objectValues[key];
+            }
             set { _objectValues[key] = value; }
         }
 
@@ -164,6 +196,16 @@ namespace Rant.IO.Bson
         {
             get { return _objectValues[key.ToString()]; }
             set { _objectValues[key.ToString()] = value; }
+        }
+
+        public object[] ToArray()
+        {
+            if (!IsArray)
+                throw new Exception("Can't convert a non-array to an array.");
+            List<object> list = new List<object>();
+            for (var i = 0; i < KeyCount; i++)
+                list.Add(this[i].Value);
+            return list.ToArray();
         }
 
         private void PossiblyCreateArray()

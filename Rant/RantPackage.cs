@@ -245,7 +245,82 @@ namespace Rant
                     return LoadOldPackage(reader);
                 else if(magic != MAGIC)
                     throw new InvalidDataException("File is corrupt.");
-                return new RantPackage();
+                var package = new RantPackage();
+                var version = reader.ReadUInt32();
+                if (version != PACKAGE_VERSION)
+                    throw new InvalidDataException("Invalid package version: " + version);
+                var compress = reader.ReadBoolean();
+                var size = reader.ReadInt32();
+                var data = reader.ReadBytes(size);
+                if (compress)
+                    data = EasyCompressor.Decompress(data);
+                var doc = BsonDocument.Read(data);
+
+                var info = doc["info"];
+                if(info == null)
+                {
+                    package.Name = info["name"];
+                    package.Namespace = info["namespace"];
+                    package.Version = info["version"];
+                    package.Description = info["description"];
+                    package.Authors = (string[])info["authors"].Value;
+                    package.Tags = (string[])info["tags"].Value;
+                }
+
+                var patterns = doc["patterns"];
+                if(patterns != null)
+                {
+                    var names = patterns.Keys;
+                    foreach (string name in names)
+                        package.AddPattern(new RantPattern(name, RantPatternSource.File, patterns[name]));
+                }
+
+                var tables = doc["tables"];
+                if(tables != null)
+                {
+                    var names = tables.Keys;
+                    foreach(string name in names)
+                    {
+                        var table = tables[name];
+                        string tableName = table["name"];
+                        string[] tableSubs = (string[])table["subs"];
+                        string[] hiddenClasses = (string[])table["hidden"];
+
+                        var entries = new List<RantDictionaryEntry>();
+                        var entryList = table["entries"];
+                        for(var i = 0; i < entryList.KeyCount; i++)
+                        {
+                            var loadedEntry = entryList[i];
+                            int weight = 1;
+                            if (loadedEntry.HasKey("weight"))
+                                weight = (int)loadedEntry["weight"].Value;
+                            string[] requiredClasses = (string[])loadedEntry["classes"];
+                            string[] optionalClasses = (string[])loadedEntry["optional_classes"];
+                            var terms = new List<RantDictionaryTerm>();
+                            var termList = loadedEntry["terms"];
+                            for(var j = 0; j < termList.KeyCount; j++)
+                            {
+                                var t = new RantDictionaryTerm(termList[j]["value"], termList[j]["pron"]);
+                                terms.Add(t);
+                            }
+                            var entry = new RantDictionaryEntry(
+                                terms.ToArray(),
+                                requiredClasses.Concat(optionalClasses.Select(x => x + "?")),
+                                weight
+                            );
+                            entries.Add(entry);
+                        }
+                        var rantTable = new RantDictionaryTable(
+                            tableName,
+                            tableSubs,
+                            entries,
+                            hiddenClasses
+                        );
+                        package.AddTable(rantTable);
+                    }
+                }
+
+                return package;
             }
         }
 
