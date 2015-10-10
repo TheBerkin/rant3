@@ -279,7 +279,6 @@
     <Compile Include="Engine\Formatters\HexFormat.cs" />
     <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
-    <Compile Include="Engine\Formatters\Symbols.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
