@@ -224,20 +224,20 @@ namespace Rant.Engine
 
         private bool HandleRichardBreak(Stack<IEnumerator<RantAction>> callStack, Stack<RantAction> actionStack, IEnumerator<RantAction> action)
         {
-            if (action.Current is REABreak)
+            if (action.Current is RichBreak)
             {
                 // move back up the call stack until we pass something "breakable"
                 while (
                     callStack.Any() &&
-                    (callStack.Peek().Current is RantExpressionAction) &&
-                    !(callStack.Peek().Current as RantExpressionAction).Breakable)
+                    (callStack.Peek().Current is RichActionBase) &&
+                    !(callStack.Peek().Current as RichActionBase).Breakable)
                 {
                     actionStack.Pop();
                     callStack.Pop();
                 }
                 // there was nothing to break from
-                if (!callStack.Any() || !(callStack.Peek().Current is RantExpressionAction))
-                    throw new RantRuntimeException(Pattern, (action.Current as REABreak).Range, "Nothing to break from.");
+                if (!callStack.Any() || !(callStack.Peek().Current is RichActionBase))
+                    throw new RantRuntimeException(Pattern, (action.Current as RichBreak).Range, "Nothing to break from.");
                 return true;
             }
             return false;
@@ -247,28 +247,28 @@ namespace Rant.Engine
         {
             var lastAction = actionStack.Peek();
             // Special processing for scripts
-            if (lastAction is RantExpressionAction)
+            if (lastAction is RichActionBase)
             {
-                var val = (lastAction as RantExpressionAction).GetValue(this);
+                var val = (lastAction as RichActionBase).GetValue(this);
                 if (val != null)
                     _scriptObjectStack.Push(val);
             }
             // i also wish this could be moved to somewhere else 
             // but someone else figure out how to do that for me
-            if (lastAction is REAReturn)
+            if (lastAction is RichReturn)
             {
                 // same thing as the processing for break
                 // todo: abstract this, DRY
                 while (
                     actionStack.Any() &&
-                    (actionStack.Peek() is RantExpressionAction) &&
-                    !(actionStack.Peek() as RantExpressionAction).Returnable)
+                    (actionStack.Peek() is RichActionBase) &&
+                    !(actionStack.Peek() as RichActionBase).Returnable)
                 {
                     actionStack.Pop();
                     callStack.Pop();
                 }
 
-                if (!(lastAction as REAReturn).HasReturnValue)
+                if (!(lastAction as RichReturn).HasReturnValue)
                     _scriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
                 // if we're not returning from anything, we've returned ourself from the Richard scope
                 return true;

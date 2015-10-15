@@ -128,13 +128,13 @@ namespace Rant
                 type = "String";
             else if(val == typeof(double))
                 type = "Number";
-            else if(val == typeof(REAList))
+            else if(val == typeof(RichList))
                 type = "List";
-            else if(val == typeof(REAObject))
+            else if(val == typeof(RichObject))
                 type = "Object";
-            else if(val == typeof(REAFunction))
+            else if(val == typeof(RichFunction))
                 type = "Function";
-            else if(val == typeof(REAPatternString))
+            else if(val == typeof(RichPatternString))
                 type = "Pattern String";
             else if(val == typeof(bool))
                 type = "Bool";

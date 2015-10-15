@@ -93,7 +93,7 @@ namespace Rant.Engine.Compiler
 
 		public RantAction Read(ExpressionReadType type = ExpressionReadType.Expression)
 		{
-			List<RantExpressionAction> actions = new List<RantExpressionAction>();
+			List<RichActionBase> actions = new List<RichActionBase>();
 
 			Token<R> token = null;
             if (type == ExpressionReadType.Expression)
@@ -120,7 +120,7 @@ namespace Rant.Engine.Compiler
                                 if (!_reader.End && _reader.PeekLooseToken().ID == R.RightSquare)
                                 {
                                     _reader.ReadLooseToken();
-                                    actions.Add(new REAList(token, new List<RantExpressionAction>(), false));
+                                    actions.Add(new RichList(token, new List<RichActionBase>(), false));
                                     break;
                                 }
                                 actions.Add((Read(ExpressionReadType.List) as RAExpression).Group);
@@ -131,7 +131,7 @@ namespace Rant.Engine.Compiler
                                 SyntaxError(val.Range, "Expected value in bracket indexer.");
 							var obj = actions.Last();
 							actions.RemoveAt(actions.Count - 1);
-							actions.Add(new REAObjectProperty(token, val.Group, obj));
+							actions.Add(new RichObjectProperty(token, val.Group, obj));
 						}
 						break;
 					case R.RightSquare:
@@ -153,15 +153,15 @@ namespace Rant.Engine.Compiler
                             var group = (Read(ExpressionReadType.ExpressionGroup) as RAExpression).Group;
                             // could be a function call
                             if (actions.Any() &&
-                                (actions.Last() is REAPatternString ||
-                                 actions.Last() is REAVariable ||
-                                 actions.Last() is REAFunctionCall ||
-                                 actions.Last() is REAGroup ||
-                                 actions.Last() is REAObjectProperty))
+                                (actions.Last() is RichPatternString ||
+                                 actions.Last() is RichVariable ||
+                                 actions.Last() is RichFunctionCall ||
+                                 actions.Last() is RichGroup ||
+                                 actions.Last() is RichObjectProperty))
                             {
                                 var last = actions.Last();
                                 actions.Remove(last);
-                                actions.Add(new REAFunctionCall(token, last, group as REAGroup, _sourceName));
+                                actions.Add(new RichFunctionCall(token, last, group as RichGroup, _sourceName));
                                 break;
                             }
                             // could be a function definition (lambda)
@@ -170,7 +170,7 @@ namespace Rant.Engine.Compiler
                                 _reader.ReadLooseToken();
                                 _reader.ReadLoose(R.RightAngle, "fat arrow");
                                 var body = Read(ExpressionReadType.FunctionBody);
-                                actions.Add(new REAFunction(token, (body as RAExpression).Group, group as REAGroup));
+                                actions.Add(new RichFunction(token, (body as RAExpression).Group, group as RichGroup));
                                 if (type == ExpressionReadType.VariableValue)
                                     goto done;
                                 if (_reader.PrevLooseToken.ID == R.RightParen && type == ExpressionReadType.ExpressionGroup)
@@ -179,7 +179,7 @@ namespace Rant.Engine.Compiler
                             }
                             if (!group.Actions.Any())
                                 Unexpected(token);
-                            if (group.Actions.Any(x => x is REAArgumentSeperator))
+                            if (group.Actions.Any(x => x is RichArgumentSeperator))
                                 actions.Add(CreateListFromActions(type, group.Actions));
                             else
                                 actions.Add(group);
@@ -199,7 +199,7 @@ namespace Rant.Engine.Compiler
 						{
 							// empty object
 							_reader.Read(R.RightCurly);
-							actions.Add(new REAObject(token, new REAObjectKeyValue[0]));
+							actions.Add(new RichObject(token, new RichObjectKeyValue[0]));
                             if (type == ExpressionReadType.VariableValue)
                             {
                                 if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon)
@@ -218,7 +218,7 @@ namespace Rant.Engine.Compiler
 							{
 								_reader.Position = tempPosition;
 								var obj = Read(ExpressionReadType.KeyValueObject);
-								actions.Add(obj as RantExpressionAction);
+								actions.Add(obj as RichActionBase);
 								break;
 							}
 							else
@@ -227,7 +227,7 @@ namespace Rant.Engine.Compiler
 						if (type == ExpressionReadType.FunctionBody || type == ExpressionReadType.Expression)
 						{
 							var body = Read(ExpressionReadType.ExpressionBlock);
-							actions.Add(body as RantExpressionAction);
+							actions.Add(body as RichActionBase);
                             if (type == ExpressionReadType.FunctionBody)
                                 goto done;
 							break;
@@ -237,11 +237,11 @@ namespace Rant.Engine.Compiler
 					case R.RightCurly:
                         if (type == ExpressionReadType.ExpressionBlock)
                         {
-                            var group = new REAGroup(actions, token, _sourceName);
-                            return new REABlock(token, new List<RantExpressionAction>() { group });
+                            var group = new RichGroup(actions, token, _sourceName);
+                            return new RichBlock(token, new List<RichActionBase>() { group });
                         }
 						if (type == ExpressionReadType.KeyValueObjectValue)
-							return new REAGroup(actions, token, _sourceName);
+							return new RichGroup(actions, token, _sourceName);
 						Unexpected(token);
 						break;
 					case R.Semicolon:
@@ -249,7 +249,7 @@ namespace Rant.Engine.Compiler
 							goto done;
 						if (actions.Count == 0)
 							break;
-						var action = new REAGroup(actions.ToList(), token, _sourceName);
+						var action = new RichGroup(actions.ToList(), token, _sourceName);
 						actions.Clear();
 						actions.Add(action);
 						break;
@@ -258,30 +258,30 @@ namespace Rant.Engine.Compiler
 						{
 							var name = token;
 							_reader.ReadLoose(R.Colon, "key value seperator");
-							var value = Read(ExpressionReadType.KeyValueObjectValue) as REAGroup;
+							var value = Read(ExpressionReadType.KeyValueObjectValue) as RichGroup;
                             if (value.Actions.Count == 0)
                                 SyntaxError(value.Range, "Expected value for key.");
-							actions.Add(new REAObjectKeyValue(name, value));
+							actions.Add(new RichObjectKeyValue(name, value));
 							if (_reader.PrevLooseToken.ID == R.RightCurly)
 							{
-								List<REAObjectKeyValue> keyValues = new List<REAObjectKeyValue>();
-								foreach (RantExpressionAction kv in actions)
+								List<RichObjectKeyValue> keyValues = new List<RichObjectKeyValue>();
+								foreach (RichActionBase kv in actions)
 								{
-									if (!(kv is REAObjectKeyValue))
+									if (!(kv is RichObjectKeyValue))
 										throw new RantCompilerException(_sourceName, token, "Unexpected token in key value object.");
-									keyValues.Add(kv as REAObjectKeyValue);
+									keyValues.Add(kv as RichObjectKeyValue);
 								}
-								return new REAObject(name, keyValues.ToArray());
+								return new RichObject(name, keyValues.ToArray());
 							}
 							break;
 						}
-						actions.Add(new REAString(Util.UnescapeConstantLiteral(token.Value), token));
+						actions.Add(new RichString(Util.UnescapeConstantLiteral(token.Value), token));
 						break;
 					case R.Dollar:
 						if (_reader.PeekType() == R.ConstantLiteral)
 						{
 							var value = _reader.Read(R.ConstantLiteral, "string");
-							actions.Add(new REAPatternString(Util.UnescapeConstantLiteral(value.Value), token));
+							actions.Add(new RichPatternString(Util.UnescapeConstantLiteral(value.Value), token));
 							break;
 						}
 						Unexpected(token);
@@ -290,12 +290,12 @@ namespace Rant.Engine.Compiler
 						// numbers
 						if (char.IsDigit(token.Value[0]))
 						{
-                            if (actions.Any() && actions.Last() is REANumber)
+                            if (actions.Any() && actions.Last() is RichNumber)
                                 Unexpected(token);
 							double number;
 							if (!ReadNumber(token, out number))
 								SyntaxError(token, "Invalid number: " + token.Value);
-							actions.Add(new REANumber(number, token));
+							actions.Add(new RichNumber(number, token));
 							break;
 						}
 						// keywords
@@ -311,10 +311,10 @@ namespace Rant.Engine.Compiler
 									{
 										_reader.ReadToken();
 										var val = Read(ExpressionReadType.VariableValue) as RAExpression;
-										actions.Add(new REAObjectPropertyAssignment(name, null, val.Group));
+										actions.Add(new RichObjectPropertyAssignment(name, null, val.Group));
 									}
 									else if (_reader.PeekType() == R.Semicolon || _reader.End)
-										actions.Add(new REAObjectPropertyAssignment(name, null, null));
+										actions.Add(new RichObjectPropertyAssignment(name, null, null));
 									break;
 								case "function":
 									{
@@ -322,22 +322,22 @@ namespace Rant.Engine.Compiler
 										var argGroup = Read(ExpressionReadType.ExpressionGroup) as RAExpression;
 										_reader.ReadLoose(R.LeftCurly, "function body open bracket");
 										var body = Read(ExpressionReadType.ExpressionBlock);
-										actions.Add(new REAFunction(token, body as RantExpressionAction, argGroup.Group));
+										actions.Add(new RichFunction(token, body as RichActionBase, argGroup.Group));
 										if (type == ExpressionReadType.VariableValue)
 											goto done;
 									}
 									break;
 								case "true":
-									actions.Add(new REABoolean(token, true));
+									actions.Add(new RichBoolean(token, true));
 									break;
 								case "false":
-									actions.Add(new REABoolean(token, false));
+									actions.Add(new RichBoolean(token, false));
 									break;
                                 case "no":
-                                    actions.Add(new REANull(token));
+                                    actions.Add(new RichNull(token));
                                     break;
 								case "maybe":
-									actions.Add(new REAMaybe(token));
+									actions.Add(new RichMaybe(token));
 									break;
 								case "list":
 									{
@@ -346,10 +346,10 @@ namespace Rant.Engine.Compiler
 										ReadNumber(num, out listLength);
 										if (listLength < 0)
 											SyntaxError(num, "Invalid list length.");
-										List<RantExpressionAction> fakeList = new List<RantExpressionAction>();
+										List<RichActionBase> fakeList = new List<RichActionBase>();
 										for (var i = 0; i < listLength; i++)
 											fakeList.Add(null);
-										actions.Add(new REAList(token, fakeList, false));
+										actions.Add(new RichList(token, fakeList, false));
 									}
 									break;
 								case "if":
@@ -359,23 +359,23 @@ namespace Rant.Engine.Compiler
 										_reader.ReadLoose(R.LeftParen, "if statement param");
 										var val = Read(ExpressionReadType.ExpressionGroupNoList) as RAExpression;
 										var body = Read(ExpressionReadType.FunctionBody) as RAExpression;
-                                        RantExpressionAction elseBody = null;
+                                        RichActionBase elseBody = null;
                                         if (!_reader.End && _reader.PeekLooseToken().Value == "else")
                                         {
                                             _reader.ReadLooseToken();
                                             elseBody = (Read(ExpressionReadType.FunctionBody) as RAExpression).Group;
                                         }
-										actions.Add(new REAIfStatement(token, val.Group, body.Group, elseBody));
+										actions.Add(new RichIfStatement(token, val.Group, body.Group, elseBody));
 									}
 									break;
 								case "return":
 									{
 										if (type != ExpressionReadType.ExpressionBlock && type != ExpressionReadType.FunctionBody && type != ExpressionReadType.Expression)
 											Unexpected(token);
-                                        RantExpressionAction expr = null;
+                                        RichActionBase expr = null;
                                         if (_reader.PeekLooseToken().ID != R.Semicolon)
                                             expr = (Read(ExpressionReadType.VariableValue) as RAExpression).Group;
-                                        actions.Add(new REAReturn(token, expr));
+                                        actions.Add(new RichReturn(token, expr));
                                         if (_reader.PrevLooseToken.ID == R.Semicolon && type == ExpressionReadType.FunctionBody)
                                             return new RAExpression(actions, token, _sourceName);
                                     }
@@ -387,14 +387,14 @@ namespace Rant.Engine.Compiler
                                         _reader.ReadLoose(R.LeftParen, "while loop test");
                                         var test = (Read(ExpressionReadType.ExpressionGroupNoList) as RAExpression).Group;
                                         var body = (Read(ExpressionReadType.FunctionBody) as RAExpression).Group;
-                                        actions.Add(new REAWhile(token, test, body));
+                                        actions.Add(new RichWhile(token, test, body));
                                     }
                                     break;
                                 case "break":
                                     {
                                         if (type != ExpressionReadType.FunctionBody && type != ExpressionReadType.ExpressionBlock)
                                             Unexpected(token);
-                                        actions.Add(new REABreak(token));
+                                        actions.Add(new RichBreak(token));
                                     }
                                     break;
                                 case "for":
@@ -412,7 +412,7 @@ namespace Rant.Engine.Compiler
                                             SyntaxError(inStmt, "Expected in statement in for loop.");
                                         var expr = (Read(ExpressionReadType.ExpressionGroupNoList) as RAExpression).Group;
                                         var body = (Read(ExpressionReadType.FunctionBody) as RAExpression).Group;
-                                        actions.Add(new REAFor(token, indexName.Value, body, expr));
+                                        actions.Add(new RichFor(token, indexName.Value, body, expr));
                                     }
                                     break;
 							}
@@ -423,27 +423,27 @@ namespace Rant.Engine.Compiler
                         {
                             var name = token;
                             _reader.ReadLoose(R.Colon, "key value seperator");
-                            var value = Read(ExpressionReadType.KeyValueObjectValue) as REAGroup;
+                            var value = Read(ExpressionReadType.KeyValueObjectValue) as RichGroup;
                             if (value.Actions.Count == 0)
                                 SyntaxError(value.Range, "Expected value for key.");
-                            actions.Add(new REAObjectKeyValue(name, value));
+                            actions.Add(new RichObjectKeyValue(name, value));
                             if (_reader.PrevLooseToken.ID == R.RightCurly)
                             {
-                                List<REAObjectKeyValue> keyValues = new List<REAObjectKeyValue>();
-                                foreach (RantExpressionAction kv in actions)
+                                List<RichObjectKeyValue> keyValues = new List<RichObjectKeyValue>();
+                                foreach (RichActionBase kv in actions)
                                 {
-                                    if (!(kv is REAObjectKeyValue))
+                                    if (!(kv is RichObjectKeyValue))
                                         throw new RantCompilerException(_sourceName, token, "Unexpected token in key value object.");
-                                    keyValues.Add(kv as REAObjectKeyValue);
+                                    keyValues.Add(kv as RichObjectKeyValue);
                                 }
-                                return new REAObject(name, keyValues.ToArray());
+                                return new RichObject(name, keyValues.ToArray());
                             }
                             break;
                         }
-                        if (actions.Any() && actions.Last() is REAVariable)
+                        if (actions.Any() && actions.Last() is RichVariable)
                             Unexpected(token);
                         // just a variable
-                        actions.Add(new REAVariable(token));
+                        actions.Add(new RichVariable(token));
                         if (type == ExpressionReadType.InvertValue)
                             return new RAExpression(actions, token, _sourceName);
 						break;
@@ -454,11 +454,11 @@ namespace Rant.Engine.Compiler
                         {
                             _reader.ReadToken();
                             // postfix
-                            if (actions.Any() && actions.Last() is REAVariable)
+                            if (actions.Any() && actions.Last() is RichVariable)
                             {
                                 var variable = actions.Last();
                                 actions.RemoveAt(actions.Count - 1);
-                                actions.Add(new REAPostfixIncDec(token) { LeftSide = variable });
+                                actions.Add(new RichPostfixIncDec(token) { LeftSide = variable });
                                 break;
                             }
                             if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
@@ -467,12 +467,12 @@ namespace Rant.Engine.Compiler
                                 double dummyNumber = -1;
                                 if (ReadNumber(varName, out dummyNumber))
                                     SyntaxError(token, "Cannot increment constant.");
-                                actions.Add(new REAPrefixIncDec(token) { RightSide = new REAVariable(varName) });
+                                actions.Add(new RichPrefixIncDec(token) { RightSide = new RichVariable(varName) });
                                 break;
                             }
                             Unexpected(token);
                         }
-						actions.Add(new REAAdditionOperator(token));
+						actions.Add(new RichAdditionOperator(token));
 						break;
 					case R.Hyphen:
                         // decrement operator
@@ -480,17 +480,17 @@ namespace Rant.Engine.Compiler
                         {
                             _reader.ReadToken();
                             // postfix
-                            if (actions.Any() && actions.Last() is REAVariable)
+                            if (actions.Any() && actions.Last() is RichVariable)
                             {
                                 var variable = actions.Last();
                                 actions.RemoveAt(actions.Count - 1);
-                                actions.Add(new REAPostfixIncDec(token) { LeftSide = variable, Increment = false });
+                                actions.Add(new RichPostfixIncDec(token) { LeftSide = variable, Increment = false });
                                 break;
                             }
                             if (!_reader.End && _reader.PeekLooseToken().ID == R.Text)
                             {
                                 var varName = _reader.ReadLooseToken();
-                                actions.Add(new REAPrefixIncDec(token) { Increment = false, RightSide = new REAVariable(varName) });
+                                actions.Add(new RichPrefixIncDec(token) { Increment = false, RightSide = new RichVariable(varName) });
                                 break;
                             }
                             Unexpected(token);
@@ -502,29 +502,29 @@ namespace Rant.Engine.Compiler
 							double number;
 							if (!ReadNumber(token, out number))
 								SyntaxError(token, "Invalid number: " + token.Value);
-							actions.Add(new REANumber(number, token));
+							actions.Add(new RichNumber(number, token));
 							break;
 						}
-						actions.Add(new REASubtractionOperator(token));
+						actions.Add(new RichSubtractionOperator(token));
 						break;
 					case R.Comma:
 						if (type == ExpressionReadType.KeyValueObjectValue)
-							return new REAGroup(actions, token, _sourceName);
+							return new RichGroup(actions, token, _sourceName);
 						if (type == ExpressionReadType.ExpressionGroup || type == ExpressionReadType.VariableValue || type == ExpressionReadType.List || type == ExpressionReadType.Expression)
 						{
-							actions.Add(new REAArgumentSeperator(token));
+							actions.Add(new RichArgumentSeperator(token));
 							break;
 						}
                         Unexpected(token);
                         break;
 					case R.ForwardSlash:
-						actions.Add(new READivisionOperator(token));
+						actions.Add(new RichDivisionOperator(token));
 						break;
 					case R.Asterisk:
-						actions.Add(new REAMultiplicationOperator(token));
+						actions.Add(new RichMultiplicationOperator(token));
 						break;
 					case R.Tilde:
-						actions.Add(new REAConcatOperator(token));
+						actions.Add(new RichConcatOperator(token));
 						break;
 					// accessing properties
 					case R.Subtype:
@@ -532,47 +532,47 @@ namespace Rant.Engine.Compiler
 							var name = _reader.Read(R.Text, "object property access");
 							var obj = actions.Last();
 							actions.Remove(obj);
-						    actions.Add(new REAObjectProperty(name, obj));
+						    actions.Add(new RichObjectProperty(name, obj));
 						}
 						break;
 					case R.LeftAngle:
 						if (_reader.PeekType() == R.Equal)
 						{
 							_reader.ReadToken();
-							actions.Add(new REALessThanOperator(token, true));
+							actions.Add(new RichLessThanOperator(token, true));
 						}
 						else
-							actions.Add(new REALessThanOperator(token, false));
+							actions.Add(new RichLessThanOperator(token, false));
 						break;
 					case R.RightAngle:
 						if (_reader.PeekType() == R.Equal)
 						{
 							_reader.ReadToken();
-							actions.Add(new REAGreaterThanOperator(token, true));
+							actions.Add(new RichGreaterThanOperator(token, true));
 						}
 						else
-							actions.Add(new REAGreaterThanOperator(token, false));
+							actions.Add(new RichGreaterThanOperator(token, false));
 						break;
                     case R.Exclamation:
                         if (!_reader.End && _reader.PeekToken().ID == R.Equal)
                         {
                             _reader.ReadToken();
-                            actions.Add(new REAInequalityOperator(token));
+                            actions.Add(new RichInequalityOperator(token));
                             break;
                         }
                         // invert operator maybe
                         if (!_reader.End && (_reader.PeekLooseToken().ID == R.LeftParen || _reader.PeekLooseToken().ID == R.Text))
                         {
-                            RantExpressionAction rightSide = null;
+                            RichActionBase rightSide = null;
                             if (_reader.PeekLooseToken().ID == R.LeftParen)
                             {
                                 _reader.ReadLooseToken();
                                 rightSide = (Read(ExpressionReadType.ExpressionGroup) as RAExpression).Group;
-                                actions.Add(new REAPrefixInvert(token) { RightSide = rightSide });
+                                actions.Add(new RichPrefixInvert(token) { RightSide = rightSide });
                                 break;
                             }
                             rightSide = (Read(ExpressionReadType.InvertValue) as RAExpression).Group;
-                            actions.Add(new REAPrefixInvert(token) { RightSide = rightSide });
+                            actions.Add(new RichPrefixInvert(token) { RightSide = rightSide });
                             break;
                         }
                         Unexpected(token);
@@ -581,25 +581,25 @@ namespace Rant.Engine.Compiler
 						if (_reader.PeekType() == R.Equal)
 						{
 							_reader.ReadToken();
-							actions.Add(new REAEqualityOperator(token));
+							actions.Add(new RichEqualityOperator(token));
 							break;
 						}
-                        REAInfixOperator op = null;
+                        RichInfixOperator op = null;
                         if (!actions.Any())
                             SyntaxError(token, "Cannot assign value to nothing.");
-                        if (actions.Last() is REAInfixOperator)
+                        if (actions.Last() is RichInfixOperator)
                         {
                             if (_reader.PrevToken.ID == R.Whitespace)
                                 Unexpected(token);
-                            op = actions.Last() as REAInfixOperator;
-                            if (op.Type == RantExpressionAction.ActionValueType.Boolean)
+                            op = actions.Last() as RichInfixOperator;
+                            if (op.Type == RichActionBase.ActionValueType.Boolean)
                                 Unexpected(token);
                             actions.RemoveAt(actions.Count - 1);
                             if (!actions.Any())
                                 Unexpected(token);
                         }
                         // variable assignment
-                        if (actions.Last() is REAVariable)
+                        if (actions.Last() is RichVariable)
                         {
                             var lastAction = actions.Last();
                             var val = (Read(ExpressionReadType.VariableValue) as RAExpression).Group;
@@ -607,7 +607,7 @@ namespace Rant.Engine.Compiler
 
                             if (_keywords.IndexOf(lastAction.Range.Value) > -1)
                                 SyntaxError(lastAction.Range, "Cannot use reserved variable name.");
-                            var assignment = new REAObjectPropertyAssignment(lastAction.Range, null, val);
+                            var assignment = new RichObjectPropertyAssignment(lastAction.Range, null, val);
                             assignment.Operator = op;
                             actions.Add(assignment);
                             if (type == ExpressionReadType.FunctionBody)
@@ -615,15 +615,15 @@ namespace Rant.Engine.Compiler
                             break;
                         }
                         // object property assignment
-                        if (actions.Last() is REAObjectProperty)
+                        if (actions.Last() is RichObjectProperty)
                         {
-                            var lastAction = actions.Last() as REAObjectProperty;
+                            var lastAction = actions.Last() as RichObjectProperty;
                             var value = Read(ExpressionReadType.VariableValue) as RAExpression;
-                            REAObjectPropertyAssignment assignment = null;
-                            if (lastAction.Name is RantExpressionAction)
-                                assignment = new REAObjectPropertyAssignment(lastAction.Range, lastAction.Name as RantExpressionAction, lastAction.Object, value.Group);
+                            RichObjectPropertyAssignment assignment = null;
+                            if (lastAction.Name is RichActionBase)
+                                assignment = new RichObjectPropertyAssignment(lastAction.Range, lastAction.Name as RichActionBase, lastAction.Object, value.Group);
                             else
-                                assignment = new REAObjectPropertyAssignment(lastAction.Range, lastAction.Object, value.Group);
+                                assignment = new RichObjectPropertyAssignment(lastAction.Range, lastAction.Object, value.Group);
                             assignment.Operator = op;
                             actions.Add(assignment);
                             break;
@@ -633,17 +633,17 @@ namespace Rant.Engine.Compiler
                     case R.Undefined:
                         if (!_reader.End && _reader.PeekLooseToken().ID != R.Semicolon && _reader.PeekLooseToken().ID != R.RightSquare)
                             Unexpected(_reader.PeekLooseToken());
-                        actions.Add(new REAUndefined(token));
+                        actions.Add(new RichUndefined(token));
                         break;
                     case R.Percent:
-                        actions.Add(new REAModuloOperator(token));
+                        actions.Add(new RichModuloOperator(token));
                         break;
                     case R.Ampersand:
                         // boolean AND
                         if (!_reader.End && _reader.PeekType() == R.Ampersand)
                         {
                             _reader.ReadToken();
-                            actions.Add(new REABooleanAndOperator(token));
+                            actions.Add(new RichBooleanAndOperator(token));
                             break;
                         }
                         Unexpected(token);
@@ -653,7 +653,7 @@ namespace Rant.Engine.Compiler
                         if (!_reader.End && _reader.PeekType() == R.Pipe)
                         {
                             _reader.ReadToken();
-                            actions.Add(new REABooleanOrOperator(token));
+                            actions.Add(new RichBooleanOrOperator(token));
                             break;
                         }
                         Unexpected(token);
@@ -666,7 +666,7 @@ namespace Rant.Engine.Compiler
 
             done:
 
-            if ((actions.Any(x => x is REAArgumentSeperator) &&
+            if ((actions.Any(x => x is RichArgumentSeperator) &&
                 (type == ExpressionReadType.Expression ||
                 type == ExpressionReadType.VariableValue) || type == ExpressionReadType.List))
             {
@@ -675,8 +675,8 @@ namespace Rant.Engine.Compiler
                 actions.Clear();
                 actions.Add(list);
             }
-            else if(actions.Where(x => x is REAArgumentSeperator).Any() && type != ExpressionReadType.ExpressionGroup)
-                Unexpected(actions.Where(x => x is REAArgumentSeperator).First().Range);
+            else if(actions.Where(x => x is RichArgumentSeperator).Any() && type != ExpressionReadType.ExpressionGroup)
+                Unexpected(actions.Where(x => x is RichArgumentSeperator).First().Range);
 
 			switch (type)
 			{
@@ -694,13 +694,13 @@ namespace Rant.Engine.Compiler
 			}
 		}
 
-        private REAList CreateListFromActions(ExpressionReadType type, List<RantExpressionAction> actions)
+        private RichList CreateListFromActions(ExpressionReadType type, List<RichActionBase> actions)
         {
-            List<RantExpressionAction> listActions = new List<RantExpressionAction>();
-            RantExpressionAction lastItem = null;
-            foreach (RantExpressionAction reAction in actions)
+            List<RichActionBase> listActions = new List<RichActionBase>();
+            RichActionBase lastItem = null;
+            foreach (RichActionBase reAction in actions)
             {
-                if (reAction is REAArgumentSeperator)
+                if (reAction is RichArgumentSeperator)
                 {
                     if (lastItem == null)
                         Unexpected(reAction.Range);
@@ -712,13 +712,13 @@ namespace Rant.Engine.Compiler
             }
             if (lastItem == null)
             {
-                if (actions.Any() && actions.Where(x => x is REAArgumentSeperator).Any())
-                    Unexpected(actions.Where(x => x is REAArgumentSeperator).Last().Range);
+                if (actions.Any() && actions.Where(x => x is RichArgumentSeperator).Any())
+                    Unexpected(actions.Where(x => x is RichArgumentSeperator).Last().Range);
                 else
                     SyntaxError(actions.First().Range, "Blank item in list.");
             }
             listActions.Add(lastItem);
-            return new REAList(actions.First().Range, listActions, type != ExpressionReadType.List);
+            return new RichList(actions.First().Range, listActions, type != ExpressionReadType.List);
         }
 
 		private bool ReadNumber(Token<R> token, out double number)

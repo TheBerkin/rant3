@@ -17,7 +17,7 @@ namespace Rant.Engine
     {
         private static bool _loaded = false;
         private static Dictionary<Type, Dictionary<string, RantFunctionInfo>> _properties;
-        private static Dictionary<string, REAObject> _globalObjects;
+        private static Dictionary<string, RichObject> _globalObjects;
 
         static RichardFunctions()
         {
@@ -29,7 +29,7 @@ namespace Rant.Engine
             if (_loaded) return;
 
             _properties = new Dictionary<Type, Dictionary<string, RantFunctionInfo>>();
-            _globalObjects = new Dictionary<string, REAObject>();
+            _globalObjects = new Dictionary<string, RichObject>();
 
             foreach (var method in typeof(RichardFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
             {
@@ -80,16 +80,16 @@ namespace Rant.Engine
         private static void RegisterGlobalObject(string name, string property, RantFunctionInfo info)
         {
             if (!_globalObjects.ContainsKey(name))
-                _globalObjects[name] = new REAObject(null);
+                _globalObjects[name] = new RichObject(null);
             if (info.TreatAsRichardFunction)
-                _globalObjects[name].Values[property] = new REANativeFunction(null, info.ParamCount - 1, info);
+                _globalObjects[name].Values[property] = new RichNativeFunction(null, info.ParamCount - 1, info);
             else
-                _globalObjects[name].Values[property] = new REAFunctionInfo(null, info);
+                _globalObjects[name].Values[property] = new RichFunctionInfo(null, info);
         }
 
         public static bool HasObject(string name) => _globalObjects.ContainsKey(name);
 
-        public static REAObject GetObject(string name)
+        public static RichObject GetObject(string name)
         {
             if (!HasObject(name))
                 return null;
@@ -105,9 +105,9 @@ namespace Rant.Engine
         public static RantFunctionInfo GetObjectProperty(string name, string prop)
         {
             var property = _globalObjects[name].Values[prop];
-            if (property is REAFunctionInfo)
-                return (property as REAFunctionInfo).Function;
-            return (property as REANativeFunction).Function;
+            if (property is RichFunctionInfo)
+                return (property as RichFunctionInfo).Function;
+            return (property as RichNativeFunction).Function;
         }
 
         // String properties
@@ -115,115 +115,115 @@ namespace Rant.Engine
         [RantDescription("Returns the length of this string.")]
         private static IEnumerator<RantAction> StringLength(Sandbox sb, RantObject that)
         {
-            yield return new REANumber((that.Value as string).Length, null);
+            yield return new RichNumber((that.Value as string).Length, null);
         }
 
         // List properties
-        [RichardProperty("length", typeof(REAList), Returns = "number", IsFunction = false)]
+        [RichardProperty("length", typeof(RichList), Returns = "number", IsFunction = false)]
         [RantDescription("Returns the length of this list.")]
         private static IEnumerator<RantAction> ListLength(Sandbox sb, RantObject that)
         {
-            yield return that.Value as REAList;
+            yield return that.Value as RichList;
             var list = sb.ScriptObjectStack.Pop();
-            yield return new REANumber((list as REAList).Items.Count, null);
+            yield return new RichNumber((list as RichList).Items.Count, null);
         }
 
-        [RichardProperty("last", typeof(REAList), Returns = "any", IsFunction = false)]
+        [RichardProperty("last", typeof(RichList), Returns = "any", IsFunction = false)]
         [RantDescription("Returns the last item of this list.")]
         private static IEnumerator<RantAction> ListLast(Sandbox sb, RantObject that)
         {
-            yield return that.Value as REAList;
+            yield return that.Value as RichList;
             var list = sb.ScriptObjectStack.Pop();
-            yield return (list as REAList).Items.Last();
+            yield return (list as RichList).Items.Last();
         }
 
-        [RichardProperty("push", typeof(REAList))]
+        [RichardProperty("push", typeof(RichList))]
         [RantDescription("Pushes the given item onto the end of this list.")]
         private static IEnumerator<RantAction> ListPush(Sandbox sb, RantObject that,
             [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
             RantObject obj)
         {
-            (that.Value as REAList).InternalItems.Add(new READummy(null, obj.Value));
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).InternalItems.Add(new RichDummy(null, obj.Value));
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("pop", typeof(REAList), Returns = "any")]
+        [RichardProperty("pop", typeof(RichList), Returns = "any")]
         [RantDescription("Pops the last item from this list.")]
         private static IEnumerator<RantAction> ListPop(Sandbox sb, RantObject that)
         {
-            var last = (that.Value as REAList).Items.Last();
-            (that.Value as REAList).InternalItems.RemoveAt((that.Value as REAList).Items.Count - 1);
-            (that.Value as REAList).ItemsChanged = true;
+            var last = (that.Value as RichList).Items.Last();
+            (that.Value as RichList).InternalItems.RemoveAt((that.Value as RichList).Items.Count - 1);
+            (that.Value as RichList).ItemsChanged = true;
             yield return last;
         }
 
-        [RichardProperty("pushFront", typeof(REAList))]
+        [RichardProperty("pushFront", typeof(RichList))]
         [RantDescription("Pushes the given item onto the front of this list.")]
         private static IEnumerator<RantAction> ListPushFront(Sandbox sb, RantObject that,
             [RichardPropertyArgument("item", "any", Description = "The item to push onto the list.")]
             RantObject obj)
         {
-            (that.Value as REAList).InternalItems.Insert(0, new READummy(null, obj.Value));
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).InternalItems.Insert(0, new RichDummy(null, obj.Value));
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("popFront", typeof(REAList), Returns = "any")]
+        [RichardProperty("popFront", typeof(RichList), Returns = "any")]
         [RantDescription("Pops the first item from this list.")]
         private static IEnumerator<RantAction> ListPopFront(Sandbox sb, RantObject that)
         {
-            var first = (that.Value as REAList).Items.First();
-            (that.Value as REAList).InternalItems.RemoveAt(0);
-            (that.Value as REAList).ItemsChanged = true;
+            var first = (that.Value as RichList).Items.First();
+            (that.Value as RichList).InternalItems.RemoveAt(0);
+            (that.Value as RichList).ItemsChanged = true;
             yield return first;
         }
 
-        [RichardProperty("copy", typeof(REAList), Returns = "list")]
+        [RichardProperty("copy", typeof(RichList), Returns = "list")]
         [RantDescription("Returns a new list with identical items.")]
         private static IEnumerator<RantAction> ListCopy(Sandbox sb, RantObject that)
         {
-            var newList = (that.Value as REAList).Items.ToList();
-            yield return new REAList((that.Value as REAList).Range, newList, false);
+            var newList = (that.Value as RichList).Items.ToList();
+            yield return new RichList((that.Value as RichList).Range, newList, false);
         }
 
-        [RichardProperty("fill", typeof(REAList))]
+        [RichardProperty("fill", typeof(RichList))]
         [RantDescription("Fills every item of the list with a specified value.")]
         private static IEnumerator<RantAction> ListFill(Sandbox sb, RantObject that,
             [RichardPropertyArgument("value", "any", Description = "The value to fill the list with.")]
             RantObject obj)
         {
             var fillValue = obj.Value;
-            (that.Value as REAList).InternalItems =
-                (that.Value as REAList).Items.Select(
-                    x => (RantExpressionAction)new READummy(null, fillValue)
+            (that.Value as RichList).InternalItems =
+                (that.Value as RichList).Items.Select(
+                    x => (RichActionBase)new RichDummy(null, fillValue)
                 ).ToList();
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("reverse", typeof(REAList))]
+        [RichardProperty("reverse", typeof(RichList))]
         [RantDescription("Reverses this list in place.")]
         private static IEnumerator<RantAction> ListReverse(Sandbox sb, RantObject that)
         {
-            (that.Value as REAList).InternalItems.Reverse();
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).InternalItems.Reverse();
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("join", typeof(REAList), Returns = "string")]
+        [RichardProperty("join", typeof(RichList), Returns = "string")]
         [RantDescription("Returns the list items joined together by a specified string.")]
         private static IEnumerator<RantAction> ListJoin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("seperator", "string", Description = "The string to seperate each item of the list.")]
             RantObject obj)
         {
-            yield return (that.Value as REAList);
+            yield return (that.Value as RichList);
             var list = sb.ScriptObjectStack.Pop();
-            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (list as REAList).Items.Select(item => item.ToString()).ToArray()));
+            sb.ScriptObjectStack.Push(string.Join(obj.ToString(), (list as RichList).Items.Select(item => item.ToString()).ToArray()));
             yield break;
         }
 
-        [RichardProperty("insert", typeof(REAList))]
+        [RichardProperty("insert", typeof(RichList))]
         [RantDescription("Inserts an item into a specified position in this list.")]
         private static IEnumerator<RantAction> ListInsert(Sandbox sb, RantObject that,
             [RichardPropertyArgument("item", "any", Description = "The item to insert into this list.")]
@@ -235,12 +235,12 @@ namespace Rant.Engine
             var position = pos.Value;
             if (!(position is double))
                 throw new RantRuntimeException(sb.Pattern, null, "Position must be a number.");
-            (that.Value as REAList).InternalItems.Insert(Convert.ToInt32(position), new READummy(null, obj));
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).InternalItems.Insert(Convert.ToInt32(position), new RichDummy(null, obj));
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("remove", typeof(REAList))]
+        [RichardProperty("remove", typeof(RichList))]
         [RantDescription("Removes an item from a specified position in this list.")]
         private static IEnumerator<RantAction> ListRemove(Sandbox sb, RantObject that,
             [RichardPropertyArgument("position", "number", Description = "The position in this list to remove the item from.")]
@@ -249,22 +249,22 @@ namespace Rant.Engine
             var position = pos.Value;
             if (!(position is double))
                 throw new RantRuntimeException(sb.Pattern, null, "Position must be a number.");
-            (that.Value as REAList).InternalItems.RemoveAt(Convert.ToInt32(position));
-            (that.Value as REAList).ItemsChanged = true;
+            (that.Value as RichList).InternalItems.RemoveAt(Convert.ToInt32(position));
+            (that.Value as RichList).ItemsChanged = true;
             yield break;
         }
 
-        [RichardProperty("filter", typeof(REAList))]
+        [RichardProperty("filter", typeof(RichList))]
         [RantDescription("Filters the items of this list according to the results of a test function.")]
         private static IEnumerator<RantAction> ListFilter(Sandbox sb, RantObject that,
             [RichardPropertyArgument("test", "function", Description = "The test function which will be called for every item in this list.")]
             RantObject test)
         {
-            if (!(test.Value is REAFunction))
+            if (!(test.Value is RichFunction))
                 throw new RantRuntimeException(sb.Pattern, null, "Test must be a function.");
-            List<RantExpressionAction> filteredObjects = new List<RantExpressionAction>();
-            var testFunction = (test.Value as REAFunction);
-            foreach (RantExpressionAction action in (that.Value as REAList).Items)
+            List<RichActionBase> filteredObjects = new List<RichActionBase>();
+            var testFunction = (test.Value as RichFunction);
+            foreach (RichActionBase action in (that.Value as RichList).Items)
             {
                 var count = sb.ScriptObjectStack.Count;
                 yield return action;
@@ -284,9 +284,9 @@ namespace Rant.Engine
                     throw new RantRuntimeException(sb.Pattern, testFunction.Range, $"Expected boolean value from test function, got {Util.ScriptingObjectType(testValue)}.");
                 var testBool = (bool)testValue;
                 if (testBool)
-                    filteredObjects.Add(new READummy(testFunction.Range, currentObj));
+                    filteredObjects.Add(new RichDummy(testFunction.Range, currentObj));
             }
-            sb.ScriptObjectStack.Push(new REAList(sb.CurrentAction.Range, filteredObjects, false));
+            sb.ScriptObjectStack.Push(new RichList(sb.CurrentAction.Range, filteredObjects, false));
             yield break;
         }
 
@@ -297,7 +297,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Target", "get", Returns = "string")]
         [RantDescription("Returns the value of the target with the specified name, or undefined.")]
-        private static IEnumerator<RantExpressionAction> TargetGet(Sandbox sb, RantObject that, 
+        private static IEnumerator<RichActionBase> TargetGet(Sandbox sb, RantObject that, 
             [RichardPropertyArgument("targetName", "string", Description = "The name of the target that will be returned.")]
             RantObject obj)
         {
@@ -311,7 +311,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Target", "send")]
         [RantDescription("Sends the provided value to the named target.")]
-        private static IEnumerator<RantExpressionAction> TargetSend(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> TargetSend(Sandbox sb, RantObject that,
             [RichardPropertyArgument("targetName", "string", Description = "The name of the target to write to.")]
             RantObject obj1,
             [RichardPropertyArgument("value", "string", Description = "The value to write to the target.")]
@@ -330,7 +330,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Target", "clear")]
         [RantDescription("Clears the named target.")]
-        private static IEnumerator<RantExpressionAction> TargetClear(Sandbox sb, RantObject that, 
+        private static IEnumerator<RichActionBase> TargetClear(Sandbox sb, RantObject that, 
             [RichardPropertyArgument("targetName", "string", Description = "The target name to clear.")]
             RantObject obj1)
         {
@@ -343,7 +343,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "set")]
         [RantDescription("Creates and applies a synchronizer with the specified name and type.")]
-        private static IEnumerator<RantExpressionAction> SyncSet(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncSet(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to create.")]
             RantObject obj1,
             [RichardPropertyArgument("syncType", "string", Description = "The type of synchronizer to create.")]
@@ -363,7 +363,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "reset")]
         [RantDescription("Resets the named synchronizer.")]
-        private static IEnumerator<RantExpressionAction> SyncReset(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncReset(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to reset.")]
             RantObject obj1)
         {
@@ -376,7 +376,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "reseed")]
         [RantDescription("Reseeds the named synchronizer with a provided seed.")]
-        private static IEnumerator<RantExpressionAction> SyncReseed(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncReseed(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to reseed.")]
             RantObject obj1,
             [RichardPropertyArgument("seed", "string", Description = "The value that the synchronizer will be seeded with.")]
@@ -396,7 +396,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "pin")]
         [RantDescription("Pins the named synchronizer.")]
-        private static IEnumerator<RantExpressionAction> SyncPin(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncPin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to pin.")]
             RantObject obj1)
         {
@@ -409,7 +409,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "unpin")]
         [RantDescription("Unpins the named synchronizer.")]
-        private static IEnumerator<RantExpressionAction> SyncUnpin(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncUnpin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to unpin.")]
             RantObject obj1)
         {
@@ -422,7 +422,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "isPinned", Returns = "bool")]
         [RantDescription("Returns whether or not the named synchronizer is pinned.")]
-        private static IEnumerator<RantExpressionAction> SyncIsPinned(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncIsPinned(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to check for pinnedness. Pinfulness?")]
             RantObject obj1)
         {
@@ -437,7 +437,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "exists", Returns = "bool")]
         [RantDescription("Returns whether or not the named synchronizer exists.")]
-        private static IEnumerator<RantExpressionAction> SyncExists(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncExists(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer whose existence will be checked.")]
             RantObject obj1)
         {
@@ -450,7 +450,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Sync", "setPinnedState")]
         [RantDescription("Sets the pinned state of the named synchronizer.")]
-        private static IEnumerator<RantExpressionAction> SyncSetPinnedState(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> SyncSetPinnedState(Sandbox sb, RantObject that,
             [RichardPropertyArgument("syncName", "string", Description = "The name of the synchronizer to set pinned state on.")]
             RantObject obj1,
             [RichardPropertyArgument("pinnedState", "bool", Description = "The pinned state that will be assigned to this synchronizer.")]
@@ -468,7 +468,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Convert", "toString", Returns = "string")]
         [RantDescription("Converts the specified object to a string.")]
-        private static IEnumerator<RantExpressionAction> ConvertToString(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> ConvertToString(Sandbox sb, RantObject that,
             [RichardPropertyArgument("object", "any", Description = "The object to convert to a string.")]
             RantObject obj)
         {
@@ -478,7 +478,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Convert", "toNumber", Returns = "number")]
         [RantDescription("Converts the specified object to a number.")]
-        private static IEnumerator<RantExpressionAction> ConvertToNumber(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> ConvertToNumber(Sandbox sb, RantObject that,
             [RichardPropertyArgument("object", "any", Description = "The object to convert to a number.")]
             RantObject obj)
         {
@@ -492,7 +492,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Output", "print")]
         [RantDescription("Prints the provided object, cast to a string.")]
-        private static IEnumerator<RantExpressionAction> OutputPrint(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> OutputPrint(Sandbox sb, RantObject that,
             [RichardPropertyArgument("object", "any", Description = "The object to print.")]
             RantObject obj)
         {
@@ -502,7 +502,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Type", "get", Returns = "string")]
         [RantDescription("Checks the type of a provided object and returns it.")]
-        private static IEnumerator<RantExpressionAction> TypeGet(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> TypeGet(Sandbox sb, RantObject that,
             [RichardPropertyArgument("object", "any", Description = "The object whose type will be returned.")]
             RantObject obj)
         {
@@ -513,7 +513,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "E", Returns = "number", IsFunction = false)]
         [RantDescription("Returns the value of the mathematical constant E.")]
-        private static IEnumerator<RantExpressionAction> MathE(Sandbox sb)
+        private static IEnumerator<RichActionBase> MathE(Sandbox sb)
         {
             sb.ScriptObjectStack.Push(Math.E);
             yield break;
@@ -521,14 +521,14 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "PI", Returns = "number", IsFunction = false)]
         [RantDescription("Returns the value of the mathematical constant Pi.")]
-        private static IEnumerator<RantExpressionAction> MathPI(Sandbox sb)
+        private static IEnumerator<RichActionBase> MathPI(Sandbox sb)
         {
             sb.ScriptObjectStack.Push(Math.PI);
             yield break;
         }
         [RichardGlobalObject("Math", "acos", Returns = "number")]
         [RantDescription("Returns acos(n).")]
-        private static IEnumerator<RantExpressionAction> MathAcos(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathAcos(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -541,7 +541,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "asin", Returns = "number")]
         [RantDescription("Returns asin(n).")]
-        private static IEnumerator<RantExpressionAction> MathAsin(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathAsin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -554,7 +554,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "atan", Returns = "number")]
         [RantDescription("Returns atan(n).")]
-        private static IEnumerator<RantExpressionAction> MathAtan(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathAtan(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -566,7 +566,7 @@ namespace Rant.Engine
         }
         [RichardGlobalObject("Math", "atan2", Returns = "number")]
         [RantDescription("Returns atan2(y, n).")]
-        private static IEnumerator<RantExpressionAction> MathAtan2(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathAtan2(Sandbox sb, RantObject that,
             [RichardPropertyArgument("y", "number", Description = "The Y value of the atan2 operation.")]
             RantObject arg1,
             [RichardPropertyArgument("x", "number", Description = "The X value of the atan2 operation.")]
@@ -584,7 +584,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "ceil", Returns = "number")]
         [RantDescription("Returns ceil(n).")]
-        private static IEnumerator<RantExpressionAction> MathCeil(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathCeil(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -597,7 +597,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "cos", Returns = "number")]
         [RantDescription("Returns cos(n).")]
-        private static IEnumerator<RantExpressionAction> MathCos(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathCos(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -610,7 +610,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "cosh", Returns = "number")]
         [RantDescription("Returns cosh(n).")]
-        private static IEnumerator<RantExpressionAction> MathCosh(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathCosh(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -623,7 +623,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "exp", Returns = "number")]
         [RantDescription("Returns exp(n).")]
-        private static IEnumerator<RantExpressionAction> MathExp(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathExp(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -636,7 +636,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "floor", Returns = "number")]
         [RantDescription("Returns floor(n).")]
-        private static IEnumerator<RantExpressionAction> MathFloor(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathFloor(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -649,7 +649,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "log", Returns = "number")]
         [RantDescription("Returns log(n).")]
-        private static IEnumerator<RantExpressionAction> MathLog(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathLog(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -662,7 +662,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "log10", Returns = "number")]
         [RantDescription("Returns log10(n).")]
-        private static IEnumerator<RantExpressionAction> MathLog10(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathLog10(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -675,7 +675,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "max", Returns = "number")]
         [RantDescription("Returns the largest of the two provided numbers.")]
-        private static IEnumerator<RantExpressionAction> MathMax(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathMax(Sandbox sb, RantObject that,
             [RichardPropertyArgument("a", "number")]
             RantObject arg1,
             [RichardPropertyArgument("b", "number")]
@@ -693,7 +693,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "min", Returns = "number")]
         [RantDescription("Returns the smallest of the two provided numbers.")]
-        private static IEnumerator<RantExpressionAction> MathMin(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathMin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("a", "number")]
             RantObject arg1,
             [RichardPropertyArgument("b", "number")]
@@ -711,7 +711,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "pow", Returns = "number")]
         [RantDescription("Raises base to exponent and returns the resulting number.")]
-        private static IEnumerator<RantExpressionAction> MathPow(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathPow(Sandbox sb, RantObject that,
             [RichardPropertyArgument("base", "number", Description = "The base number of the exponent operation.")]
             RantObject baseObj,
             [RichardPropertyArgument("exponent", "number", Description = "The exponent that base will be raised to.")]
@@ -727,7 +727,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "round", Returns = "number")]
         [RantDescription("Returns round(n).")]
-        private static IEnumerator<RantExpressionAction> MathRound(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathRound(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -740,7 +740,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "sin", Returns = "number")]
         [RantDescription("Returns sin(n).")]
-        private static IEnumerator<RantExpressionAction> MathSin(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathSin(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -753,7 +753,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "sinh", Returns = "number")]
         [RantDescription("Returns sinh(n).")]
-        private static IEnumerator<RantExpressionAction> MathSinh(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathSinh(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -766,7 +766,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "sqrt", Returns = "number")]
         [RantDescription("Returns sqrt(n).")]
-        private static IEnumerator<RantExpressionAction> MathSqrt(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathSqrt(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -779,7 +779,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "tan", Returns = "number")]
         [RantDescription("Returns tan(n).")]
-        private static IEnumerator<RantExpressionAction> MathTan(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathTan(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -792,7 +792,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "tanh", Returns = "number")]
         [RantDescription("Returns tanh(n).")]
-        private static IEnumerator<RantExpressionAction> MathTanh(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathTanh(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
@@ -805,7 +805,7 @@ namespace Rant.Engine
 
         [RichardGlobalObject("Math", "truncate", Returns = "number")]
         [RantDescription("Returns truncate(n).")]
-        private static IEnumerator<RantExpressionAction> MathTruncate(Sandbox sb, RantObject that,
+        private static IEnumerator<RichActionBase> MathTruncate(Sandbox sb, RantObject that,
             [RichardPropertyArgument("n", "number", Description = "The number that will be used in this operation.")]
             RantObject obj)
         {
