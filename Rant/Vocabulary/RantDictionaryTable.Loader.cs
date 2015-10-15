@@ -153,11 +153,11 @@ namespace Rant.Vocabulary
                                             parts[1].Split('/')
                                                 .Select(s => s.Trim())
                                                 .ToArray();
-                                        if (subtypes.Length != pron.Length)
-                                            LoadError(path, token, "Pronunciation list length must match subtype count.");
-
-                                        for (int i = 0; i < entry.Terms.Length; i++)
-                                            entry.Terms[i].Pronunciation = pron[i];
+                                        if (subtypes.Length == pron.Length)
+                                        {
+                                            for (int i = 0; i < entry.Terms.Length; i++)
+                                                entry.Terms[i].Pronunciation = pron[i];
+                                        }
                                     }
                                     break;
                                 default:
