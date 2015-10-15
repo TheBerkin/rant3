@@ -46,7 +46,7 @@ namespace Rant.Engine.Syntax.Richard
 
         private void CreatePattern()
         {
-            _pattern = new RantPattern("pattern string", RantPatternSource.String, Value);
+            _pattern = new RantPattern("pattern string", RantPatternOrigin.String, Value);
         }
 
         public override IEnumerator<RantAction> Run(Sandbox sb)

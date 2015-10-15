@@ -18,7 +18,7 @@ namespace Rant
         /// <summary>
 		/// Describes the origin of the pattern.
 		/// </summary>
-		public RantPatternSource Type { get; }
+		public RantPatternOrigin Type { get; }
 
         /// <summary>
 		/// The code contained in the pattern.
@@ -27,7 +27,7 @@ namespace Rant
 
         internal RantAction Action { get; }
 
-        internal RantPattern(string name, RantPatternSource type, string code)
+        internal RantPattern(string name, RantPatternOrigin type, string code)
         {
             Name = name;
             Type = type;
@@ -41,7 +41,7 @@ namespace Rant
         /// <param name="code">The code to compile.</param>
         /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
         /// <returns></returns>
-        public static RantPattern FromString(string code) => new RantPattern("Pattern", RantPatternSource.String, code);
+        public static RantPattern FromString(string code) => new RantPattern("Pattern", RantPatternOrigin.String, code);
 
         /// <summary>
         /// Compiles a pattern from a string with the specified name.
@@ -50,7 +50,7 @@ namespace Rant
         /// <param name="code">The code to compile.</param>
         /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
         /// <returns></returns>
-        public static RantPattern FromString(string name, string code) => new RantPattern(name, RantPatternSource.String, code);
+        public static RantPattern FromString(string name, string code) => new RantPattern(name, RantPatternOrigin.String, code);
 
         /// <summary>
         /// Loads the file located at the specified path and compiles a pattern from its contents.
@@ -59,7 +59,7 @@ namespace Rant
         /// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
         /// <exception cref="System.IO.FileNotFoundException">Thrown if the file cannot be found.</exception>
         /// <returns></returns>
-        public static RantPattern FromFile(string path) => new RantPattern(Path.GetFileName(path), RantPatternSource.File, File.ReadAllText(path));
+        public static RantPattern FromFile(string path) => new RantPattern(Path.GetFileName(path), RantPatternOrigin.File, File.ReadAllText(path));
 
 		/// <summary>
 		/// Returns a string describing the pattern.

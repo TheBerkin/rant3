@@ -272,7 +272,7 @@ namespace Rant
                 {
                     var names = patterns.Keys;
                     foreach (string name in names)
-                        package.AddPattern(new RantPattern(name, RantPatternSource.File, patterns[name]));
+                        package.AddPattern(new RantPattern(name, RantPatternOrigin.File, patterns[name]));
                 }
 
                 var tables = doc["tables"];
@@ -340,7 +340,7 @@ namespace Rant
                 var name = reader.ReadString();
                 var code = reader.ReadString();
 
-                pkg.AddPattern(new RantPattern(name, RantPatternSource.String, code));
+                pkg.AddPattern(new RantPattern(name, RantPatternOrigin.String, code));
             }
 
             // Tables

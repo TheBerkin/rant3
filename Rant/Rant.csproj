@@ -359,7 +359,7 @@
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Engine\Compiler\R.cs" />
     <Compile Include="RantPattern.cs" />
-    <Compile Include="RantPatternSource.cs" />
+    <Compile Include="RantPatternOrigin.cs" />
     <Compile Include="Engine\TokenReader.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
