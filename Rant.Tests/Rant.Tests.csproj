@@ -50,8 +50,8 @@
       <HintPath>..\packages\NUnitTestAdapter.1.2\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RGiesecke.DllExport.Metadata">
-      <HintPath>..\packages\UnmanagedExports.1.2.6\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
+    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnmanagedExports.1.2.7\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -115,7 +115,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets')" />
+  <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
