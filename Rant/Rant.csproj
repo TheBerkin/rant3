@@ -199,6 +199,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Compiler\DefaultParseletAttribute.cs" />
+    <Compile Include="Engine\Compiler\NewRantCompiler.cs" />
+    <Compile Include="Engine\Compiler\Parselets\DefaultParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
     <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
     <Compile Include="Engine\Constructs\AttribPersistence.cs" />
     <Compile Include="Engine\Constructs\BlockManager.cs" />
@@ -299,6 +303,7 @@
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBitTree.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantInternalException.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Stringes\Lexer.cs" />

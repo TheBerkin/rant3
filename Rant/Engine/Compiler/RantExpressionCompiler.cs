@@ -66,9 +66,9 @@ namespace Rant.Engine.Compiler
 		private List<string> _keywords;
         // a hack for VariableValue and FunctionBody going past end of expression
         private bool _hitEndOfExpr = false;
-        private RantCompiler _rantCompiler;
+        private NewRantCompiler _rantCompiler;
 
-		public RantExpressionCompiler(string sourceName, string source, TokenReader reader, RantCompiler parentCompiler)
+		public RantExpressionCompiler(string sourceName, string source, TokenReader reader, NewRantCompiler parentCompiler)
 		{
             _rantCompiler = parentCompiler;
 			_sourceName = sourceName;

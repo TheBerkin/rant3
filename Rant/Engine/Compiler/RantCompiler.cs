@@ -27,7 +27,9 @@ namespace Rant.Engine.Compiler
 			_sourceName = sourceName;
 			_source = source;
 			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
-			_expressionCompiler = new RantExpressionCompiler(sourceName, source, _reader, this);
+
+            // commented so this builds
+			//_expressionCompiler = new RantExpressionCompiler(sourceName, source, _reader, this);
 		}
 
 		private enum ReadType
@@ -80,7 +82,7 @@ namespace Rant.Engine.Compiler
 
 		public static RantAction Compile(string sourceName, string source)
 		{
-			return new RantCompiler(sourceName, source).Read(ReadType.Sequence);
+			return new NewRantCompiler(sourceName, source).Read(Compiler.ReadType.Sequence);
 		}
 
 		private RantAction Read(ReadType type, Token<R> fromToken = null)
