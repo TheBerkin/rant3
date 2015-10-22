@@ -87,29 +87,38 @@ namespace Rant.Engine.Compiler
             var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
-            var token = reader.ReadToken();
-            var parselet = Parselet.FromTokenID(token.ID);
-            parseletStack.Push(parselet);
-            enumeratorStack.Push(parselet.Parse(this, reader, type, token));
+            Token<R> token = null;
 
-            top:
-            while (enumeratorStack.Any())
+            while (!reader.End)
             {
-                var enumerator = enumeratorStack.Peek();
+                token = reader.ReadToken();
+                var parselet = Parselet.FromTokenID(token.ID);
+                parseletStack.Push(parselet);
+                enumeratorStack.Push(parselet.Parse(this, reader, type, token));
 
-                while (enumerator.MoveNext())
+                top:
+                while (enumeratorStack.Any())
                 {
-                    if (enumerator.Current == null)
-                        break;
+                    var enumerator = enumeratorStack.Peek();
 
-                    token = reader.ReadToken();
-                    parseletStack.Push(enumerator.Current);
-                    enumeratorStack.Push(enumerator.Current.Parse(this, reader, type, token));
-                    goto top;
+                    while (enumerator.MoveNext())
+                    {
+                        if (enumerator.Current == null)
+                            break;
+
+                        token = reader.ReadToken();
+
+                        if (token.ID == R.EOF) // TODO: maybe don't hardcode this?
+                            goto done;
+
+                        parseletStack.Push(enumerator.Current);
+                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, type, token));
+                        goto top;
+                    }
+
+                    parseletStack.Pop();
+                    enumeratorStack.Pop();
                 }
-
-                parseletStack.Pop();
-                enumeratorStack.Pop();
             }
 
             done:
@@ -134,6 +143,16 @@ namespace Rant.Engine.Compiler
         public void AddRuleSwitchToQuery(params ClassFilterRule[] rules) => query.ClassFilter.AddRuleSwitch(rules);
         public void SetQuerySyllablePredicate(Range value) => query.SyllablePredicate = value;
         public void AddQueryCarrierComponent(CarrierComponent type, params string[] values) => query.Carrier.AddComponent(type, values);
+
+        public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
+        {
+            var func = group.GetFunction(argc);
+
+            if (func == null)
+                SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} arguments");
+
+            return func;
+        }
 
         public void Unexpected(Stringe token)
         {
