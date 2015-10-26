@@ -916,5 +916,20 @@ namespace Rant.Engine
         [RantFunction("ss")]
         [RantDescription("Prints an eszett (double S).")]
         private static void Eszett(Sandbox sb) => sb.Print("\x00df");
+
+        [RantFunction("emoji")]
+        [RantDescription("Takes an emoji shortcode and prints the corresponding emoji.")]
+        private static void PrintEmoji(Sandbox sb, 
+            [RantDescription("The emoji shortcode to use, without colons.")]
+            string shortcode)
+        {
+            shortcode = shortcode.ToLower();
+            if(!Emoji.Shortcodes.ContainsKey(shortcode))
+            {
+                sb.Print("[missing emoji]");
+                return;
+            }
+            sb.Print(Char.ConvertFromUtf32(Emoji.Shortcodes[shortcode]));
+        }
     }
 }

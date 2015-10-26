@@ -74,5 +74,11 @@ namespace Rant.Tests
                 rant.Do(@"[tm] [reg] [c] [em] [en] [b] [ss]").Main
             );
         }
+
+        [Test]
+        public void Emoji()
+        {
+            Assert.AreEqual("🔫😠", rant.Do(@"[emoji:gun][emoji:angry]").Main);
+        }
     }
 }
