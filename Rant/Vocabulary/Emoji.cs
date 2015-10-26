@@ -10,12 +10,12 @@ namespace Rant.Vocabulary
     /// A list of emoji.
     /// I don't know where to put this other than a class, so uh, here you go.
     /// </summary>
-    public static class Emoji
+    internal static class Emoji
     {
         /// <summary>
         /// Maps Emoji shortcodes to Unicode code points.
         /// </summary>
-        public static Dictionary<string, int> Shortcodes = new Dictionary<string, int>()
+        internal readonly static Dictionary<string, int> Shortcodes = new Dictionary<string, int>()
         {
             { "+1", 0x1f44d },
             { "-1", 0x1f44e },
