@@ -22,15 +22,121 @@ namespace Rant
 
         private HashSet<RantPattern> _patterns;
         private HashSet<RantDictionaryTable> _tables;
+		private HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 
-        public string Name = "";
-        public string Namespace = "";
-        public string Description = "";
-        public string[] Tags = new string[] { };
-        public string Version = "";
-        public string[] Authors = new string[] { };
+		/// <summary>
+		/// The display name of the package.
+		/// </summary>
+		public string Title { get; set; } = "Untitled Package";
 
-        /// <summary>
+	    /// <summary>
+	    /// The ID of the package.
+	    /// </summary>
+	    public string ID { get; set; } = "";
+
+	    /// <summary>
+	    /// The description for the package.
+	    /// </summary>
+	    public string Description { get; set; } = "";
+
+	    /// <summary>
+	    /// The tags associated with the package.
+	    /// </summary>
+	    public string[] Tags { get; set; } = { };
+
+	    /// <summary>
+	    /// The package version.
+	    /// </summary>
+	    public string Version { get; set; } = "1.0.0";
+
+	    /// <summary>
+	    /// The authors of the package.
+	    /// </summary>
+	    public string[] Authors { get; set; } = { };
+
+		/// <summary>
+		/// Adds the specified dependency to the package.
+		/// </summary>
+		/// <param name="dependency">The dependency to add.</param>
+	    public void AddDependency(RantPackageDependency dependency)
+		{
+			if (dependency == null) throw new ArgumentNullException(nameof(dependency));
+			_dependencies.Add(dependency);
+		}
+
+		/// <summary>
+		/// Adds the specified dependency to the package.
+		/// </summary>
+		/// <param name="id">The ID of the package.</param>
+		/// <param name="version">The package version to target.</param>
+	    public void AddDependency(string id, string version)
+	    {
+		    if (id == null) throw new ArgumentNullException(nameof(id));
+		    if (version == null) throw new ArgumentNullException(nameof(version));
+		    _dependencies.Add(new RantPackageDependency(id, version));
+	    }
+
+		/// <summary>
+		/// Determines whether the package depends on the specified package.
+		/// </summary>
+		/// <param name="id">The ID of the package to check for.</param>
+		/// <param name="version">The version of the package to check for.</param>
+		/// <returns></returns>
+	    public bool DependsOn(string id, string version)
+		{
+			if (id == null) throw new ArgumentNullException(nameof(id));
+			if (version == null) throw new ArgumentNullException(nameof(version));
+			return _dependencies.Contains(new RantPackageDependency(id, version));
+		}
+
+		/// <summary>
+		/// Determines whether the package has the specified dependency.
+		/// </summary>
+		/// <param name="dependency">The dependency to check for.</param>
+		/// <returns></returns>
+	    public bool DependsOn(RantPackageDependency dependency)
+	    {
+		    if (dependency == null) throw new ArgumentNullException(nameof(dependency));
+		    return _dependencies.Contains(dependency);
+	    }
+
+		/// <summary>
+		/// Enumerates the package's dependencies.
+		/// </summary>
+		/// <returns></returns>
+	    public IEnumerable<RantPackageDependency> GetDependencies() => _dependencies.AsEnumerable();
+
+		/// <summary>
+		/// Removes the specified dependency from the package.
+		/// </summary>
+		/// <param name="id">The ID of the dependency to remove.</param>
+		/// <param name="version">The version of the dependency to remove.</param>
+		/// <returns></returns>
+	    public bool RemoveDependency(string id, string version)
+	    {
+		    if (id == null) throw new ArgumentNullException(nameof(id));
+		    if (version == null) throw new ArgumentNullException(nameof(version));
+		    return _dependencies.Remove(new RantPackageDependency(id, version));
+	    }
+
+		/// <summary>
+		/// Removes the specified dependency from the package.
+		/// </summary>
+		/// <param name="dependency">The dependency to remove.</param>
+		/// <returns></returns>
+	    public bool RemoveDependency(RantPackageDependency dependency)
+	    {
+		    if (dependency == null) throw new ArgumentNullException(nameof(dependency));
+		    return _dependencies.Remove(dependency);
+	    }
+
+		/// <summary>
+		/// Removes all dependencies from the package.
+		/// </summary>
+	    public void ClearDependencies() => _dependencies.Clear();
+
+
+	    /// <summary>
         /// Adds the specified pattern to the package.
         /// </summary>
         /// <param name="pattern">The pattern to add.</param>
@@ -99,8 +205,8 @@ namespace Rant
             {
                 var doc = new BsonDocument(stringTableMode);
                 var info = doc.Top["info"] = new BsonItem();
-                info["name"] = new BsonItem(Name);
-                info["namespace"] = new BsonItem(Namespace);
+                info["name"] = new BsonItem(Title);
+                info["namespace"] = new BsonItem(ID);
                 info["description"] = new BsonItem(Description);
                 info["tags"] = new BsonItem(Tags);
                 info["version"] = new BsonItem(Version);
@@ -259,8 +365,8 @@ namespace Rant
                 var info = doc["info"];
                 if(info == null)
                 {
-                    package.Name = info["name"];
-                    package.Namespace = info["namespace"];
+                    package.Title = info["name"];
+                    package.ID = info["namespace"];
                     package.Version = info["version"];
                     package.Description = info["description"];
                     package.Authors = (string[])info["authors"].Value;

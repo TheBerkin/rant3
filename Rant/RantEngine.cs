@@ -40,6 +40,7 @@ namespace Rant
         internal readonly ObjectTable Objects = new ObjectTable();
         
         private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
+	    private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>(); 
 		private RantDictionary _dictionary = new RantDictionary();
 
         /// <summary>
@@ -134,6 +135,7 @@ namespace Rant
         public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             if (package == null) throw new ArgumentNullException(nameof(package));
+	        if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
 
             var patterns = package.GetPatterns();
             var tables = package.GetTables();
@@ -158,6 +160,18 @@ namespace Rant
                     }
                 }
             }
+
+	        _loadedPackages.Add(RantPackageDependency.Create(package));
+
+	        foreach (var dependency in package.GetDependencies())
+	        {
+		        if (!File.Exists($"{dependency.ID}.rantpkg"))
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' cannot find dependency '{dependency}'.");
+		        var pkg = RantPackage.Load($"{dependency.ID}.rantpkg");
+				if (pkg.Version.Trim() != dependency.Version)
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version did not match ({pkg.Version}).");
+                LoadPackage(pkg, mergeBehavior);
+	        }
         }
 
         /// <summary>
@@ -176,8 +190,9 @@ namespace Rant
             }
 
             var package = RantPackage.Load(path);
+			if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
 
-            var patterns = package.GetPatterns();
+			var patterns = package.GetPatterns();
             var tables = package.GetTables();
 
             if (patterns.Any())
@@ -200,7 +215,19 @@ namespace Rant
                     }
                 }
             }
-        }
+
+	        _loadedPackages.Add(RantPackageDependency.Create(package));
+
+			foreach (var dependency in package.GetDependencies())
+			{
+				if (!File.Exists($"{dependency.ID}.rantpkg"))
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' cannot find dependency '{dependency}'.");
+				var pkg = RantPackage.Load($"{dependency.ID}.rantpkg");
+				if (pkg.Version.Trim() != dependency.Version)
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version did not match ({pkg.Version}).");
+				LoadPackage(pkg, mergeBehavior);
+			}
+		}
 
         private RantOutput RunVM(Sandbox vm, double timeout)
         {

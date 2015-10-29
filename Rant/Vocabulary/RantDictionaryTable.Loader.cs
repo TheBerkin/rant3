@@ -41,7 +41,7 @@ namespace Rant.Vocabulary
 
                             switch (dirName)
                             {
-                                case "name":
+                                case "name":    
                                     if (!header) LoadError(path, token, "The #name directive may only be used in the file header.");
                                     if (args.Length != 1) LoadError(path, token, "#name directive expected one word:\r\n\r\n" + token.Value);
                                     if (!Util.ValidateName(args[0])) LoadError(path, token, $"Invalid #name value: '{args[1]}'");
