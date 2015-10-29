@@ -22,7 +22,7 @@ namespace Rant
 
         private HashSet<RantPattern> _patterns;
         private HashSet<RantDictionaryTable> _tables;
-		private HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
+		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 
 		/// <summary>
 		/// The display name of the package.
@@ -482,5 +482,7 @@ namespace Rant
 
             return pkg;
         }
+
+	    public override string ToString() => $"{Title}, v{Version}";
     }
 }
