@@ -168,8 +168,8 @@ namespace Rant
 		        if (!File.Exists($"{dependency.ID}.rantpkg"))
 					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' cannot find dependency '{dependency}'.");
 		        var pkg = RantPackage.Load($"{dependency.ID}.rantpkg");
-				if (pkg.Version.Trim() != dependency.Version)
-					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version did not match ({pkg.Version}).");
+				if (!dependency.CheckVersion(pkg.Version))
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version was incompatible ({pkg.Version}).");
                 LoadPackage(pkg, mergeBehavior);
 	        }
         }
@@ -223,8 +223,8 @@ namespace Rant
 				if (!File.Exists($"{dependency.ID}.rantpkg"))
 					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' cannot find dependency '{dependency}'.");
 				var pkg = RantPackage.Load($"{dependency.ID}.rantpkg");
-				if (pkg.Version.Trim() != dependency.Version)
-					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version did not match ({pkg.Version}).");
+				if (!dependency.CheckVersion(pkg.Version))
+					throw new FileNotFoundException($"Package '{package.ID} {package.Version}' tried to load dependency '{dependency}' but the version was incompatible ({pkg.Version}).");
 				LoadPackage(pkg, mergeBehavior);
 			}
 		}

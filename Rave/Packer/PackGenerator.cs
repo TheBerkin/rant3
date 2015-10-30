@@ -66,7 +66,7 @@ namespace Rave.Packer
 				var info = JsonConvert.DeserializeObject<PackInfo>(File.ReadAllText(infoPath));
 				pkg.Title = info.Title;
 				pkg.Authors = info.Authors;
-				pkg.Version = !String.IsNullOrWhiteSpace(Property("version")) ? Property("version") : info.Version;
+				pkg.Version = RantPackageVersion.Parse(!String.IsNullOrWhiteSpace(Property("version")) ? Property("version") : info.Version);
 				pkg.Description = info.Description;
 				pkg.ID = info.ID;
 				pkg.Tags = info.Tags;

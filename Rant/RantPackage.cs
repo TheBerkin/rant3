@@ -23,16 +23,35 @@ namespace Rant
         private HashSet<RantPattern> _patterns;
         private HashSet<RantDictionaryTable> _tables;
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
+	    private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
+	    private string _title = "Untitled Package";
+	    private string _id = "";
 
-		/// <summary>
-		/// The display name of the package.
-		/// </summary>
-		public string Title { get; set; } = "Untitled Package";
+	    /// <summary>
+	    /// The display name of the package.
+	    /// </summary>
+	    public string Title
+	    {
+		    get { return _title; }
+		    set
+		    {
+			    if (value == null) throw new ArgumentNullException(nameof(value));
+			    _title = value;
+		    }
+	    }
 
 	    /// <summary>
 	    /// The ID of the package.
 	    /// </summary>
-	    public string ID { get; set; } = "";
+	    public string ID
+	    {
+		    get { return _id; }
+		    set
+		    {
+			    if (value == null) throw new ArgumentNullException(nameof(value));
+			    _id = value;
+		    }
+	    }
 
 	    /// <summary>
 	    /// The description for the package.
@@ -47,7 +66,15 @@ namespace Rant
 	    /// <summary>
 	    /// The package version.
 	    /// </summary>
-	    public string Version { get; set; } = "1.0.0";
+	    public RantPackageVersion Version
+	    {
+		    get { return _version; }
+		    set
+		    {
+			    if (value == null) throw new ArgumentNullException(nameof(value));
+			    _version = value;
+		    }
+	    }
 
 	    /// <summary>
 	    /// The authors of the package.
@@ -205,11 +232,11 @@ namespace Rant
             {
                 var doc = new BsonDocument(stringTableMode);
                 var info = doc.Top["info"] = new BsonItem();
-                info["name"] = new BsonItem(Title);
-                info["namespace"] = new BsonItem(ID);
+                info["title"] = new BsonItem(Title);
+                info["id"] = new BsonItem(ID);
                 info["description"] = new BsonItem(Description);
                 info["tags"] = new BsonItem(Tags);
-                info["version"] = new BsonItem(Version);
+                info["version"] = new BsonItem(Version.ToString());
                 info["authors"] = new BsonItem(Authors);
                 
                 var patterns = doc.Top["patterns"] = new BsonItem();
@@ -218,40 +245,43 @@ namespace Rant
                         patterns[pattern.Name] = new BsonItem(pattern.Code);
 
                 var tables = doc.Top["tables"] = new BsonItem();
-                foreach(var table in _tables)
-                {
-                    var t = tables[table.Name] = new BsonItem();
-                    t["name"] = new BsonItem(table.Name);
-                    t["subs"] = new BsonItem(table.Subtypes);
-                    t["language"] = new BsonItem(table.Language);
-                    t["hidden"] = new BsonItem(table.HiddenClasses.ToArray());
-                    t["hints"] = new BsonItem(0);
-                    var entries = new List<BsonItem>();
-                    foreach(var entry in table.GetEntries())
-                    {
-                        var e = new BsonItem();
-                        if(entry.Weight != 1)
-                            e["weight"] = new BsonItem(entry.Weight);
-                        var requiredClasses = entry.GetRequiredClasses().ToArray();
-                        if(requiredClasses.Length > 0)
-                            e["classes"] = new BsonItem(requiredClasses);
-                        var optionalClasses = entry.GetOptionalClasses().ToArray();
-                        if(optionalClasses.Length > 0)
-                            e["optional_classes"] = new BsonItem();
-                        var terms = new List<BsonItem>();
-                        foreach(var term in entry.Terms)
-                        {
-                            var et = new BsonItem();
-                            et["value"] = new BsonItem(term.Value);
-                            if(term.Pronunciation != "")
-                                et["pron"] = new BsonItem(term.Pronunciation);
-                            terms.Add(et);
-                        }
-                        e["terms"] = new BsonItem(terms.ToArray());
-                        entries.Add(e);
-                    }
-                    t["entries"] = new BsonItem(entries.ToArray());
-                }
+	            if (_tables != null)
+	            {
+					foreach (var table in _tables)
+					{
+						var t = tables[table.Name] = new BsonItem();
+						t["name"] = new BsonItem(table.Name);
+						t["subs"] = new BsonItem(table.Subtypes);
+						t["language"] = new BsonItem(table.Language);
+						t["hidden"] = new BsonItem(table.HiddenClasses.ToArray());
+						t["hints"] = new BsonItem(0);
+						var entries = new List<BsonItem>();
+						foreach (var entry in table.GetEntries())
+						{
+							var e = new BsonItem();
+							if (entry.Weight != 1)
+								e["weight"] = new BsonItem(entry.Weight);
+							var requiredClasses = entry.GetRequiredClasses().ToArray();
+							if (requiredClasses.Length > 0)
+								e["classes"] = new BsonItem(requiredClasses);
+							var optionalClasses = entry.GetOptionalClasses().ToArray();
+							if (optionalClasses.Length > 0)
+								e["optional_classes"] = new BsonItem();
+							var terms = new List<BsonItem>();
+							foreach (var term in entry.Terms)
+							{
+								var et = new BsonItem();
+								et["value"] = new BsonItem(term.Value);
+								if (term.Pronunciation != "")
+									et["pron"] = new BsonItem(term.Pronunciation);
+								terms.Add(et);
+							}
+							e["terms"] = new BsonItem(terms.ToArray());
+							entries.Add(e);
+						}
+						t["entries"] = new BsonItem(entries.ToArray());
+					}
+				}
 
                 var data = doc.ToByteArray(stringTableMode != BsonStringTableMode.None);
                 if (compress)
@@ -349,7 +379,7 @@ namespace Rant
                 var magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
                 if (magic == OLD_MAGIC)
                     return LoadOldPackage(reader);
-                else if(magic != MAGIC)
+                if (magic != MAGIC)
                     throw new InvalidDataException("File is corrupt.");
                 var package = new RantPackage();
                 var version = reader.ReadUInt32();
@@ -365,9 +395,9 @@ namespace Rant
                 var info = doc["info"];
                 if(info == null)
                 {
-                    package.Title = info["name"];
-                    package.ID = info["namespace"];
-                    package.Version = info["version"];
+                    package.Title = info["title"];
+                    package.ID = info["id"];
+                    package.Version = RantPackageVersion.Parse(info["version"]);
                     package.Description = info["description"];
                     package.Authors = (string[])info["authors"].Value;
                     package.Tags = (string[])info["tags"].Value;
