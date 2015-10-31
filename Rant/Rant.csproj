@@ -300,6 +300,7 @@
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBitTree.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantDependencyResolver.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantPackageDependency.cs" />
     <Compile Include="RantPackageVersion.cs" />

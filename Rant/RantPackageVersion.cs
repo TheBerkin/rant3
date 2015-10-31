@@ -129,6 +129,29 @@ namespace Rant
 		}
 
 		/// <summary>
+		/// Attempts to parse a version string and outputs the equivalent RantPackageVersion.
+		/// </summary>
+		/// <param name="version">The version string to parse.</param>
+		/// <param name="result">The parsing result, if successful.</param>
+		/// <returns></returns>
+		public static bool TryParse(string version, out RantPackageVersion result)
+		{
+			const NumberStyles styles = NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite;
+			result = null;
+			if (String.IsNullOrWhiteSpace(version)) return false;
+			var parts = version.Split('.');
+			if (parts.Length > 3) return false;
+			var v = new RantPackageVersion();
+			if (!int.TryParse(parts[0], styles, CultureInfo.InvariantCulture, out v._major) || v._major < 0)
+				return false;
+			if (parts.Length < 2) return true;
+			if (!int.TryParse(parts[1], styles, CultureInfo.InvariantCulture, out v._minor) || v._minor < 0)
+				return false;
+			if (parts.Length < 3) return true;
+			return int.TryParse(parts[2], styles, CultureInfo.InvariantCulture, out v._revision) && v._revision >= 0;
+		}
+
+		/// <summary>
 		/// Returns a string representation of the current version.
 		/// </summary>
 		/// <returns></returns>

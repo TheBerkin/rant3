@@ -73,7 +73,7 @@ namespace Rave.Packer
 
 				if (!String.IsNullOrWhiteSpace(info.OutputPath))
 				{
-					outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}.rantpkg");
+					outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}-{pkg.Version}.rantpkg");
 					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 				}
 
