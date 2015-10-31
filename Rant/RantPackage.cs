@@ -233,8 +233,8 @@ namespace Rant
             {
                 var doc = new BsonDocument(stringTableMode);
                 var info = doc.Top["info"] = new BsonItem();
-                info["title"] = new BsonItem(Title);
-                info["id"] = new BsonItem(ID);
+                info["title"] = new BsonItem(_title);
+                info["id"] = new BsonItem(_id);
                 info["description"] = new BsonItem(Description);
                 info["tags"] = new BsonItem(Tags);
                 info["version"] = new BsonItem(Version.ToString());
@@ -244,7 +244,7 @@ namespace Rant
 					var depObj = new BsonItem();
 					depObj["id"] = dep.ID;
 					depObj["version"] = dep.Version.ToString();
-					depObj["allow-newer"] = (byte)(dep.AllowNewer ? 1 : 0);
+					depObj["allow-newer"] = dep.AllowNewer;
 					return depObj;
 				}).ToArray());
                 
@@ -402,29 +402,29 @@ namespace Rant
                 var doc = BsonDocument.Read(data);
 
                 var info = doc["info"];
-                if(info == null)
-                {
-                    package.Title = info["title"];
-                    package.ID = info["id"];
-                    package.Version = RantPackageVersion.Parse(info["version"]);
-                    package.Description = info["description"];
-                    package.Authors = (string[])info["authors"].Value;
-                    package.Tags = (string[])info["tags"].Value;
-	                var deps = info["dependencies"];
-	                if (deps != null && deps.IsArray)
-	                {
-		                foreach (var depObj in deps.ToArray())
-		                {
-			                var dep = depObj as BsonItem;
-			                var depId = dep["id"];
-			                var depVersion = dep["version"];
-			                bool depAllowNewer = (byte)dep["allow-newer"].Value == 1;
-							package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString()) { AllowNewer = depAllowNewer });
-		                }
-	                }
-                }
+				if (info == null)
+					throw new InvalidDataException("Metadata is missing from package.");
 
-                var patterns = doc["patterns"];
+				package.Title = info["title"];
+				package.ID = info["id"];
+				package.Version = RantPackageVersion.Parse(info["version"]);
+				package.Description = info["description"];
+	            package.Authors = (string[])info["authors"];
+				package.Tags = (string[])info["tags"];
+				var deps = info["dependencies"];
+				if (deps != null && deps.IsArray)
+				{
+					for(int i = 0; i < deps.Count; i++)
+					{
+						var dep = deps[i];
+						var depId = dep["id"].Value;
+						var depVersion = dep["version"].Value;
+						bool depAllowNewer = (bool)dep["allow-newer"].Value;
+						package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString()) { AllowNewer = depAllowNewer });
+					}
+				}
+
+				var patterns = doc["patterns"];
                 if(patterns != null)
                 {
                     var names = patterns.Keys;
@@ -445,7 +445,7 @@ namespace Rant
 
                         var entries = new List<RantDictionaryEntry>();
                         var entryList = table["entries"];
-                        for(var i = 0; i < entryList.KeyCount; i++)
+                        for(var i = 0; i < entryList.Count; i++)
                         {
                             var loadedEntry = entryList[i];
                             int weight = 1;
@@ -455,7 +455,7 @@ namespace Rant
                             string[] optionalClasses = (string[])loadedEntry["optional_classes"];
                             var terms = new List<RantDictionaryTerm>();
                             var termList = loadedEntry["terms"];
-                            for(var j = 0; j < termList.KeyCount; j++)
+                            for(var j = 0; j < termList.Count; j++)
                             {
                                 var t = new RantDictionaryTerm(termList[j]["value"], termList[j]["pron"]);
                                 terms.Add(t);

@@ -75,7 +75,7 @@ namespace Rant.Tests.Misc
             document["test"] = new BsonItem(new BsonItem[] { item1, item2 });
             var data = document.ToByteArray();
             var readDocument = BsonDocument.Read(data);
-            Assert.AreEqual(2, readDocument["test"].KeyCount);
+            Assert.AreEqual(2, readDocument["test"].Count);
             Assert.AreEqual(true, readDocument["test"][0]["prop"].Value);
         }
 
@@ -86,7 +86,7 @@ namespace Rant.Tests.Misc
             document["test"] = new BsonItem(new string[] { "testing", "123" });
             var data = document.ToByteArray();
             var readDocument = BsonDocument.Read(data);
-            Assert.AreEqual(2, readDocument["test"].KeyCount);
+            Assert.AreEqual(2, readDocument["test"].Count);
             Assert.AreEqual("testing", readDocument["test"][0].Value);
             Assert.AreEqual("123", readDocument["test"][1].Value);
         }

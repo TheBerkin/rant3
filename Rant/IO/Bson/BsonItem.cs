@@ -94,7 +94,7 @@ namespace Rant.IO.Bson
         {
             if (a == null)
                 return new string[] { };
-            return a.ToArray().Cast<string>().ToArray();
+            return a.ToValueArray().Cast<string>().ToArray();
         }
 
         /// <summary>
@@ -162,9 +162,9 @@ namespace Rant.IO.Bson
         }
 
         /// <summary>
-        /// The number of keys in this BsonItem.
+        /// The number of items in this BsonItem, if it's a collection.
         /// </summary>
-        public int KeyCount => _objectValues.Keys.Count;
+        public int Count => _objectValues.Keys.Count;
 
         /// <summary>
         /// An array of the keys in this BsonItem.
@@ -198,12 +198,12 @@ namespace Rant.IO.Bson
             set { _objectValues[key.ToString()] = value; }
         }
 
-        public object[] ToArray()
+        public object[] ToValueArray()
         {
             if (!IsArray)
                 throw new Exception("Can't convert a non-array to an array.");
-            List<object> list = new List<object>();
-            for (var i = 0; i < KeyCount; i++)
+            var list = new List<object>();
+            for (var i = 0; i < Count; i++)
                 list.Add(this[i].Value);
             return list.ToArray();
         }
