@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using Rant.Engine;
 using Rant.IO;
 using Rant.IO.Bson;
 using Rant.IO.Compression;
@@ -25,7 +26,7 @@ namespace Rant
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 	    private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
 	    private string _title = "Untitled Package";
-	    private string _id = "";
+	    private string _id = "Package";
 
 	    /// <summary>
 	    /// The display name of the package.
@@ -35,8 +36,8 @@ namespace Rant
 		    get { return _title; }
 		    set
 		    {
-			    if (value == null) throw new ArgumentNullException(nameof(value));
-			    _title = value;
+				if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException("Title cannot be empty.");
+				_title = value;
 		    }
 	    }
 
@@ -48,7 +49,7 @@ namespace Rant
 		    get { return _id; }
 		    set
 		    {
-			    if (value == null) throw new ArgumentNullException(nameof(value));
+			    if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException("ID cannot be empty.");
 			    _id = value;
 		    }
 	    }
