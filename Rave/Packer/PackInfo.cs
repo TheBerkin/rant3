@@ -29,8 +29,8 @@ namespace Rave.Packer
 		[JsonProperty("out")]
 		public string OutputPath { get; set; }
 
-		[JsonProperty("dependencies")]
+		[JsonProperty("dependencies", NullValueHandling = NullValueHandling.Ignore)]
 		[JsonConverter(typeof(DependencyListConverter))]
-		public List<RantPackageDependency> Dependencies { get; set; }
+		public List<RantPackageDependency> Dependencies { get; set; } = new List<RantPackageDependency>();
 	}
 }

@@ -70,6 +70,10 @@ namespace Rave.Packer
 				pkg.Description = info.Description;
 				pkg.ID = info.ID;
 				pkg.Tags = info.Tags;
+	            foreach (var dep in info.Dependencies)
+	            {
+		            pkg.AddDependency(dep);
+	            }
 
 				if (!String.IsNullOrWhiteSpace(info.OutputPath))
 				{

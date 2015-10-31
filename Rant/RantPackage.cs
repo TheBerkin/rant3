@@ -238,6 +238,14 @@ namespace Rant
                 info["tags"] = new BsonItem(Tags);
                 info["version"] = new BsonItem(Version.ToString());
                 info["authors"] = new BsonItem(Authors);
+				info["dependencies"] = new BsonItem(_dependencies.Select(dep =>
+				{
+					var depObj = new BsonItem();
+					depObj["id"] = dep.ID;
+					depObj["version"] = dep.Version.ToString();
+					depObj["allow-newer"] = (byte)(dep.AllowNewer ? 1 : 0);
+					return depObj;
+				}).ToArray());
                 
                 var patterns = doc.Top["patterns"] = new BsonItem();
                 if(_patterns != null)
@@ -401,6 +409,18 @@ namespace Rant
                     package.Description = info["description"];
                     package.Authors = (string[])info["authors"].Value;
                     package.Tags = (string[])info["tags"].Value;
+	                var deps = info["dependencies"];
+	                if (deps != null && deps.IsArray)
+	                {
+		                foreach (var depObj in deps.ToArray())
+		                {
+			                var dep = depObj as BsonItem;
+			                var depId = dep["id"];
+			                var depVersion = dep["version"];
+			                bool depAllowNewer = (byte)dep["allow-newer"].Value == 1;
+							package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString()) { AllowNewer = depAllowNewer });
+		                }
+	                }
                 }
 
                 var patterns = doc["patterns"];
