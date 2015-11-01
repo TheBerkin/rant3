@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using Rant.Engine.Syntax;
 using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    internal class Subtype : Parselet
+    internal class RegexFilter : Parselet
     {
         public override R[] Identifiers
         {
             get
             {
-                return new[] { R.Subtype };
+                return new[] { R.Without, R.Question };
             }
         }
 
-        public Subtype()
+        public RegexFilter()
         {
         }
 
@@ -28,12 +27,13 @@ namespace Rant.Engine.Compiler.Parselets
             if (fromToken != null && fromToken.ID != R.LeftAngle)
             {
                 yield return Parselet.DefaultParselet;
-                yield break; 
+                yield break;
             }
 
-            var subtypeToken = reader.ReadLoose(R.Text, "subtype");
-            compiler.GetQuery().Subtype = subtypeToken.Value;
-            // for some reason, we don't need a yield break here because there's already one over there in the if block
+            var negative = Token.ID == R.Without;
+            var regexToken = reader.ReadLoose(R.Regex, "regex");
+
+            ((List<_<bool, Regex>>)compiler.GetQuery().RegexFilters).Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
         }
     }
 }

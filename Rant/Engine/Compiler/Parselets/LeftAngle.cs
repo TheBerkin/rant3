@@ -24,7 +24,7 @@ namespace Rant.Engine.Compiler.Parselets
         {
         }
 
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
+        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
             Stringe name = null;
 
@@ -32,7 +32,7 @@ namespace Rant.Engine.Compiler.Parselets
                 name = reader.ReadLoose(R.Text, "table name");
 
             if (name != null && (Util.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
-                compiler.SyntaxError(token, "Invalid table name in query");
+                compiler.SyntaxError(Token, "Invalid table name in query");
 
             compiler.SetNewQuery(new Query
             {
@@ -43,9 +43,13 @@ namespace Rant.Engine.Compiler.Parselets
             });
 
             var exclusivity = reader.PeekToken();
+
+            if (exclusivity == null)
+                compiler.SyntaxError(Token, "Unexpected end of file");
+
             if (exclusivity.ID == R.Dollar)
             {
-                compiler.SetQueryExclusivity(true);
+                compiler.GetQuery().Exclusive = true;
                 reader.ReadToken();
             }
 
@@ -56,15 +60,14 @@ namespace Rant.Engine.Compiler.Parselets
                 R.LeftParen, R.RightAngle
             };
 
-            compiler.SetFromToken(token);
+            compiler.SetFromToken(Token);
             Token<R> queryReadToken = null;
             while ((queryReadToken = reader.ReadAny(allowedTokens)).ID != R.RightAngle)
-                // technically queryReadToken will never be null because if the token doesn't fit our criteria, the compiler throws an exception
             {
-                yield return Parselet.FromTokenID(queryReadToken.ID);
+                yield return Parselet.GetWithToken(queryReadToken);
             }
 
-            yield return Parselet.FromTokenID(queryReadToken.ID);
+            yield return Parselet.GetWithToken(queryReadToken);
         }
     }
 }

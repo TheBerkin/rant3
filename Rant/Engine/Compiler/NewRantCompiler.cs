@@ -69,7 +69,6 @@ namespace Rant.Engine.Compiler
         Query query;
         readonly RantExpressionCompiler expressionCompiler;
 
-        Stack<Parselet> parseletStack;
         Token<R> fromToken;
 
         List<RantAction> output;
@@ -87,7 +86,7 @@ namespace Rant.Engine.Compiler
 
         public RantAction Read()
         {
-            parseletStack = new Stack<Parselet>();
+            var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
             Token<R> token = null;
@@ -95,9 +94,9 @@ namespace Rant.Engine.Compiler
             while (!reader.End)
             {
                 token = reader.ReadToken();
-                var parselet = Parselet.FromTokenID(token.ID);
+                var parselet = Parselet.GetWithToken(token);
                 parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse(this, reader, token, fromToken));
+                enumeratorStack.Push(parselet.Parse(this, reader, fromToken));
 
                 top:
                 while (enumeratorStack.Any())
@@ -110,7 +109,7 @@ namespace Rant.Engine.Compiler
                             break;
 
                         parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, token, fromToken));
+                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, fromToken));
                         goto top;
                     }
 
@@ -124,7 +123,6 @@ namespace Rant.Engine.Compiler
         }
 
         public void SetFromToken(Token<R> token) => fromToken = token;
-        public Parselet PrevParselet() => parseletStack.ElementAt(1);
 
         public void AddToOutput(RantAction action) => output.Add(action);
         public void PushToFuncCalls(RantFunctionGroup group) => funcCalls.Push(group);
@@ -133,11 +131,6 @@ namespace Rant.Engine.Compiler
 
         public Query GetQuery() => query;
         public void SetNewQuery(Query query) => this.query = query;
-        public void SetQueryExclusivity(bool value) => query.Exclusive = value;
-        public void SetQuerySubtype(string value) => query.Subtype = value;
-        public void AddRuleSwitchToQuery(params ClassFilterRule[] rules) => query.ClassFilter.AddRuleSwitch(rules);
-        public void SetQuerySyllablePredicate(Range value) => query.SyllablePredicate = value;
-        public void AddQueryCarrierComponent(CarrierComponent type, params string[] values) => query.Carrier.AddComponent(type, values);
 
         public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
         {

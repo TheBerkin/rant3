@@ -62,26 +62,31 @@ namespace Rant.Engine.Compiler.Parselets
             loaded = true;
         }
 
-        public static Parselet FromTokenID(R id)
+        public static Parselet GetWithToken(Token<R> token)
         {
             Parselet parselet;
-            if (parseletDict.TryGetValue(id, out parselet))
+            if (parseletDict.TryGetValue(token.ID, out parselet))
+            {
+                parselet.Token = token; // NOTE: this way of passing the appropriate token is kind of ugly but it works
                 return parselet;
+            }
 
             if (defaultParselet == null)
                 throw new RantInternalException("DefaultParselet not set");
 
+            defaultParselet.Token = token;
             return defaultParselet;
         }
 
         // instance stuff
 
         public abstract R[] Identifiers { get; }
+        protected Token<R> Token { get; private set; }
 
         public Parselet()
         {
         }
 
-        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken);
+        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken);
     }
 }

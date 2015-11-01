@@ -22,21 +22,17 @@ namespace Rant.Engine.Compiler.Parselets
         {
         }
 
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
+        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
-            if (!new[] { R.Subtype, R.Hyphen,
-                R.Without, R.Question,
-                R.LeftParen, R.DoubleColon,
-                R.Equal, R.At, R.LeftAngle,
-                R.Exclamation, R.Ampersand }.Any(compiler.PrevParselet().Identifiers.Contains))
-                compiler.SyntaxError(token, "Unexpected query terminator");
+            if (fromToken != null && fromToken.ID != R.LeftAngle)
+                compiler.SyntaxError(Token, "Unexpected query terminator");
 
             var query = compiler.GetQuery();
 
             if (query.Name == null && query.Carrier.GetTotalCount() == 0)
-                compiler.SyntaxError(token, "Carrier delete query specified without any carriers");
+                compiler.SyntaxError(Token, "Carrier delete query specified without any carriers");
 
-            compiler.AddToOutput(new RAQuery(query, Stringe.Range(fromToken, token)));
+            compiler.AddToOutput(new RAQuery(query, Stringe.Range(fromToken, Token)));
             yield break;
         }
     }

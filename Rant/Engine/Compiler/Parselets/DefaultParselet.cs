@@ -24,9 +24,9 @@ namespace Rant.Engine.Compiler.Parselets
         {
         }
 
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
+        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
-            compiler.AddToOutput(new RAText(token));
+            compiler.AddToOutput(new RAText(Token));
             yield break;
         }
     }
