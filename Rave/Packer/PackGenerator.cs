@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 using Newtonsoft.Json;
 
@@ -49,7 +51,7 @@ namespace Rave.Packer
 			
 			Console.WriteLine("Packing...");
 
-			var contentDir = paths.Length == 0 ? Environment.CurrentDirectory : paths[0];
+			var contentDir = Path.GetFullPath(paths.Length == 0 ? Environment.CurrentDirectory : paths[0]);
 
 			var outputPath = Property("out", Path.Combine(
 				Directory.GetParent(Environment.CurrentDirectory).FullName,
@@ -100,12 +102,15 @@ namespace Rave.Packer
 
 		private static void Pack(RantPackage package, string contentPath)
 		{
-			foreach (var path in Directory.GetFiles(contentPath, "*.rant", SearchOption.AllDirectories))
+			foreach (var path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
+				.Where(p => p.EndsWith(".rant") || p.EndsWith(".rants")))
 			{
-				Console.WriteLine("+ " + path);
-
 				var pattern = RantPattern.FromFile(path);
-				package.AddPattern(pattern);
+				string relativePath;
+				TryGetRelativePath(contentPath, path, out relativePath, true);
+				pattern.Name = relativePath;
+                package.AddPattern(pattern);
+				Console.WriteLine("+ " + pattern.Name);
 			}
 
 			foreach (var path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
@@ -114,6 +119,40 @@ namespace Rave.Packer
 				var table = RantDictionaryTable.FromFile(path);
 				package.AddTable(table);
 			}
+		}
+
+		private static bool TryGetRelativePath(string rootDir, string fullPath, out string relativePath, bool removeExtension = false)
+		{
+			relativePath = null;
+			if (String.IsNullOrWhiteSpace(rootDir)) return false;
+			if (String.IsNullOrWhiteSpace(fullPath)) return false;
+			var rootParts = Path.GetFullPath(rootDir).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			var fullParts = Path.GetFullPath(fullPath).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			if (rootParts.Length == 0 || fullParts.Length <= rootParts.Length)
+			{
+				relativePath = fullPath;
+				return true;
+			}
+			for (int i = 0; i < rootParts.Length; i++)
+			{
+				if (rootParts[i] != fullParts[i]) return false;
+			}
+			var sb = new StringBuilder();
+			int indDot;
+			for (int j = rootParts.Length; j < fullParts.Length; j++)
+			{
+				if (j > rootParts.Length) sb.Append('/');
+				if (removeExtension && j == fullParts.Length - 1 && (indDot = fullParts[j].LastIndexOf('.')) > -1)
+				{
+					sb.Append(fullParts[j].Substring(0, indDot));
+				}
+				else
+				{
+					sb.Append(fullParts[j]);
+				}
+			}
+			relativePath = sb.ToString();
+			return true;
 		}
 	}
 }
