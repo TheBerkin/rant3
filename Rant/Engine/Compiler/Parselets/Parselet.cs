@@ -16,6 +16,8 @@ namespace Rant.Engine.Compiler.Parselets
         static Dictionary<R, Parselet> parseletDict;
         static Parselet defaultParselet;
 
+        public static Parselet DefaultParselet => defaultParselet;
+
         static Parselet()
         {
             // scan the Compiler.Parselets namespace for all parselets, create instances of them store them in a dictionary
@@ -64,8 +66,6 @@ namespace Rant.Engine.Compiler.Parselets
         // instance stuff
 
         public abstract R[] Identifiers { get; }
-
-        public Token<R> FromToken { get; set; }
 
         public Parselet()
         {

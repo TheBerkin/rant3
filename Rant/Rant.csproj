@@ -207,6 +207,7 @@
     <Compile Include="Engine\Compiler\Parselets\LeftAngle.cs" />
     <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\RightAngle.cs" />
+    <Compile Include="Engine\Compiler\Parselets\Subtype.cs" />
     <Compile Include="Engine\Compiler\Parselets\Whitespace.cs" />
     <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
     <Compile Include="Engine\Constructs\AttribPersistence.cs" />

@@ -70,6 +70,7 @@ namespace Rant.Engine.Compiler
         readonly RantExpressionCompiler expressionCompiler;
 
         Stack<Parselet> parseletStack;
+        Token<R> fromToken;
 
         List<RantAction> output;
 
@@ -84,7 +85,7 @@ namespace Rant.Engine.Compiler
             output = new List<RantAction>();
         }
 
-        public RantAction Read(Token<R> fromToken = null)
+        public RantAction Read()
         {
             parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
@@ -108,7 +109,6 @@ namespace Rant.Engine.Compiler
                         if (enumerator.Current == null)
                             break;
 
-                        fromToken = parseletStack.Peek().FromToken;
                         parseletStack.Push(enumerator.Current);
                         enumeratorStack.Push(enumerator.Current.Parse(this, reader, token, fromToken));
                         goto top;
@@ -123,7 +123,8 @@ namespace Rant.Engine.Compiler
             return new RASequence(output, token);
         }
 
-        public Parselet PeekParselet() => parseletStack.Peek();
+        public void SetFromToken(Token<R> token) => fromToken = token;
+        public Parselet PrevParselet() => parseletStack.ElementAt(1);
 
         public void AddToOutput(RantAction action) => output.Add(action);
         public void PushToFuncCalls(RantFunctionGroup group) => funcCalls.Push(group);

@@ -56,7 +56,7 @@ namespace Rant.Engine.Compiler.Parselets
                 R.LeftParen, R.RightAngle
             };
 
-            FromToken = token;
+            compiler.SetFromToken(token);
             Token<R> queryReadToken = null;
             while ((queryReadToken = reader.ReadAny(allowedTokens)).ID != R.RightAngle)
                 // technically queryReadToken will never be null because if the token doesn't fit our criteria, the compiler throws an exception

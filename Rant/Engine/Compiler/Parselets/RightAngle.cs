@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Rant.Vocabulary;
 using Rant.Engine.Syntax;
 using Rant.Stringes;
 
@@ -28,8 +27,8 @@ namespace Rant.Engine.Compiler.Parselets
             if (!new[] { R.Subtype, R.Hyphen,
                 R.Without, R.Question,
                 R.LeftParen, R.DoubleColon,
-                R.Equal, R.At,
-                R.Exclamation, R.Ampersand }.Any(compiler.PeekParselet().Identifiers.Contains))
+                R.Equal, R.At, R.LeftAngle,
+                R.Exclamation, R.Ampersand }.Any(compiler.PrevParselet().Identifiers.Contains))
                 compiler.SyntaxError(token, "Unexpected query terminator");
 
             var query = compiler.GetQuery();
