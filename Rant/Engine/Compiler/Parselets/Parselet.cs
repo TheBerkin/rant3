@@ -65,10 +65,12 @@ namespace Rant.Engine.Compiler.Parselets
 
         public abstract R[] Identifiers { get; }
 
+        public Token<R> FromToken { get; set; }
+
         public Parselet()
         {
         }
 
-        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token);
+        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken);
     }
 }

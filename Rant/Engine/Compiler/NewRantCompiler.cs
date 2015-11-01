@@ -84,7 +84,7 @@ namespace Rant.Engine.Compiler
 
         public RantAction Read(Token<R> fromToken = null)
         {
-            //var parseletStack = new Stack<Parselet>();
+            var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
             Token<R> token = null;
@@ -93,8 +93,8 @@ namespace Rant.Engine.Compiler
             {
                 token = reader.ReadToken();
                 var parselet = Parselet.FromTokenID(token.ID);
-                //parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse(this, reader, token));
+                parseletStack.Push(parselet);
+                enumeratorStack.Push(parselet.Parse(this, reader, token, fromToken));
 
                 top:
                 while (enumeratorStack.Any())
@@ -106,22 +106,18 @@ namespace Rant.Engine.Compiler
                         if (enumerator.Current == null)
                             break;
 
-                        token = reader.ReadToken();
-
-                        if (token.ID == R.EOF) // TODO: maybe don't hardcode this?
-                            goto done;
-
-                        //parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, token));
+                        fromToken = parseletStack.Peek().FromToken;
+                        parseletStack.Push(enumerator.Current);
+                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, token, fromToken));
                         goto top;
                     }
 
-                    //parseletStack.Pop();
+                    parseletStack.Pop();
                     enumeratorStack.Pop();
                 }
             }
 
-            done:
+            //done:
             return new RASequence(output, token);
         }
 
@@ -130,8 +126,9 @@ namespace Rant.Engine.Compiler
         public void PushToRegexes(Regex regex) => regexes.Push(regex);
         public void PushToSubroutines(RASubroutine sub) => subroutines.Push(sub);
 
+        public Query GetQuery() => query;
         public void SetNewQuery(Query query) => this.query = query;
-        public void SetQueryExclusitivity(bool value) => query.Exclusive = value;
+        public void SetQueryExclusivity(bool value) => query.Exclusive = value;
         public void SetQuerySubtype(string value) => query.Subtype = value;
         public void AddRuleSwitchToQuery(params ClassFilterRule[] rules) => query.ClassFilter.AddRuleSwitch(rules);
         public void SetQuerySyllablePredicate(Range value) => query.SyllablePredicate = value;

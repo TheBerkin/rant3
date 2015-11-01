@@ -23,7 +23,7 @@ namespace Rant.Engine.Compiler.Parselets
         {
         }
 
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token)
+        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
         {
             // TODO: figure that out
             //switch (reader.PeekType())
