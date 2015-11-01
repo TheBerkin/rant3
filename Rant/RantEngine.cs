@@ -22,6 +22,7 @@ namespace Rant
 	    {
 		    RantFunctions.Load();
             RichardFunctions.Load();
+            Engine.Compiler.Parselets.Parselet.Load();
 	    }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace Rant.Engine.Compiler.Parselets
     {
         // static stuff
 
+        static bool loaded = false;
         static Dictionary<R, Parselet> parseletDict;
         static Parselet defaultParselet;
 
@@ -20,9 +21,17 @@ namespace Rant.Engine.Compiler.Parselets
 
         static Parselet()
         {
+            Load();
+        }
+
+        public static void Load(bool forceNewLoad = false)
+        {
+            if (loaded && !forceNewLoad)
+                return;
+
             // scan the Compiler.Parselets namespace for all parselets, create instances of them store them in a dictionary
             // it's clean, it's super easy to extend. a single statement loads them all from the namespace and sets them up right
-            // it's slow-ish and may be a memory hog with many parselets
+            // it's slow and may be a memory hog with many parselets
             // maybe create the instances of the parselets as needed?
 
             parseletDict = new Dictionary<R, Parselet>();
@@ -49,6 +58,8 @@ namespace Rant.Engine.Compiler.Parselets
                 foreach (var id in instance.Identifiers)
                     parseletDict.Add(id, instance);
             }
+
+            loaded = true;
         }
 
         public static Parselet FromTokenID(R id)
