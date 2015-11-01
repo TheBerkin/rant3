@@ -43,7 +43,9 @@ namespace Rant.Engine.Compiler.Parselets
                 }
 
                 var instance = (Parselet)Activator.CreateInstance(type);
-                parseletDict.Add(instance.Identifier, instance);
+
+                foreach (var id in instance.Identifiers)
+                    parseletDict.Add(id, instance);
             }
         }
 
@@ -53,18 +55,20 @@ namespace Rant.Engine.Compiler.Parselets
             if (parseletDict.TryGetValue(id, out parselet))
                 return parselet;
 
+            if (defaultParselet == null)
+                throw new RantInternalException("DefaultParselet not set");
+
             return defaultParselet;
         }
 
         // instance stuff
 
-        public abstract R Identifier { get; }
+        public abstract R[] Identifiers { get; }
 
         public Parselet()
         {
         }
 
-        // TODO: return regexes and funcgroups
-        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, ReadType readType, Token<R> token);
+        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token);
     }
 }

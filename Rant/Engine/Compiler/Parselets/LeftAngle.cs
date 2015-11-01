@@ -9,25 +9,23 @@ using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    [DefaultParselet]
-    internal class DefaultParselet : Parselet
+    internal class LeftAngle : Parselet
     {
         public override R[] Identifiers
         {
             get
             {
-                throw new RantInternalException("Cannot access DefaultParselet's identifier");
+                return new[] { R.LeftAngle };
             }
         }
 
-        public DefaultParselet()
+        public LeftAngle()
         {
         }
 
         public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token)
         {
-            compiler.AddToOutput(new RAText(token));
-            yield break;
+            
         }
     }
 }

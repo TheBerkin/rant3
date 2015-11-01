@@ -82,9 +82,9 @@ namespace Rant.Engine.Compiler
             output = new List<RantAction>();
         }
 
-        public RantAction Read(ReadType type, Token<R> fromToken = null)
+        public RantAction Read(Token<R> fromToken = null)
         {
-            var parseletStack = new Stack<Parselet>();
+            //var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
             Token<R> token = null;
@@ -93,8 +93,8 @@ namespace Rant.Engine.Compiler
             {
                 token = reader.ReadToken();
                 var parselet = Parselet.FromTokenID(token.ID);
-                parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse(this, reader, type, token));
+                //parseletStack.Push(parselet);
+                enumeratorStack.Push(parselet.Parse(this, reader, token));
 
                 top:
                 while (enumeratorStack.Any())
@@ -111,31 +111,24 @@ namespace Rant.Engine.Compiler
                         if (token.ID == R.EOF) // TODO: maybe don't hardcode this?
                             goto done;
 
-                        parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, type, token));
+                        //parseletStack.Push(enumerator.Current);
+                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, token));
                         goto top;
                     }
 
-                    parseletStack.Pop();
+                    //parseletStack.Pop();
                     enumeratorStack.Pop();
                 }
             }
 
             done:
-            switch (type)
-            {
-                case ReadType.Sequence:
-                    return new RASequence(output, token);
-
-                case ReadType.Block:
-                    throw new RantCompilerException(sourceName, fromToken, "Unterminated block found.");
-
-                default:
-                    throw new RantCompilerException(sourceName, token, "Unexpected end of file.");
-            }
+            return new RASequence(output, token);
         }
 
         public void AddToOutput(RantAction action) => output.Add(action);
+        public void PushToFuncCalls(RantFunctionGroup group) => funcCalls.Push(group);
+        public void PushToRegexes(Regex regex) => regexes.Push(regex);
+        public void PushToSubroutines(RASubroutine sub) => subroutines.Push(sub);
 
         public void SetNewQuery(Query query) => this.query = query;
         public void SetQueryExclusitivity(bool value) => query.Exclusive = value;

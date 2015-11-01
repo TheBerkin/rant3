@@ -82,7 +82,7 @@ namespace Rant.Engine.Compiler
 
 		public static RantAction Compile(string sourceName, string source)
 		{
-			return new NewRantCompiler(sourceName, source).Read(Compiler.ReadType.Sequence);
+			return new NewRantCompiler(sourceName, source).Read();
 		}
 
 		private RantAction Read(ReadType type, Token<R> fromToken = null)
