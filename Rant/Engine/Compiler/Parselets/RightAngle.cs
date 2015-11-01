@@ -25,7 +25,12 @@ namespace Rant.Engine.Compiler.Parselets
 
         public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
         {
-            // TODO: figure out how to throw syntax errors if we're not coming from a query parselet
+            if (!new[] { R.Subtype, R.Hyphen,
+                R.Without, R.Question,
+                R.LeftParen, R.DoubleColon,
+                R.Equal, R.At,
+                R.Exclamation, R.Ampersand }.Any(compiler.PeekParselet().Identifiers.Contains))
+                compiler.SyntaxError(token, "Unexpected query terminator");
 
             var query = compiler.GetQuery();
 
