@@ -25,9 +25,9 @@ namespace Rant.Engine.Compiler.Parselets
 
         public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
-            if (fromToken != null && fromToken.ID != R.LeftAngle)
+            if (fromToken == null || fromToken.ID != R.LeftAngle)
             {
-                yield return Parselet.DefaultParselet;
+                yield return Parselet.GetDefaultParselet(Token);
                 yield break; 
             }
 

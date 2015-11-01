@@ -17,8 +17,6 @@ namespace Rant.Engine.Compiler.Parselets
         static Dictionary<R, Parselet> parseletDict;
         static Parselet defaultParselet;
 
-        public static Parselet DefaultParselet => defaultParselet;
-
         static Parselet()
         {
             Load();
@@ -71,6 +69,11 @@ namespace Rant.Engine.Compiler.Parselets
                 return parselet;
             }
 
+            return GetDefaultParselet(token);
+        }
+
+        public static Parselet GetDefaultParselet(Token<R> token)
+        {
             if (defaultParselet == null)
                 throw new RantInternalException("DefaultParselet not set");
 

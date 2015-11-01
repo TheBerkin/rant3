@@ -206,6 +206,7 @@
     <Compile Include="Engine\Compiler\Parselets\EscapeSequence.cs" />
     <Compile Include="Engine\Compiler\Parselets\Hyphen.cs" />
     <Compile Include="Engine\Compiler\Parselets\LeftAngle.cs" />
+    <Compile Include="Engine\Compiler\Parselets\LeftParen.cs" />
     <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\RegexFilter.cs" />
     <Compile Include="Engine\Compiler\Parselets\RightAngle.cs" />

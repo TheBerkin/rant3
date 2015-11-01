@@ -24,7 +24,7 @@ namespace Rant.Engine.Compiler.Parselets
 
         public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
-            if (fromToken != null && fromToken.ID != R.LeftAngle)
+            if (fromToken == null || fromToken.ID != R.LeftAngle)
                 compiler.SyntaxError(Token, "Unexpected query terminator");
 
             var query = compiler.GetQuery();
