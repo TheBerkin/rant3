@@ -46,13 +46,13 @@ namespace Rant.Engine
                 type = "string";
             if (val is double)
                 type = "number";
-            if (val is REAObject)
+            if (val is RichObject)
                 type = "object";
-            if (val is REAList)
+            if (val is RichList)
                 type = "list";
-            if (val is REAFunction)
+            if (val is RichFunction)
                 type = "function";
-            if (val is REAPatternString)
+            if (val is RichPatternString)
                 type = "pattern string";
             if (val is bool)
                 type = "bool";
@@ -61,15 +61,15 @@ namespace Rant.Engine
             return type;
         }
         
-        public static RantExpressionAction ConvertToAction(Stringe token, object value)
+        public static RichActionBase ConvertToAction(Stringe token, object value)
         {
             if (value is double)
-                return new REANumber((double)value, token);
+                return new RichNumber((double)value, token);
             if (value is string)
-                return new REAString((string)value, token);
+                return new RichString((string)value, token);
             if (value is bool)
-                return new REABoolean(token, (bool)value);
-            return value as RantExpressionAction;
+                return new RichBoolean(token, (bool)value);
+            return value as RichActionBase;
         }
 
         private static void CacheEnum(Type type)

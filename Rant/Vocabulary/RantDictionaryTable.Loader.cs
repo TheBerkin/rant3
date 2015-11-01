@@ -41,7 +41,7 @@ namespace Rant.Vocabulary
 
                             switch (dirName)
                             {
-                                case "name":
+                                case "name":    
                                     if (!header) LoadError(path, token, "The #name directive may only be used in the file header.");
                                     if (args.Length != 1) LoadError(path, token, "#name directive expected one word:\r\n\r\n" + token.Value);
                                     if (!Util.ValidateName(args[0])) LoadError(path, token, $"Invalid #name value: '{args[1]}'");
@@ -58,9 +58,11 @@ namespace Rant.Vocabulary
                                     if (!header) LoadError(path, token, "The #hidden directive may only be used in the file header.");
                                     if (Util.ValidateName(args[0])) hiddenClasses.Add(args[0]);
                                     break;
+                                    // Deprecated, remove in Rant 3
                                 case "nsfw":
                                     scopedClassSet.Add("nsfw");
                                     break;
+                                    // Deprecated, remove in Rant 3
                                 case "sfw":
                                     scopedClassSet.Remove("nsfw");
                                     break;
@@ -94,9 +96,9 @@ namespace Rant.Vocabulary
                     case DicTokenType.Entry:
                         {
                             if (Util.IsNullOrWhiteSpace(name))
-                                LoadError(path, token, "Missing dictionary name before entry list.");
+                                LoadError(path, token, "Missing table name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
-                                LoadError(path, token, "Encountered empty dictionary entry.");
+                                LoadError(path, token, "Encountered empty entry.");
                             header = false;
                             entry = new RantDictionaryEntry(token.Value.Split('/').Select(s => s.Trim()).ToArray(), scopedClassSet);
                             entries.Add(entry);
@@ -106,9 +108,9 @@ namespace Rant.Vocabulary
                     case DicTokenType.DiffEntry:
                         {
                             if (Util.IsNullOrWhiteSpace(name))
-                                LoadError(path, token, "Missing dictionary name before entry list.");
+                                LoadError(path, token, "Missing table name before entry list.");
                             if (Util.IsNullOrWhiteSpace(token.Value))
-                                LoadError(path, token, "Encountered empty dictionary entry.");
+                                LoadError(path, token, "Encountered empty entry.");
                             header = false;
                             string first = null;
                             entry = new RantDictionaryEntry(token.Value.Split('/')
@@ -153,11 +155,11 @@ namespace Rant.Vocabulary
                                             parts[1].Split('/')
                                                 .Select(s => s.Trim())
                                                 .ToArray();
-                                        if (subtypes.Length != pron.Length)
-                                            LoadError(path, token, "Pronunciation list length must match subtype count.");
-
-                                        for (int i = 0; i < entry.Terms.Length; i++)
-                                            entry.Terms[i].Pronunciation = pron[i];
+                                        if (subtypes.Length == pron.Length)
+                                        {
+                                            for (int i = 0; i < entry.Terms.Length; i++)
+                                                entry.Terms[i].Pronunciation = pron[i];
+                                        }
                                     }
                                     break;
                                 default:

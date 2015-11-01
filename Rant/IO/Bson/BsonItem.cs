@@ -16,6 +16,8 @@ namespace Rant.IO.Bson
         private bool _typeSet = false;
         private byte _type = 0;
 
+        public bool IsArray => _type == 0x04;
+
         /// <summary>
         /// The BSON type code of this object. If not explicitly specified, it will guess.
         /// </summary>
@@ -56,7 +58,7 @@ namespace Rant.IO.Bson
         {
             get { return _value == null; }
         }
-
+        
         /// <summary>
         /// Creates a new BsonItem with the specified value.
         /// </summary>
@@ -66,6 +68,78 @@ namespace Rant.IO.Bson
             _value = value;
             _objectValues = new Dictionary<string, BsonItem>();
             PossiblyCreateArray();
+        }
+
+        /// <summary>
+        /// Converts this BsonItem to a double.
+        /// </summary>
+        /// <param name="a">The BsonItem to convert.</param>
+        public static implicit operator double(BsonItem a)
+        {
+            return (double)a.Value;
+        }
+
+        /// <summary>
+        /// Convers this BsonItem to a string.
+        /// </summary>
+        /// <param name="a">The BsonItem to convert.</param>
+        public static implicit operator string(BsonItem a)
+        {
+            if (a == null)
+                return null;
+            return (string)a.Value;
+        }
+
+        public static explicit operator string[](BsonItem a)
+        {
+            if (a == null)
+                return new string[] { };
+            return a.ToValueArray().Cast<string>().ToArray();
+        }
+
+        /// <summary>
+        /// Converts this double to a BsonItem.
+        /// </summary>
+        /// <param name="a">The double to convert.</param>
+        public static implicit operator BsonItem(double a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this string to a BsonItem.
+        /// </summary>
+        /// <param name="a">The string to convert.</param>
+        public static implicit operator BsonItem(string a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this bool to a BsonItem.
+        /// </summary>
+        /// <param name="a">The bool to convert.</param>
+        public static implicit operator BsonItem(bool a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this int to a BsonItem.
+        /// </summary>
+        /// <param name="a">The int to convert.</param>
+        public static implicit operator BsonItem(int a)
+        {
+            return new BsonItem(a);
+        }
+
+        /// <summary>
+        /// Converts this long to a BsonItem.
+        /// </summary>
+        /// <param name="a">The long to convert.</param>
+        public static implicit operator BsonItem(long a)
+        {
+            return new BsonItem(a);
         }
 
         /// <summary>
@@ -88,9 +162,9 @@ namespace Rant.IO.Bson
         }
 
         /// <summary>
-        /// The number of keys in this BsonItem.
+        /// The number of items in this BsonItem, if it's a collection.
         /// </summary>
-        public int KeyCount => _objectValues.Keys.Count;
+        public int Count => _objectValues.Keys.Count;
 
         /// <summary>
         /// An array of the keys in this BsonItem.
@@ -104,7 +178,12 @@ namespace Rant.IO.Bson
         /// <returns>The value of the specified key.</returns>
         public BsonItem this[string key]
         {
-            get { return _objectValues[key]; }
+            get
+            {
+                if (!HasKey(key))
+                    return null;
+                return _objectValues[key];
+            }
             set { _objectValues[key] = value; }
         }
 
@@ -119,6 +198,16 @@ namespace Rant.IO.Bson
             set { _objectValues[key.ToString()] = value; }
         }
 
+        public object[] ToValueArray()
+        {
+            if (!IsArray)
+                throw new Exception("Can't convert a non-array to an array.");
+            var list = new List<object>();
+            for (var i = 0; i < Count; i++)
+                list.Add(this[i].Value);
+            return list.ToArray();
+        }
+
         private void PossiblyCreateArray()
         {
             if (_value == null) return;
@@ -126,10 +215,17 @@ namespace Rant.IO.Bson
             if (!type.IsArray) return;
             var arr = (object[])_value;
             _type = 0x04; // array
+            _typeSet = true;
             _objectValues = new Dictionary<string, BsonItem>();
             _value = null;
             for (var i = 0; i < arr.Length; i++)
-                _objectValues[i.ToString()] = new BsonItem(arr[i]);
+            {
+                _objectValues[i.ToString()] = (
+                    arr[i] is BsonItem ?
+                        (BsonItem)arr[i] :
+                        new BsonItem(arr[i])
+                    );
+            }
         }
 
         private void DetermineType()
@@ -142,7 +238,7 @@ namespace Rant.IO.Bson
 
             // i apologize for this if statement
 
-            if (_value is double)
+            if (_value is double || _value is float)
                 _type = 0x01;
             else if (_value is string)
                 _type = 0x02;

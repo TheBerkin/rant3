@@ -65,5 +65,20 @@ namespace Rant.Tests
         {
             Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s  }   ").Main);
         }
+
+        [Test]
+        public void SymbolFunctions()
+        {
+            Assert.AreEqual(
+                "\x2122 \x00ae \x00a9 \x2014 \x2013 \x2022 \x00df",
+                rant.Do(@"[tm] [reg] [c] [em] [en] [b] [ss]").Main
+            );
+        }
+
+        [Test]
+        public void Emoji()
+        {
+            Assert.AreEqual("🔫😠", rant.Do(@"[emoji:gun][emoji:angry]").Main);
+        }
     }
 }

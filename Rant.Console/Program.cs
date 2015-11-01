@@ -35,24 +35,30 @@ namespace RantConsole
 
             var rant = new RantEngine();
 
+#if !DEBUG
             try
             {
+#endif
                 if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
                 if (!String.IsNullOrEmpty(PKG_PATH)) rant.LoadPackage(PKG_PATH);
+#if !DEBUG
             }
             catch (Exception e)
             {
                 ForegroundColor = ConsoleColor.Cyan;
                 WriteLine($"Dictionary load error: {e.Message}");
             }
-
+#endif
             if (Flag("nsfw")) rant.Dictionary.IncludeHiddenClass("nsfw");
 
             if (!String.IsNullOrEmpty(FILE))
             {
+#if !DEBUG
                 try
                 {
+#endif
                     PrintOutput(rant, File.ReadAllText(FILE));
+#if !DEBUG
                 }
                 catch (Exception ex)
                 {
@@ -60,6 +66,7 @@ namespace RantConsole
                     WriteLine(ex.Message);
                     ResetColor();
                 }
+#endif
 
                 if (Flag("wait")) ReadKey(true);
                 return;
@@ -111,7 +118,7 @@ namespace RantConsole
                     ForegroundColor = ConsoleColor.Green;
                     if (chan.Value.Length > 0)
                     {
-                        if (pattern.Type == RantPatternSource.File && writeToFile)
+                        if (pattern.Type == RantPatternOrigin.File && writeToFile)
                         {
                             var path = Property("out");
                             File.WriteAllText(
@@ -130,13 +137,13 @@ namespace RantConsole
                     else if (!writeToFile)
                     {
                         ForegroundColor = ConsoleColor.DarkGray;
-                        if (pattern.Type != RantPatternSource.File) WriteLine("[Empty]");
+                        if (pattern.Type != RantPatternOrigin.File) WriteLine("[Empty]");
                     }
                     ResetColor();
                     WriteLine();
                 }
 
-                if ((pattern.Type != RantPatternSource.File || Flag("wait")) && !Flag("nostats"))
+                if ((pattern.Type != RantPatternOrigin.File || Flag("wait")) && !Flag("nostats"))
                 {
                     PrintStats(
                         new Stat("Seed",

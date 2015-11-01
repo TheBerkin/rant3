@@ -13,6 +13,13 @@ namespace Rant.IO.Bson
     public class BsonDocument
     {
         /// <summary>
+        /// The current string table version.
+        /// At some point we might want to make modifications to the format,
+        /// and we'll want a way to maintain backwards compatibility.
+        /// </summary>
+        public const int STRING_TABLE_VERSION = 1;
+
+        /// <summary>
         /// The top item of this BSON document.
         /// </summary>
         public BsonItem Top;
@@ -36,44 +43,85 @@ namespace Rant.IO.Bson
             }
         }
 
+        public BsonStringTableMode StringTableMode => _stringTableMode;
+
+        public Dictionary<int, string> ReverseStringTable => _reverseStringTable;
+
+        private Dictionary<string, int> _stringTable;
+        private Dictionary<int, string> _reverseStringTable; // for reading
+        private int _stringTableIndex = 0;
+        private BsonStringTableMode _stringTableMode = BsonStringTableMode.None;
+
         /// <summary>
         /// Creates an empty BSON document.
+        /// <param name="useStringTable">Whether or not to generate and use a string table.</param>
         /// </summary>
-        public BsonDocument()
+        public BsonDocument(
+            BsonStringTableMode mode = BsonStringTableMode.None, 
+            Dictionary<int, string> reverseStringTable = null)
         {
+            _stringTableMode = mode;
+            _stringTable = new Dictionary<string, int>();
+            _reverseStringTable = reverseStringTable;
             Top = new BsonItem();
+        }
+        
+        /// <summary>
+        /// Returns this document encoded in BSON as a byte array.
+        /// </summary>
+        /// <returns>This document converted to BSON.</returns>
+        public byte[] ToByteArray(bool includeStringTable = false)
+        {
+            var stream = new MemoryStream();
+            Write(stream, includeStringTable);
+            stream.Close();
+            return stream.ToArray();
+        }
+
+        public byte[] GenerateStringTable()
+        {
+            var stream = new MemoryStream();
+            var writer = new EasyWriter(stream);
+            writer.Write(_stringTable.Count);
+            foreach(string key in _stringTable.Keys)
+            {
+                writer.Write(_stringTable[key]);
+                writer.Write(key, Encoding.UTF8);
+            }
+            writer.Close();
+            stream.Close();
+            return stream.ToArray();
         }
 
         /// <summary>
         /// Writes this BSON document to the specified path.
         /// </summary>
         /// <param name="path">The path to write to.</param>
-        public void Write(string path)
+        public void Write(string path, bool includeStringTable = false)
         {
-            var writer = new EasyWriter(path);
+            var stream = File.Open(path, FileMode.Create);
+            var writer = new EasyWriter(stream);
             Write(writer);
-        }
-
-        /// <summary>
-        /// Returns this document encoded in BSON as a byte array.
-        /// </summary>
-        /// <returns>This document converted to BSON.</returns>
-        public byte[] Write()
-        {
-            var stream = new MemoryStream();
-            Write(stream);
+            writer.Close();
             stream.Close();
-            return stream.ToArray();
         }
 
         /// <summary>
         /// Writes this document as BSON to the specified stream.
         /// </summary>
         /// <param name="stream">The stream that will be written to.</param>
-        public void Write(Stream stream)
+        public void Write(Stream stream, bool includeStringTable = false)
         {
-            var writer = new EasyWriter(stream);
-            Write(writer);
+            var memoryStream = new MemoryStream();
+            using (var writer = new EasyWriter(memoryStream))
+            {
+                Write(writer);
+            }
+            memoryStream.Close();
+            var bytes = memoryStream.ToArray();
+            var tableWriter = new EasyWriter(stream);
+            WriteStringTable(tableWriter, includeStringTable);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         /// <summary>
@@ -82,16 +130,31 @@ namespace Rant.IO.Bson
         /// <param name="writer">The writer that will be used to write this document.</param>
         internal void Write(EasyWriter writer)
         {
+            _stringTableIndex = 0;
+            _stringTable.Clear();
             WriteItem(writer, Top, null, true);
             writer.Close();
         }
 
-        private void WriteItem(EasyWriter writer, BsonItem item, string name, bool isTop = false)
+        internal void WriteStringTable(EasyWriter writer, bool include)
+        {
+            writer.Write(include);
+            if (include)
+            {
+                writer.Write((byte)_stringTableMode);
+                writer.Write((byte)STRING_TABLE_VERSION);
+                var stringTableBytes = GenerateStringTable();
+                writer.Write(stringTableBytes.Length);
+                writer.Write(stringTableBytes);
+            }
+        }
+
+        private void WriteItem(EasyWriter writer, BsonItem item, string name, bool isTop = false, bool isArray = false)
         {
             if(!isTop)
             {
                 writer.Write(item.Type);
-                writer.Write(name, Encoding.UTF8, true);
+                writer.Write(isArray ? name : GetKeyName(name), Encoding.UTF8, true);
             }
 
             if (item.HasValues) // object or array - we need to write a document
@@ -99,10 +162,11 @@ namespace Rant.IO.Bson
                 var stream = new MemoryStream();
                 var vWriter = new EasyWriter(stream);
                 foreach(string key in item.Keys)
-                    WriteItem(vWriter, item[key], key);
+                    WriteItem(vWriter, item[key], key, false, item.IsArray);
                 vWriter.Close();
                 var data = stream.ToArray();
-                writer.Write(data.Length);
+                // length of data + length of length + null terminator
+                writer.Write(data.Length + 4 + 1);
                 writer.Write(data);
                 writer.Write((byte)0x00);
                 return;
@@ -114,7 +178,10 @@ namespace Rant.IO.Bson
                     writer.Write((double)item.Value);
                     break;
                 case 0x02: // string
-                    writer.Write((string)item.Value, Encoding.UTF8);
+                    var bytes = Encoding.UTF8.GetBytes(GetKeyName((string)item.Value, true));
+                    writer.Write(bytes.Length + 1); // includes null terminator
+                    writer.WriteBytes(bytes);
+                    writer.Write((byte)0x00);
                     break;
                 case 0x05: // binary
                     var byteArray = (byte[])item.Value;
@@ -142,6 +209,23 @@ namespace Rant.IO.Bson
         }
 
         /// <summary>
+        /// Determines the correct name for the provided key.
+        /// This will return the string table key instead if it's enabled.
+        /// </summary>
+        /// <param name="name">The name of the key.</param>
+        /// <returns>The correct name for the provided key.</returns>
+        private string GetKeyName(string name, bool value = false)
+        {
+            if (_stringTableMode == BsonStringTableMode.None ||
+                value && _stringTableMode == BsonStringTableMode.Keys)
+                return name;
+            if (_stringTable.ContainsKey(name))
+                return _stringTable[name].ToString();
+            _stringTable[name] = _stringTableIndex++;
+            return _stringTable[name].ToString();
+        }
+
+        /// <summary>
         /// Reads a BSON document from the specified byte array.
         /// </summary>
         /// <param name="data">The byte array that this document will be read from.</param>
@@ -166,9 +250,36 @@ namespace Rant.IO.Bson
         /// </summary>
         /// <param name="reader">The reader that will be used to read this document.</param>
         /// <returns>The document that was read.</returns>
-        internal static BsonDocument Read(EasyReader reader)
+        internal static BsonDocument Read(EasyReader reader, BsonDocument parent = null, bool inArray = false)
         {
-            var document = new BsonDocument();
+            var stringTableMode = BsonStringTableMode.None;
+            Dictionary<int, string> stringTable = null;
+            if (parent == null)
+            {
+                var includesStringTable = reader.ReadBoolean();
+                if (includesStringTable)
+                {
+                    stringTable = new Dictionary<int, string>();
+                    stringTableMode = (BsonStringTableMode)reader.ReadByte();
+                    var version = reader.ReadByte();
+                    if (version != STRING_TABLE_VERSION)
+                        throw new InvalidDataException("Unsupported string table version: " + version);
+                    var tableLength = reader.ReadInt32();
+                    var tableEntries = reader.ReadInt32();
+                    for (var i = 0; i < tableEntries; i++)
+                    {
+                        var num = reader.ReadInt32();
+                        var val = reader.ReadString(Encoding.UTF8);
+                        stringTable[num] = val;
+                    }
+                }
+            }
+            else
+            {
+                stringTable = parent.ReverseStringTable;
+                stringTableMode = parent.StringTableMode;
+            }
+            var document = new BsonDocument(stringTableMode, stringTable);
 
             var length = reader.ReadInt32();
             while(!reader.EndOfStream)
@@ -177,6 +288,8 @@ namespace Rant.IO.Bson
                 if (code == 0x00) // end of document
                     break;
                 var name = reader.ReadCString();
+                if (!inArray && document.StringTableMode != BsonStringTableMode.None)
+                    name = document.ReverseStringTable[int.Parse(name)];
                 var data = ReadItem(code, document, reader);
                 document.Top[name] = data;
             }
@@ -193,10 +306,14 @@ namespace Rant.IO.Bson
                     break;
                 case 0x02: // string
                     val = reader.ReadString(Encoding.UTF8).TrimEnd('\x00');
+                    if (document.StringTableMode == BsonStringTableMode.KeysAndValues)
+                        val = document.ReverseStringTable[int.Parse((string)val)];
                     break;
                 case 0x03: // document
+                    val = Read(reader, document).Top;
+                    break;
                 case 0x04: // array
-                    val = Read(reader).Top;
+                    val = Read(reader, document, true).Top;
                     break;
                 case 0x05: // binary
                     var length = reader.ReadInt32();

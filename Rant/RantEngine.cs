@@ -40,6 +40,8 @@ namespace Rant
         internal readonly ObjectTable Objects = new ObjectTable();
         
         private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
+	    private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>(); 
+		private RantDependencyResolver _resolver = new RantDependencyResolver();
 		private RantDictionary _dictionary = new RantDictionary();
 
         /// <summary>
@@ -88,6 +90,19 @@ namespace Rant
             }
         }
 
+		/// <summary>
+		/// Gets or sets the depdendency resolver used for packages.
+		/// </summary>
+	    public RantDependencyResolver DependencyResolver
+	    {
+		    get { return _resolver; }
+		    set
+		    {
+			    if (value == null) throw new ArgumentNullException(nameof(value));
+			    _resolver = value;
+		    }
+	    }
+
         /// <summary>
         /// Creates a new RantEngine object without a dictionary.
         /// </summary>
@@ -134,6 +149,7 @@ namespace Rant
         public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
             if (package == null) throw new ArgumentNullException(nameof(package));
+	        if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
 
             var patterns = package.GetPatterns();
             var tables = package.GetTables();
@@ -158,6 +174,16 @@ namespace Rant
                     }
                 }
             }
+
+	        _loadedPackages.Add(RantPackageDependency.Create(package));
+
+	        foreach (var dependency in package.GetDependencies())
+	        {
+		        RantPackage pkg;
+				if (!_resolver.TryResolvePackage(dependency, out pkg))
+					throw new FileNotFoundException($"Package '{package}' was unable to resolve dependency '{dependency}'");
+                LoadPackage(pkg, mergeBehavior);
+	        }
         }
 
         /// <summary>
@@ -167,40 +193,14 @@ namespace Rant
         /// <param name="mergeBehavior">The table merging strategy to employ.</param>
         public void LoadPackage(string path, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
         {
-            if (String.IsNullOrEmpty(path))
+            if (Util.IsNullOrWhiteSpace(path))
                 throw new ArgumentException("Path cannot be null nor empty.");
 
-            if (String.IsNullOrEmpty(Path.GetExtension(path)))
-            {
-                path += ".rantpkg";
-            }
-
-            var package = RantPackage.Load(path);
-
-            var patterns = package.GetPatterns();
-            var tables = package.GetTables();
-
-            if (patterns.Any())
-            {
-                foreach (var pattern in patterns)
-                    _patternCache[pattern.Name] = pattern;
-            }
-
-            if (tables.Any())
-            {
-                if (_dictionary == null)
-                {
-                    _dictionary = new RantDictionary(tables, mergeBehavior);
-                }
-                else
-                {
-                    foreach (var table in tables)
-                    {
-                        _dictionary.AddTable(table, mergeBehavior);
-                    }
-                }
-            }
-        }
+	        if (Util.IsNullOrWhiteSpace(Path.GetExtension(path)))
+		        path += ".rantpkg";
+			
+			LoadPackage(RantPackage.Load(path), mergeBehavior);
+		}
 
         private RantOutput RunVM(Sandbox vm, double timeout)
         {
