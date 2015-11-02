@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
+using Rant.Engine;
 using Rant.Engine.Compiler;
 using Rant.Engine.Syntax;
 
@@ -10,15 +14,27 @@ namespace Rant
     /// </summary>
     public sealed class RantPattern
     {
-        /// <summary>
-        /// Gets or sets the name of the source code.
-        /// </summary>
-        public string Name { get; set; }
+		private static readonly HashSet<char> _invalidNameChars = new HashSet<char>(new[]{'$', '@', ':', '~', '%', '?', '>', '<', '[', ']', '|', '{', '}'});
+	    private string _name;
 
-        /// <summary>
-		/// Describes the origin of the pattern.
-		/// </summary>
-		public RantPatternOrigin Type { get; }
+	    /// <summary>
+	    /// Gets or sets the name of the source code.
+	    /// </summary>
+	    public string Name
+	    {
+		    get { return _name; }
+		    set
+		    {
+				if (!IsValidPatternName(value))
+					throw new ArgumentException($"Invalid pattern name: '{value ?? "<null>"}'");
+				_name = String.Join("/", value.Split(new[] {'/', '\\'}, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray());
+		    }
+	    }
+
+	    /// <summary>
+	    /// Describes the origin of the pattern.
+	    /// </summary>
+	    public RantPatternOrigin Type { get; }
 
         /// <summary>
 		/// The code contained in the pattern.
@@ -66,5 +82,15 @@ namespace Rant
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString() => $"{Name} [{Type}]";
+
+	    private static bool IsValidPatternName(string name)
+	    {
+		    if (Util.IsNullOrWhiteSpace(name)) return false;
+		    foreach (char c in name)
+		    {
+			    if (_invalidNameChars.Contains(c)) return false;
+		    }
+		    return true;
+	    }
     }
 }
