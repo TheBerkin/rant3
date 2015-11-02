@@ -62,15 +62,19 @@ namespace Rant.Engine.Compiler.Parselets
                 R.LeftParen, R.RightAngle
             };
 
-            Token<R> queryReadToken = null;
-            while ((queryReadToken = reader.ReadToken()).ID != R.RightAngle)
+            while (true) // looks kinda dangerous
             {
+                var queryReadToken = reader.ReadToken();
                 // egh
                 switch (queryReadToken.ID)
                 {
                     default:
                         compiler.SyntaxError(queryReadToken, $"Invalid token in query: {queryReadToken.Value}");
                         break;
+
+                    case R.RightAngle:
+                        RightAngle(compiler, reader, Token);
+                        yield break;
 
                     case R.Subtype:
                         Subtype(compiler, reader);
@@ -90,9 +94,6 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
                 }
             }
-
-            RightAngle(compiler, reader, Token);
-            yield break;
         }
 
         void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
