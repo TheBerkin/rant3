@@ -66,7 +66,6 @@ namespace Rant.Engine.Compiler
         readonly Stack<RantFunctionGroup> funcCalls = new Stack<RantFunctionGroup>();
         readonly Stack<Regex> regexes = new Stack<Regex>();
         readonly Stack<RASubroutine> subroutines = new Stack<RASubroutine>();
-        Query query;
         readonly RantExpressionCompiler expressionCompiler;
 
         Token<R> fromToken;
@@ -128,9 +127,6 @@ namespace Rant.Engine.Compiler
         public void PushToFuncCalls(RantFunctionGroup group) => funcCalls.Push(group);
         public void PushToRegexes(Regex regex) => regexes.Push(regex);
         public void PushToSubroutines(RASubroutine sub) => subroutines.Push(sub);
-
-        public Query GetQuery() => query;
-        public void SetNewQuery(Query query) => this.query = query;
 
         public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
         {
