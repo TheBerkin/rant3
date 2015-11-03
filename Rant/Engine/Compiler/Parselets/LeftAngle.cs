@@ -55,13 +55,6 @@ namespace Rant.Engine.Compiler.Parselets
                 reader.ReadToken();
             }
 
-            // these are the tokens for queries
-            var allowedTokens = new[] {
-                R.Subtype, R.Hyphen,
-                R.Without, R.Question,
-                R.LeftParen, R.RightAngle
-            };
-
             while (true) // looks kinda dangerous
             {
                 var queryReadToken = reader.ReadToken();
@@ -73,7 +66,7 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.RightAngle:
-                        RightAngle(compiler, reader, Token);
+                        RightAngle(compiler, reader, queryReadToken);
                         yield break;
 
                     case R.Subtype:
@@ -96,12 +89,12 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> token)
         {
             if (query.Name == null && query.Carrier.GetTotalCount() == 0)
                 compiler.SyntaxError(Token, "Carrier delete query specified without any carriers");
 
-            compiler.AddToOutput(new RAQuery(query, Stringe.Range(fromToken, Token)));
+            compiler.AddToOutput(new RAQuery(query, Stringe.Range(Token, token)));
         }
 
         void RegexFilter(NewRantCompiler compiler, TokenReader reader, Token<R> token)
