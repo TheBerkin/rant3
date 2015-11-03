@@ -90,7 +90,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                     case R.Question:
                     case R.Without:
-                        RegexFilter(compiler, reader);
+                        RegexFilter(compiler, reader, queryReadToken);
                         break;
                 }
             }
@@ -104,9 +104,9 @@ namespace Rant.Engine.Compiler.Parselets
             compiler.AddToOutput(new RAQuery(query, Stringe.Range(fromToken, Token)));
         }
 
-        void RegexFilter(NewRantCompiler compiler, TokenReader reader)
+        void RegexFilter(NewRantCompiler compiler, TokenReader reader, Token<R> token)
         {
-            var negative = Token.ID == R.Without;
+            var negative = token.ID == R.Without;
             var regexToken = reader.ReadLoose(R.Regex, "regex");
 
             ((List<_<bool, Regex>>)query.RegexFilters).Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
