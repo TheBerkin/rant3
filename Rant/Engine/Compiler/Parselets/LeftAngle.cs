@@ -85,7 +85,96 @@ namespace Rant.Engine.Compiler.Parselets
                     case R.Without:
                         RegexFilter(compiler, reader, queryReadToken);
                         break;
+
+                    case R.DoubleColon:
+                        DoubleColon(compiler, reader);
+                        break;
                 }
+            }
+        }
+
+        void DoubleColon(NewRantCompiler compiler, TokenReader reader)
+        {
+            var carrierToken = reader.ReadToken();
+
+            switch (carrierToken.ID)
+            {
+                default:
+                    compiler.SyntaxError(carrierToken, $"Invalid token in query carrier: {carrierToken.Value}");
+                    break;
+
+                case R.Equal: // match carrier
+                    var name = reader.ReadLoose(R.Text, "carrier match identifier");
+                    query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
+                    break;
+
+                case R.At: // associative, disassociative, divergent, relational or the match versions of those
+                    {
+                        // 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
+                        var componentType = CarrierComponent.Associative;
+                        var nextToken = reader.PeekToken();
+
+                        // disassociative
+                        switch (nextToken.ID)
+                        {
+                            case R.Exclamation:
+                                componentType = CarrierComponent.Dissociative;
+                                reader.ReadToken();
+                                break;
+
+                            case R.Plus:
+                                componentType = CarrierComponent.Divergent;
+                                reader.ReadToken();
+                                break;
+
+                            case R.Question:
+                                componentType = CarrierComponent.Relational;
+                                reader.ReadToken();
+                                break;
+                        }
+
+                        // match
+                        if (reader.PeekToken().ID == R.Equal)
+                        {
+                            reader.ReadToken();
+                            // nice if clause
+                            if (componentType == CarrierComponent.Associative)
+                                componentType = CarrierComponent.MatchAssociative;
+                            if (componentType == CarrierComponent.Dissociative)
+                                componentType = CarrierComponent.MatchDissociative;
+                            if (componentType == CarrierComponent.Divergent)
+                                componentType = CarrierComponent.MatchDivergent;
+                            if (componentType == CarrierComponent.Relational)
+                                componentType = CarrierComponent.MatchRelational;
+                        }
+
+                        var nameToken = reader.ReadLoose(R.Text, "carrier association identifier");
+                        query.Carrier.AddComponent(componentType, nameToken.Value);
+                        break;
+                    }
+
+                case R.Exclamation: // unique or match-unique
+                    {
+                        var match = false;
+
+                        if (reader.PeekToken().ID == R.Equal)
+                        {
+                            match = true;
+                            reader.ReadToken();
+                        }
+
+                        var nameToken = reader.ReadLoose(R.Text, "carrier unique identifier");
+                        var componentType = match ? CarrierComponent.MatchUnique : CarrierComponent.Unique;
+                        break;
+                    }
+
+                case R.Ampersand: // rhymes
+                    {
+                        // NOTE: rhymes may be broken for some reason. i'm not getting proper results. i'm using the dictionary v2.0.21 -spanfile
+                        var nameToken = reader.ReadLoose(R.Text, "carrier rhyme identifier");
+                        query.Carrier.AddComponent(CarrierComponent.Rhyme, nameToken.Value);
+                    }
+                    break;
             }
         }
 
