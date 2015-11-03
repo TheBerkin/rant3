@@ -39,7 +39,8 @@ namespace Rant.Engine.Compiler.Parselets
                     break;
 
                 case R.Regex:
-                    
+                    foreach (var parselet in Regex(compiler, reader, tagToken))
+                        yield return parselet;
                     break;
 
                 case R.At:
