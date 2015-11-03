@@ -47,7 +47,7 @@ namespace Rant.Engine.Compiler.Parselets
             //        }
             //        break;
             //}
-            compiler.AddToOutput(new RAText(Token));
+            AddToOutput(new RAText(Token));
             yield break;
         }
     }

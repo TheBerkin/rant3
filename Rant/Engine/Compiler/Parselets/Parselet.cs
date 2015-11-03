@@ -60,22 +60,33 @@ namespace Rant.Engine.Compiler.Parselets
             loaded = true;
         }
 
-        public static Parselet GetWithToken(Token<R> token)
+        // looks kinda silly to pass the compiler in
+        public static Parselet GetWithToken(NewRantCompiler compiler, Token<R> token, Action<RantAction> addToOutputDelegate = null)
         {
             Parselet parselet;
             if (parseletDict.TryGetValue(token.ID, out parselet))
             {
+                if (addToOutputDelegate == null)
+                    parselet.AddToOutput = compiler.AddToOutput;
+                else
+                    parselet.AddToOutput = addToOutputDelegate;
+
                 parselet.Token = token; // NOTE: this way of passing the appropriate token is kind of ugly but it works
                 return parselet;
             }
 
-            return GetDefaultParselet(token);
+            return GetDefaultParselet(compiler, token, addToOutputDelegate);
         }
 
-        public static Parselet GetDefaultParselet(Token<R> token)
+        public static Parselet GetDefaultParselet(NewRantCompiler compiler, Token<R> token, Action<RantAction> addToOutputDelegate = null)
         {
             if (defaultParselet == null)
                 throw new RantInternalException("DefaultParselet not set");
+
+            if (addToOutputDelegate == null)
+                defaultParselet.AddToOutput = compiler.AddToOutput;
+            else
+                defaultParselet.AddToOutput = addToOutputDelegate;
 
             defaultParselet.Token = token;
             return defaultParselet;
@@ -85,6 +96,7 @@ namespace Rant.Engine.Compiler.Parselets
 
         public abstract R[] Identifiers { get; }
         protected Token<R> Token { get; private set; }
+        public Action<RantAction> AddToOutput { get; set; }
 
         public Parselet()
         {

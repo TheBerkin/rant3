@@ -183,7 +183,7 @@ namespace Rant.Engine.Compiler.Parselets
             if (query.Name == null && query.Carrier.GetTotalCount() == 0)
                 compiler.SyntaxError(Token, "Carrier delete query specified without any carriers");
 
-            compiler.AddToOutput(new RAQuery(query, Stringe.Range(Token, token)));
+            AddToOutput(new RAQuery(query, Stringe.Range(Token, token)));
         }
 
         void RegexFilter(NewRantCompiler compiler, TokenReader reader, Token<R> token)
