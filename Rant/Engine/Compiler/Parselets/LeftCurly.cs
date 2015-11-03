@@ -30,14 +30,17 @@ namespace Rant.Engine.Compiler.Parselets
             // LOOK AT ME. I'M THE COMPILER NOW
             Token<R> token = null;
             var actions = new List<RantAction>();
+            var sequences = new List<RantAction>();
+
             while (!reader.End)
             {
                 reader.SkipSpace();
                 token = reader.ReadToken();
+
                 if (token.ID == R.Pipe)
                 {
                     // add action to block and continue
-                    compiler.AddToSequences(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
                     reader.SkipSpace();
                     actions.Clear();
                     continue;
@@ -45,12 +48,12 @@ namespace Rant.Engine.Compiler.Parselets
                 else if (token.ID == R.RightCurly)
                 {
                     // add action to block and return
-                    compiler.AddToSequences(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
-                    AddToOutput(new RABlock(Stringe.Range(Token, token), compiler.GetSequences()));
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
+                    AddToOutput(new RABlock(Stringe.Range(Token, token), sequences));
                     yield break;
                 }
 
-                yield return Parselet.GetWithToken(compiler, token, a => actions.Add(a));
+                yield return Parselet.GetWithToken(compiler, token, actions.Add);
             }
 
             compiler.SyntaxError(Token, "Unterminated block: unexpected end of file.");

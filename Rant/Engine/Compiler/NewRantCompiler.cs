@@ -71,7 +71,6 @@ namespace Rant.Engine.Compiler
         Token<R> fromToken;
 
         List<RantAction> output;
-        List<RantAction> sequences; // TODO: make these not be stored in the compiler (maybe?)
 
         public NewRantCompiler(string sourceName, string source)
         {
@@ -82,7 +81,6 @@ namespace Rant.Engine.Compiler
             expressionCompiler = new RantExpressionCompiler(sourceName, source, reader, this);
 
             output = new List<RantAction>();
-            sequences = new List<RantAction>();
         }
 
         public RantAction Read()
@@ -123,15 +121,16 @@ namespace Rant.Engine.Compiler
             return new RASequence(output, token);
         }
 
-        public void SetFromToken(Token<R> token) => fromToken = token;
-
         public void AddToOutput(RantAction action) => output.Add(action);
-        public void AddToSequences(RantAction sequence) => sequences.Add(sequence);
-        public List<RantAction> GetSequences() => sequences;
 
-        public void PushToFuncCalls(RantFunctionGroup group) => funcCalls.Push(group);
-        public void PushToRegexes(Regex regex) => regexes.Push(regex);
-        public void PushToSubroutines(RASubroutine sub) => subroutines.Push(sub);
+        public void PushFuncCall(RantFunctionGroup group) => funcCalls.Push(group);
+        public RantFunctionGroup PopFuncCall() => funcCalls.Pop();
+
+        public void PushRegex(Regex regex) => regexes.Push(regex);
+        public Regex PopRegex() => regexes.Pop();
+
+        public void PushSubroutine(RASubroutine sub) => subroutines.Push(sub);
+        public RASubroutine PopSubroutine() => subroutines.Pop();
 
         public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
         {
