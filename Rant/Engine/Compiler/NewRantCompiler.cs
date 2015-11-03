@@ -123,15 +123,6 @@ namespace Rant.Engine.Compiler
 
         public void AddToOutput(RantAction action) => output.Add(action);
 
-        public void PushFuncCall(RantFunctionGroup group) => funcCalls.Push(group);
-        public RantFunctionGroup PopFuncCall() => funcCalls.Pop();
-
-        public void PushRegex(Regex regex) => regexes.Push(regex);
-        public Regex PopRegex() => regexes.Pop();
-
-        public void PushSubroutine(RASubroutine sub) => subroutines.Push(sub);
-        public RASubroutine PopSubroutine() => subroutines.Pop();
-
         public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
         {
             var func = group.GetFunction(argc);
