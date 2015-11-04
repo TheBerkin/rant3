@@ -20,13 +20,9 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        public DefaultParselet()
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
         {
-        }
-
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
-        {
-            AddToOutput(new RAText(Token));
+            AddToOutput(new RAText(token));
             yield break;
         }
     }

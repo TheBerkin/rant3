@@ -68,8 +68,6 @@ namespace Rant.Engine.Compiler
         readonly Stack<RASubroutine> subroutines = new Stack<RASubroutine>();
         readonly RantExpressionCompiler expressionCompiler;
 
-        Token<R> fromToken;
-
         List<RantAction> output;
 
         public NewRantCompiler(string sourceName, string source)
@@ -81,6 +79,8 @@ namespace Rant.Engine.Compiler
             expressionCompiler = new RantExpressionCompiler(sourceName, source, reader, this);
 
             output = new List<RantAction>();
+
+            Parselet.SetCompilerAndReader(this, reader);
         }
 
         public RantAction Read()
@@ -93,9 +93,9 @@ namespace Rant.Engine.Compiler
             while (!reader.End)
             {
                 token = reader.ReadToken();
-                var parselet = Parselet.GetWithToken(this, token);
+                var parselet = Parselet.GetParselet(token);
                 parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse(this, reader, fromToken));
+                enumeratorStack.Push(parselet.Parse(null));
 
                 top:
                 while (enumeratorStack.Any())
@@ -108,7 +108,7 @@ namespace Rant.Engine.Compiler
                             break;
 
                         parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse(this, reader, fromToken));
+                        enumeratorStack.Push(enumerator.Current.Parse(null));
                         goto top;
                     }
 
@@ -120,6 +120,8 @@ namespace Rant.Engine.Compiler
             //done:
             return new RASequence(output, token);
         }
+
+        public RantAction ReadExpression() => expressionCompiler.Read();
 
         public void AddToOutput(RantAction action) => output.Add(action);
 

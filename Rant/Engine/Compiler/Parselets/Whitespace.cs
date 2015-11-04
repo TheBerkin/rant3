@@ -19,11 +19,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        public Whitespace()
-        {
-        }
-
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
         {
             // TODO: figure that out
             //switch (reader.PeekType())
@@ -47,7 +43,7 @@ namespace Rant.Engine.Compiler.Parselets
             //        }
             //        break;
             //}
-            AddToOutput(new RAText(Token));
+            AddToOutput(new RAText(token));
             yield break;
         }
     }

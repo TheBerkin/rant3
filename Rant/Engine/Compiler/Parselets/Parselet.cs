@@ -16,10 +16,18 @@ namespace Rant.Engine.Compiler.Parselets
         static bool loaded = false;
         static Dictionary<R, Parselet> parseletDict;
         static Parselet defaultParselet;
+        static NewRantCompiler sCompiler; // the s is for static
+        static TokenReader sReader;
 
         static Parselet()
         {
             Load();
+        }
+
+        public static void SetCompilerAndReader(NewRantCompiler c, TokenReader r)
+        {
+            sCompiler = c;
+            sReader = r;
         }
 
         public static void Load(bool forceNewLoad = false)
@@ -60,48 +68,92 @@ namespace Rant.Engine.Compiler.Parselets
             loaded = true;
         }
 
-        // looks kinda silly to pass the compiler in
-        public static Parselet GetWithToken(NewRantCompiler compiler, Token<R> token, Action<RantAction> addToOutputDelegate = null)
+        public static Parselet GetParselet(Token<R> token, Action<RantAction> outputOverride = null)
         {
             Parselet parselet;
             if (parseletDict.TryGetValue(token.ID, out parselet))
             {
-                if (addToOutputDelegate == null)
-                    parselet.AddToOutput = compiler.AddToOutput;
-                else
-                    parselet.AddToOutput = addToOutputDelegate;
+                if (!parselet.MatchingCompilerAndReader(sCompiler, sReader))
+                    parselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
-                parselet.Token = token; // NOTE: this way of passing the appropriate token is kind of ugly but it works
+                if (outputOverride != null)
+                    parselet.PushOutputOverride(outputOverride);
+
+                parselet.PushToken(token);
                 return parselet;
             }
 
-            return GetDefaultParselet(compiler, token, addToOutputDelegate);
+            return GetDefaultParselet(token, outputOverride);
         }
 
-        public static Parselet GetDefaultParselet(NewRantCompiler compiler, Token<R> token, Action<RantAction> addToOutputDelegate = null)
+        static Parselet GetDefaultParselet(Token<R> token, Action<RantAction> outputOverride = null)
         {
             if (defaultParselet == null)
                 throw new RantInternalException("DefaultParselet not set");
 
-            if (addToOutputDelegate == null)
-                defaultParselet.AddToOutput = compiler.AddToOutput;
-            else
-                defaultParselet.AddToOutput = addToOutputDelegate;
+            if (!defaultParselet.MatchingCompilerAndReader(sCompiler, sReader))
+                defaultParselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
-            defaultParselet.Token = token;
+            if (outputOverride != null)
+                defaultParselet.PushOutputOverride(outputOverride);
+
+            defaultParselet.PushToken(token);
             return defaultParselet;
         }
 
         // instance stuff
 
         public abstract R[] Identifiers { get; }
-        protected Token<R> Token { get; private set; }
-        public Action<RantAction> AddToOutput { get; set; }
 
-        public Parselet()
+        Stack<Token<R>> tokens;
+        Stack<Action<RantAction>> outputOverrides;
+
+        protected NewRantCompiler compiler;
+        protected TokenReader reader;
+
+        protected Parselet()
         {
+            tokens = new Stack<Token<R>>();
+            outputOverrides = new Stack<Action<RantAction>>();
         }
 
-        public abstract IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken);
+        // NOTE: this way of passing in the proper token and output override is kinda bad and a hack of sorts. maybe improve?
+        void PushToken(Token<R> token) => tokens.Push(token);
+        void PushOutputOverride(Action<RantAction> action) => outputOverrides.Push(action);
+
+        bool MatchingCompilerAndReader(NewRantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
+        void InternalSetCompilerAndReader(NewRantCompiler compiler, TokenReader reader)
+        {
+            if (compiler == null)
+                throw new RantInternalException("Compiler is null");
+
+            if (reader == null)
+                throw new RantInternalException("Token reader is null");
+
+            this.compiler = compiler;
+            this.reader = reader;
+        }
+
+        public IEnumerator<Parselet> Parse(Token<R> fromToken)
+        {
+            if (!tokens.Any())
+                throw new RantInternalException("Token stack is empty");
+
+            foreach (var parselet in InternalParse(tokens.Pop(), fromToken))
+                yield return parselet;
+
+            if (outputOverrides.Any())
+                outputOverrides.Pop();
+        }
+
+        protected abstract IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken);
+
+        protected void AddToOutput(RantAction action)
+        {
+            if (outputOverrides.Any())
+                outputOverrides.Peek()(action);
+            else
+                compiler.AddToOutput(action);
+        }
     }
 }

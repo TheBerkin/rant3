@@ -19,44 +19,40 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        public LeftCurly()
-        {
-        }
-
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
         {
             reader.SkipSpace();
 
             // LOOK AT ME. I'M THE COMPILER NOW
-            Token<R> token = null;
+            Token<R> readToken = null;
             var actions = new List<RantAction>();
             var sequences = new List<RantAction>();
 
             while (!reader.End)
             {
                 reader.SkipSpace();
-                token = reader.ReadToken();
+                readToken = reader.ReadToken();
 
-                if (token.ID == R.Pipe)
+                if (readToken.ID == R.Pipe)
                 {
                     // add action to block and continue
-                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, readToken));
                     reader.SkipSpace();
                     actions.Clear();
                     continue;
                 }
-                else if (token.ID == R.RightCurly)
+                else if (readToken.ID == R.RightCurly)
                 {
                     // add action to block and return
-                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, Token));
-                    AddToOutput(new RABlock(Stringe.Range(Token, token), sequences));
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, readToken));
+                    AddToOutput(new RABlock(Stringe.Range(token, readToken), sequences));
                     yield break;
                 }
 
-                yield return Parselet.GetWithToken(compiler, token, actions.Add);
+                yield return Parselet.GetParselet(readToken, actions.Add);
             }
 
-            compiler.SyntaxError(Token, "Unterminated block: unexpected end of file.");
+            compiler.SyntaxError(token, "Unterminated block: unexpected end of file.");
         }
     }
 }

@@ -22,11 +22,7 @@ namespace Rant.Engine.Compiler.Parselets
 
         Query query;
 
-        public LeftAngle()
-        {
-        }
-
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
         {
             Stringe name = null;
 
@@ -34,7 +30,7 @@ namespace Rant.Engine.Compiler.Parselets
                 name = reader.ReadLoose(R.Text, "table name");
 
             if (name != null && (Util.IsNullOrWhiteSpace(name?.Value) || !Util.ValidateName(name?.Value)))
-                compiler.SyntaxError(Token, "Invalid table name in query");
+                compiler.SyntaxError(token, "Invalid table name in query");
 
             query = new Query
             {
@@ -47,7 +43,7 @@ namespace Rant.Engine.Compiler.Parselets
             var exclusivity = reader.PeekToken();
 
             if (exclusivity == null)
-                compiler.SyntaxError(Token, "Unexpected end of file");
+                compiler.SyntaxError(token, "Unexpected end of file");
 
             if (exclusivity.ID == R.Dollar)
             {
@@ -66,7 +62,7 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.RightAngle:
-                        RightAngle(compiler, reader, queryReadToken);
+                        RightAngle(compiler, reader, queryReadToken, token);
                         yield break;
 
                     case R.Subtype:
@@ -74,11 +70,11 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.Hyphen:
-                        Hyphen(compiler, reader);
+                        Hyphen(compiler, reader, token);
                         break;
 
                     case R.LeftParen:
-                        LeftParen(compiler, reader);
+                        LeftParen(compiler, reader, token);
                         break;
 
                     case R.Question:
@@ -178,12 +174,12 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> token)
+        void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
         {
             if (query.Name == null && query.Carrier.GetTotalCount() == 0)
-                compiler.SyntaxError(Token, "Carrier delete query specified without any carriers");
+                compiler.SyntaxError(token, "Carrier delete query specified without any carriers");
 
-            AddToOutput(new RAQuery(query, Stringe.Range(Token, token)));
+            AddToOutput(new RAQuery(query, Stringe.Range(fromToken, token)));
         }
 
         void RegexFilter(NewRantCompiler compiler, TokenReader reader, Token<R> token)
@@ -200,14 +196,14 @@ namespace Rant.Engine.Compiler.Parselets
             query.Subtype = subtypeToken.Value;
         }
 
-        void Hyphen(NewRantCompiler compiler, TokenReader reader)
+        void Hyphen(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
             var filterParts = new List<ClassFilterRule>();
             do
             {
                 var negative = reader.Take(R.Exclamation);
                 if (query.Exclusive && negative)
-                    compiler.SyntaxError(Token, "You can't define a negative class filter in an exclusive query");
+                    compiler.SyntaxError(fromToken, "You can't define a negative class filter in an exclusive query");
 
                 var classNameToken = reader.ReadLoose(R.Text, "class name");
                 filterParts.Add(new ClassFilterRule(classNameToken.Value, !negative));
@@ -216,7 +212,7 @@ namespace Rant.Engine.Compiler.Parselets
             query.ClassFilter.AddRuleSwitch(filterParts.ToArray());
         }
 
-        void LeftParen(NewRantCompiler compiler, TokenReader reader)
+        void LeftParen(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
         {
             var nextToken = reader.ReadToken();
             var firstNum = -1;
@@ -259,7 +255,7 @@ namespace Rant.Engine.Compiler.Parselets
                 reader.Read(R.RightParen, "right parenthesis");
 
             if (range.Minimum == null && range.Maximum == null)
-                compiler.SyntaxError(Token, "Unkown syllable range syntax");
+                compiler.SyntaxError(fromToken, "Unkown syllable range syntax");
 
             query.SyllablePredicate = range;
         }

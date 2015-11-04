@@ -20,11 +20,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        public LeftSquare()
-        {
-        }
-
-        public override IEnumerator<Parselet> Parse(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
         {
             var tagToken = reader.ReadToken();
             switch (tagToken.ID)
@@ -34,25 +30,95 @@ namespace Rant.Engine.Compiler.Parselets
                     break;
 
                 case R.Text:
-                    foreach (var parselet in Text(compiler, reader, tagToken)) // TODO: all this needs some serious cleanup
+                    foreach (var parselet in Text(tagToken, token)) // TODO: all this needs some serious cleanup
                         yield return parselet;
                     break;
 
                 case R.Regex:
-                    foreach (var parselet in Regex(compiler, reader, tagToken))
+                    foreach (var parselet in Regex(tagToken, token))
                         yield return parselet;
                     break;
 
                 case R.At:
+                    AddToOutput(compiler.ReadExpression());
                     break;
 
                 case R.Dollar:
+                    foreach (var parselet in Dollar(tagToken, token))
+                        yield return parselet;
                     break;
             }
         }
 
         // TODO: all these "mini-parselets" are bad and DRY
-        IEnumerable<Parselet> Regex(NewRantCompiler compiler, TokenReader reader, Token<R> token)
+        IEnumerable<Parselet> Dollar(Token<R> token, Token<R> fromToken)
+        {
+            var call = false;
+            var nextToken = reader.ReadToken();
+
+            // if the first token isn't a square, it's the name of the subroutine call
+            if (nextToken.ID != R.LeftSquare)
+                call = true;
+            else
+                nextToken = reader.Read(R.Text, "subroutine name");
+
+            // if there's a color here, there's args
+            var hasArgs = reader.Take(R.Colon);
+
+            if (call)
+            {
+                foreach (var parselet in SubroutineArgs(token, new RACallSubroutine(nextToken)))
+                    yield return parselet;
+                yield break;
+            }
+
+            var subroutine = new RADefineSubroutine(nextToken);
+            subroutine.Parameters = new Dictionary<string, SubroutineParameterType>();
+
+            // read ALL THE ARGS!!
+            // right now we're at [$[name: or [$[name
+            while (hasArgs && !reader.End)
+            {
+                var nameToken = reader.ReadLooseToken();
+
+                if (nameToken.ID == R.Text)
+                    subroutine.Parameters.Add(nameToken.Value, SubroutineParameterType.Greedy);
+                else if (nameToken.ID == R.At)
+                {
+                    nameToken = reader.ReadLoose(R.Text);
+                    subroutine.Parameters.Add(nameToken.Value, SubroutineParameterType.Loose);
+                }
+                else
+                    compiler.SyntaxError(nameToken, "Expected subroutine parameter");
+
+                nextToken = reader.ReadLooseToken();
+
+                if (nextToken.ID == R.Semicolon)
+                    continue;
+
+                if (nextToken.ID == R.RightSquare)
+                    break;
+
+                compiler.SyntaxError(nextToken, "Unexpected token in subroutine parameter definition");
+            }
+
+            // if there's no args, we need to get rid of the right square before the body
+            if (!hasArgs)
+                reader.ReadLoose(R.RightSquare);
+
+            // start reading the body
+            reader.ReadLoose(R.Colon);
+
+            RASequence body = null;
+
+            foreach (var parselet in SubroutineBody(token, b => body = b))
+                yield return parselet;
+
+            subroutine.Body = body;
+            AddToOutput(subroutine);
+        }
+
+        IEnumerable<Parselet> Regex(Token<R> token, Token<R> fromToken)
         {
             Regex regex = null;
             try
@@ -66,32 +132,56 @@ namespace Rant.Engine.Compiler.Parselets
 
             reader.ReadLoose(R.Colon);
 
-            foreach (var parselet in ReplacerArgs(compiler, reader, token, regex))
+            foreach (var parselet in ReplacerArgs(token, regex))
                 yield return parselet;
         }
 
-        IEnumerable<Parselet> Text(NewRantCompiler compiler, TokenReader reader, Token<R> token)
+        IEnumerable<Parselet> Text(Token<R> token, Token<R> fromToken)
         {
             var name = token.Value;
             var group = RantFunctions.GetFunctionGroup(name);
 
             if (group == null)
-                compiler.SyntaxError(token, $"Unknown function: '{name}");
+                compiler.SyntaxError(token, $"Unknown function: '{name}'");
 
             if (reader.TakeLoose(R.Colon))
             {
-                foreach (var parselet in FuncArgs(compiler, reader, token, group))
+                foreach (var parselet in FuncArgs(token, group))
                     yield return parselet;
             }
             else
             {
                 var end = reader.Read(R.RightSquare);
-                AddToOutput(new RAFunction(Stringe.Range(Token, end), compiler.GetFunctionInfo(group, 0, Token, end), new List<RantAction>()));
+                AddToOutput(new RAFunction(Stringe.Range(fromToken, end), compiler.GetFunctionInfo(group, 0, fromToken, end), new List<RantAction>()));
             }
         }
 
         // TODO: all these "mini-compilers" are bad and DRY
-        IEnumerable<Parselet> ReplacerArgs(NewRantCompiler compiler, TokenReader reader, Token<R> token, Regex regex)
+        IEnumerable<Parselet> SubroutineBody(Token<R> fromToken, Action<RASequence> setSequence)
+        {
+            Token<R> funcToken = null;
+            var actions = new List<RantAction>();
+            var sequences = new List<RantAction>();
+
+            while (!reader.End)
+            {
+                funcToken = reader.ReadToken();
+
+                if (funcToken.ID == R.RightSquare)
+                {
+                    // add action to args and return
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
+                    setSequence(new RASequence(sequences, funcToken));
+                    yield break;
+                }
+
+                yield return Parselet.GetParselet(funcToken, actions.Add);
+            }
+
+            compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
+        }
+
+        IEnumerable<Parselet> SubroutineArgs(Token<R> fromToken, RASubroutine subroutine)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();
@@ -113,21 +203,57 @@ namespace Rant.Engine.Compiler.Parselets
                 {
                     // add action to args and return
                     sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
-
-                    if (sequences.Count != 2)
-                        compiler.SyntaxError(Stringe.Between(token, Token), "Replacer must have two arguments");
-
-                    AddToOutput(new RAReplacer(Stringe.Range(Token, token), regex, sequences[0], sequences[1]));
+                    subroutine.Arguments = sequences.Where(x => !(x is RASequence && (x as RASequence).Actions.Count == 0)).ToList();
+                    AddToOutput(subroutine);
                     yield break;
                 }
 
-                yield return Parselet.GetWithToken(compiler, funcToken, actions.Add);
+                yield return Parselet.GetParselet(funcToken, actions.Add);
             }
 
-            compiler.SyntaxError(Token, "Unterminated function: unexpected end of file");
+            compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
         }
 
-        IEnumerable<Parselet> FuncArgs(NewRantCompiler compiler, TokenReader reader, Token<R> token, RantFunctionGroup group)
+        IEnumerable<Parselet> ReplacerArgs(Token<R> fromToken, Regex regex)
+        {
+            Token<R> funcToken = null;
+            var actions = new List<RantAction>();
+            var sequences = new List<RantAction>();
+
+            while (!reader.End)
+            {
+                funcToken = reader.ReadToken();
+
+                if (funcToken.ID == R.Semicolon)
+                {
+                    // add action to args and continue
+                    if (sequences.Count == 1)
+                        compiler.SyntaxError(funcToken, "Too many arguments in replacer");
+
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
+                    actions.Clear();
+                    reader.SkipSpace();
+                    continue;
+                }
+                else if (funcToken.ID == R.RightSquare)
+                {
+                    // add action to args and return
+                    sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
+
+                    if (sequences.Count != 2)
+                        compiler.SyntaxError(Stringe.Between(funcToken, fromToken), "Replacer must have two arguments");
+
+                    AddToOutput(new RAReplacer(Stringe.Range(fromToken, funcToken), regex, sequences[0], sequences[1]));
+                    yield break;
+                }
+
+                yield return Parselet.GetParselet(funcToken, actions.Add);
+            }
+
+            compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
+        }
+
+        IEnumerable<Parselet> FuncArgs(Token<R> fromToken, RantFunctionGroup group)
         { 
             Token<R> funcToken = null;
             var actions = new List<RantAction>();
@@ -149,15 +275,15 @@ namespace Rant.Engine.Compiler.Parselets
                 {
                     // add action to args and return
                     sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
-                    AddToOutput(new RAFunction(Stringe.Range(Token, token),
-                        compiler.GetFunctionInfo(group, sequences.Count, Token, token), sequences));
+                    AddToOutput(new RAFunction(Stringe.Range(fromToken, funcToken),
+                        compiler.GetFunctionInfo(group, sequences.Count, fromToken, funcToken), sequences));
                     yield break;
                 }
 
-                yield return Parselet.GetWithToken(compiler, funcToken, actions.Add);
+                yield return Parselet.GetParselet(funcToken, actions.Add);
             }
 
-            compiler.SyntaxError(Token, "Unterminated function: unexpected end of file");
+            compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
         }
     }
 }
