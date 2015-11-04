@@ -227,16 +227,16 @@ namespace Rant.Engine.Compiler.Parselets
 
             if (nextToken.ID == R.Hyphen)
             {
-                var numToken = reader.ReadToken();
+                nextToken = reader.ReadToken();
 
                 // (num - num)
-                if (numToken.ID == R.Text)
+                if (nextToken.ID == R.Text) // see note above
                 {
-                    Util.ParseInt(numToken.Value, out secondNum);
+                    Util.ParseInt(nextToken.Value, out secondNum);
                     range.Minimum = firstNum;
                     range.Maximum = secondNum;
                 }
-                else if (numToken.ID == R.RightParen && firstNum != -1) // (num -)
+                else if (nextToken.ID == R.RightParen && firstNum != -1) // (num -)
                 {
                     range.Minimum = firstNum;
                 }
