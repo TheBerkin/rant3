@@ -52,13 +52,10 @@ namespace Rave.Packer
 			Console.WriteLine("Packing...");
 
 			var contentDir = Path.GetFullPath(paths.Length == 0 ? Environment.CurrentDirectory : paths[0]);
-
-			var outputPath = Property("out", Path.Combine(
-				Directory.GetParent(Environment.CurrentDirectory).FullName,
-				Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
 			
 			Pack(pkg, contentDir);
-
+			
+			string outputPath;
 			if (!Flag("old"))
             {
 				var infoPath = Path.Combine(contentDir, "rantpkg.json");
@@ -77,11 +74,15 @@ namespace Rave.Packer
 		            pkg.AddDependency(dep);
 	            }
 
-				if (!String.IsNullOrWhiteSpace(info.OutputPath))
-				{
-					outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}-{pkg.Version}.rantpkg");
-					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-				}
+	            if (!String.IsNullOrWhiteSpace(info.OutputPath))
+	            {
+		            outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}-{pkg.Version}.rantpkg");
+		            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+	            }
+	            else
+	            {
+		            outputPath = Path.Combine(Directory.GetParent(contentDir).FullName, $"{pkg.ID}-{pkg.Version}.rantpkg");
+	            }
 
 				Console.WriteLine($"String table mode: {modeEnum}");
                 Console.WriteLine($"Compression: {(compress ? "yes" : "no")}");
@@ -90,7 +91,10 @@ namespace Rave.Packer
                 pkg.Save(outputPath, compress, modeEnum);
             }
             else
-            {
+			{
+				outputPath = Property("out", Path.Combine(
+					Directory.GetParent(Environment.CurrentDirectory).FullName,
+					Path.GetFileName(Environment.CurrentDirectory) + ".rantpkg"));
                 Console.WriteLine("Saving...");
                 pkg.SaveOld(outputPath);
             }
