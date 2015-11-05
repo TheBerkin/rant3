@@ -19,14 +19,14 @@ namespace Rant
 		public virtual bool TryResolvePackage(RantPackageDependency depdendency, out RantPackage package)
 		{
 			package = null;
-			var path = $"{depdendency.ID}.rantpkg";
+			var path = Path.Combine(Environment.CurrentDirectory, $"{depdendency.ID}.rantpkg");
 			if (!File.Exists(path))
 			{
 				RantPackageVersion version;
 				// Fallback to name with version appended
 				path = Directory.GetFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg").FirstOrDefault(p =>
 				{
-					var match = Regex.Match(Path.GetFileNameWithoutExtension(p), depdendency.ID + @"[\s\-_.]+v?(?<version>\d+(\.\d+){1,2})");
+					var match = Regex.Match(Path.GetFileNameWithoutExtension(p), depdendency.ID + @"[\s\-_.]*[vV]?(?<version>\d+(\.\d+){0,2})$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
 					if (!match.Success) return false;
 					version = RantPackageVersion.Parse(match.Groups["version"].Value);
 					return (depdendency.AllowNewer && version >= depdendency.Version) || depdendency.Version == version;
