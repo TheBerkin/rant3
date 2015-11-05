@@ -204,24 +204,7 @@ namespace Rant
 
         private RantOutput RunVM(Sandbox vm, double timeout)
         {
-#if EDITOR
-            EventHandler<LineEventArgs> lineEvent = (sender, e) =>
-            {
-                ActiveLineChanged?.Invoke(this, e);
-            };
-            vm.ActiveLineChanged += lineEvent;
-
-            try
-            {
-                return vm.Run(timeout);
-            }
-            finally
-            {
-                vm.ActiveLineChanged -= lineEvent;
-            }
-#else
             return vm.Run(timeout);
-#endif
         }
 
         #region Do, DoFile

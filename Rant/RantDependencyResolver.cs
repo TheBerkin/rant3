@@ -10,6 +10,8 @@ namespace Rant
 	/// </summary>
 	public class RantDependencyResolver
 	{
+		private static readonly Regex FallbackRegex = new Regex(@"[\s\-_.]*[vV]?(?<version>\d+(\.\d+){0,2})$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+
 		/// <summary>
 		/// Attempts to resolve a depdendency to the appropriate package.
 		/// </summary>
@@ -24,9 +26,9 @@ namespace Rant
 			{
 				RantPackageVersion version;
 				// Fallback to name with version appended
-				path = Directory.GetFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg").FirstOrDefault(p =>
+				path = Directory.EnumerateFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
 				{
-					var match = Regex.Match(Path.GetFileNameWithoutExtension(p), depdendency.ID + @"[\s\-_.]*[vV]?(?<version>\d+(\.\d+){0,2})$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+					var match = FallbackRegex.Match(Path.GetFileNameWithoutExtension(p));
 					if (!match.Success) return false;
 					version = RantPackageVersion.Parse(match.Groups["version"].Value);
 					return (depdendency.AllowNewer && version >= depdendency.Version) || depdendency.Version == version;
@@ -37,7 +39,7 @@ namespace Rant
 			{
 				var pkg = RantPackage.Load(path);
 				if (pkg.ID != depdendency.ID) return false;
-				if ((depdendency.AllowNewer && package.Version >= depdendency.Version) || package.Version == depdendency.Version)
+				if ((depdendency.AllowNewer && pkg.Version >= depdendency.Version) || pkg.Version == depdendency.Version)
 				{
 					package = pkg;
 					return true;
