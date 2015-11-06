@@ -10,6 +10,14 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal class FunctionParselet : Parselet
     {
+        [TokenParser(R.RightSquare)]
+        IEnumerable<Parselet> RightSquare(Token<R> token)
+        {
+            // TODO: is it 'tag' or 'method' or 'function' or what?
+            compiler.SyntaxError(token, "Unexpected function terminator");
+            yield break;
+        }
+
         [TokenParser(R.LeftSquare)]
         IEnumerable<Parselet> LeftSquare(Token<R> token)
         {
