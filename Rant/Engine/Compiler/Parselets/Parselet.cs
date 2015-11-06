@@ -77,10 +77,10 @@ namespace Rant.Engine.Compiler.Parselets
                     parselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
                 if (outputDelegate == null)
-                    throw new RantInternalException("Output delegate is null");
+                    throw new RantInternalException("Output delegate is null.");
 
                 if (token == null)
-                    throw new RantInternalException("Token is null");
+                    throw new RantInternalException("Token is null.");
 
                 parselet.PushOutputDelegate(outputDelegate);
                 parselet.PushToken(token);
@@ -93,16 +93,16 @@ namespace Rant.Engine.Compiler.Parselets
         static Parselet GetDefaultParselet(Token<R> token, Action<RantAction> outputDelegate)
         {
             if (defaultParselet == null)
-                throw new RantInternalException("DefaultParselet not set");
+                throw new RantInternalException("DefaultParselet not set.");
 
             if (!defaultParselet.MatchingCompilerAndReader(sCompiler, sReader))
                 defaultParselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
             if (outputDelegate == null)
-                throw new RantInternalException("Output delegate is null");
+                throw new RantInternalException("Output delegate is null.");
 
             if (token == null)
-                throw new RantInternalException("Token is null");
+                throw new RantInternalException("Token is null.");
 
             defaultParselet.PushOutputDelegate(outputDelegate);
             defaultParselet.PushToken(token);
@@ -133,10 +133,10 @@ namespace Rant.Engine.Compiler.Parselets
         void InternalSetCompilerAndReader(RantCompiler compiler, TokenReader reader)
         {
             if (compiler == null)
-                throw new RantInternalException("Compiler is null");
+                throw new RantInternalException("Compiler is null.");
 
             if (reader == null)
-                throw new RantInternalException("Token reader is null");
+                throw new RantInternalException("Token reader is null.");
 
             this.compiler = compiler;
             this.reader = reader;
@@ -145,10 +145,10 @@ namespace Rant.Engine.Compiler.Parselets
         public IEnumerator<Parselet> Parse()
         {
             if (!tokens.Any())
-                throw new RantInternalException("Token stack is empty");
+                throw new RantInternalException("Token stack is empty.");
 
             if (!outputDelegates.Any())
-                throw new RantInternalException("Output delegate stack is empty");
+                throw new RantInternalException("Output delegate stack is empty.");
 
             foreach (var parselet in InternalParse(tokens.Pop()))
                 yield return parselet;
@@ -161,7 +161,7 @@ namespace Rant.Engine.Compiler.Parselets
         protected void AddToOutput(RantAction action)
         {
             if (!outputDelegates.Any())
-                throw new RantInternalException("Output delegate stack is empty");
+                throw new RantInternalException("Output delegate stack is empty.");
 
             outputDelegates.Peek()(action);
         }
