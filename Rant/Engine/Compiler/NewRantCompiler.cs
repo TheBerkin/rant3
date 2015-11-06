@@ -10,54 +10,6 @@ using Rant.Engine.Compiler.Parselets;
 
 namespace Rant.Engine.Compiler
 {
-    public enum ReadType
-    {
-        /// <summary>
-        /// Reads a list of items and returns an RASequence.
-        /// </summary>
-        Sequence,
-
-        /// <summary>
-        /// Reads a list of items and returns an RABlock.
-        /// </summary>
-        Block,
-
-        /// <summary>
-        /// Reads a list of arguments and returns an RAFunction.
-        /// </summary>
-        FuncArgs,
-
-        /// <summary>
-        /// Reads a query and returns a RAQuery
-        /// </summary>
-        Query,
-
-        /// <summary>
-        /// Reads a query carrier
-        /// </summary>
-        QueryCarrier,
-
-        /// <summary>
-        /// Reads the arguments needed by a replacer and return an RAReplacer.
-        /// </summary>
-        ReplacerArgs,
-
-        /// <summary>
-        /// Reads the arguments needed by a subroutine.
-        /// </summary>
-        SubroutineArgs,
-
-        /// <summary>
-        /// Reads the body of a subroutine.
-        /// </summary>
-        SubroutineBody,
-
-        /// <summary>
-        /// Reads a block weight.
-        /// </summary>
-        BlockWeight
-    }
-
     internal class NewRantCompiler
     {
         readonly string source;
