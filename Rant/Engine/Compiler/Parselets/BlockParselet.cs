@@ -9,9 +9,8 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal class BlockParselet : Parselet
     {
-        public override R Identifier => R.LeftCurly;
-
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
+        [TokenParser(R.LeftCurly)]
+        IEnumerable<Parselet> LeftCurly(Token<R> token)
         {
             reader.SkipSpace();
 

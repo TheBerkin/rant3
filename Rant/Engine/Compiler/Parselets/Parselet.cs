@@ -59,7 +59,7 @@ namespace Rant.Engine.Compiler.Parselets
                 }
 
                 var instance = (Parselet)Activator.CreateInstance(type);
-                parseletDict.Add(instance.Identifier, instance);
+                // here we just hope that the parselet handles itself properly
             }
 
             if (defaultParselet == null)
@@ -111,7 +111,10 @@ namespace Rant.Engine.Compiler.Parselets
 
         // instance stuff
 
-        public abstract R Identifier { get; }
+        delegate IEnumerable<Parselet> TokenParserDelegate(Token<R> token);
+
+        Dictionary<R, TokenParserDelegate> tokenParserMethods;
+        TokenParserDelegate defaultParserMethod;
 
         Stack<Token<R>> tokens;
         Stack<Action<RantAction>> outputDelegates;
@@ -121,8 +124,51 @@ namespace Rant.Engine.Compiler.Parselets
 
         protected Parselet()
         {
+            tokenParserMethods = new Dictionary<R, TokenParserDelegate>();
+
             tokens = new Stack<Token<R>>();
             outputDelegates = new Stack<Action<RantAction>>();
+
+            var methods =
+                from method in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+                let attrib = method.GetCustomAttribute<TokenParserAttribute>()
+                let defaultAttrib = method.GetCustomAttribute<DefaultParserAttribute>()
+                where attrib != null || defaultAttrib != null
+                select new { Method = method, TokenType = attrib?.TokenType, IsDefault = defaultAttrib != null };
+
+            if (!methods.Any())
+                throw new RantInternalException($"'{GetType().Name}' doesn't contain any parselet implementations.");
+
+            foreach (var method in methods)
+            {
+                if (method.Method.IsStatic)
+                    throw new RantInternalException($"Parselet method musn't be static: '{method.Method.Name}'.");
+
+                if (method.Method.IsGenericMethod)
+                    throw new RantInternalException($"Parselet method musn't be generic: '{method.Method.Name}'.");
+
+                if (method.Method.GetParameters().Length != 1)
+                    throw new RantInternalException($"Invalid amount of parameters for parselet method: '{method.Method.Name}'.");
+
+                if (method.Method.GetParameters().First().ParameterType != typeof(Token<R>))
+                    throw new RantInternalException($"Wrong parameter type for parselet method: '{method.Method.Name}'.");
+
+                if (method.IsDefault)
+                {
+                    if (defaultParserMethod != null)
+                        throw new RantInternalException($"Default parser method already defined for '{GetType().Name}'");
+
+                    defaultParserMethod = (TokenParserDelegate)method.Method.CreateDelegate(typeof(TokenParserDelegate), this);
+                    continue;
+                }
+
+                Parselet existingParselet;
+                if (parseletDict.TryGetValue(method.TokenType.Value, out existingParselet))
+                    throw new RantInternalException($"'{existingParselet.GetType().Name}' already has an implementation for {method.TokenType}");
+
+                parseletDict.Add(method.TokenType.Value, this);
+                tokenParserMethods.Add(method.TokenType.Value, (TokenParserDelegate)method.Method.CreateDelegate(typeof(TokenParserDelegate), this));
+            }
         }
 
         // NOTE: this way of passing in the proper token and output override is kinda bad and a hack of sorts. maybe improve?
@@ -150,13 +196,22 @@ namespace Rant.Engine.Compiler.Parselets
             if (!outputDelegates.Any())
                 throw new RantInternalException("Output delegate stack is empty.");
 
-            foreach (var parselet in InternalParse(tokens.Pop()))
+            var token = tokens.Pop();
+
+            TokenParserDelegate tokenParser = null;
+            if (!tokenParserMethods.TryGetValue(token.ID, out tokenParser))
+            {
+                if (defaultParserMethod == null)
+                    throw new RantInternalException($"Parselet '{GetType().Name}' doesn't contain an implementation for {token.ID}.");
+
+                tokenParser = defaultParserMethod;
+            }
+
+            foreach (var parselet in tokenParser(token))
                 yield return parselet;
 
             outputDelegates.Pop();
         }
-
-        protected abstract IEnumerable<Parselet> InternalParse(Token<R> token);
 
         protected void AddToOutput(RantAction action)
         {

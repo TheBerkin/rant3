@@ -10,11 +10,10 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal class QueryParselet : Parselet
     {
-        public override R Identifier => R.LeftAngle;
-
         Query query;
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
+        [TokenParser(R.LeftAngle)]
+        IEnumerable<Parselet> LeftAngle(Token<R> token)
         {
             Stringe name = null;
 

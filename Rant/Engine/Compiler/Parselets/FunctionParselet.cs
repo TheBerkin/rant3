@@ -10,9 +10,8 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal class FunctionParselet : Parselet
     {
-        public override R Identifier => R.LeftSquare;
-
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
+        [TokenParser(R.LeftSquare)]
+        IEnumerable<Parselet> LeftSquare(Token<R> token)
         {
             var tagToken = reader.ReadToken();
             switch (tagToken.ID)
