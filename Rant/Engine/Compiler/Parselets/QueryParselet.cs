@@ -83,87 +83,113 @@ namespace Rant.Engine.Compiler.Parselets
 
         void DoubleColon(Token<R> token)
         {
-            var carrierToken = reader.ReadLooseToken();
+            Token<R> carrierToken = null;
 
-            switch (carrierToken.ID)
+            while (true)
             {
-                default:
-                    compiler.SyntaxError(carrierToken, $"Invalid token in query carrier: '{carrierToken.Value}'");
-                    break;
+                carrierToken = reader.PeekLooseToken();
 
-                case R.Equal: // match carrier
-                    var name = reader.ReadLoose(R.Text, "carrier match identifier");
-                    query.Carrier.AddComponent(CarrierComponent.Match, name.Value);
-                    break;
-
-                case R.At: // associative, disassociative, divergent, relational or the match versions of those
-                    {
-                        // 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
-                        var componentType = CarrierComponent.Associative;
-                        var nextToken = reader.PeekToken();
-
-                        // disassociative
-                        switch (nextToken.ID)
-                        {
-                            case R.Exclamation:
-                                componentType = CarrierComponent.Dissociative;
-                                reader.ReadToken();
-                                break;
-
-                            case R.Plus:
-                                componentType = CarrierComponent.Divergent;
-                                reader.ReadToken();
-                                break;
-
-                            case R.Question:
-                                componentType = CarrierComponent.Relational;
-                                reader.ReadToken();
-                                break;
-                        }
-
-                        // match
-                        if (reader.PeekToken().ID == R.Equal)
-                        {
-                            reader.ReadToken();
-                            // nice if clause
-                            if (componentType == CarrierComponent.Associative)
-                                componentType = CarrierComponent.MatchAssociative;
-                            if (componentType == CarrierComponent.Dissociative)
-                                componentType = CarrierComponent.MatchDissociative;
-                            if (componentType == CarrierComponent.Divergent)
-                                componentType = CarrierComponent.MatchDivergent;
-                            if (componentType == CarrierComponent.Relational)
-                                componentType = CarrierComponent.MatchRelational;
-                        }
-
-                        var nameToken = reader.ReadLoose(R.Text, "carrier association identifier");
-                        query.Carrier.AddComponent(componentType, nameToken.Value);
+                switch (carrierToken.ID)
+                {
+                    default:
+                        compiler.SyntaxError(carrierToken, $"Invalid token in query carrier: '{carrierToken.Value}'");
                         break;
-                    }
 
-                case R.Exclamation: // unique or match-unique
-                    {
-                        var match = false;
+                    // these are query-related tokens that aren't part of carriers
+                    case R.RightAngle:
+                    case R.Subtype:
+                    case R.Hyphen:
+                    case R.LeftParen:
+                    case R.Question:
+                    case R.Without:
+                        if (query.Carrier.GetTotalCount() == 0)
+                            compiler.SyntaxError(carrierToken, "Empty query carrier");
+                        return;
 
-                        if (reader.PeekToken().ID == R.Equal)
+                    case R.Equal: // match carrier
                         {
-                            match = true;
-                            reader.ReadToken();
+                            reader.ReadLooseToken();
+
+                            var nameToken = reader.ReadLoose(R.Text, "carrier match identifier");
+                            query.Carrier.AddComponent(CarrierComponent.Match, nameToken.Value);
+                            break;
                         }
 
-                        var nameToken = reader.ReadLoose(R.Text, "carrier unique identifier");
-                        var componentType = match ? CarrierComponent.MatchUnique : CarrierComponent.Unique;
-                        query.Carrier.AddComponent(componentType, nameToken.Value);
-                        break;
-                    }
+                    case R.At: // associative, disassociative, divergent, relational or the match versions of those
+                        {
+                            reader.ReadLooseToken();
 
-                case R.Ampersand: // rhymes
-                    {
-                        // NOTE: rhymes may be broken for some reason. i'm not getting proper results. i'm using the dictionary v2.0.21 -spanfile
-                        var nameToken = reader.ReadLoose(R.Text, "carrier rhyme identifier");
-                        query.Carrier.AddComponent(CarrierComponent.Rhyme, nameToken.Value);
-                    }
-                    break;
+                            // 0 = associative, 1 = disassociative, 2 = divergent, 3 = relational
+                            var componentType = CarrierComponent.Associative;
+                            var nextToken = reader.PeekLooseToken();
+
+                            // disassociative
+                            switch (nextToken.ID)
+                            {
+                                case R.Exclamation:
+                                    componentType = CarrierComponent.Dissociative;
+                                    reader.ReadLooseToken();
+                                    break;
+
+                                case R.Plus:
+                                    componentType = CarrierComponent.Divergent;
+                                    reader.ReadLooseToken();
+                                    break;
+
+                                case R.Question:
+                                    componentType = CarrierComponent.Relational;
+                                    reader.ReadLooseToken();
+                                    break;
+                            }
+
+                            // match
+                            if (reader.PeekLooseToken().ID == R.Equal)
+                            {
+                                reader.ReadLooseToken();
+                                // nice if clause
+                                if (componentType == CarrierComponent.Associative)
+                                    componentType = CarrierComponent.MatchAssociative;
+                                if (componentType == CarrierComponent.Dissociative)
+                                    componentType = CarrierComponent.MatchDissociative;
+                                if (componentType == CarrierComponent.Divergent)
+                                    componentType = CarrierComponent.MatchDivergent;
+                                if (componentType == CarrierComponent.Relational)
+                                    componentType = CarrierComponent.MatchRelational;
+                            }
+
+                            var nameToken = reader.ReadLoose(R.Text, "carrier association identifier");
+                            query.Carrier.AddComponent(componentType, nameToken.Value);
+                            break;
+                        }
+
+                    case R.Exclamation: // unique or match-unique
+                        {
+                            reader.ReadLooseToken();
+
+                            var match = false;
+
+                            if (reader.PeekToken().ID == R.Equal)
+                            {
+                                match = true;
+                                reader.ReadToken();
+                            }
+
+                            var nameToken = reader.ReadLoose(R.Text, "carrier unique identifier");
+                            var componentType = match ? CarrierComponent.MatchUnique : CarrierComponent.Unique;
+                            query.Carrier.AddComponent(componentType, nameToken.Value);
+                            break;
+                        }
+
+                    case R.Ampersand: // rhymes
+                        {
+                            reader.ReadLooseToken();
+
+                            // NOTE: rhymes may be broken for some reason. i'm not getting proper results. i'm using the dictionary v2.0.21 -spanfile
+                            var nameToken = reader.ReadLoose(R.Text, "carrier rhyme identifier");
+                            query.Carrier.AddComponent(CarrierComponent.Rhyme, nameToken.Value);
+                        }
+                        break;
+                }
             }
         }
 
