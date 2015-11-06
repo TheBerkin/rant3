@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    internal class LeftCurly : Parselet
+    internal class BlockParselet : Parselet
     {
-        public override R[] Identifiers
-        {
-            get
-            {
-                return new[] { R.LeftCurly };
-            }
-        }
+        public override R Identifier => R.LeftCurly;
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
         {
             reader.SkipSpace();
 

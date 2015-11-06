@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
@@ -12,7 +8,7 @@ namespace Rant.Engine.Compiler.Parselets
     [DefaultParselet]
     internal class DefaultParselet : Parselet
     {
-        public override R[] Identifiers
+        public override R Identifier
         {
             get
             {
@@ -20,7 +16,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
         {
             AddToOutput(new RAText(token));
             yield break;

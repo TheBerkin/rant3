@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    internal class LeftSquare : Parselet
+    internal class FunctionParselet : Parselet
     {
-        public override R[] Identifiers
-        {
-            get
-            {
-                return new[] { R.LeftSquare };
-            }
-        }
+        public override R Identifier => R.LeftSquare;
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
         {
             var tagToken = reader.ReadToken();
             switch (tagToken.ID)
@@ -30,12 +22,12 @@ namespace Rant.Engine.Compiler.Parselets
                     break;
 
                 case R.Text:
-                    foreach (var parselet in Text(tagToken, token)) // TODO: all this needs some serious cleanup
+                    foreach (var parselet in Text(tagToken, token))
                         yield return parselet;
                     break;
 
                 case R.Regex:
-                    foreach (var parselet in Regex(tagToken, token))
+                    foreach (var parselet in Regex(tagToken))
                         yield return parselet;
                     break;
 
@@ -44,14 +36,14 @@ namespace Rant.Engine.Compiler.Parselets
                     break;
 
                 case R.Dollar:
-                    foreach (var parselet in Dollar(tagToken, token))
+                    foreach (var parselet in Dollar(tagToken))
                         yield return parselet;
                     break;
             }
         }
 
-        // TODO: all these "mini-parselets" are bad and DRY
-        IEnumerable<Parselet> Dollar(Token<R> token, Token<R> fromToken)
+        // TODO: all these "mini-parselets" are DRY. they're not too easy to extend. improve?
+        IEnumerable<Parselet> Dollar(Token<R> token)
         {
             var call = false;
             var nextToken = reader.ReadToken();
@@ -118,7 +110,7 @@ namespace Rant.Engine.Compiler.Parselets
             AddToOutput(subroutine);
         }
 
-        IEnumerable<Parselet> Regex(Token<R> token, Token<R> fromToken)
+        IEnumerable<Parselet> Regex(Token<R> token)
         {
             Regex regex = null;
             try
@@ -156,7 +148,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        // TODO: all these "mini-compilers" are bad and DRY
+        // TODO: all these "mini-compilers" are DRY. they're not too easy to extend. improve?
         IEnumerable<Parselet> SubroutineBody(Token<R> fromToken, Action<RASequence> setSequence)
         {
             Token<R> funcToken = null;

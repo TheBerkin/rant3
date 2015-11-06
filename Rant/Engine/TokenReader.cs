@@ -301,6 +301,12 @@ namespace Rant.Engine
 			return _tokens[_pos++];
 		}
 
+        /// <summary>
+        /// Reads and returns the next token if its type matches any of the given types
+        /// If it does not match, a RantCompilerException is thrown with the expected token names.
+        /// </summary>
+        /// <param name="types">The token types accepted for the read token.</param>
+        /// <returns></returns>
         public Token<R> ReadAny(params R[] types)
         {
             if (End)

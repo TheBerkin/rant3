@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
@@ -44,7 +43,7 @@ namespace Rant.Engine.Compiler.Parselets
 
             var types = Assembly.GetExecutingAssembly().GetTypes().Where(t =>
                 t.IsClass &&
-                !t.IsNested && // for some reason makes sure some weird type isn't included
+                !t.IsNested && // for some reason makes sure the internal enumerable type isn't included
                 !t.IsAbstract && // makes sure we don't load this base class
                 t.Namespace == "Rant.Engine.Compiler.Parselets");
 
@@ -53,22 +52,23 @@ namespace Rant.Engine.Compiler.Parselets
                 if (type.GetCustomAttribute<DefaultParseletAttribute>() != null)
                 {
                     if (defaultParselet != null)
-                        throw new RantInternalException($"{defaultParselet.GetType().Name} is already defined as default parselet");
+                        throw new RantInternalException($"Cannot define {type.Name} as default parselet: {defaultParselet.GetType().Name} is already defined as default parselet");
 
                     defaultParselet = (Parselet)Activator.CreateInstance(type);
                     continue;
                 }
 
                 var instance = (Parselet)Activator.CreateInstance(type);
-
-                foreach (var id in instance.Identifiers)
-                    parseletDict.Add(id, instance);
+                parseletDict.Add(instance.Identifier, instance);
             }
+
+            if (defaultParselet == null)
+                throw new RantInternalException($"Missing default parselet");
 
             loaded = true;
         }
 
-        public static Parselet GetParselet(Token<R> token, Action<RantAction> outputOverride = null)
+        public static Parselet GetParselet(Token<R> token, Action<RantAction> outputDelegate)
         {
             Parselet parselet;
             if (parseletDict.TryGetValue(token.ID, out parselet))
@@ -76,17 +76,18 @@ namespace Rant.Engine.Compiler.Parselets
                 if (!parselet.MatchingCompilerAndReader(sCompiler, sReader))
                     parselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
-                if (outputOverride != null)
-                    parselet.PushOutputOverride(outputOverride);
+                if (outputDelegate == null)
+                    throw new RantInternalException("Output delegate is null");
 
+                parselet.PushOutputDelegate(outputDelegate);
                 parselet.PushToken(token);
                 return parselet;
             }
 
-            return GetDefaultParselet(token, outputOverride);
+            return GetDefaultParselet(token, outputDelegate);
         }
 
-        static Parselet GetDefaultParselet(Token<R> token, Action<RantAction> outputOverride = null)
+        static Parselet GetDefaultParselet(Token<R> token, Action<RantAction> outputDelegate)
         {
             if (defaultParselet == null)
                 throw new RantInternalException("DefaultParselet not set");
@@ -94,19 +95,20 @@ namespace Rant.Engine.Compiler.Parselets
             if (!defaultParselet.MatchingCompilerAndReader(sCompiler, sReader))
                 defaultParselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
-            if (outputOverride != null)
-                defaultParselet.PushOutputOverride(outputOverride);
+            if (outputDelegate == null)
+                throw new RantInternalException("Output delegate is null");
 
+            defaultParselet.PushOutputDelegate(outputDelegate);
             defaultParselet.PushToken(token);
             return defaultParselet;
         }
 
         // instance stuff
 
-        public abstract R[] Identifiers { get; }
+        public abstract R Identifier { get; }
 
         Stack<Token<R>> tokens;
-        Stack<Action<RantAction>> outputOverrides;
+        Stack<Action<RantAction>> outputDelegates;
 
         protected NewRantCompiler compiler;
         protected TokenReader reader;
@@ -114,12 +116,12 @@ namespace Rant.Engine.Compiler.Parselets
         protected Parselet()
         {
             tokens = new Stack<Token<R>>();
-            outputOverrides = new Stack<Action<RantAction>>();
+            outputDelegates = new Stack<Action<RantAction>>();
         }
 
         // NOTE: this way of passing in the proper token and output override is kinda bad and a hack of sorts. maybe improve?
         void PushToken(Token<R> token) => tokens.Push(token);
-        void PushOutputOverride(Action<RantAction> action) => outputOverrides.Push(action);
+        void PushOutputDelegate(Action<RantAction> action) => outputDelegates.Push(action);
 
         bool MatchingCompilerAndReader(NewRantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
         void InternalSetCompilerAndReader(NewRantCompiler compiler, TokenReader reader)
@@ -134,26 +136,28 @@ namespace Rant.Engine.Compiler.Parselets
             this.reader = reader;
         }
 
-        public IEnumerator<Parselet> Parse(Token<R> fromToken)
+        public IEnumerator<Parselet> Parse()
         {
             if (!tokens.Any())
                 throw new RantInternalException("Token stack is empty");
 
-            foreach (var parselet in InternalParse(tokens.Pop(), fromToken))
+            if (!outputDelegates.Any())
+                throw new RantInternalException("Output delegate stack is empty");
+
+            foreach (var parselet in InternalParse(tokens.Pop()))
                 yield return parselet;
 
-            if (outputOverrides.Any())
-                outputOverrides.Pop();
+            outputDelegates.Pop();
         }
 
-        protected abstract IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken);
+        protected abstract IEnumerable<Parselet> InternalParse(Token<R> token);
 
         protected void AddToOutput(RantAction action)
         {
-            if (outputOverrides.Any())
-                outputOverrides.Peek()(action);
-            else
-                compiler.AddToOutput(action);
+            if (!outputDelegates.Any())
+                throw new RantInternalException("Output delegate stack is empty");
+
+            outputDelegates.Peek()(action);
         }
     }
 }

@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    internal class Whitespace : Parselet
+    internal class WhitespaceParselet : Parselet
     {
-        public override R[] Identifiers
-        {
-            get
-            {
-                return new[] { R.Whitespace };
-            }
-        }
+        public override R Identifier => R.Whitespace;
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
         {
             // TODO: figure that out
             //switch (reader.PeekType())

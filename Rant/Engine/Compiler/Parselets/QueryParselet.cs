@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Vocabulary;
@@ -10,19 +8,13 @@ using Rant.Stringes;
 
 namespace Rant.Engine.Compiler.Parselets
 {
-    internal class LeftAngle : Parselet
+    internal class QueryParselet : Parselet
     {
-        public override R[] Identifiers
-        {
-            get
-            {
-                return new[] { R.LeftAngle };
-            }
-        }
+        public override R Identifier => R.LeftAngle;
 
         Query query;
 
-        protected override IEnumerable<Parselet> InternalParse(Token<R> token, Token<R> fromToken)
+        protected override IEnumerable<Parselet> InternalParse(Token<R> token)
         {
             Stringe name = null;
 
@@ -62,34 +54,34 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.RightAngle:
-                        RightAngle(compiler, reader, queryReadToken, token);
+                        RightAngle(queryReadToken, token);
                         yield break;
 
                     case R.Subtype:
-                        Subtype(compiler, reader);
+                        Subtype();
                         break;
 
                     case R.Hyphen:
-                        Hyphen(compiler, reader, token);
+                        Hyphen(token);
                         break;
 
                     case R.LeftParen:
-                        LeftParen(compiler, reader, token);
+                        LeftParen(token);
                         break;
 
                     case R.Question:
                     case R.Without:
-                        RegexFilter(compiler, reader, queryReadToken);
+                        RegexFilter(queryReadToken);
                         break;
 
                     case R.DoubleColon:
-                        DoubleColon(compiler, reader);
+                        DoubleColon();
                         break;
                 }
             }
         }
 
-        void DoubleColon(NewRantCompiler compiler, TokenReader reader)
+        void DoubleColon()
         {
             var carrierToken = reader.ReadToken();
 
@@ -174,7 +166,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        void RightAngle(NewRantCompiler compiler, TokenReader reader, Token<R> token, Token<R> fromToken)
+        void RightAngle(Token<R> token, Token<R> fromToken)
         {
             if (query.Name == null && query.Carrier.GetTotalCount() == 0)
                 compiler.SyntaxError(token, "Carrier delete query specified without any carriers");
@@ -182,7 +174,7 @@ namespace Rant.Engine.Compiler.Parselets
             AddToOutput(new RAQuery(query, Stringe.Range(fromToken, token)));
         }
 
-        void RegexFilter(NewRantCompiler compiler, TokenReader reader, Token<R> token)
+        void RegexFilter(Token<R> token)
         {
             var negative = token.ID == R.Without;
             var regexToken = reader.ReadLoose(R.Regex, "regex");
@@ -190,13 +182,13 @@ namespace Rant.Engine.Compiler.Parselets
             ((List<_<bool, Regex>>)query.RegexFilters).Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
         }
 
-        void Subtype(NewRantCompiler compiler, TokenReader reader)
+        void Subtype()
         {
             var subtypeToken = reader.ReadLoose(R.Text, "subtype");
             query.Subtype = subtypeToken.Value;
         }
 
-        void Hyphen(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        void Hyphen(Token<R> fromToken)
         {
             var filterParts = new List<ClassFilterRule>();
             do
@@ -212,7 +204,7 @@ namespace Rant.Engine.Compiler.Parselets
             query.ClassFilter.AddRuleSwitch(filterParts.ToArray());
         }
 
-        void LeftParen(NewRantCompiler compiler, TokenReader reader, Token<R> fromToken)
+        void LeftParen(Token<R> fromToken)
         {
             var nextToken = reader.ReadToken();
             var firstNum = -1;

@@ -201,14 +201,14 @@
   <ItemGroup>
     <Compile Include="Engine\Compiler\DefaultParseletAttribute.cs" />
     <Compile Include="Engine\Compiler\NewRantCompiler.cs" />
-    <Compile Include="Engine\Compiler\Parselets\ConstantLiteral.cs" />
+    <Compile Include="Engine\Compiler\Parselets\ConstantLiteralParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\DefaultParselet.cs" />
-    <Compile Include="Engine\Compiler\Parselets\EscapeSequence.cs" />
-    <Compile Include="Engine\Compiler\Parselets\LeftAngle.cs" />
-    <Compile Include="Engine\Compiler\Parselets\LeftCurly.cs" />
-    <Compile Include="Engine\Compiler\Parselets\LeftSquare.cs" />
+    <Compile Include="Engine\Compiler\Parselets\EscapeSequenceParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\QueryParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\BlockParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
-    <Compile Include="Engine\Compiler\Parselets\Whitespace.cs" />
+    <Compile Include="Engine\Compiler\Parselets\WhitespaceParselet.cs" />
     <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
     <Compile Include="Engine\Constructs\AttribPersistence.cs" />
     <Compile Include="Engine\Constructs\BlockManager.cs" />

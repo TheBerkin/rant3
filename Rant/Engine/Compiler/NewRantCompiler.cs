@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Rant.Engine.Syntax;
-using Rant.Vocabulary;
 using Rant.Stringes;
 using Rant.Engine.Compiler.Parselets;
 
@@ -15,12 +13,7 @@ namespace Rant.Engine.Compiler
         readonly string source;
         readonly string sourceName;
         readonly TokenReader reader;
-        readonly Stack<RantFunctionGroup> funcCalls = new Stack<RantFunctionGroup>();
-        readonly Stack<Regex> regexes = new Stack<Regex>();
-        readonly Stack<RASubroutine> subroutines = new Stack<RASubroutine>();
         readonly RantExpressionCompiler expressionCompiler;
-
-        List<RantAction> output;
 
         public NewRantCompiler(string sourceName, string source)
         {
@@ -30,13 +23,13 @@ namespace Rant.Engine.Compiler
             reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
             expressionCompiler = new RantExpressionCompiler(sourceName, source, reader, this);
 
-            output = new List<RantAction>();
-
             Parselet.SetCompilerAndReader(this, reader);
         }
 
         public RantAction Read()
         {
+            var output = new List<RantAction>();
+
             var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
@@ -45,9 +38,9 @@ namespace Rant.Engine.Compiler
             while (!reader.End)
             {
                 token = reader.ReadToken();
-                var parselet = Parselet.GetParselet(token);
+                var parselet = Parselet.GetParselet(token, output.Add);
                 parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse(null));
+                enumeratorStack.Push(parselet.Parse());
 
                 top:
                 while (enumeratorStack.Any())
@@ -60,7 +53,7 @@ namespace Rant.Engine.Compiler
                             break;
 
                         parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse(null));
+                        enumeratorStack.Push(enumerator.Current.Parse());
                         goto top;
                     }
 
@@ -75,8 +68,6 @@ namespace Rant.Engine.Compiler
 
         public RantAction ReadExpression() => expressionCompiler.Read();
 
-        public void AddToOutput(RantAction action) => output.Add(action);
-
         public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
         {
             var func = group.GetFunction(argc);
@@ -85,11 +76,6 @@ namespace Rant.Engine.Compiler
                 SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} arguments");
 
             return func;
-        }
-
-        public void Unexpected(Stringe token)
-        {
-            throw new RantCompilerException(sourceName, token, $"Unexpected token: '{token.Value}'");
         }
 
         public void SyntaxError(Stringe token, string message)
