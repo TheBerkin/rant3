@@ -40,7 +40,18 @@ namespace RantConsole
             {
 #endif
                 if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
-                if (!String.IsNullOrEmpty(PKG_PATH)) rant.LoadPackage(PKG_PATH);
+
+                if (!String.IsNullOrEmpty(PKG_PATH))
+                {
+#if DEBUG
+                    Stopwatch timer = Stopwatch.StartNew();
+#endif
+                    rant.LoadPackage(PKG_PATH);
+#if DEBUG
+                    timer.Stop();
+                    WriteLine($"Package loading: {timer.ElapsedMilliseconds}ms");
+#endif
+                }
 #if !DEBUG
             }
             catch (Exception e)

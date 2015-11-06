@@ -39,6 +39,10 @@ namespace Rant.Engine.Compiler.Parselets
             // it's slow and may be a memory hog with many parselets
             // maybe create the instances of the parselets as needed?
 
+#if DEBUG
+            System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
             parseletDict = new Dictionary<R, Parselet>();
 
             var types = Assembly.GetExecutingAssembly().GetTypes().Where(t =>
@@ -66,6 +70,11 @@ namespace Rant.Engine.Compiler.Parselets
                 throw new RantInternalException($"Missing default parselet");
 
             loaded = true;
+
+#if DEBUG
+            timer.Stop();
+            Console.WriteLine($"Parselet loading: {timer.ElapsedMilliseconds}ms");
+#endif
         }
 
         public static Parselet GetParselet(Token<R> token, Action<RantAction> outputDelegate)
