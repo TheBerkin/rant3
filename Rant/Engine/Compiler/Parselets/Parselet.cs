@@ -79,6 +79,9 @@ namespace Rant.Engine.Compiler.Parselets
                 if (outputDelegate == null)
                     throw new RantInternalException("Output delegate is null");
 
+                if (token == null)
+                    throw new RantInternalException("Token is null");
+
                 parselet.PushOutputDelegate(outputDelegate);
                 parselet.PushToken(token);
                 return parselet;
@@ -97,6 +100,9 @@ namespace Rant.Engine.Compiler.Parselets
 
             if (outputDelegate == null)
                 throw new RantInternalException("Output delegate is null");
+
+            if (token == null)
+                throw new RantInternalException("Token is null");
 
             defaultParselet.PushOutputDelegate(outputDelegate);
             defaultParselet.PushToken(token);

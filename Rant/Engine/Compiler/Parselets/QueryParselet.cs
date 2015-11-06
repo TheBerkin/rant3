@@ -179,6 +179,7 @@ namespace Rant.Engine.Compiler.Parselets
             var negative = token.ID == R.Without;
             var regexToken = reader.ReadLoose(R.Regex, "regex");
 
+            // NOTE: why is this so complicated?
             ((List<_<bool, Regex>>)query.RegexFilters).Add(new _<bool, Regex>(!negative, Util.ParseRegex(regexToken.Value)));
         }
 
