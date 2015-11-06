@@ -15,7 +15,7 @@ namespace Rant.Engine.Compiler.Parselets
         static bool loaded = false;
         static Dictionary<R, Parselet> parseletDict;
         static Parselet defaultParselet;
-        static NewRantCompiler sCompiler; // the s is for static
+        static RantCompiler sCompiler; // the s is for static
         static TokenReader sReader;
 
         static Parselet()
@@ -23,7 +23,7 @@ namespace Rant.Engine.Compiler.Parselets
             Load();
         }
 
-        public static void SetCompilerAndReader(NewRantCompiler c, TokenReader r)
+        public static void SetCompilerAndReader(RantCompiler c, TokenReader r)
         {
             sCompiler = c;
             sReader = r;
@@ -116,7 +116,7 @@ namespace Rant.Engine.Compiler.Parselets
         Stack<Token<R>> tokens;
         Stack<Action<RantAction>> outputDelegates;
 
-        protected NewRantCompiler compiler;
+        protected RantCompiler compiler;
         protected TokenReader reader;
 
         protected Parselet()
@@ -129,8 +129,8 @@ namespace Rant.Engine.Compiler.Parselets
         void PushToken(Token<R> token) => tokens.Push(token);
         void PushOutputDelegate(Action<RantAction> action) => outputDelegates.Push(action);
 
-        bool MatchingCompilerAndReader(NewRantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
-        void InternalSetCompilerAndReader(NewRantCompiler compiler, TokenReader reader)
+        bool MatchingCompilerAndReader(RantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
+        void InternalSetCompilerAndReader(RantCompiler compiler, TokenReader reader)
         {
             if (compiler == null)
                 throw new RantInternalException("Compiler is null");

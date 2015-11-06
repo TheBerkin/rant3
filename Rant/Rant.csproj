@@ -200,7 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Compiler\DefaultParseletAttribute.cs" />
-    <Compile Include="Engine\Compiler\NewRantCompiler.cs" />
+    <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Compiler\Parselets\ConstantLiteralParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\DefaultParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\EscapeSequenceParselet.cs" />
@@ -276,7 +276,6 @@
     <Compile Include="Engine\RantFunctionInfo.cs" />
     <Compile Include="Engine\RantFunctions.cs" />
     <Compile Include="Engine\Sandbox.cs" />
-    <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Syntax\RABlock.cs" />
     <Compile Include="Engine\Syntax\RantAction.cs" />
     <Compile Include="Engine\Syntax\RAQuery.cs" />
