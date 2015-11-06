@@ -50,11 +50,11 @@ namespace Rant.Engine.Compiler.Parselets
                 switch (queryReadToken.ID)
                 {
                     default:
-                        compiler.SyntaxError(queryReadToken, $"Invalid token in query: {queryReadToken.Value}");
+                        compiler.SyntaxError(queryReadToken, $"Invalid token in query: '{queryReadToken.Value}'");
                         break;
 
                     case R.RightAngle:
-                        RightAngle(queryReadToken, token);
+                        RightAngle(queryReadToken, queryReadToken);
                         yield break;
 
                     case R.Subtype:
@@ -62,11 +62,11 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.Hyphen:
-                        Hyphen(token);
+                        Hyphen(queryReadToken);
                         break;
 
                     case R.LeftParen:
-                        LeftParen(token);
+                        LeftParen(queryReadToken);
                         break;
 
                     case R.Question:
@@ -75,20 +75,20 @@ namespace Rant.Engine.Compiler.Parselets
                         break;
 
                     case R.DoubleColon:
-                        DoubleColon();
+                        DoubleColon(queryReadToken);
                         break;
                 }
             }
         }
 
-        void DoubleColon()
+        void DoubleColon(Token<R> token)
         {
-            var carrierToken = reader.ReadToken();
+            var carrierToken = reader.ReadLooseToken();
 
             switch (carrierToken.ID)
             {
                 default:
-                    compiler.SyntaxError(carrierToken, $"Invalid token in query carrier: {carrierToken.Value}");
+                    compiler.SyntaxError(carrierToken, $"Invalid token in query carrier: '{carrierToken.Value}'");
                     break;
 
                 case R.Equal: // match carrier
@@ -153,6 +153,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                         var nameToken = reader.ReadLoose(R.Text, "carrier unique identifier");
                         var componentType = match ? CarrierComponent.MatchUnique : CarrierComponent.Unique;
+                        query.Carrier.AddComponent(componentType, nameToken.Value);
                         break;
                     }
 
