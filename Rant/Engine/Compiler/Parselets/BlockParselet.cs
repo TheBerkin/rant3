@@ -31,10 +31,19 @@ namespace Rant.Engine.Compiler.Parselets
 
             while (!reader.End)
             {
-                reader.SkipSpace();
+                //reader.SkipSpace();
                 readToken = reader.ReadToken();
 
-                if (readToken.ID == R.LeftParen) // weight
+                // TODO: kinda stupid having this handle it's own whitespace when we have a parselet for whitespace
+                if (readToken.ID == R.Whitespace)
+                {
+                    switch (reader.PeekType())
+                    {
+                        case R.RightCurly:
+                            continue;
+                    }
+                }
+                else if (readToken.ID == R.LeftParen) // weight
                 {
                     RantAction weightAction = null;
 

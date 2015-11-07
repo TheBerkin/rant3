@@ -166,7 +166,16 @@ namespace Rant.Engine.Compiler.Parselets
             {
                 funcToken = reader.ReadToken();
 
-                if (funcToken.ID == R.RightSquare)
+                // TODO: this has to be made not-so-DRY
+                if (funcToken.ID == R.Whitespace)
+                {
+                    switch (reader.PeekType())
+                    {
+                        case R.RightSquare:
+                            continue;
+                    }
+                }
+                else if (funcToken.ID == R.RightSquare)
                 {
                     // add action to args and return
                     sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
@@ -190,7 +199,15 @@ namespace Rant.Engine.Compiler.Parselets
             {
                 funcToken = reader.ReadToken();
 
-                if (funcToken.ID == R.Semicolon)
+                if (funcToken.ID == R.Whitespace)
+                {
+                    switch (reader.PeekType())
+                    {
+                        case R.RightSquare:
+                            continue;
+                    }
+                }
+                else if (funcToken.ID == R.Semicolon)
                 {
                     // add action to args and continue
                     sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
@@ -223,7 +240,15 @@ namespace Rant.Engine.Compiler.Parselets
             {
                 funcToken = reader.ReadToken();
 
-                if (funcToken.ID == R.Semicolon)
+                if (funcToken.ID == R.Whitespace)
+                {
+                    switch (reader.PeekType())
+                    {
+                        case R.RightSquare:
+                            continue;
+                    }
+                }
+                else if (funcToken.ID == R.Semicolon)
                 {
                     // add action to args and continue
                     if (sequences.Count == 1)
