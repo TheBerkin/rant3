@@ -142,7 +142,11 @@ namespace RantConsole
                         }
                         else
                         {
+#if DEBUG
+                            WriteLine($"'{chan.Value}'");
+#else
                             WriteLine(chan.Value);
+#endif
                         }
                     }
                     else if (!writeToFile)
