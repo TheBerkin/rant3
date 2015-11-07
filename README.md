@@ -126,7 +126,7 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
 
 ##Support Rant
-If you love my work and want to support it by donating, you can do so from the "Donate" button on [the Rant webpage](berkin.me/rant). Donating isn't required, but it's much appreciated!
+If you love my work and want to support it by donating, you can do so from the "Donate" button on [the Rant webpage](http://berkin.me/rant). Donating isn't required, but it's much appreciated!
 
 ##Other projects
 If you like Rant, you may also like these other, Rant-related projects:
