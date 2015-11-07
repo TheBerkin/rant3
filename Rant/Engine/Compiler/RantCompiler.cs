@@ -40,6 +40,10 @@ namespace Rant.Engine.Compiler
             while (!reader.End)
             {
                 token = reader.ReadToken();
+
+                if (token.ID == R.EOF)
+                    goto done;
+
                 var parselet = Parselet.GetParselet(token, output.Add);
                 parseletStack.Push(parselet);
                 enumeratorStack.Push(parselet.Parse());
@@ -64,7 +68,7 @@ namespace Rant.Engine.Compiler
                 }
             }
 
-            //done:
+            done:
             return new RASequence(output, token);
         }
 
