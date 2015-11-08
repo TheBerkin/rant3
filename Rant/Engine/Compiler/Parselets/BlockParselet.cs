@@ -31,7 +31,6 @@ namespace Rant.Engine.Compiler.Parselets
 
             while (!reader.End)
             {
-                //reader.SkipSpace();
                 readToken = reader.ReadToken();
 
                 // TODO: kinda stupid having this handle it's own whitespace when we have a parselet for whitespace
@@ -40,6 +39,7 @@ namespace Rant.Engine.Compiler.Parselets
                     switch (reader.PeekType())
                     {
                         case R.RightCurly:
+                        case R.Pipe:
                             continue;
                     }
                 }
@@ -47,8 +47,10 @@ namespace Rant.Engine.Compiler.Parselets
                 {
                     RantAction weightAction = null;
 
-                    foreach (var parselet in BlockWeight(token, a => weightAction = a))
-                        yield return parselet;
+                    // i like this AddToOutput thing because it's just a delegate that takes in a RantAction.
+                    // it can do anything with the RantAction, in this case it sets it to our weightAction
+                    // :>
+                    yield return Parselet.GetParselet("BlockWeight", readToken, a => weightAction = a);
 
                     if (weightAction is RAText) // constant
                     {
@@ -97,32 +99,6 @@ namespace Rant.Engine.Compiler.Parselets
             }
 
             compiler.SyntaxError(token, "Unterminated block: unexpected end of file.");
-        }
-
-        IEnumerable<Parselet> BlockWeight(Token<R> fromToken, Action<RantAction> setAction)
-        {
-            Token<R> funcToken = null;
-            var actions = new List<RantAction>();
-
-            while (!reader.End)
-            {
-                funcToken = reader.ReadToken();
-
-                if (funcToken.ID == R.RightParen)
-                {
-                    reader.SkipSpace();
-
-                    if (!actions.Any())
-                        compiler.SyntaxError(funcToken, "Expected weight value");
-
-                    setAction(actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions, funcToken));
-                    yield break;
-                }
-
-                yield return Parselet.GetParselet(funcToken, actions.Add);
-            }
-
-            compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
         }
     }
 }

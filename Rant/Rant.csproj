@@ -201,6 +201,10 @@
   <ItemGroup>
     <Compile Include="Engine\Compiler\DefaultParseletAttribute.cs" />
     <Compile Include="Engine\Compiler\DefaultParserAttribute.cs" />
+    <Compile Include="Engine\Compiler\Parselets\BlockWeightParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionRegexParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionSubroutineParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionTextParselet.cs" />
     <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Compiler\Parselets\ConstantLiteralParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\DefaultParselet.cs" />

@@ -32,7 +32,8 @@ namespace Rant.Engine.Compiler
         {
             var output = new List<RantAction>();
 
-            var parseletStack = new Stack<Parselet>();
+            // NOTE: since parselets are more like containers for multiple parsers, maybe figure out something to stuff a stack full of rather than parselets
+            //var parseletStack = new Stack<Parselet>();
             var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
             Token<R> token = null;
@@ -45,7 +46,7 @@ namespace Rant.Engine.Compiler
                     goto done;
 
                 var parselet = Parselet.GetParselet(token, output.Add);
-                parseletStack.Push(parselet);
+                //parseletStack.Push(parselet);
                 enumeratorStack.Push(parselet.Parse());
 
                 top:
@@ -58,12 +59,12 @@ namespace Rant.Engine.Compiler
                         if (enumerator.Current == null)
                             break;
 
-                        parseletStack.Push(enumerator.Current);
+                        //parseletStack.Push(enumerator.Current);
                         enumeratorStack.Push(enumerator.Current.Parse());
                         goto top;
                     }
 
-                    parseletStack.Pop();
+                    //parseletStack.Pop();
                     enumeratorStack.Pop();
                 }
             }

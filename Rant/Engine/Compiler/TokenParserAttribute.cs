@@ -9,9 +9,14 @@ namespace Rant.Engine.Compiler
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     internal class TokenParserAttribute : Attribute
     {
-        public R TokenType => tokenType;
+        public string Name { get; set; }
+        public R? TokenType => tokenType;
 
-        readonly R tokenType;
+        private readonly R? tokenType;
+
+        public TokenParserAttribute()
+        {
+        }
 
         public TokenParserAttribute(R tokenType)
         {
