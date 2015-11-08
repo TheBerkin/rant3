@@ -10,14 +10,14 @@ namespace Rant.Engine.Compiler.Parselets
     internal class BlockParselet : Parselet
     {
         [TokenParser(R.RightCurly)]
-        IEnumerable<Parselet> RightCurly(Token<R> token)
+        private IEnumerable<Parselet> RightCurly(Token<R> token)
         {
             compiler.SyntaxError(token, "Unexpected block terminator");
             yield break;
         }
 
         [TokenParser(R.LeftCurly)]
-        IEnumerable<Parselet> LeftCurly(Token<R> token)
+        private IEnumerable<Parselet> LeftCurly(Token<R> token)
         {
             reader.SkipSpace();
 

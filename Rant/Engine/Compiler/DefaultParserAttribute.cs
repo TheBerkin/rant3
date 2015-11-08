@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Rant.Engine.Compiler
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    internal class DefaultParserAttribute : Attribute
+    internal sealed class DefaultParserAttribute : Attribute
     {
         public DefaultParserAttribute()
         {

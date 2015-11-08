@@ -12,10 +12,10 @@ namespace Rant.Engine.Compiler
     {
         public static RantAction Compile(string sourceName, string source) => new RantCompiler(sourceName, source).Read();
 
-        readonly string source;
-        readonly string sourceName;
-        readonly TokenReader reader;
-        readonly RantExpressionCompiler expressionCompiler;
+        private readonly string source;
+        private readonly string sourceName;
+        private readonly TokenReader reader;
+        private readonly RantExpressionCompiler expressionCompiler;
 
         public RantCompiler(string sourceName, string source)
         {

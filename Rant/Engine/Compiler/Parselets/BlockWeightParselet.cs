@@ -10,7 +10,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class BlockWeightParselet : Parselet
     {
         [TokenParser]
-        IEnumerable<Parselet> BlockWeight(Token<R> token)
+        private IEnumerable<Parselet> BlockWeight(Token<R> token)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();

@@ -13,7 +13,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class FunctionRegexParselet : Parselet
     {
         [TokenParser]
-        IEnumerable<Parselet> FunctionRegex(Token<R> token)
+        private IEnumerable<Parselet> FunctionRegex(Token<R> token)
         {
             Regex regex = null;
             try
@@ -31,7 +31,7 @@ namespace Rant.Engine.Compiler.Parselets
                 yield return parselet;
         }
 
-        IEnumerable<Parselet> ReplacerArgs(Token<R> fromToken, Regex regex)
+        private IEnumerable<Parselet> ReplacerArgs(Token<R> fromToken, Regex regex)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();

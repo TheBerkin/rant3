@@ -12,7 +12,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class FunctionSubroutineParselet : Parselet
     {
         [TokenParser]
-        IEnumerable<Parselet> FunctionSubroutine(Token<R> token)
+        private IEnumerable<Parselet> FunctionSubroutine(Token<R> token)
         {
             var call = false;
             var nextToken = reader.ReadToken();
@@ -79,7 +79,7 @@ namespace Rant.Engine.Compiler.Parselets
             AddToOutput(subroutine);
         }
 
-        IEnumerable<Parselet> SubroutineBody(Token<R> fromToken, Action<RASequence> setSequence)
+        private IEnumerable<Parselet> SubroutineBody(Token<R> fromToken, Action<RASequence> setSequence)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();
@@ -112,7 +112,7 @@ namespace Rant.Engine.Compiler.Parselets
             compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
         }
 
-        IEnumerable<Parselet> SubroutineArgs(Token<R> fromToken, Token<R> token)
+        private IEnumerable<Parselet> SubroutineArgs(Token<R> fromToken, Token<R> token)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();

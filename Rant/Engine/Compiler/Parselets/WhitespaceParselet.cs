@@ -8,7 +8,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class WhitespaceParselet : Parselet
     {
         [TokenParser(R.Whitespace)]
-        IEnumerable<Parselet> Whitespace(Token<R> token)
+        private IEnumerable<Parselet> Whitespace(Token<R> token)
         {
             // TODO: figure that out
             //switch (reader.PeekType())

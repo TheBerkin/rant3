@@ -9,7 +9,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class DefaultParselet : Parselet
     {
         [DefaultParser]
-        IEnumerable<Parselet> Default(Token<R> token)
+        private IEnumerable<Parselet> Default(Token<R> token)
         {
             AddToOutput(new RAText(token));
             yield break;

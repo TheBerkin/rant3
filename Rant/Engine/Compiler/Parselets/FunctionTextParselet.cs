@@ -12,7 +12,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class FunctionTextParselet : Parselet
     {
         [TokenParser]
-        IEnumerable<Parselet> FunctionText(Token<R> token)
+        private IEnumerable<Parselet> FunctionText(Token<R> token)
         {
             var name = token.Value;
             var group = RantFunctions.GetFunctionGroup(name);
@@ -32,7 +32,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
         }
 
-        IEnumerable<Parselet> FuncArgs(Token<R> fromToken, RantFunctionGroup group)
+        private IEnumerable<Parselet> FuncArgs(Token<R> fromToken, RantFunctionGroup group)
         { 
             Token<R> funcToken = null;
             var actions = new List<RantAction>();

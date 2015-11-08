@@ -10,13 +10,13 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal abstract class Parselet
     {
-        // static stuff
+        // static stuff first
 
         static bool loaded = false;
         static Dictionary<R, string> tokenTypeParseletNameDict; // nice name
         static Dictionary<string, Parselet> parseletNameDict;
         static Parselet defaultParselet;
-        static RantCompiler sCompiler; // the s is for static
+        static RantCompiler sCompiler; // the s is for static since the instance already has members called compiler and reader
         static TokenReader sReader;
 
         static Parselet()
@@ -133,19 +133,19 @@ namespace Rant.Engine.Compiler.Parselets
             return defaultParselet;
         }
 
-        // instance stuff
+        // and then the instance stuff
 
-        delegate IEnumerable<Parselet> TokenParserDelegate(Token<R> token);
-
-        Dictionary<string, TokenParserDelegate> tokenParserMethods;
-        TokenParserDelegate defaultParserMethod;
-
-        Stack<string> parseletNames; // maybe needs a better name
-        Stack<Token<R>> tokens;
-        Stack<Action<RantAction>> outputDelegates;
+        private delegate IEnumerable<Parselet> TokenParserDelegate(Token<R> token);
 
         protected RantCompiler compiler;
         protected TokenReader reader;
+
+        private Dictionary<string, TokenParserDelegate> tokenParserMethods;
+        private TokenParserDelegate defaultParserMethod;
+
+        private Stack<string> parseletNames; // maybe needs a better name
+        private Stack<Token<R>> tokens;
+        private Stack<Action<RantAction>> outputDelegates;
 
         protected Parselet()
         {
@@ -155,6 +155,7 @@ namespace Rant.Engine.Compiler.Parselets
             tokens = new Stack<Token<R>>();
             outputDelegates = new Stack<Action<RantAction>>();
 
+            // it doesn't matter if the methods are private, we can still call them because reflection
             var methods =
                 from method in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 let attrib = method.GetCustomAttribute<TokenParserAttribute>()
@@ -220,12 +221,14 @@ namespace Rant.Engine.Compiler.Parselets
         }
 
         // NOTE: this way of passing in the proper token, parselet name and output override is kinda bad and a hack of sorts. maybe improve?
-        void PushToken(Token<R> token) => tokens.Push(token);
-        void PushOutputDelegate(Action<RantAction> action) => outputDelegates.Push(action);
-        void PushParseletName(string parseletName) => parseletNames.Push(parseletName);
+        private void PushToken(Token<R> token) => tokens.Push(token);
+        private void PushOutputDelegate(Action<RantAction> action) => outputDelegates.Push(action);
+        private void PushParseletName(string parseletName) => parseletNames.Push(parseletName);
 
-        bool MatchingCompilerAndReader(RantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
-        void InternalSetCompilerAndReader(RantCompiler compiler, TokenReader reader)
+        // NOTE: one thing i don't really like is having to create a completely new compiler for each pattern you run.
+        // figure out a way to create one compiler at the start, and use that for all patterns?
+        private bool MatchingCompilerAndReader(RantCompiler compiler, TokenReader reader) => this.compiler == compiler && this.reader == reader;
+        private void InternalSetCompilerAndReader(RantCompiler compiler, TokenReader reader)
         {
             if (compiler == null)
                 throw new RantInternalException("Compiler is null.");

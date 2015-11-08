@@ -8,7 +8,7 @@ namespace Rant.Engine.Compiler.Parselets
     internal class EscapeSequenceParselet : Parselet
     {
         [TokenParser(R.EscapeSequence)]
-        IEnumerable<Parselet> EscapeSequence(Token<R> token)
+        private IEnumerable<Parselet> EscapeSequence(Token<R> token)
         {
             AddToOutput(new RAEscape(token));
             yield break;

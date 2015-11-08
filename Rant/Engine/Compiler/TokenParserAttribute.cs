@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Rant.Engine.Compiler
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    internal class TokenParserAttribute : Attribute
+    internal sealed class TokenParserAttribute : Attribute
     {
         public string Name { get; set; }
         public R? TokenType => tokenType;

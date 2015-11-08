@@ -10,18 +10,18 @@ namespace Rant.Engine.Compiler.Parselets
 {
     internal class QueryParselet : Parselet
     {
-        Query query;
+        private Query query;
 
         // this (and the equivalents in BlockParselet and FunctionParselet) are just for detecting loose statement terminators
         [TokenParser(R.RightAngle)]
-        IEnumerable<Parselet> RightAngle(Token<R> token)
+        private IEnumerable<Parselet> RightAngle(Token<R> token)
         {
             compiler.SyntaxError(token, "Unexpected query terminator");
             yield break;
         }
 
         [TokenParser(R.LeftAngle)]
-        IEnumerable<Parselet> LeftAngle(Token<R> token)
+        private IEnumerable<Parselet> LeftAngle(Token<R> token)
         {
             Stringe name = null;
 
