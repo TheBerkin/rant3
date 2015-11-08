@@ -314,12 +314,14 @@
     <Compile Include="IO\Compression\RangeCoder\RangeCoder.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="RantArgAttribute.cs" />
     <Compile Include="RantCompilerException.cs" />
     <Compile Include="RantInternalException.cs" />
     <Compile Include="RantDependencyResolver.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantPackageDependency.cs" />
     <Compile Include="RantPackageVersion.cs" />
+    <Compile Include="RantPatternArgs.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Stringes\Lexer.cs" />
     <Compile Include="Stringes\StringeUtils.cs" />

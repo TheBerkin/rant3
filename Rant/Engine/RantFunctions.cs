@@ -882,12 +882,31 @@ namespace Rant.Engine
             sb.RNG.Branch(id.Hash());
         }
 
+		[RantFunction]
+		[RantDescription("Branches the internal RNG, executes the specified action, and then merges the branch.")]
+	    private static IEnumerator<RantAction> Branch(Sandbox sb, string id, RantAction branchAction)
+	    {
+		    sb.RNG.Branch(id.Hash());
+		    yield return branchAction;
+		    sb.RNG.Merge();
+	    }
+
         [RantFunction]
         [RantDescription("Merges the topmost branch of the internal RNG, if it has been branched at least once.")]
         private static void Merge(Sandbox sb)
         {
             sb.RNG.Merge();
         }
+
+		[RantFunction("in")]
+		[RantDescription("Prints the value of the specified pattern argument.")]
+	    private static void PatternArg(Sandbox sb, 
+			[RantDescription("The name of the argument to access.")]
+			string argName)
+		{
+			if (sb.PatternArgs == null) return;
+			sb.CurrentOutput.Write(sb.PatternArgs[argName]);
+		}
 
         [RantFunction("tm")]
         [RantDescription("Prints the trademark symbol.")]
