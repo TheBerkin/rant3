@@ -69,12 +69,12 @@ namespace Rant.Engine.Compiler.Parselets
             }
 
             if (defaultParselet == null)
-                throw new RantInternalException($"Missing default parselet.");
+                throw new RantInternalException($"Default parselet missing/not loaded.");
 
             loaded = true;
 #if DEBUG
             timer.Stop();
-            Console.WriteLine($"{parseletNameDict.Count} parselets and {tokenTypeParseletNameDict.Count} token name associations loaded in {timer.ElapsedMilliseconds}ms");
+            Console.WriteLine($"{parseletNameDict.Count} parselets from {types.Count()} classes and {tokenTypeParseletNameDict.Count} token name associations loaded in {timer.ElapsedMilliseconds}ms");
 #endif
         }
 
@@ -99,10 +99,10 @@ namespace Rant.Engine.Compiler.Parselets
                     parselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
                 if (outputDelegate == null)
-                    throw new RantInternalException("Output delegate is null.");
+                    throw new RantInternalException($"GetParselet('{parseletName}', {token}): Output delegate is null.");
 
                 if (token == null)
-                    throw new RantInternalException("Token is null.");
+                    throw new RantInternalException($"GetParselet('{parseletName}'): Token is null.");
 
                 parselet.PushOutputDelegate(outputDelegate);
                 parselet.PushToken(token);
@@ -116,16 +116,16 @@ namespace Rant.Engine.Compiler.Parselets
         static Parselet GetDefaultParselet(string parseletName, Token<R> token, Action<RantAction> outputDelegate)
         {
             if (defaultParselet == null)
-                throw new RantInternalException("DefaultParselet not set.");
+                throw new RantInternalException($"GetDefaultParselet('{parseletName}', {token}): DefaultParselet not set.");
 
             if (!defaultParselet.MatchingCompilerAndReader(sCompiler, sReader))
                 defaultParselet.InternalSetCompilerAndReader(sCompiler, sReader);
 
             if (outputDelegate == null)
-                throw new RantInternalException("Output delegate is null.");
+                throw new RantInternalException($"GetDefaultParselet('{parseletName}', {token}): Output delegate is null.");
 
             if (token == null)
-                throw new RantInternalException("Token is null.");
+                throw new RantInternalException($"GetDefaultParselet('{parseletName}'): Token is null.");
 
             defaultParselet.PushOutputDelegate(outputDelegate);
             defaultParselet.PushToken(token);
@@ -164,23 +164,24 @@ namespace Rant.Engine.Compiler.Parselets
                 select new { Method = method, Attrib = attrib, IsDefault = defaultAttrib != null };
 
             if (!methods.Any())
-                throw new RantInternalException($"'{GetType().Name}' doesn't contain any parselet implementations.");
+                throw new RantInternalException($"{GetType().Name}.ctor: No parselet implementations found.");
 
             foreach (var method in methods)
             {
                 if (method.Method.IsStatic)
-                    throw new RantInternalException($"Parselet method musn't be static: '{method.Method.Name}'.");
+                    throw new RantInternalException($"{GetType().Name}.ctor: Parselet method '{method.Method.Name}' musn't be static.");
 
                 if (method.Method.IsGenericMethod)
-                    throw new RantInternalException($"Parselet method musn't be generic: '{method.Method.Name}'.");
+                    throw new RantInternalException($"{GetType().Name}.ctor: Parselet method '{method.Method.Name}' musn't be generic:.");
 
                 if (method.Method.GetParameters().Length != 1)
-                    throw new RantInternalException($"Invalid amount of parameters for parselet method: '{method.Method.Name}'.");
+                    throw new RantInternalException($"{GetType().Name}.ctor: Invalid amount of parameters for parselet method '{method.Method.Name}'.");
 
                 if (method.Method.GetParameters().First().ParameterType != typeof(Token<R>))
-                    throw new RantInternalException($"Wrong parameter type for parselet method: '{method.Method.Name}'.");
+                    throw new RantInternalException($"{GetType().Name}.ctor: Wrong parameter type for parselet method '{method.Method.Name}'.");
 
-                // TODO: maybe throw internal exception if the method has both DefaultParser and TokenParser attributes?
+                if (method.IsDefault && method.Attrib != null)
+                    throw new RantInternalException($"{GetType().Name}.ctor: Parselet method '{method.Method.Name}' has both TokenParser and DefaultParser attributes.");
 
                 var parseletName = method.Method.Name;
                 // this could be a default method so it may not have the TokenParser attribute
@@ -190,7 +191,9 @@ namespace Rant.Engine.Compiler.Parselets
                 if (method.IsDefault)
                 {
                     if (defaultParserMethod != null)
-                        throw new RantInternalException($"Default parser method already defined for '{GetType().Name}',");
+                        throw new RantInternalException(
+                            $"{GetType().Name}.ctor: Default parser method already defined: '{defaultParserMethod.Method.Name}'. " +
+                            $"Cannot define '{method.Method.Name}' as default parser method.");
 
                     // associate our default method with us
                     parseletNameDict.Add(parseletName, this);
@@ -201,7 +204,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                 Parselet existingParselet;
                 if (parseletNameDict.TryGetValue(parseletName, out existingParselet))
-                    throw new RantInternalException($"'{existingParselet.GetType().Name}' already has an implementation called '{parseletName}'.");
+                    throw new RantInternalException($"{GetType().Name}.ctor: '{existingParselet.GetType().Name}' already has an implementation called '{parseletName}'.");
 
                 // associate our method with us
                 parseletNameDict.Add(parseletName, this);
@@ -212,7 +215,7 @@ namespace Rant.Engine.Compiler.Parselets
                     var type = method.Attrib.TokenType.Value;
                     var existingName = "";
                     if (tokenTypeParseletNameDict.TryGetValue(type, out existingName))
-                        throw new RantInternalException($"'{existingName}' is already associated with {type}.");
+                        throw new RantInternalException($"{GetType().Name}.ctor: '{existingName}' is already associated with R.{type}.");
 
                     // associate the method's name with the token type
                     tokenTypeParseletNameDict.Add(type, parseletName);
@@ -231,10 +234,10 @@ namespace Rant.Engine.Compiler.Parselets
         private void InternalSetCompilerAndReader(RantCompiler compiler, TokenReader reader)
         {
             if (compiler == null)
-                throw new RantInternalException("Compiler is null.");
+                throw new RantInternalException($"{GetType().Name}.InternalSetCompilerAndReader(): Given compiler is null.");
 
             if (reader == null)
-                throw new RantInternalException("Token reader is null.");
+                throw new RantInternalException($"{GetType().Name}.InternalSetCompilerAndReader(): Given token reader is null.");
 
             this.compiler = compiler;
             this.reader = reader;
@@ -243,13 +246,13 @@ namespace Rant.Engine.Compiler.Parselets
         public IEnumerator<Parselet> Parse()
         {
             if (!parseletNames.Any())
-                throw new RantInternalException("Parselet name stack is empty.");
+                throw new RantInternalException($"{GetType().Name}.Parse(): Parselet name stack is empty.");
 
             if (!tokens.Any())
-                throw new RantInternalException("Token stack is empty.");
+                throw new RantInternalException($"{GetType().Name}.Parse(): Token stack is empty.");
 
             if (!outputDelegates.Any())
-                throw new RantInternalException("Output delegate stack is empty.");
+                throw new RantInternalException($"{GetType().Name}.Parse(): Output delegate stack is empty.");
 
             var name = parseletNames.Pop();
             var token = tokens.Pop();
@@ -258,7 +261,7 @@ namespace Rant.Engine.Compiler.Parselets
             if (!tokenParserMethods.TryGetValue(name, out tokenParser))
             {
                 if (defaultParserMethod == null)
-                    throw new RantInternalException($"Parselet '{GetType().Name}' doesn't contain an implementation for {token.ID}.");
+                    throw new RantInternalException($"{GetType().Name}.Parse(): No valid implementation exists for R.{token.ID}.");
 
                 tokenParser = defaultParserMethod;
             }
@@ -271,8 +274,9 @@ namespace Rant.Engine.Compiler.Parselets
 
         protected void AddToOutput(RantAction action)
         {
+            // NOTE: kinda sucks we can't include the caller's name here because this method's signature must stay just as it is
             if (!outputDelegates.Any())
-                throw new RantInternalException("Output delegate stack is empty.");
+                throw new RantInternalException($"{GetType().Name}.AddToOutput({action.GetType().Name}): Output delegate stack is empty.");
 
             outputDelegates.Peek()(action);
         }
