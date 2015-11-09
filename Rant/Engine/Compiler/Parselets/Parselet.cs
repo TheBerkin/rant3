@@ -58,7 +58,7 @@ namespace Rant.Engine.Compiler.Parselets
                 if (type.GetCustomAttribute<DefaultParseletAttribute>() != null)
                 {
                     if (defaultParselet != null)
-                        throw new RantInternalException($"Cannot define {type.Name} as default parselet: {defaultParselet.GetType().Name} is already defined as default parselet");
+                        throw new RantInternalException($"Cannot define {type.Name} as default parselet: {defaultParselet.GetType().Name} is already defined as default parselet.");
 
                     defaultParselet = (Parselet)Activator.CreateInstance(type);
                     continue;
@@ -69,7 +69,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
 
             if (defaultParselet == null)
-                throw new RantInternalException($"Missing default parselet");
+                throw new RantInternalException($"Missing default parselet.");
 
             loaded = true;
 #if DEBUG
@@ -190,7 +190,7 @@ namespace Rant.Engine.Compiler.Parselets
                 if (method.IsDefault)
                 {
                     if (defaultParserMethod != null)
-                        throw new RantInternalException($"Default parser method already defined for '{GetType().Name}'");
+                        throw new RantInternalException($"Default parser method already defined for '{GetType().Name}',");
 
                     // associate our default method with us
                     parseletNameDict.Add(parseletName, this);
@@ -201,7 +201,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                 Parselet existingParselet;
                 if (parseletNameDict.TryGetValue(parseletName, out existingParselet))
-                    throw new RantInternalException($"'{existingParselet.GetType().Name}' already has an implementation called '{parseletName}'");
+                    throw new RantInternalException($"'{existingParselet.GetType().Name}' already has an implementation called '{parseletName}'.");
 
                 // associate our method with us
                 parseletNameDict.Add(parseletName, this);
@@ -212,7 +212,7 @@ namespace Rant.Engine.Compiler.Parselets
                     var type = method.Attrib.TokenType.Value;
                     var existingName = "";
                     if (tokenTypeParseletNameDict.TryGetValue(type, out existingName))
-                        throw new RantInternalException($"'{existingName}' is already associated with {type}");
+                        throw new RantInternalException($"'{existingName}' is already associated with {type}.");
 
                     // associate the method's name with the token type
                     tokenTypeParseletNameDict.Add(type, parseletName);

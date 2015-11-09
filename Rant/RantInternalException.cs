@@ -18,12 +18,12 @@ namespace Rant
         }
 
         internal RantInternalException(string message)
-            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message})")
+            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message}.")
         {
         }
 
         internal RantInternalException(string message, Exception inner)
-            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message})", inner)
+            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message}.", inner)
         {
         }
     }
