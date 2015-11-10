@@ -7,7 +7,7 @@ namespace Rant.Engine.Constructs
 {
 	internal class BlockManager
 	{
-        private Dictionary<BlockAttribs, List<RABlock>> _blockList;
+        private readonly Dictionary<BlockAttribs, List<RABlock>> _blockList;
 
         private BlockAttribs _prevAttribs;
         private int _prevCount = 0;
@@ -25,19 +25,15 @@ namespace Rant.Engine.Constructs
 
         public BlockAttribs GetPrevious(int repeatMaximum)
         {
-            if (repeatMaximum < 0)
-                return _prevAttribs;
+            if (repeatMaximum < 0) return _prevAttribs;
 
             if (_prevCount < repeatMaximum - 1)
             {
                 _prevCount += 1;
                 return _prevAttribs;
             }
-            else
-            {
-                _prevCount = 0;
-                return new BlockAttribs();
-            }
+	        _prevCount = 0;
+	        return new BlockAttribs();
         }
 
         public void Add(BlockAttribs attribs, RABlock block)
@@ -67,6 +63,6 @@ namespace Rant.Engine.Constructs
             _blockList[attribs].Remove(block);
         }
 
-        public BlockAttribs GetAttribs(RABlock block) => _blockList.Where(p => p.Value.Contains(block)).Single().Key;
+        public BlockAttribs GetAttribs(RABlock block) => _blockList.Single(p => p.Value.Contains(block)).Key;
 	}
 }

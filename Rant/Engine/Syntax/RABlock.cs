@@ -81,7 +81,7 @@ namespace Rant.Engine.Syntax
 					weightSum += _weights[dw.Item1];
 				}
 			}
-
+	        
 			sb.Blocks.Push(block);
 			for (int i = 0; i < reps; i++)
 			{

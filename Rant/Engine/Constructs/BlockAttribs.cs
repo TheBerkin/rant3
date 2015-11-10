@@ -1,4 +1,6 @@
-﻿using Rant.Engine.Syntax;
+﻿using System;
+
+using Rant.Engine.Syntax;
 
 namespace Rant.Engine.Constructs
 {

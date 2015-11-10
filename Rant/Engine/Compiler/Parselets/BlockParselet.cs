@@ -26,8 +26,8 @@ namespace Rant.Engine.Compiler.Parselets
             var actions = new List<RantAction>();
             var sequences = new List<RantAction>();
 
-            var constantWeights = new List<_<int, double>>();
-            var dynamicWeights = new List<_<int, RantAction>>();
+	        List<_<int, double>> constantWeights = null;
+			List<_<int, RantAction>> dynamicWeights = null;
 
             while (!reader.End)
             {
@@ -69,12 +69,12 @@ namespace Rant.Engine.Compiler.Parselets
                         if (d < 0)
                             compiler.SyntaxError(weightAction.Range, $"Invalid weight value '{strWeight}' - constant cannot be a negative.");
 
-                        constantWeights.Add(_.Create(sequences.Count, d));
+                        (constantWeights ?? (constantWeights = new List<_<int, double>>())).Add(_.Create(sequences.Count, d));
                     }
                     else // dynamic
                     {
                         // TODO: there's some weird issue going on with doubles being seen as dynamic weights
-                        dynamicWeights.Add(_.Create(sequences.Count, weightAction));
+                        (dynamicWeights ?? (dynamicWeights = new List<_<int, RantAction>>())).Add(_.Create(sequences.Count, weightAction));
                     }
 
                     continue;

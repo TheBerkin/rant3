@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+
+using NUnit.Framework;
 
 namespace Rant.Tests
 {
@@ -42,32 +44,10 @@ namespace Rant.Tests
 				rant.Do(@"[depth], {[depth]}, {{[depth]}}, {{{[depth]}}}").Main);
 		}
 
-        [Test]
-        public void PersistenceOn()
-        {
-            Assert.AreEqual("aaabbb",
-                rant.Do(@"[persist:on][r:3]{a}{b}").Main);
-        }
-
-        [Test]
-        public void PersistenceOff()
-        {
-            Assert.AreEqual("aaab",
-                rant.Do(@"[persist:off][r:3]{a}{b}").Main);
-        }
-
-        [Test]
-        public void PersistenceOnce()
-        {
-            Assert.AreEqual("aaabbbc",
-                rant.Do(@"[persist:once][r:3]{a}{b}{c}").Main);
-        }
-
-        [Test]
-        public void PersistenceOuter()
-        {
-            Assert.AreEqual("ababab",
-                rant.Do(@"[persist:outer][r:3]{{a}{b}}").Main);
-        }
+		[Test]
+		public void LockedSynchronizer()
+		{
+			Assert.IsTrue(rant.Do(@"[r:10k][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}").Main.Distinct().Count() == 1);
+		}
     }
 }

@@ -41,7 +41,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Berkin-Release|AnyCPU'">
-    <OutputPath>..\..\..\..\Desktop\Rant\</OutputPath>
+    <OutputPath>C:\rant\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
     <Optimize>true</Optimize>
