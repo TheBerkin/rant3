@@ -301,6 +301,25 @@ namespace Rant.Engine
 			return _tokens[_pos++];
 		}
 
+        /// <summary>
+        /// Reads and returns the next token if its type matches any of the given types
+        /// If it does not match, a RantCompilerException is thrown with the expected token names.
+        /// </summary>
+        /// <param name="types">The token types accepted for the read token.</param>
+        /// <returns></returns>
+        public Token<R> ReadAny(params R[] types)
+        {
+            if (End)
+                throw new RantCompilerException(_sourceName, null,
+                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)))}}}, but hit end of file.");
+
+            if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
+                throw new RantCompilerException(_sourceName, _tokens[_pos],
+                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)))}}}.");
+
+            return _tokens[_pos++];
+        }
+
 		/// <summary>
 		/// Reads and returns the next non-whitespace token if its type matches the specified type.
 		/// If it does not match, a RantCompilerException is thrown with the expected token name.

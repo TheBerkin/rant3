@@ -19,6 +19,8 @@ namespace Rant.Engine
     /// </summary>
     internal class Sandbox
     {
+		private static readonly object fallbackArgsLockObj = new object();
+
         private readonly RantEngine _engine;
         private readonly ChannelWriter _mainOutput;
         private readonly Stack<ChannelWriter> _outputs;
@@ -36,6 +38,7 @@ namespace Rant.Engine
         private readonly Stack<object> _scriptObjectStack;
         private readonly Stopwatch _stopwatch;
         private readonly BlockManager _blockManager;
+	    private readonly RantPatternArgs _patternArgs;
 
         private BlockAttribs _newAttribs = new BlockAttribs();
         private int _quoteLevel = 0;
@@ -125,7 +128,9 @@ namespace Rant.Engine
         /// </summary>
         public HashSet<string> ConditionFlags { get; } = new HashSet<string>();
 
-        public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0)
+	    public RantPatternArgs PatternArgs => _patternArgs;
+
+        public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, RantPatternArgs args = null)
         {
             _engine = engine;
             _format = engine.Format;
@@ -144,6 +149,7 @@ namespace Rant.Engine
             _syncManager = new SyncManager(this);
             _blockManager = new BlockManager();
             _scriptObjectStack = new Stack<object>();
+	        _patternArgs = args;
             _stopwatch = new Stopwatch();
         }
 
@@ -284,133 +290,139 @@ namespace Rant.Engine
 
         public RantOutput Run(double timeout, RantPattern pattern = null)
         {
-            if (pattern == null) pattern = _pattern;
-            LastTimeout = timeout;
-            long timeoutMS = (long)(timeout * 1000);
-            bool timed = timeoutMS > 0;
-            bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
-            if (!_stopwatch.IsRunning)
-            {
-                _stopwatch.Reset();
-                _stopwatch.Start();
-            }
+	        lock (_patternArgs ?? fallbackArgsLockObj)
+	        {
+				if (pattern == null) pattern = _pattern;
+				LastTimeout = timeout;
+				long timeoutMS = (long)(timeout * 1000);
+				bool timed = timeoutMS > 0;
+				bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
+				if (!_stopwatch.IsRunning)
+				{
+					_stopwatch.Reset();
+					_stopwatch.Start();
+				}
 
-            _scriptObjectStack.Clear();
-            var callStack = new Stack<IEnumerator<RantAction>>();
-            var actionStack = new Stack<RantAction>();
-            IEnumerator<RantAction> action;
+				_scriptObjectStack.Clear();
+				var callStack = new Stack<IEnumerator<RantAction>>();
+				var actionStack = new Stack<RantAction>();
+				IEnumerator<RantAction> action;
 
-            // Push the AST root
-            CurrentAction = pattern.Action;
-            actionStack.Push(CurrentAction);
-            callStack.Push(pattern.Action.Run(this));
+				// Push the AST root
+				CurrentAction = pattern.Action;
+				actionStack.Push(CurrentAction);
+				callStack.Push(pattern.Action.Run(this));
 
-            top:
-            while (callStack.Any())
-            {
-                // Get the topmost call stack item
-                action = callStack.Peek();
+				top:
+				while (callStack.Any())
+				{
+					// Get the topmost call stack item
+					action = callStack.Peek();
 
-                // Execute the node until it runs out of children
-                while (action.MoveNext())
-                {
-                    if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-                        throw new RantRuntimeException(pattern, action.Current.Range,
-                            $"The pattern has timed out ({timeout}s).");
+					// Execute the node until it runs out of children
+					while (action.MoveNext())
+					{
+						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
+							throw new RantRuntimeException(pattern, action.Current.Range,
+								$"The pattern has timed out ({timeout}s).");
 
-                    if (callStack.Count >= RantEngine.MaxStackSize)
-                        throw new RantRuntimeException(pattern, action.Current.Range,
-                            $"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+						if (callStack.Count >= RantEngine.MaxStackSize)
+							throw new RantRuntimeException(pattern, action.Current.Range,
+								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 
-                    if (action.Current == null) break;
+						if (action.Current == null) break;
 
-                    if (HandleRichardBreak(callStack, actionStack, action)) goto top;
+						if (HandleRichardBreak(callStack, actionStack, action)) goto top;
 
-                    // Push child node onto stack and start over
-                    CurrentAction = action.Current;
-                    actionStack.Push(CurrentAction);
-                    callStack.Push(CurrentAction.Run(this));
-                    goto top;
-                }
+						// Push child node onto stack and start over
+						CurrentAction = action.Current;
+						actionStack.Push(CurrentAction);
+						callStack.Push(CurrentAction.Run(this));
+						goto top;
+					}
 
-                if (HandleRichardReturn(callStack, actionStack)) continue;
+					if (HandleRichardReturn(callStack, actionStack)) continue;
 
-                // Remove node once finished
-                callStack.Pop();
-                actionStack.Pop();
-            }
+					// Remove node once finished
+					callStack.Pop();
+					actionStack.Pop();
+				}
 
-            if (!stopwatchAlreadyRunning) _stopwatch.Stop();
+				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
 
-            return Return();
+				return Return();
+			}
         }
 
         public IEnumerable<RantOutput> RunSerial(double timeout, RantPattern pattern = null)
         {
-            if (pattern == null) pattern = _pattern;
-            LastTimeout = timeout;
-            long timeoutMS = (long)(timeout * 1000);
-            bool timed = timeoutMS > 0;
-            bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
-            if (!_stopwatch.IsRunning)
-            {
-                _stopwatch.Reset();
-                _stopwatch.Start();
-            }
+			lock(_patternArgs ?? fallbackArgsLockObj)
+			{
+				if (pattern == null) pattern = _pattern;
+				LastTimeout = timeout;
+				long timeoutMS = (long)(timeout * 1000);
+				bool timed = timeoutMS > 0;
+				bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
+				if (!_stopwatch.IsRunning)
+				{
+					_stopwatch.Reset();
+					_stopwatch.Start();
+				}
 
-            _scriptObjectStack.Clear();
-            var callStack = new Stack<IEnumerator<RantAction>>();
-            var actionStack = new Stack<RantAction>();
-            IEnumerator<RantAction> action;
+				_scriptObjectStack.Clear();
+				var callStack = new Stack<IEnumerator<RantAction>>();
+				var actionStack = new Stack<RantAction>();
+				IEnumerator<RantAction> action;
 
-            // Push the AST root
-            CurrentAction = pattern.Action;
-            actionStack.Push(CurrentAction);
-            callStack.Push(pattern.Action.Run(this));
+				// Push the AST root
+				CurrentAction = pattern.Action;
+				actionStack.Push(CurrentAction);
+				callStack.Push(pattern.Action.Run(this));
 
-            top:
-            while (callStack.Any())
-            {
-                // Get the topmost call stack item
-                action = callStack.Peek();
+				top:
+				while (callStack.Any())
+				{
+					// Get the topmost call stack item
+					action = callStack.Peek();
 
-                // Execute the node until it runs out of children
-                while (action.MoveNext())
-                {
-                    if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-                        throw new RantRuntimeException(pattern, action.Current.Range,
-                            $"The pattern has timed out ({timeout}s).");
+					// Execute the node until it runs out of children
+					while (action.MoveNext())
+					{
+						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
+							throw new RantRuntimeException(pattern, action.Current.Range,
+								$"The pattern has timed out ({timeout}s).");
 
-                    if (callStack.Count >= RantEngine.MaxStackSize)
-                        throw new RantRuntimeException(pattern, action.Current.Range,
-                            $"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+						if (callStack.Count >= RantEngine.MaxStackSize)
+							throw new RantRuntimeException(pattern, action.Current.Range,
+								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
 
-                    if (action.Current == null) break;
+						if (action.Current == null) break;
 
-                    if (HandleRichardBreak(callStack, actionStack, action)) goto top;
+						if (HandleRichardBreak(callStack, actionStack, action)) goto top;
 
-                    // Push child node onto stack and start over
-                    CurrentAction = action.Current;
-                    actionStack.Push(CurrentAction);
-                    callStack.Push(CurrentAction.Run(this));
-                    goto top;
-                }
+						// Push child node onto stack and start over
+						CurrentAction = action.Current;
+						actionStack.Push(CurrentAction);
+						callStack.Push(CurrentAction.Run(this));
+						goto top;
+					}
 
-                if (shouldYield)
-                {
-                    shouldYield = false;
-                    yield return Return();
-                    AddOutputWriter();
-                }
+					if (shouldYield)
+					{
+						shouldYield = false;
+						yield return Return();
+						AddOutputWriter();
+					}
 
-                if (HandleRichardReturn(callStack, actionStack)) continue;
+					if (HandleRichardReturn(callStack, actionStack)) continue;
 
-                // Remove node once finished
-                callStack.Pop();
-                actionStack.Pop();
-            }
+					// Remove node once finished
+					callStack.Pop();
+					actionStack.Pop();
+				}
 
-            if (!stopwatchAlreadyRunning) _stopwatch.Stop();
+				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
+			}
         }
     }
 }

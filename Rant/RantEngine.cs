@@ -22,6 +22,7 @@ namespace Rant
 	    {
 		    RantFunctions.Load();
             RichardFunctions.Load();
+            Engine.Compiler.Parselets.Parselet.Load();
 	    }
 
         /// <summary>
@@ -208,211 +209,230 @@ namespace Rant
         }
 
         #region Do, DoFile
-        /// <summary>
-        /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The input string to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(string input, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit), timeout);
 
-        /// <summary>
-        /// Loads the file located at the specified path and executes it, returning the resulting output.
-        /// </summary>
-        /// <param name="path">The path to the file to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit), timeout);
+	    /// <summary>
+	    /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
+	    /// </summary>
+	    /// <param name="input">The input string to execute.</param>
+	    /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+	    /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+	    /// <param name="args">The arguments to pass to the pattern.</param>
+	    /// <returns></returns>
+	    public RantOutput Do(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, args), timeout);
 
-        /// <summary>
-        /// Compiles the specified string into a pattern, executes it using a custom seed, and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The input string to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit), timeout);
+		/// <summary>
+		/// Loads the file located at the specified path and executes it, returning the resulting output.
+		/// </summary>
+		/// <param name="path">The path to the file to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit, args), timeout);
 
-        /// <summary>
-        /// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
-        /// </summary>
-        /// <param name="path">The path to the file to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit), timeout);
+		/// <summary>
+		/// Compiles the specified string into a pattern, executes it using a custom seed, and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The input string to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, args), timeout);
 
-        /// <summary>
-        /// Compiles the specified string into a pattern, executes it using a custom RNG, and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The input string to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit), timeout);
+		/// <summary>
+		/// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
+		/// </summary>
+		/// <param name="path">The path to the file to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit, args), timeout);
 
-        /// <summary>
-        /// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
-        /// </summary>
-        /// <param name="path">The path to the file to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit), timeout);
+		/// <summary>
+		/// Compiles the specified string into a pattern, executes it using a custom RNG, and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The input string to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit, args), timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit), timeout);
+		/// <summary>
+		/// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
+		/// </summary>
+		/// <param name="path">The path to the file to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit, args), timeout);
 
-        /// <summary>
-        /// Executes the specified pattern using a custom seed and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, input, new RNG(seed), charLimit), timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, args), timeout);
 
-        /// <summary>
-        /// Executes the specified pattern using a custom random number generator and returns the resulting output.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1) => 
-            RunVM(new Sandbox(this, input, rng, charLimit), timeout);
+		/// <summary>
+		/// Executes the specified pattern using a custom seed and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, input, new RNG(seed), charLimit, args), timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(RantPattern input, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern using a custom random number generator and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+            RunVM(new Sandbox(this, input, rng, charLimit, args), timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The patten to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(RantPattern input, long seed, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, input, new RNG(seed), charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(RantPattern input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, args).RunSerial(timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The pattero to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, input, rng, charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The patten to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(RantPattern input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, input, new RNG(seed), charLimit, args).RunSerial(timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(string input, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The pattero to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, input, rng, charLimit, args).RunSerial(timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(string input, long seed, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, args).RunSerial(timeout);
 
-        /// <summary>
-        /// Executes the specified pattern and returns a series of outputs.
-        /// </summary>
-        /// <param name="input">The pattern to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public IEnumerable<RantOutput> DoSerial(string input, RNG rng, int charLimit = 0, double timeout = -1) =>
-            new Sandbox(this, RantPattern.FromString(input), rng, charLimit).RunSerial(timeout);
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(string input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, args).RunSerial(timeout);
 
-        /// <summary>
-        /// Executes a pattern that has been loaded from a package and returns the resulting output.
-        /// </summary>
-        /// <param name="patternName">The name of the pattern to execute.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1)
+		/// <summary>
+		/// Executes the specified pattern and returns a series of outputs.
+		/// </summary>
+		/// <param name="input">The pattern to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public IEnumerable<RantOutput> DoSerial(string input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
+            new Sandbox(this, RantPattern.FromString(input), rng, charLimit, args).RunSerial(timeout);
+
+		/// <summary>
+		/// Executes a pattern that has been loaded from a package and returns the resulting output.
+		/// </summary>
+		/// <param name="patternName">The name of the pattern to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1, RantPatternArgs args = null)
         {
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(Seeds.NextRaw()), charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(Seeds.NextRaw()), charLimit, args), timeout);
         }
 
-        /// <summary>
-        /// Executes a pattern that has been loaded from a package and returns the resulting output.
-        /// </summary>
-        /// <param name="patternName">The name of the pattern to execute.</param>
-        /// <param name="seed">The seed to generate output with.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1)
+		/// <summary>
+		/// Executes a pattern that has been loaded from a package and returns the resulting output.
+		/// </summary>
+		/// <param name="patternName">The name of the pattern to execute.</param>
+		/// <param name="seed">The seed to generate output with.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null)
         {
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit, args), timeout);
         }
 
-        /// <summary>
-        /// Executes a pattern that has been loaded from a package using a custom random number generator and returns the resulting output.
-        /// </summary>
-        /// <param name="patternName">The name of the pattern to execute.</param>
-        /// <param name="rng">The random number generator to use when generating output.</param>
-        /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-        /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-        /// <returns></returns>
-        public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1)
+		/// <summary>
+		/// Executes a pattern that has been loaded from a package using a custom random number generator and returns the resulting output.
+		/// </summary>
+		/// <param name="patternName">The name of the pattern to execute.</param>
+		/// <param name="rng">The random number generator to use when generating output.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null)
         {
             if (!PatternExists(patternName))
                 throw new ArgumentException("Pattern doesn't exist.");
 
-            return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit), timeout);
+            return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit, args), timeout);
         }
         #endregion
     }

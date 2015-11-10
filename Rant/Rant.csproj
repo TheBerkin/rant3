@@ -199,7 +199,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Compiler\DefaultParseletAttribute.cs" />
+    <Compile Include="Engine\Compiler\DefaultParserAttribute.cs" />
+    <Compile Include="Engine\Compiler\Parselets\BlockWeightParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionRegexParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionSubroutineParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionTextParselet.cs" />
+    <Compile Include="Engine\Compiler\RantCompiler.cs" />
+    <Compile Include="Engine\Compiler\Parselets\ConstantLiteralParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\DefaultParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\EscapeSequenceParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\QueryParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\BlockParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\FunctionParselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
+    <Compile Include="Engine\Compiler\Parselets\WhitespaceParselet.cs" />
     <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
+    <Compile Include="Engine\Compiler\TokenParserAttribute.cs" />
     <Compile Include="Engine\Constructs\AttribPersistence.cs" />
     <Compile Include="Engine\Constructs\BlockManager.cs" />
     <Compile Include="Engine\Constructs\SyncManager.cs" />
@@ -266,7 +282,6 @@
     <Compile Include="Engine\RantFunctionInfo.cs" />
     <Compile Include="Engine\RantFunctions.cs" />
     <Compile Include="Engine\Sandbox.cs" />
-    <Compile Include="Engine\Compiler\RantCompiler.cs" />
     <Compile Include="Engine\Syntax\RABlock.cs" />
     <Compile Include="Engine\Syntax\RantAction.cs" />
     <Compile Include="Engine\Syntax\RAQuery.cs" />
@@ -299,11 +314,14 @@
     <Compile Include="IO\Compression\RangeCoder\RangeCoder.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="IO\Compression\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="RantArgAttribute.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantInternalException.cs" />
     <Compile Include="RantDependencyResolver.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantPackageDependency.cs" />
     <Compile Include="RantPackageVersion.cs" />
+    <Compile Include="RantPatternArgs.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Stringes\Lexer.cs" />
     <Compile Include="Stringes\StringeUtils.cs" />
