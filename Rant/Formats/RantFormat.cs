@@ -69,6 +69,11 @@ namespace Rant.Formats
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
 
+		/// <summary>
+		/// The standard space character used in automated formatting, such as series.
+		/// </summary>
+	    public char StandardSpace { get; protected set; } = ' ';
+
         /// <summary>
         /// The vowel-sensitive indefinite articles used by the \a escape sequence.
         /// </summary>

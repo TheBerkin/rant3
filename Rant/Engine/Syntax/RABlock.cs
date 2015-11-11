@@ -108,7 +108,40 @@ namespace Rant.Engine.Syntax
 
 				sb.Blocks.Pop(); // Don't allow separator to access block state
 				// Separator
-				if (i > 0 && attribs.Separator != null) yield return attribs.Separator;
+				if (i > 0 && attribs.Separator != null)
+				{
+					if (attribs.IsSeries)
+					{
+						// Check if we're on the last separator in a series
+						if (i == reps - 1)
+						{
+							// Add the oxford comma if specified
+							if (attribs.EndSeparator != null)
+							{
+								// If there are more than two items, print it!
+								if (reps > 2) yield return attribs.EndSeparator;
+							}
+
+							sb.Print(sb.Format.StandardSpace);
+
+							// Add conjunction if specified (it normally should be, if it's a series)
+							if (attribs.EndConjunction != null)
+							{
+								yield return attribs.EndConjunction;
+								sb.Print(sb.Format.StandardSpace);
+							}
+						}
+						else if (reps > 2)
+						{
+							yield return attribs.Separator;
+							sb.Print(sb.Format.StandardSpace);
+						}
+					}
+					else
+					{
+						yield return attribs.Separator;
+					}
+				}
 				sb.Blocks.Push(block); // Now put it back
 
 				// Prefix

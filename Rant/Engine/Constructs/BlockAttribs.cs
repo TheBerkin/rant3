@@ -17,8 +17,12 @@ namespace Rant.Engine.Constructs
 			    RepEach = false;
 		    }
 	    }
+
+		public bool IsSeries { get; set; }
 		public bool RepEach { get; set; }
         public RantAction Separator { get; set; }
+		public RantAction EndSeparator { get; set; }
+		public RantAction EndConjunction { get; set; }
 		public RantAction Start { get; set; }
         public RantAction Before { get; set; }
         public RantAction After { get; set; }
@@ -36,8 +40,11 @@ namespace Rant.Engine.Constructs
 	    {
 			Repetitions = 1;
 		    RepEach = false;
+		    IsSeries = false;
 			Chance = 100;
 			Separator = null;
+		    EndSeparator = null;
+		    EndConjunction = null;
 			Before = null;
 			After = null;
 			Sync = null;

@@ -29,6 +29,11 @@ namespace Rant.Formats
         /// </summary>
         public new char ClosingSecondaryQuote { get; set; } = '\u2019';
 
+		/// <summary>
+		/// The standard space character used in automated formatting, such as series.
+		/// </summary>
+		public new char StandardSpace { get; set; } = ' ';
+
         #endregion
 
         /// <summary>

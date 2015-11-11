@@ -49,5 +49,19 @@ namespace Rant.Tests
 		{
 			Assert.IsTrue(rant.Do(@"[r:10k][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}").Main.Distinct().Count() == 1);
 		}
+
+		[Test]
+		public void SeriesCommas()
+		{
+			Assert.AreEqual("dogs, dogs, dogs and dogs",
+				rant.Do(@"[r:4][s:,;and]{dogs}").Main);
+		}
+
+		[Test]
+		public void OxfordComma()
+		{
+			Assert.AreEqual("dogs, dogs, dogs, and dogs",
+				rant.Do(@"[r:4][s:,;,;and]{dogs}").Main);
+		}
     }
 }

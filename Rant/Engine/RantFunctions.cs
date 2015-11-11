@@ -198,17 +198,48 @@ namespace Rant.Engine
             [RantDescription("The separator pattern to run between iterations of the next block.")]
             RantAction separator)
         {
+	        sb.CurrentBlockAttribs.IsSeries = false;
             sb.CurrentBlockAttribs.Separator = separator;
         }
 
-        [RantFunction("rs")]
+		[RantFunction("sep", "s")]
+		[RantDescription("Flags the next block as a series and sets the separator and conjunction patterns.")]
+		private static void Sep(Sandbox sb,
+			[RantDescription("The separator pattern to run between items.")]
+			RantAction separator,
+			[RantDescription("The conjunction pattern to run before the last item.")]
+			RantAction conjunction)
+		{
+			sb.CurrentBlockAttribs.IsSeries = true;
+			sb.CurrentBlockAttribs.Separator = separator;
+			sb.CurrentBlockAttribs.EndConjunction = conjunction;
+		}
+
+		[RantFunction("sep", "s")]
+		[RantDescription("Sets the separator, Oxford comma, and conjunction patterns for the next series.")]
+		private static void Sep(Sandbox sb,
+			[RantDescription("The separator pattern to run between items.")]
+			RantAction separator,
+			[RantDescription("The Oxford comma pattern to run before the last item.")]
+			RantAction oxford,
+			[RantDescription("The conjunction pattern to run before the last item in the series.")]
+			RantAction conjunction)
+		{
+			sb.CurrentBlockAttribs.IsSeries = true;
+			sb.CurrentBlockAttribs.Separator = separator;
+			sb.CurrentBlockAttribs.EndSeparator = oxford;
+			sb.CurrentBlockAttribs.EndConjunction = conjunction;
+		}
+
+		[RantFunction("rs")]
         [RantDescription("Sets the repetitions and separator for the next block. A combination of rep and sep.")]
         private static void RepSep(Sandbox sb,
             [RantDescription("The number of times to repeat the next block.")]
             int times,
             [RantDescription("The separator pattern to run between iterations of the next block.")]
             RantAction separator)
-        {
+		{
+			sb.CurrentBlockAttribs.IsSeries = false;
             sb.CurrentBlockAttribs.Repetitions = times;
             sb.CurrentBlockAttribs.Separator = separator;
         }
