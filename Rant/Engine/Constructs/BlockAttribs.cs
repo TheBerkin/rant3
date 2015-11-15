@@ -61,11 +61,6 @@ namespace Rant.Engine.Constructs
 		/// <returns></returns>
 		public int NextIndex(int blockItemCount, RNG rng)
 	    {
-			if (Chance < 100 && rng.NextDouble(0, 100) > Chance)
-			{
-				return -1; // Skip the block
-			}
-
 			// Use synchronizer if available
 			if (Sync != null)
 			{

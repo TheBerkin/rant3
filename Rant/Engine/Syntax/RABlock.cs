@@ -61,6 +61,13 @@ namespace Rant.Engine.Syntax
         public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
 			var attribs = sb.NextAttribs(this);
+
+			// Skip if chance doesn't fall within range
+			if (attribs.Chance < 100 && sb.RNG.NextDouble(0, 100) > attribs.Chance)
+			{
+				yield break;
+			}
+
 			int next = -1;
 			int reps = attribs.RepEach ? _items.Count : attribs.Repetitions;
 			var block = new BlockState(attribs.Repetitions);
