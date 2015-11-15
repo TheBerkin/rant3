@@ -130,8 +130,8 @@ Global
 		{A756F3FA-9172-4F08-94EB-17AFBD115078}.Unity|x64.Build.0 = Release|Any CPU
 		{A756F3FA-9172-4F08-94EB-17AFBD115078}.Unity|x86.ActiveCfg = Release|Any CPU
 		{A756F3FA-9172-4F08-94EB-17AFBD115078}.Unity|x86.Build.0 = Release|Any CPU
-		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|Any CPU.ActiveCfg = Release|Any CPU
-		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|Any CPU.Build.0 = Release|Any CPU
+		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|Any CPU.ActiveCfg = Berkin-Release|Any CPU
+		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|Any CPU.Build.0 = Berkin-Release|Any CPU
 		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|x64.ActiveCfg = Release|Any CPU
 		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|x64.Build.0 = Release|Any CPU
 		{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}.Berkin-Release|x86.ActiveCfg = Release|Any CPU
