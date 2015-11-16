@@ -7,7 +7,7 @@ namespace Rant.IO.Bson
     /// <summary>
     /// One item in a BSON document.
     /// </summary>
-    public class BsonItem
+    internal class BsonItem
     {
         private Dictionary<string, BsonItem> _objectValues;
         private object _value;

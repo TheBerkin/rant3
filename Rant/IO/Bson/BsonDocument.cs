@@ -8,7 +8,7 @@ namespace Rant.IO.Bson
     /// <summary>
     /// Represents a document encoded in BSON.
     /// </summary>
-    public class BsonDocument
+    internal class BsonDocument
     {
         /// <summary>
         /// The current string table version.

@@ -6,7 +6,7 @@ namespace Rant.IO.Compression.LZMA
 {
 	using RangeCoder;
 
-	public class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
+	internal class Encoder : ICoder, ISetCoderProperties, IWriteCoderProperties
 	{
 		enum EMatchFinderType
 		{

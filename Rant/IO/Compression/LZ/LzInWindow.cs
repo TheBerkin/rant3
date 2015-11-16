@@ -4,7 +4,7 @@ using System;
 
 namespace Rant.IO.Compression.LZ
 {
-	public class InWindow
+	internal class InWindow
 	{
 		public Byte[] _bufferBase = null; // pointer to buffer with data
 		System.IO.Stream _stream;

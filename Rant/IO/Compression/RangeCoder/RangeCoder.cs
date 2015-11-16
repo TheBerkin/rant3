@@ -2,7 +2,7 @@ using System;
 
 namespace Rant.IO.Compression.RangeCoder
 {
-	class Encoder
+	internal class Encoder
 	{
 		public const uint kTopValue = (1 << 24);
 

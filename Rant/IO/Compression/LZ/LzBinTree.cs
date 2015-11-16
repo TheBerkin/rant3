@@ -4,7 +4,7 @@ using System;
 
 namespace Rant.IO.Compression.LZ
 {
-	public class BinTree : InWindow, IMatchFinder
+	internal class BinTree : InWindow, IMatchFinder
 	{
 		UInt32 _cyclicBufferPos;
 		UInt32 _cyclicBufferSize = 0;

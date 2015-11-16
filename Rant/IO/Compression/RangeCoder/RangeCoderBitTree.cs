@@ -2,7 +2,7 @@ using System;
 
 namespace Rant.IO.Compression.RangeCoder
 {
-	struct BitTreeEncoder
+	internal struct BitTreeEncoder
 	{
 		BitEncoder[] Models;
 		int NumBitLevels;
@@ -22,7 +22,7 @@ namespace Rant.IO.Compression.RangeCoder
 		public void Encode(Encoder rangeEncoder, UInt32 symbol)
 		{
 			UInt32 m = 1;
-			for (int bitIndex = NumBitLevels; bitIndex > 0; )
+			for (int bitIndex = NumBitLevels; bitIndex > 0;)
 			{
 				bitIndex--;
 				UInt32 bit = (symbol >> bitIndex) & 1;
@@ -47,7 +47,7 @@ namespace Rant.IO.Compression.RangeCoder
 		{
 			UInt32 price = 0;
 			UInt32 m = 1;
-			for (int bitIndex = NumBitLevels; bitIndex > 0; )
+			for (int bitIndex = NumBitLevels; bitIndex > 0;)
 			{
 				bitIndex--;
 				UInt32 bit = (symbol >> bitIndex) & 1;

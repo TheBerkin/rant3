@@ -2,7 +2,7 @@ using System;
 
 namespace Rant.IO.Compression.RangeCoder
 {
-	struct BitEncoder
+	internal struct BitEncoder
 	{
 		public const int kNumBitModelTotalBits = 11;
 		public const uint kBitModelTotal = (1 << kNumBitModelTotalBits);
@@ -64,7 +64,7 @@ namespace Rant.IO.Compression.RangeCoder
 		{
 			return ProbPrices[(((Prob - symbol) ^ ((-(int)symbol))) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
 		}
-	  public uint GetPrice0() { return ProbPrices[Prob >> kNumMoveReducingBits]; }
+		public uint GetPrice0() { return ProbPrices[Prob >> kNumMoveReducingBits]; }
 		public uint GetPrice1() { return ProbPrices[(kBitModelTotal - Prob) >> kNumMoveReducingBits]; }
 	}
 

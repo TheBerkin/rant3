@@ -7,7 +7,7 @@ namespace Rant.IO.Compression
 	/// <summary>
 	/// The exception that is thrown when an error in input stream occurs during decoding.
 	/// </summary>
-	class DataErrorException : ApplicationException
+	internal class DataErrorException : ApplicationException
 	{
 		public DataErrorException(): base("Data Error") { }
 	}
@@ -15,12 +15,12 @@ namespace Rant.IO.Compression
 	/// <summary>
 	/// The exception that is thrown when the value of an argument is outside the allowable range.
 	/// </summary>
-	class InvalidParamException : ApplicationException
+	internal class InvalidParamException : ApplicationException
 	{
 		public InvalidParamException(): base("Invalid Parameter") { }
 	}
 
-	public interface ICodeProgress
+	internal interface ICodeProgress
 	{
 		/// <summary>
 		/// Callback progress.
@@ -34,7 +34,7 @@ namespace Rant.IO.Compression
 		void SetProgress(Int64 inSize, Int64 outSize);
 	};
 
-	public interface ICoder
+	internal interface ICoder
 	{
 		/// <summary>
 		/// Codes streams.
@@ -75,7 +75,7 @@ namespace Rant.IO.Compression
 	/// <summary>
 	/// Provides the fields that represent properties idenitifiers for compressing.
 	/// </summary>
-	public enum CoderPropID
+	internal enum CoderPropID
 	{
 		/// <summary>
 		/// Specifies default property.
@@ -140,17 +140,17 @@ namespace Rant.IO.Compression
 	};
 
 
-	public interface ISetCoderProperties
+	internal interface ISetCoderProperties
 	{
 		void SetCoderProperties(CoderPropID[] propIDs, object[] properties);
 	};
 
-	public interface IWriteCoderProperties
+	internal interface IWriteCoderProperties
 	{
 		void WriteCoderProperties(System.IO.Stream outStream);
 	}
 
-	public interface ISetDecoderProperties
+	internal interface ISetDecoderProperties
 	{
 		void SetDecoderProperties(byte[] properties);
 	}

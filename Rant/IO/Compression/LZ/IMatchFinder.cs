@@ -4,7 +4,7 @@ using System;
 
 namespace Rant.IO.Compression.LZ
 {
-	interface IInWindowStream
+	internal interface IInWindowStream
 	{
 		void SetStream(System.IO.Stream inStream);
 		void Init();
@@ -14,7 +14,7 @@ namespace Rant.IO.Compression.LZ
 		UInt32 GetNumAvailableBytes();
 	}
 
-	interface IMatchFinder : IInWindowStream
+	internal interface IMatchFinder : IInWindowStream
 	{
 		void Create(UInt32 historySize, UInt32 keepAddBufferBefore,
 				UInt32 matchMaxLen, UInt32 keepAddBufferAfter);

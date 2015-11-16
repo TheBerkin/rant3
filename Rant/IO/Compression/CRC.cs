@@ -2,7 +2,7 @@
 
 namespace Rant.IO.Compression
 {
-	class CRC
+	internal class CRC
 	{
 		public static readonly uint[] Table;
 

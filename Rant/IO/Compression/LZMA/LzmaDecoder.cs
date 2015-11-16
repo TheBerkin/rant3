@@ -6,7 +6,7 @@ namespace Rant.IO.Compression.LZMA
 {
 	using RangeCoder;
 
-	public class Decoder : ICoder, ISetDecoderProperties // ,System.IO.Stream
+	internal class Decoder : ICoder, ISetDecoderProperties // ,System.IO.Stream
 	{
 		class LenDecoder
 		{
