@@ -45,7 +45,12 @@ namespace Rant
 				objPropMap[type] = map = new Dictionary<string, PropertyInfo>();
 				foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead))
 				{
+#if UNITY
+					if ((attrName = prop.GetCustomAttributes(typeof(RantArgAttribute), true).Cast<RantArgAttribute>().FirstOrDefault()) != null)
+#else
 					if ((attrName = prop.GetCustomAttributes<RantArgAttribute>().FirstOrDefault()) != null)
+#endif
+
 					{
 						map[attrName.Name] = prop;
 					}
@@ -58,8 +63,13 @@ namespace Rant
 
 			foreach (var pair in map)
 			{
+#if UNITY
+				var obj = pair.Value.GetValue(value, null);
+#else
 				var obj = pair.Value.GetValue(value);
-				if (obj != null) _args[pair.Key] = Convert.ToString(obj, CultureInfo.InvariantCulture);
+#endif
+
+				if (obj != null) _args[pair.Key] = Convert.ToString(obj as object, CultureInfo.InvariantCulture);
 			}
 		}
 

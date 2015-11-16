@@ -311,11 +311,11 @@ namespace Rant.Engine
         {
             if (End)
                 throw new RantCompilerException(_sourceName, null,
-                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)))}}}, but hit end of file.");
+                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
 
             if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
                 throw new RantCompilerException(_sourceName, _tokens[_pos],
-                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)))}}}.");
+                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
 
             return _tokens[_pos++];
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
 
+using Rant.Engine;
+
 namespace Rant
 {
 	/// <summary>
@@ -113,7 +115,7 @@ namespace Rant
 		public static RantPackageVersion Parse(string version)
 		{
 			const NumberStyles styles = NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite;
-			if (String.IsNullOrWhiteSpace(version)) throw new ArgumentException("Version cannot be empty.", nameof(version));
+			if (Util.IsNullOrWhiteSpace(version)) throw new ArgumentException("Version cannot be empty.", nameof(version));
 			var parts = version.Split('.');
 			if (parts.Length > 3) throw new FormatException("Version cannot be composed of more than 3 parts.");
 			var v = new RantPackageVersion();
@@ -138,7 +140,7 @@ namespace Rant
 		{
 			const NumberStyles styles = NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite;
 			result = null;
-			if (String.IsNullOrWhiteSpace(version)) return false;
+			if (Util.IsNullOrWhiteSpace(version)) return false;
 			var parts = version.Split('.');
 			if (parts.Length > 3) return false;
 			var v = new RantPackageVersion();

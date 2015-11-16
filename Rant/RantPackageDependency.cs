@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Rant.Engine;
+
 namespace Rant
 {
 	/// <summary>
@@ -85,7 +87,7 @@ namespace Rant
 		/// <returns></returns>
 		public static RantPackageDependency Create(RantPackage package)
 		{
-			if (String.IsNullOrWhiteSpace(package.ID))
+			if (Util.IsNullOrWhiteSpace(package.ID))
 				throw new ArgumentException("Package ID cannot be empty.");
 			return new RantPackageDependency(package.ID, package.Version);
 		}

@@ -55,9 +55,14 @@ namespace Rant.Engine.Compiler.Parselets
 
             foreach (var type in types)
             {
-                if (type.GetCustomAttribute<DefaultParseletAttribute>() != null)
-                {
-                    if (defaultParselet != null)
+#if UNITY
+				if (type.GetCustomAttributes(typeof(DefaultParseletAttribute), true).Cast<DefaultParseletAttribute>().FirstOrDefault() != null)
+#else
+				if (type.GetCustomAttribute<DefaultParseletAttribute>() != null)
+#endif
+
+				{
+					if (defaultParselet != null)
                         throw new RantInternalException($"Cannot define {type.Name} as default parselet: {defaultParselet.GetType().Name} is already defined as default parselet.");
 
                     defaultParselet = (Parselet)Activator.CreateInstance(type);
@@ -69,7 +74,7 @@ namespace Rant.Engine.Compiler.Parselets
             }
 
             if (defaultParselet == null)
-                throw new RantInternalException($"Default parselet missing/not loaded.");
+                throw new RantInternalException("Default parselet missing/not loaded.");
 
             loaded = true;
 #if DEBUG
@@ -140,12 +145,12 @@ namespace Rant.Engine.Compiler.Parselets
         protected RantCompiler compiler;
         protected TokenReader reader;
 
-        private Dictionary<string, TokenParserDelegate> tokenParserMethods;
-        private TokenParserDelegate defaultParserMethod;
+        private readonly Dictionary<string, TokenParserDelegate> tokenParserMethods;
+        private readonly TokenParserDelegate defaultParserMethod;
 
-        private Stack<string> parseletNames; // maybe needs a better name
-        private Stack<Token<R>> tokens;
-        private Stack<Action<RantAction>> outputDelegates;
+        private readonly Stack<string> parseletNames; // maybe needs a better name
+        private readonly Stack<Token<R>> tokens;
+        private readonly Stack<Action<RantAction>> outputDelegates;
 
         protected Parselet()
         {
@@ -155,15 +160,25 @@ namespace Rant.Engine.Compiler.Parselets
             tokens = new Stack<Token<R>>();
             outputDelegates = new Stack<Action<RantAction>>();
 
-            // it doesn't matter if the methods are private, we can still call them because reflection
-            var methods =
+			// it doesn't matter if the methods are private, we can still call them because reflection
+#if UNITY
+			var methods =
+				from method in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+				let attrib = method.GetCustomAttributes(typeof(TokenParserAttribute), true).Cast<TokenParserAttribute>().FirstOrDefault()
+				let defaultAttrib = method.GetCustomAttributes(typeof(DefaultParserAttribute), true).Cast<DefaultParserAttribute>().FirstOrDefault()
+				where attrib != null || defaultAttrib != null
+				select new { Method = method, Attrib = attrib, IsDefault = defaultAttrib != null };
+#else
+			var methods =
                 from method in GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                 let attrib = method.GetCustomAttribute<TokenParserAttribute>()
                 let defaultAttrib = method.GetCustomAttribute<DefaultParserAttribute>()
                 where attrib != null || defaultAttrib != null
                 select new { Method = method, Attrib = attrib, IsDefault = defaultAttrib != null };
+#endif
 
-            if (!methods.Any())
+
+			if (!methods.Any())
                 throw new RantInternalException($"{GetType().Name}.ctor: No parselet implementations found.");
 
             foreach (var method in methods)
@@ -185,7 +200,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                 var parseletName = method.Method.Name;
                 // this could be a default method so it may not have the TokenParser attribute
-                if (method.Attrib != null && !String.IsNullOrWhiteSpace(method.Attrib.Name))
+                if (method.Attrib != null && !Util.IsNullOrWhiteSpace(method.Attrib.Name))
                     parseletName = method.Attrib.Name;
 
                 if (method.IsDefault)
@@ -198,7 +213,7 @@ namespace Rant.Engine.Compiler.Parselets
                     // associate our default method with us
                     parseletNameDict.Add(parseletName, this);
 
-                    defaultParserMethod = (TokenParserDelegate)method.Method.CreateDelegate(typeof(TokenParserDelegate), this);
+	                defaultParserMethod = Delegate.CreateDelegate(typeof(TokenParserDelegate), method.Method) as TokenParserDelegate;
                     continue;
                 }
 
@@ -208,7 +223,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                 // associate our method with us
                 parseletNameDict.Add(parseletName, this);
-                tokenParserMethods.Add(parseletName, (TokenParserDelegate)method.Method.CreateDelegate(typeof(TokenParserDelegate), this));
+				tokenParserMethods.Add(parseletName, Delegate.CreateDelegate(typeof(TokenParserDelegate), method.Method) as TokenParserDelegate);
 
                 if (method.Attrib.TokenType != null)
                 {

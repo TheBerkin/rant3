@@ -26,7 +26,12 @@ namespace Rant
 			{
 				RantPackageVersion version;
 				// Fallback to name with version appended
+#if UNITY
+				path = Directory.GetFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
+#else
 				path = Directory.EnumerateFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
+#endif
+
 				{
 					var match = FallbackRegex.Match(Path.GetFileNameWithoutExtension(p));
 					if (!match.Success) return false;

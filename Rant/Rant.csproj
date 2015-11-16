@@ -226,6 +226,8 @@
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
     <Compile Include="Engine\Metadata\RantModeValue.cs" />
+    <Compile Include="Engine\Output\OutputChain.cs" />
+    <Compile Include="Engine\Output\OutputChainItem.cs" />
     <Compile Include="Engine\RantFunctionGroup.cs" />
     <Compile Include="Engine\RichardFunctions.cs" />
     <Compile Include="Engine\Syntax\Richard\Operators\RichAdditionOperator.cs" />

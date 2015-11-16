@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Rant.Engine.Syntax;
 using Rant.Stringes;
@@ -106,7 +104,7 @@ namespace Rant.Engine.Compiler.Parselets
                     yield break;
                 }
 
-                yield return Parselet.GetParselet(funcToken, actions.Add);
+                yield return GetParselet(funcToken, actions.Add);
             }
 
             compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
@@ -149,7 +147,7 @@ namespace Rant.Engine.Compiler.Parselets
                     yield break;
                 }
 
-                yield return Parselet.GetParselet(funcToken, actions.Add);
+                yield return GetParselet(funcToken, actions.Add);
             }
 
             compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
