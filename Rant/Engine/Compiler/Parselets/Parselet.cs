@@ -212,8 +212,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                     // associate our default method with us
                     parseletNameDict.Add(parseletName, this);
-
-	                defaultParserMethod = Delegate.CreateDelegate(typeof(TokenParserDelegate), method.Method) as TokenParserDelegate;
+	                defaultParserMethod = Delegate.CreateDelegate(typeof(TokenParserDelegate), this, method.Method) as TokenParserDelegate;
                     continue;
                 }
 
@@ -223,7 +222,7 @@ namespace Rant.Engine.Compiler.Parselets
 
                 // associate our method with us
                 parseletNameDict.Add(parseletName, this);
-				tokenParserMethods.Add(parseletName, Delegate.CreateDelegate(typeof(TokenParserDelegate), method.Method) as TokenParserDelegate);
+				tokenParserMethods.Add(parseletName, Delegate.CreateDelegate(typeof(TokenParserDelegate), this, method.Method) as TokenParserDelegate);
 
                 if (method.Attrib.TokenType != null)
                 {

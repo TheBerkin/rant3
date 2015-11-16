@@ -69,28 +69,36 @@ namespace Rant
 		{
 			if (ReferenceEquals(a, null)) throw new ArgumentNullException(nameof(a));
 			if (ReferenceEquals(b, null)) throw new ArgumentNullException(nameof(b));
-			return a._major < b._major || a._minor < b._minor || a._revision < b._revision;
+			if (a._major != b._major) return a._major < b._major;
+			if (a._minor != b._minor) return a._minor < b._minor;
+			return a._revision < b._revision;
 		}
 
 		public static bool operator >(RantPackageVersion a, RantPackageVersion b)
 		{
 			if (ReferenceEquals(a, null)) throw new ArgumentNullException(nameof(a));
 			if (ReferenceEquals(b, null)) throw new ArgumentNullException(nameof(b));
-			return a._major > b._major || a._minor > b._minor || a._revision > b._revision;
+			if (a._major != b._major) return a._major > b._major;
+			if (a._minor != b._minor) return a._minor > b._minor;
+			return a._revision > b._revision;
 		}
 
 		public static bool operator <=(RantPackageVersion a, RantPackageVersion b)
 		{
 			if (ReferenceEquals(a, null)) throw new ArgumentNullException(nameof(a));
 			if (ReferenceEquals(b, null)) throw new ArgumentNullException(nameof(b));
-			return a._major <= b._major || a._minor <= b._minor || a._revision <= b._revision;
+			if (a._major <= b._major) return true;
+			if (a._minor <= b._minor) return true;
+			return a._revision <= b._revision;
 		}
 
 		public static bool operator >=(RantPackageVersion a, RantPackageVersion b)
 		{
 			if (ReferenceEquals(a, null)) throw new ArgumentNullException(nameof(a));
 			if (ReferenceEquals(b, null)) throw new ArgumentNullException(nameof(b));
-			return a._major >= b._major || a._minor >= b._minor || a._revision >= b._revision;
+			if (a._major >= b._major) return true;
+			if (a._minor >= b._minor) return true;
+			return a._revision >= b._revision;
 		}
 
 		public static bool operator ==(RantPackageVersion a, RantPackageVersion b)
