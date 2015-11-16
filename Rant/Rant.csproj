@@ -384,7 +384,7 @@
     <Compile Include="Engine\Compiler\R.cs" />
     <Compile Include="RantPattern.cs" />
     <Compile Include="RantPatternOrigin.cs" />
-    <Compile Include="Engine\TokenReader.cs" />
+    <Compile Include="Engine\Compiler\TokenReader.cs" />
     <Compile Include="Stringes\Chare.cs" />
     <Compile Include="Stringes\Extensions.cs" />
     <Compile Include="Stringes\Stringe.cs" />

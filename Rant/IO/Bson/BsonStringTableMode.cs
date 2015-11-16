@@ -1,6 +1,6 @@
 ﻿namespace Rant.IO.Bson
 {
-    internal enum BsonStringTableMode
+    public enum BsonStringTableMode
     {
         None = 0,
         Keys = 1,

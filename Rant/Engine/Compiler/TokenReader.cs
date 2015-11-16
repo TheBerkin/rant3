@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Engine.Compiler;
 using Rant.Stringes;
 
-namespace Rant.Engine
+namespace Rant.Engine.Compiler
 {
 	internal class TokenReader
 	{
