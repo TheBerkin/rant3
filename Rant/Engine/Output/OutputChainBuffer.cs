@@ -16,13 +16,17 @@ namespace Rant.Engine.Output
 			= new HashSet<char>(new[] { '.', '?', '!' });
 
 		private readonly Sandbox sandbox;
+		protected readonly StringBuilder _buffer;
 		private readonly OutputChainBuffer _prevItem;
 		private OutputChainBuffer _nextItem;
+
+		private readonly bool _isTarget = false;
 		private readonly NumberFormatter _numberFormatter = new NumberFormatter();
 		private Capitalization _caps = Capitalization.None;
-		private bool printedSinceCapsChange = false;
+		// Determines if a print took place after capitalization was changed
+		private bool _printedSinceCapsChange = false;
+		// Size of the buffer before the last print
 		private int oldSize;
-		protected readonly StringBuilder _buffer;
 
 		public StringBuilder Buffer => _buffer;
 
@@ -31,10 +35,14 @@ namespace Rant.Engine.Output
 			get { return _caps; }
 			set
 			{
-				printedSinceCapsChange = false;
+				_printedSinceCapsChange = false;
 				_caps = value;
 			}
 		}
+
+		public bool IsTarget => _isTarget;
+
+		protected bool PrintedSinceCapsChange => _printedSinceCapsChange;
 
 		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev)
 		{
@@ -43,13 +51,14 @@ namespace Rant.Engine.Output
 			if (prev != null)
 			{
 				prev._nextItem = this;
-				_caps = prev._caps;
+				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
 				_numberFormatter.BinaryFormat = prev.NumberFormatter.BinaryFormat;
 				_numberFormatter.BinaryFormatDigits = prev.NumberFormatter.BinaryFormatDigits;
 				_numberFormatter.Endianness = prev.NumberFormatter.Endianness;
 				_numberFormatter.NumberFormat = prev.NumberFormatter.NumberFormat;
 			}
 
+			_isTarget = true;
 			_buffer = new StringBuilder(InitialCapacity);
 			sandbox = sb;
 		}
@@ -61,7 +70,7 @@ namespace Rant.Engine.Output
 			if (prev != null)
 			{
 				prev._nextItem = this;
-				_caps = prev._caps;
+				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
 			}
 
 			_buffer = targetOrigin._buffer;
@@ -93,7 +102,7 @@ namespace Rant.Engine.Output
 			if (String.IsNullOrEmpty(value)) return;
 			Format(ref value);
 			_buffer.Append(value);
-			printedSinceCapsChange = true;
+			_printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
 			UpdateSize();
@@ -109,7 +118,7 @@ namespace Rant.Engine.Output
 			var str = value.ToString();
 			Format(ref str);
 			_buffer.Append(str);
-			printedSinceCapsChange = true;
+			_printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
 			UpdateSize();
@@ -168,8 +177,8 @@ namespace Rant.Engine.Output
 						// If the buffer's empty, check previous buffer
 						if (_buffer.Length == 0)
 						{
-							// If the prev buffer is null, it's the very start.
-							if (_prevItem == null)
+							// Check if we're at the start
+							if (_prevItem == null || (_prevItem.Prev == null && _prevItem.Length == 0))
 							{
 								CapitalizeFirstLetter(ref value);
 								break;
@@ -198,8 +207,8 @@ namespace Rant.Engine.Output
 							|| Char.IsSeparator(lastChar)
 							|| lastChar == '\0';
 
-						// Since the lexer splits text by words, this is easy.
-						if (!printedSinceCapsChange)
+						// This ensures that the first title word is always capitalized
+						if (!_printedSinceCapsChange)
 						{
 							CapitalizeFirstLetter(ref value);
 							return;
@@ -211,7 +220,7 @@ namespace Rant.Engine.Output
 					}
 					break;
 				case Capitalization.First:
-					if (CapitalizeFirstLetter(ref value)) _caps = Capitalization.None;
+					if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
 					break;
 			}
 		}
@@ -229,10 +238,7 @@ namespace Rant.Engine.Output
 				}
 				else
 				{
-					if (sentenceTerminators.Contains(c))
-					{
-						capitalize = true;
-					}
+					if (sentenceTerminators.Contains(c)) capitalize = true;
 					sb.Append(c);
 				}
 			}

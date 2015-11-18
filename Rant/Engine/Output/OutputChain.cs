@@ -11,9 +11,9 @@ namespace Rant.Engine.Output
 	{
 		// Engine
 		private readonly Sandbox sandbox;
-		
+
 		// Targets
-		private readonly Dictionary<string, OutputChainBuffer> targets = new Dictionary<string, OutputChainBuffer>();  
+		private readonly Dictionary<string, OutputChainBuffer> targets = new Dictionary<string, OutputChainBuffer>();
 
 		// Buffer endpoint references
 		private readonly OutputChainBuffer _first;
@@ -87,14 +87,22 @@ namespace Rant.Engine.Output
 			return String.Empty;
 		}
 
-		public void Print(string value) => _last.Print(value);
+		public void Print(string value)
+		{
+			if (_last.GetType() != typeof(OutputChainBuffer)) AddBuffer();
+			_last.Print(value);
+		}
 
-		public void Print(object obj) => _last.Print(obj);
+		public void Print(object obj)
+		{
+			if (_last.GetType() != typeof(OutputChainBuffer)) AddBuffer();
+			_last.Print(obj);
+		} 
 
 		public OutputChainBuffer AddArticleBuffer()
 		{
+			// If the last buffer is empty, just replace it.
 			var b = _last = new OutputChainArticleBuffer(sandbox, _last);
-			AddBuffer();
 			return b;
 		}
 
