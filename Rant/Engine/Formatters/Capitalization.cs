@@ -2,7 +2,7 @@
 
 namespace Rant.Engine.Formatters
 {
-    internal enum Case
+    internal enum Capitalization
     {
         [RantDescription("No capitalization.")]
         None,

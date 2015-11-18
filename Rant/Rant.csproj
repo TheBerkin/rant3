@@ -226,6 +226,10 @@
     <Compile Include="Engine\Metadata\RantDescriptionAttribute.cs" />
     <Compile Include="Engine\Constructs\BlockState.cs" />
     <Compile Include="Engine\Metadata\RantModeValue.cs" />
+    <Compile Include="Engine\Output\OutputChain.cs" />
+    <Compile Include="Engine\Output\OutputChainArticleBuffer.cs" />
+    <Compile Include="Engine\Output\OutputChainBuffer.cs" />
+    <Compile Include="Engine\Output\OutputWriter.cs" />
     <Compile Include="Engine\RantFunctionGroup.cs" />
     <Compile Include="Engine\RichardFunctions.cs" />
     <Compile Include="Engine\Syntax\Richard\Operators\RichAdditionOperator.cs" />
@@ -364,14 +368,10 @@
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\Constructs\BlockAttribs.cs" />
-    <Compile Include="Formats\IndefiniteArticles.cs" />
-    <Compile Include="Formats\IndefiniteArticleRules.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="RantRuntimeException.cs" />
-    <Compile Include="Engine\Formatters\Case.cs" />
-    <Compile Include="Engine\Channel.cs" />
-    <Compile Include="Engine\ChannelWriter.cs" />
-    <Compile Include="Engine\ChannelVisibility.cs" />
+    <Compile Include="Engine\Formatters\Capitalization.cs" />
+    <Compile Include="Engine\Output\ChannelVisibility.cs" />
     <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\Formatters\NumberFormat.cs" />
     <Compile Include="Engine\Formatters\Numerals.cs" />

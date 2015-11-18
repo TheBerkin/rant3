@@ -6,6 +6,7 @@ using System.Reflection;
 using Rant.Engine.Constructs;
 using Rant.Engine.Formatters;
 using Rant.Engine.Metadata;
+using Rant.Engine.Output;
 using Rant.Engine.Syntax;
 using Rant.Vocabulary;
 
@@ -117,10 +118,7 @@ namespace Rant.Engine
             [RantDescription("The number format to use.")]
             NumberFormat format)
         {
-            foreach (var channel in sb.CurrentOutput.GetActive())
-            {
-                channel.NumberFormatter.NumberFormat = format;
-            }
+			sb.Output.Do(chain => chain.Last.NumberFormatter.NumberFormat = format);
         }
 
         [RantFunction("numfmt")]
@@ -131,22 +129,22 @@ namespace Rant.Engine
             [RantDescription("The pattern to run.")]
             RantAction rangeAction)
         {
-            var oldChannelMap = sb.CurrentOutput.GetActive()
-                .ToDictionary(ch => ch.Name, ch => ch.NumberFormatter.NumberFormat);
+	        var oldFmtMap = new Dictionary<OutputChain, NumberFormat>();
 
-            foreach (var channel in sb.CurrentOutput.GetActive())
-            {
-                channel.NumberFormatter.NumberFormat = format;
-            }
+			sb.Output.Do(chain =>
+			{
+				oldFmtMap[chain] = chain.Last.NumberFormatter.NumberFormat;
+				chain.Last.NumberFormatter.NumberFormat = format;
+			});
 
             yield return rangeAction;
 
             NumberFormat fmt;
-            foreach (var channel in sb.CurrentOutput.GetActive())
-            {
-                if (!oldChannelMap.TryGetValue(channel.Name, out fmt)) continue;
-                channel.NumberFormatter.NumberFormat = fmt;
-            }
+			sb.Output.Do(chain =>
+			{
+				if (!oldFmtMap.TryGetValue(chain, out fmt)) return;
+				chain.Last.NumberFormatter.NumberFormat = fmt;
+			});
         }
 
         [RantFunction]
@@ -157,11 +155,11 @@ namespace Rant.Engine
             [RantDescription("The digit count to associate with the mode.")]
             int digits)
         {
-            foreach (var channel in sb.CurrentOutput.GetActive())
-            {
-                channel.NumberFormatter.BinaryFormat = format;
-                channel.NumberFormatter.BinaryFormatDigits = digits;
-            }
+			sb.Output.Do(chain =>
+			{
+				chain.Last.NumberFormatter.BinaryFormat = format;
+				chain.Last.NumberFormatter.BinaryFormatDigits = digits;
+			});
         }
 
         [RantFunction]
@@ -170,10 +168,7 @@ namespace Rant.Engine
             [RantDescription("The endianness to use.")]
             Endianness endianness)
         {
-            foreach (var channel in sb.CurrentOutput.GetActive())
-            {
-                channel.NumberFormatter.Endianness = endianness;
-            }
+			sb.Output.Do(chain => chain.Last.NumberFormatter.Endianness = endianness);
         }
 
         [RantFunction("rep", "r")]
@@ -276,9 +271,9 @@ namespace Rant.Engine
         [RantDescription("Changes the capitalization mode for all open channels.")]
         private static void Case(Sandbox sb,
             [RantDescription("The capitalization mode to use.")]
-            Case textCase)
+            Capitalization textCase)
         {
-            sb.CurrentOutput.SetCase(textCase);
+            sb.Output.Capitalize(textCase);
         }
 
         [RantFunction]
@@ -287,10 +282,10 @@ namespace Rant.Engine
             [RantDescription("A string that is capitalized in the format to be set.")]
             string sample)
         {
-            var output = sb.CurrentOutput;
+            var output = sb.Output;
             if (String.IsNullOrEmpty(sample))
             {
-                output.SetCase(Formatters.Case.None);
+                output.Capitalize(Capitalization.None);
                 return;
             }
             var words = sample.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -301,24 +296,24 @@ namespace Rant.Engine
                 {
                     if (Char.IsUpper(word[0]))
                     {
-                        output.SetCase(Formatters.Case.First);
+                        output.Capitalize(Capitalization.First);
                     }
                     else
                     {
-                        output.SetCase(Formatters.Case.None);
+                        output.Capitalize(Capitalization.None);
                     }
                 }
                 else if (Util.IsUppercase(word))
                 {
-                    output.SetCase(Formatters.Case.Upper);
+                    output.Capitalize(Capitalization.Upper);
                 }
                 else if (Char.IsUpper(word.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
                 {
-                    output.SetCase(Formatters.Case.First);
+                    output.Capitalize(Capitalization.First);
                 }
                 else
                 {
-                    output.SetCase(Formatters.Case.None);
+                    output.Capitalize(Capitalization.None);
                 }
             }
             else
@@ -326,14 +321,14 @@ namespace Rant.Engine
                 // No letters? Forget it.
                 if (!sample.Any(Char.IsLetter))
                 {
-                    output.SetCase(Formatters.Case.None);
+                    output.Capitalize(Capitalization.None);
                     return;
                 }
 
                 // Is all-caps?
                 if (Util.IsUppercase(sample))
                 {
-                    output.SetCase(Formatters.Case.Upper);
+                    output.Capitalize(Formatters.Capitalization.Upper);
                     return;
                 }
 
@@ -349,13 +344,13 @@ namespace Rant.Engine
                 {
                     if (lwords.All(lw => Char.IsUpper(lw[0])))
                     {
-                        output.SetCase(Formatters.Case.Word);
+                        output.Capitalize(Capitalization.Word);
                         return;
                     }
 
                     if (lwords.All(lw => Char.IsLower(lw[0]) == sb.Format.Excludes(lw)))
                     {
-                        output.SetCase(Formatters.Case.Title);
+                        output.Capitalize(Capitalization.Title);
                         return;
                     }
                 }
@@ -372,19 +367,19 @@ namespace Rant.Engine
 
                 if (sentences.Length > 1 && all)
                 {
-                    output.SetCase(Formatters.Case.Sentence);
+                    output.Capitalize(Capitalization.Sentence);
                 }
                 else if (none)
                 {
-                    output.SetCase(Formatters.Case.Lower);
+                    output.Capitalize(Capitalization.Lower);
                 }
                 else if (Char.IsUpper(sample.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
                 {
-                    output.SetCase(Formatters.Case.First);
+                    output.Capitalize(Capitalization.First);
                 }
                 else
                 {
-                    output.SetCase(Formatters.Case.None);
+                    output.Capitalize(Capitalization.None);
                 }
             }
         }
@@ -637,25 +632,14 @@ namespace Rant.Engine
             sb.DecreaseQuote();
         }
 
-        [RantFunction]
-        [RantDescription("Opens a new output channel with the specified name and visibility.")]
-        private static void Open(Sandbox sb,
-            [RantDescription("The name of the channel to open.")]
-            string channelName,
-            [RantDescription("The visibility to assign to the channel.")]
-            ChannelVisibility visibility)
-        {
-            sb.CurrentOutput.OpenChannel(channelName, visibility, sb.Format);
-        }
-
-        [RantFunction]
-        [RantDescription("Closes the output channel with the specified name.")]
-        private static void Close(Sandbox sb,
-            [RantDescription("The name of the channel to close.")]
-            string channelName)
-        {
-            sb.CurrentOutput.CloseChannel(channelName);
-        }
+	    [RantFunction]
+	    [RantDescription("Opens a channel for writing and executes the specified pattern inside of it.")]
+	    private static IEnumerator<RantAction> Chan(Sandbox sb, string channelName, ChannelVisibility visibility, RantAction pattern)
+	    {
+			sb.Output.OpenChannel(channelName, visibility);
+		    yield return pattern;
+		    sb.Output.CloseChannel();
+	    }
 
         [RantFunction("target", "t")]
         [RantDescription("Places a target with the specified name at the current write position.")]
@@ -663,7 +647,7 @@ namespace Rant.Engine
             [RantDescription("The name of the target.")]
             string targetName)
         {
-            sb.CurrentOutput.CreateTarget(targetName);
+            sb.Output.InsertTarget(targetName);
         }
 
         [RantFunction]
@@ -674,7 +658,7 @@ namespace Rant.Engine
             [RantDescription("The string to send to the target.")]
             string value)
         {
-            sb.CurrentOutput.WriteToTarget(targetName, value);
+            sb.Output.PrintToTarget(targetName, value);
         }
 
         [RantFunction]
@@ -685,7 +669,8 @@ namespace Rant.Engine
             [RantDescription("The string to send to the target.")]
             string value)
         {
-            sb.CurrentOutput.WriteToTarget(targetName, value, true);
+			sb.Output.Do(chain => chain.ClearTarget(targetName));
+            sb.Output.PrintToTarget(targetName, value);
         }
 
         [RantFunction("targetval")]
@@ -694,7 +679,7 @@ namespace Rant.Engine
             [RantDescription("The name of the target whose value to print.")]
             string targetName)
         {
-            sb.Print(sb.CurrentOutput.GetActiveChannel().GetTargetValue(targetName));
+	        sb.Output.Do(chain => chain.Print(chain.GetTargetValue(targetName)));
         }
 
         [RantFunction("clrt")]
@@ -703,7 +688,7 @@ namespace Rant.Engine
             [RantDescription("The name of the target to be cleared.")]
             string targetName)
         {
-            sb.CurrentOutput.ClearTarget(targetName);
+            sb.Output.Do(chain => chain.ClearTarget(targetName));
         }
 
         [RantFunction]
@@ -936,7 +921,7 @@ namespace Rant.Engine
 			string argName)
 		{
 			if (sb.PatternArgs == null) return;
-			sb.CurrentOutput.Write(sb.PatternArgs[argName]);
+			sb.Output.Print(sb.PatternArgs[argName]);
 		}
 
         [RantFunction("tm")]

@@ -29,7 +29,7 @@ namespace Rant
 #if UNITY
 				path = Directory.GetFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
 #else
-				path = Directory.EnumerateFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
+				path = Directory.EnumerateFiles(Environment.CurrentDirectory, "*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
 #endif
 
 				{

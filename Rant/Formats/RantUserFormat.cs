@@ -41,11 +41,6 @@ namespace Rant.Formats
         /// </summary>
         public new char[] Letters { get; set; }
 
-        /// <summary>
-        /// The vowel-sensitive indefinite articles used by the \a escape sequence.
-        /// </summary>
-        public new IndefiniteArticles IndefiniteArticles { get; set; } = IndefiniteArticles.English;
-
 		/// <summary>
 		/// The culture to format output strings with.
 		/// </summary>
