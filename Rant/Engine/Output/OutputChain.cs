@@ -93,7 +93,9 @@ namespace Rant.Engine.Output
 
 		public OutputChainBuffer AddArticleBuffer()
 		{
-			throw new NotImplementedException();
+			var b = _last = new OutputChainArticleBuffer(sandbox, _last);
+			AddBuffer();
+			return b;
 		}
 
 		public override string ToString()

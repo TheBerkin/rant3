@@ -22,7 +22,9 @@ namespace Rant.Engine.Output
 		private Capitalization _caps = Capitalization.None;
 		private bool printedSinceCapsChange = false;
 		private int oldSize;
-		protected readonly StringBuilder buffer;
+		protected readonly StringBuilder _buffer;
+
+		public StringBuilder Buffer => _buffer;
 
 		public Capitalization Caps
 		{
@@ -42,9 +44,13 @@ namespace Rant.Engine.Output
 			{
 				prev._nextItem = this;
 				_caps = prev._caps;
+				_numberFormatter.BinaryFormat = prev.NumberFormatter.BinaryFormat;
+				_numberFormatter.BinaryFormatDigits = prev.NumberFormatter.BinaryFormatDigits;
+				_numberFormatter.Endianness = prev.NumberFormatter.Endianness;
+				_numberFormatter.NumberFormat = prev.NumberFormatter.NumberFormat;
 			}
 
-			buffer = new StringBuilder(InitialCapacity);
+			_buffer = new StringBuilder(InitialCapacity);
 			sandbox = sb;
 		}
 
@@ -58,7 +64,7 @@ namespace Rant.Engine.Output
 				_caps = prev._caps;
 			}
 
-			buffer = targetOrigin.buffer;
+			_buffer = targetOrigin._buffer;
 			sandbox = sb;
 		}
 
@@ -68,11 +74,11 @@ namespace Rant.Engine.Output
 
 		public OutputChainBuffer Prev => _prevItem;
 
-		public char LastChar => buffer.Length > 0 ? buffer[buffer.Length - 1] : '\0';
+		public char LastChar => _buffer.Length > 0 ? _buffer[_buffer.Length - 1] : '\0';
 
-		public char FirstChar => buffer.Length > 0 ? buffer[0] : '\0';
+		public char FirstChar => _buffer.Length > 0 ? _buffer[0] : '\0';
 
-		public int Length => buffer.Length;
+		public int Length => _buffer.Length;
 
 		protected virtual void OnPrevBufferChange()
 		{
@@ -86,7 +92,7 @@ namespace Rant.Engine.Output
 		{
 			if (String.IsNullOrEmpty(value)) return;
 			Format(ref value);
-			buffer.Append(value);
+			_buffer.Append(value);
 			printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
@@ -97,12 +103,12 @@ namespace Rant.Engine.Output
 		{
 			if (IOUtil.IsNumericType(value.GetType()))
 			{
-				buffer.Append(_numberFormatter.FormatNumber(Convert.ToDouble(value)));
+				_buffer.Append(_numberFormatter.FormatNumber(Convert.ToDouble(value)));
 				return;
 			}
 			var str = value.ToString();
 			Format(ref str);
-			buffer.Append(str);
+			_buffer.Append(str);
 			printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
@@ -111,9 +117,9 @@ namespace Rant.Engine.Output
 
 		private void UpdateSize()
 		{
-			if (sandbox.SizeLimit.Accumulate(buffer.Length - oldSize))
+			if (sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
 				throw new InvalidOperationException($"Exceeded character limit ({sandbox.SizeLimit.Maximum})");
-			oldSize = buffer.Length;
+			oldSize = _buffer.Length;
 		}
 
 		public void Clear()
@@ -121,11 +127,13 @@ namespace Rant.Engine.Output
 #if UNITY
 			_buffer.Length = 0;
 #else
-			buffer.Clear();
+			_buffer.Clear();
 #endif
+			sandbox.SizeLimit.Accumulate(-oldSize);
+			oldSize = 0;
 		}
 
-		public override string ToString() => buffer.ToString();
+		public override string ToString() => _buffer.ToString();
 
 		protected void Format(ref string value)
 		{
@@ -141,8 +149,8 @@ namespace Rant.Engine.Output
 					break;
 				case Capitalization.Word:
 					{
-						char lastChar = buffer.Length > 0
-							? buffer[buffer.Length - 1]
+						char lastChar = _buffer.Length > 0
+							? _buffer[_buffer.Length - 1]
 							: _prevItem?.LastChar ?? '\0';
 						if (Char.IsWhiteSpace(lastChar) || wordSepChars.Contains(lastChar) || lastChar == '\0')
 						{
@@ -152,13 +160,13 @@ namespace Rant.Engine.Output
 					break;
 				case Capitalization.Sentence:
 					{
-						var b = buffer;
+						var b = _buffer;
 
 						// Capitalize sentences in input value
 						CapitalizeSentences(ref value);
 
 						// If the buffer's empty, check previous buffer
-						if (buffer.Length == 0)
+						if (_buffer.Length == 0)
 						{
 							// If the prev buffer is null, it's the very start.
 							if (_prevItem == null)
@@ -168,7 +176,7 @@ namespace Rant.Engine.Output
 							}
 
 							// If there is a previous buffer, scan the end.
-							b = _prevItem.buffer;
+							b = _prevItem._buffer;
 						}
 
 						// Scan buffer end to determine if capitalization is needed
@@ -183,8 +191,8 @@ namespace Rant.Engine.Output
 					break;
 				case Capitalization.Title:
 					{
-						char lastChar = buffer.Length > 0
-								? buffer[buffer.Length - 1]
+						char lastChar = _buffer.Length > 0
+								? _buffer[_buffer.Length - 1]
 								: _prevItem?.LastChar ?? '\0';
 						bool boundary = Char.IsWhiteSpace(lastChar)
 							|| Char.IsSeparator(lastChar)

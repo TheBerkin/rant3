@@ -368,8 +368,6 @@
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Engine\Constructs\BlockAttribs.cs" />
-    <Compile Include="Formats\IndefiniteArticles.cs" />
-    <Compile Include="Formats\IndefiniteArticleRules.cs" />
     <Compile Include="Engine\Limit.cs" />
     <Compile Include="RantRuntimeException.cs" />
     <Compile Include="Engine\Formatters\Capitalization.cs" />
