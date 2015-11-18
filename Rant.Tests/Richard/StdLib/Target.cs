@@ -6,13 +6,7 @@ namespace Rant.Tests.Richard.StdLib
     public class Target
     {
         private readonly RantEngine rant = new RantEngine();
-
-        [Test]
-        public void TargetGet()
-        {
-            Assert.AreEqual("testtest", rant.Do("[target: t][send: t; test][@ Target.get(\"t\") ]").Main);
-        }
-
+		
         [Test]
         public void TargetSend()
         {

@@ -23,7 +23,7 @@ namespace Rant.Engine
 		private static readonly object fallbackArgsLockObj = new object();
 
         private readonly RantEngine _engine;
-        private readonly OutputWriter _mainOutput;
+        private readonly OutputWriter _baseOutput;
         private readonly Stack<OutputWriter> _outputs;
         private readonly RNG _rng;
         private readonly long _startingGen;
@@ -53,12 +53,12 @@ namespace Rant.Engine
         /// <summary>
         /// Gets the main output channel stack.
         /// </summary>
-        public OutputWriter MainOutput => _mainOutput;
+        public OutputWriter BaseOutput => _baseOutput;
 
         /// <summary>
         /// Gets the current output channel stack.
         /// </summary>
-        public OutputWriter CurrentOutput => _outputs.Peek();
+        public OutputWriter Output => _outputs.Peek();
 
         /// <summary>
         /// Gets the random number generator in use by the interpreter.
@@ -146,9 +146,9 @@ namespace Rant.Engine
             _engine = engine;
             _format = engine.Format;
             _sizeLimit = new Limit(sizeLimit);
-            _mainOutput = new OutputWriter(this);
+            _baseOutput = new OutputWriter(this);
             _outputs = new Stack<OutputWriter>();
-            _outputs.Push(_mainOutput);
+            _outputs.Push(_baseOutput);
             _rng = rng;
             _startingGen = rng.Generation;
             _pattern = pattern;
@@ -168,30 +168,30 @@ namespace Rant.Engine
 	    /// Prints the specified value to the output channel stack.
 	    /// </summary>
 	    /// <param name="obj">The value to print.</param>
-	    public void Print(object obj) => CurrentOutput.Do(chain => chain.Print(obj));
+	    public void Print(object obj) => Output.Do(chain => chain.Print(obj));
 
         public void PrintMany(Func<char> generator, int times)
         {
             if (times == 1)
             {
-                CurrentOutput.Do(chain => chain.Print(generator()));
+                Output.Do(chain => chain.Print(generator()));
                 return;
             }
             var buffer = new StringBuilder();
             for (int i = 0; i < times; i++) buffer.Append(generator());
-            CurrentOutput.Do(chain => chain.Print(buffer));
+            Output.Do(chain => chain.Print(buffer));
         }
 
         public void PrintMany(Func<string> generator, int times)
         {
             if (times == 1)
             {
-                CurrentOutput.Do(chain => chain.Print(generator()));
+                Output.Do(chain => chain.Print(generator()));
                 return;
             }
             var buffer = new StringBuilder();
             for (int i = 0; i < times; i++) buffer.Append(generator());
-			CurrentOutput.Do(chain => chain.Print(buffer));
+			Output.Do(chain => chain.Print(buffer));
 		}
 
         public void AddOutputWriter() => _outputs.Push(new OutputWriter(this));
@@ -203,10 +203,10 @@ namespace Rant.Engine
         public void DecreaseQuote() => _quoteLevel--;
 
         public void PrintOpeningQuote()
-            => CurrentOutput.Do(chain => chain.Print(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote));
+            => Output.Do(chain => chain.Print(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote));
 
         public void PrintClosingQuote()
-            => CurrentOutput.Do(chain => chain.Print(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote));
+            => Output.Do(chain => chain.Print(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote));
 
         /// <summary>
         /// Dequeues the current block attribute set and returns it, queuing a new attribute set.

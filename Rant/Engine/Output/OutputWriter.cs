@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Rant.Engine.Formatters;
+
 namespace Rant.Engine.Output
 {
 	internal class OutputWriter
@@ -49,6 +51,7 @@ namespace Rant.Engine.Output
 			bool fInternal = false;
 			foreach (var chain in chainStack)
 			{
+				if (fInternal && chain == mainChain) return;
 				chainAction(chain);
 				switch (chain.Visibility)
 				{
@@ -68,10 +71,16 @@ namespace Rant.Engine.Output
 			}
 		}
 
+		public void Capitalize(Capitalization caps) => Do(chain => chain.Last.Caps = caps);
+
 		public void Print(string value) => Do(chain => chain.Print(value));
 
 		public void Print(object obj) => Do(chain => chain.Print(obj));
 
-		public RantOutput ToRantOutput() => new RantOutput(sandbox.RNG.Seed, sandbox.StartingGen, activeChains);
+		public void InsertTarget(string targetName) => Do(chain => chain.InsertTarget(targetName));
+
+		public void PrintToTarget(string targetName, string value) => Do(chain => chain.PrintToTarget(targetName, value));
+
+		public RantOutput ToRantOutput() => new RantOutput(sandbox.RNG.Seed, sandbox.StartingGen, chains.Values);
 	}
 }

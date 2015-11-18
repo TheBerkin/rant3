@@ -55,13 +55,7 @@ namespace Rant.Engine.Syntax
 				}
 			},
 			{
-				'a', (sb, c) =>
-				{
-					foreach (var ch in sb.CurrentOutput.GetActive())
-					{
-						for(int i = 0; i < c; i++) ch.WriteArticle();
-					}
-				}
+				'a', (sb, c) => sb.Output.Do(chain => chain.AddArticleBuffer())
 			}
 		};
 

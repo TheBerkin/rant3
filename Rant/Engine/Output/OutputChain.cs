@@ -29,6 +29,7 @@ namespace Rant.Engine.Output
 		{
 			sandbox = sb;
 			_first = new OutputChainBuffer(sb, null);
+			_last = _first;
 			Name = name;
 		}
 
@@ -50,6 +51,9 @@ namespace Rant.Engine.Output
 
 			// If it does exist, just create a new instance of it with the same buffer and add it in.
 			_last = new OutputChainBuffer(sandbox, _last, buffer);
+
+			// Then add an empty buffer after it so we don't start printing onto the target.
+			AddBuffer();
 		}
 
 		public void PrintToTarget(string targetName, string value)
@@ -61,6 +65,25 @@ namespace Rant.Engine.Output
 			}
 
 			buffer.Print(value);
+		}
+
+		public void ClearTarget(string targetName)
+		{
+			OutputChainBuffer buffer;
+			if (targets.TryGetValue(targetName, out buffer))
+			{
+				buffer.Clear();
+			}
+		}
+
+		public string GetTargetValue(string targetName)
+		{
+			OutputChainBuffer buffer;
+			if (targets.TryGetValue(targetName, out buffer))
+			{
+				return buffer.ToString();
+			}
+			return String.Empty;
 		}
 
 		public void Print(string value) => _last.Print(value);

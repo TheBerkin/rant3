@@ -1,6 +1,6 @@
 ﻿using Rant.Engine.Metadata;
 
-namespace Rant.Engine
+namespace Rant.Engine.Output
 {
     /// <summary>
     /// Provides visibility settings for output channels.

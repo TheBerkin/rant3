@@ -14,7 +14,7 @@ namespace Rant.Engine.Formatters
         private static readonly Regex RegCapsSentenceA = new Regex(@"(?<=[.?!])\s+\w", FmtRegexOptions); // Handles letters after ending capitalization
         private static readonly Regex RegCapsSentenceB = new Regex(@"[.?!](?!\w)$", FmtRegexOptions); // Handles end cases (no letter after last ending)
 
-        public Case Case;
+        public Capitalization Case;
         public char LastChar => _lastChar;
                 
         private char _lastChar;
@@ -22,7 +22,7 @@ namespace Rant.Engine.Formatters
 
         public OutputFormatter()
         {
-            Case = Case.None;
+            Case = Capitalization.None;
             _lastChar = '\0';
             _sentence = true;
         }
@@ -35,17 +35,17 @@ namespace Rant.Engine.Formatters
 
             switch (Case)
             {
-                case Case.Lower:
+                case Capitalization.Lower:
                     input = input.ToLower();
                     break;
-                case Case.Upper:
+                case Capitalization.Upper:
                     input = input.ToUpper();
                     break;
-                case Case.First:
+                case Capitalization.First:
                     input = RegCapsFirst.Replace(input, m => m.Value.ToUpper());
-                    if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) Case = Case.None;
+                    if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) Case = Capitalization.None;
                     break;
-                case Case.Title:
+                case Capitalization.Title:
                     if (((options & OutputFormatterOptions.IsArticle) == OutputFormatterOptions.IsArticle || formatStyle.Excludes(input)) && Char.IsWhiteSpace(_lastChar)) break;
 
                     input = RegCapsTitleWord.Replace(input, m => (
@@ -55,14 +55,14 @@ namespace Rant.Engine.Formatters
                         || Char.IsPunctuation(_lastChar)
                         ? m.Value.ToUpper() : m.Value);
                     break;
-                case Case.Sentence:
+                case Capitalization.Sentence:
                     if (_sentence) input = Regex.Replace(input, @"^.*?\w", m => {
                         if ((options & OutputFormatterOptions.NoUpdate) != OutputFormatterOptions.NoUpdate) _sentence = false;
                         return m.Value.ToUpper();
                     });
                     input = RegCapsSentenceA.Replace(input, m => m.Value.ToUpper());                    
                     break;
-                case Case.Word:
+                case Capitalization.Word:
                     input = RegCapsTitleWord.Replace(input, m => m.Value.ToUpper());
                     break;
             }

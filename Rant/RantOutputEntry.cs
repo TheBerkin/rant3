@@ -1,4 +1,5 @@
 ﻿using Rant.Engine;
+using Rant.Engine.Output;
 
 namespace Rant
 {
