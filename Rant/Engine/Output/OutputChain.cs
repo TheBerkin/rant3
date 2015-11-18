@@ -46,11 +46,12 @@ namespace Rant.Engine.Output
 			{
 				// If not, make a new one and insert it
 				buffer = targets[targetName] = AddBuffer();
-				return;
 			}
-
-			// If it does exist, just create a new instance of it with the same buffer and add it in.
-			_last = new OutputChainBuffer(sandbox, _last, buffer);
+			else
+			{
+				// If it does exist, just create a new instance of it with the same buffer and add it in.
+				_last = new OutputChainBuffer(sandbox, _last, buffer);
+			}
 
 			// Then add an empty buffer after it so we don't start printing onto the target.
 			AddBuffer();
