@@ -20,7 +20,7 @@ namespace Rant.Engine
         /// <summary>
         /// Channel outputs only to itself and any parent channels also set to Internal.
         /// </summary>
-        [RantDescription("Channel outputs only to itself and any parent channels also set to Internal.")]
+        [RantDescription("Channel outputs only to itself and all immediate parent channels also set to Internal.")]
         Internal
     }
 }

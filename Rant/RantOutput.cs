@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Engine;
+using Rant.Engine.Output;
 
 namespace Rant
 {
@@ -12,15 +12,11 @@ namespace Rant
     /// </summary>
     public sealed class RantOutput : IEnumerable<RantOutputEntry>
     {
-        private readonly Dictionary<string, string> _channelMap;
-        private readonly RantOutputEntry[] _entries; 
+        private readonly Dictionary<string, RantOutputEntry> _outputs;
 
-        internal RantOutput(long seed, long startingGen, ChannelWriter channels)
+        internal RantOutput(long seed, long startingGen, IEnumerable<OutputChain> chains)
         {
-            _channelMap = channels.Channels.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
-            _entries = channels.Channels.Select(channel => 
-                new RantOutputEntry(channel.Key, channel.Value.Value, channel.Value.Visiblity)
-            ).ToArray();
+            _outputs = chains.ToDictionary(chain => chain.Name, chain => new RantOutputEntry(chain.Name, chain.ToString(), chain.Visibility));
             Seed = seed;
             BaseGeneration = startingGen;
         }
@@ -34,8 +30,8 @@ namespace Rant
         {
             get
             {
-                string value;
-                return _channelMap.TryGetValue(channel, out value) ? value : String.Empty;
+                RantOutputEntry value;
+                return _outputs.TryGetValue(channel, out value) ? value.Value : String.Empty;
             }
         }
 
@@ -57,10 +53,10 @@ namespace Rant
                         output[i] = String.Empty;
                         continue;
                     }
-                    string value;
-                    if (_channelMap.TryGetValue(channels[i], out value))
+                    RantOutputEntry value;
+                    if (_outputs.TryGetValue(channels[i], out value))
                     {
-                        channels[i] = value;
+                        channels[i] = value.Value;
                     }
                     else
                     {
@@ -84,15 +80,15 @@ namespace Rant
         /// <summary>
         /// The main output string.
         /// </summary>
-        public string Main => _channelMap["main"];
+        public string Main => _outputs["main"].Value;
 
         /// <summary>
         /// Returns an enumerator that iterates through the outputs in the collection.
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<RantOutputEntry> GetEnumerator() => _entries.AsEnumerable().GetEnumerator();
+        public IEnumerator<RantOutputEntry> GetEnumerator() => _outputs.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _entries.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _outputs.Values.GetEnumerator();
 
         /// <summary>
         /// Returns the output from the "main" channel.

@@ -12,10 +12,10 @@ namespace Rant.Formats
         /// Predefined article rules for English.
         /// </summary>
         public static readonly IndefiniteArticleRules English = new IndefiniteArticleRules(
-            new[] { "uni", "use", "uri", "urol", "euro", "U.", "one", "uvu" },
+            new[] { "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" },
             new[] { "honest", "honor", "hour", "8" },
             new[] { "u" },
-            new[] { "f", "fbi", "fcc", "fda", "x", "l" });
+            new[] { "f", "fbi", "fcc", "fda", "x", "l", "m", "n", "s", "h" });
 
         /// <summary>
         /// Creates a new IndefiniteArticleRules instance with the specified parameters that uses default vowels (a, e, i, o, u).
@@ -33,26 +33,9 @@ namespace Rant.Formats
         }
 
         /// <summary>
-        /// Creates a new IndefiniteArticleRules instance with the specified parameters.
-        /// </summary>
-        /// <param name="vowels">The vowel characters that the rules should test for.</param>
-        /// <param name="ignorePrefixes">The word prefixes that are to be excluded from vowel tests.</param>
-        /// <param name="allowPrefixes">The word prefixes that are to be included in vowel tests, which would normally test negative.</param>
-        /// <param name="ignoreWords">The words that should be ignored in vowel tests.</param>
-        /// <param name="allowWords">The words that should be included in vowel tests, which would normally test negative.</param>
-        public IndefiniteArticleRules(char[] vowels, string[] ignorePrefixes, string[] allowPrefixes, string[] ignoreWords, string[] allowWords)
-        {
-            Vowels = vowels;
-            IgnorePrefixes = (ignorePrefixes ?? new string[0]);
-            AllowPrefixes = (allowPrefixes ?? new string[0]);
-            IgnoreWords = (ignoreWords ?? new string[0]);
-            AllowWords = (allowWords ?? new string[0]);
-        }
-
-        /// <summary>
         /// The vowel characters that the rules should test for.
         /// </summary>
-        public char[] Vowels { get; set; } = new[] { 'a', 'e', 'i', 'o', 'u', 'é' };
+        public char[] Vowels { get; set; } = { 'a', 'e', 'i', 'o', 'u', 'é' };
 
         /// <summary>
         /// The word prefixes that are to be excluded from vowel tests.

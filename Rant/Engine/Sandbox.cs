@@ -9,6 +9,7 @@ using Rant.Engine.ObjectModel;
 using Rant.Vocabulary;
 using Rant.Engine.Syntax;
 using Rant.Engine.Constructs;
+using Rant.Engine.Output;
 using Rant.Engine.Syntax.Richard;
 using Rant.Formats;
 
@@ -22,8 +23,8 @@ namespace Rant.Engine
 		private static readonly object fallbackArgsLockObj = new object();
 
         private readonly RantEngine _engine;
-        private readonly ChannelWriter _mainOutput;
-        private readonly Stack<ChannelWriter> _outputs;
+        private readonly OutputWriter _mainOutput;
+        private readonly Stack<OutputWriter> _outputs;
         private readonly RNG _rng;
         private readonly long _startingGen;
         private readonly RantFormat _format;
@@ -52,17 +53,22 @@ namespace Rant.Engine
         /// <summary>
         /// Gets the main output channel stack.
         /// </summary>
-        public ChannelWriter MainOutput => _mainOutput;
+        public OutputWriter MainOutput => _mainOutput;
 
         /// <summary>
         /// Gets the current output channel stack.
         /// </summary>
-        public ChannelWriter CurrentOutput => _outputs.Peek();
+        public OutputWriter CurrentOutput => _outputs.Peek();
 
         /// <summary>
         /// Gets the random number generator in use by the interpreter.
         /// </summary>
         public RNG RNG => _rng;
+
+		/// <summary>
+		/// The starting generation of the RNG.
+		/// </summary>
+	    public long StartingGen => _startingGen;
 
         /// <summary>
         /// Gets the currently set block attributes. 
@@ -106,6 +112,11 @@ namespace Rant.Engine
         /// </summary>
         public SyncManager SyncManager => _syncManager;
 
+		/// <summary>
+		/// Gets the size limit for the pattern.
+		/// </summary>
+	    public Limit SizeLimit => _sizeLimit;
+
         /// <summary>
         /// Gets the current RantAction being executed.
         /// </summary>
@@ -127,7 +138,7 @@ namespace Rant.Engine
         /// Gets a collection of the flags currently being used for the flag condition.
         /// </summary>
         public HashSet<string> ConditionFlags { get; } = new HashSet<string>();
-
+		
 	    public RantPatternArgs PatternArgs => _patternArgs;
 
         public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, RantPatternArgs args = null)
@@ -135,8 +146,8 @@ namespace Rant.Engine
             _engine = engine;
             _format = engine.Format;
             _sizeLimit = new Limit(sizeLimit);
-            _mainOutput = new ChannelWriter(_format, _sizeLimit);
-            _outputs = new Stack<ChannelWriter>();
+            _mainOutput = new OutputWriter(this);
+            _outputs = new Stack<OutputWriter>();
             _outputs.Push(_mainOutput);
             _rng = rng;
             _startingGen = rng.Generation;
@@ -153,49 +164,49 @@ namespace Rant.Engine
             _stopwatch = new Stopwatch();
         }
 
-        /// <summary>
-        /// Prints the specified value to the output channel stack.
-        /// </summary>
-        /// <param name="obj">The value to print.</param>
-        public void Print(object obj) => CurrentOutput.Write(obj);
+	    /// <summary>
+	    /// Prints the specified value to the output channel stack.
+	    /// </summary>
+	    /// <param name="obj">The value to print.</param>
+	    public void Print(object obj) => CurrentOutput.Do(chain => chain.Print(obj));
 
         public void PrintMany(Func<char> generator, int times)
         {
             if (times == 1)
             {
-                CurrentOutput.Write(generator());
+                CurrentOutput.Do(chain => chain.Print(generator()));
                 return;
             }
             var buffer = new StringBuilder();
             for (int i = 0; i < times; i++) buffer.Append(generator());
-            CurrentOutput.Write(buffer);
+            CurrentOutput.Do(chain => chain.Print(buffer));
         }
 
         public void PrintMany(Func<string> generator, int times)
         {
             if (times == 1)
             {
-                CurrentOutput.Write(generator());
+                CurrentOutput.Do(chain => chain.Print(generator()));
                 return;
             }
             var buffer = new StringBuilder();
             for (int i = 0; i < times; i++) buffer.Append(generator());
-            CurrentOutput.Write(buffer);
-        }
+			CurrentOutput.Do(chain => chain.Print(buffer));
+		}
 
-        public void AddOutputWriter() => _outputs.Push(new ChannelWriter(_format, _sizeLimit));
+        public void AddOutputWriter() => _outputs.Push(new OutputWriter(this));
 
-        public RantOutput Return() => new RantOutput(_rng.Seed, _startingGen, _outputs.Pop());
+	    public RantOutput Return() => _outputs.Pop().ToRantOutput();
 
         public void IncreaseQuote() => _quoteLevel++;
 
         public void DecreaseQuote() => _quoteLevel--;
 
         public void PrintOpeningQuote()
-            => CurrentOutput.Write(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote);
+            => CurrentOutput.Do(chain => chain.Print(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote));
 
         public void PrintClosingQuote()
-            => CurrentOutput.Write(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote);
+            => CurrentOutput.Do(chain => chain.Print(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote));
 
         /// <summary>
         /// Dequeues the current block attribute set and returns it, queuing a new attribute set.
@@ -284,7 +295,7 @@ namespace Rant.Engine
 
         public RantOutput EvalPattern(double timeout, RantPattern pattern)
         {
-            _outputs.Push(new ChannelWriter(_format, _sizeLimit));
+            _outputs.Push(new OutputWriter(this));
             return Run(timeout, pattern);
         }
 
