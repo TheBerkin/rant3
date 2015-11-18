@@ -21,6 +21,7 @@ namespace Rant.Engine.Output
 		private readonly NumberFormatter _numberFormatter = new NumberFormatter();
 		private Capitalization _caps = Capitalization.None;
 		private bool printedSinceCapsChange = false;
+		private int oldSize;
 		protected readonly StringBuilder buffer;
 
 		public Capitalization Caps
@@ -89,6 +90,7 @@ namespace Rant.Engine.Output
 			printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
+			UpdateSize();
 		}
 
 		public void Print(object value)
@@ -104,6 +106,14 @@ namespace Rant.Engine.Output
 			printedSinceCapsChange = true;
 			_prevItem?.OnNextBufferChange();
 			_nextItem?.OnPrevBufferChange();
+			UpdateSize();
+		}
+
+		private void UpdateSize()
+		{
+			if (sandbox.SizeLimit.Accumulate(buffer.Length - oldSize))
+				throw new InvalidOperationException($"Exceeded character limit ({sandbox.SizeLimit.Maximum})");
+			oldSize = buffer.Length;
 		}
 
 		public void Clear()
