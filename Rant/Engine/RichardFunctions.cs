@@ -295,20 +295,6 @@ namespace Rant.Engine
         Global Objects
         */
 
-        [RichardGlobalObject("Target", "get", Returns = "string")]
-        [RantDescription("Returns the value of the target with the specified name, or undefined.")]
-        private static IEnumerator<RichActionBase> TargetGet(Sandbox sb, RantObject that, 
-            [RichardPropertyArgument("targetName", "string", Description = "The name of the target that will be returned.")]
-            RantObject obj)
-        {
-            string name = obj.Value as string;
-            if (name == null)
-                throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
-            string result = sb.CurrentOutput.GetActiveChannel().GetTargetValue(name);
-            sb.ScriptObjectStack.Push(result);
-            yield break;
-        }
-
         [RichardGlobalObject("Target", "send")]
         [RantDescription("Sends the provided value to the named target.")]
         private static IEnumerator<RichActionBase> TargetSend(Sandbox sb, RantObject that,
@@ -324,7 +310,7 @@ namespace Rant.Engine
                 throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
             if (value == null)
                 throw new RantRuntimeException(sb.Pattern, null, "value must be a string.");
-            sb.CurrentOutput.WriteToTarget(targetName, value);
+            sb.Output.PrintToTarget(targetName, value);
             yield break;
         }
 
@@ -337,7 +323,7 @@ namespace Rant.Engine
             string targetName = obj1.Value as string;
             if (targetName == null)
                 throw new RantRuntimeException(sb.Pattern, null, "targetName must be a string.");
-            sb.CurrentOutput.ClearTarget(targetName);
+            sb.Output.Do(chain => chain.ClearTarget(targetName));
             yield break;
         }
 

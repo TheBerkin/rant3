@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Rant.Engine
+﻿namespace Rant.Engine
 {
     internal sealed class Limit
     {

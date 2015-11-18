@@ -18,10 +18,7 @@ namespace Rant.Formats
 
         static RantFormat()
         {
-            English = new RantFormat
-            {
-                IndefiniteArticles = IndefiniteArticles.English
-            };
+	        English = new RantFormat();
             English.TitleCaseExclusions.AddRange(
                 "a", "an", "the", "that", "where", "when", "for", "any", "or", "and", "of", "in", "at", "as", "into", "if",
                 "are", "you", "why", "from");
@@ -73,11 +70,6 @@ namespace Rant.Formats
 		/// The standard space character used in automated formatting, such as series.
 		/// </summary>
 	    public char StandardSpace { get; protected set; } = ' ';
-
-        /// <summary>
-        /// The vowel-sensitive indefinite articles used by the \a escape sequence.
-        /// </summary>
-        public IndefiniteArticles IndefiniteArticles { get; protected set; } = IndefiniteArticles.English;
 
 	    /// <summary>
 	    /// The culture to format output strings with.

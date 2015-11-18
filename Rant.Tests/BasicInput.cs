@@ -80,5 +80,12 @@ namespace Rant.Tests
         {
             Assert.AreEqual("🔫😠", rant.Do(@"[emoji:gun][emoji:angry]").Main);
         }
+
+	    [Test]
+	    public void IndefiniteArticles()
+	    {
+		    Assert.AreEqual("a universe, an honor, a one, an apple, an X, a U, an 8",
+				rant.Do(@"\a universe, \a honor, \a one, \a apple, \a X, \a U, \a 8").Main);
+	    }
     }
 }
