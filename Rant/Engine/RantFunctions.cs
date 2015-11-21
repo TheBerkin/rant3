@@ -966,5 +966,12 @@ namespace Rant.Engine
             }
             sb.Print(Char.ConvertFromUtf32(Emoji.Shortcodes[shortcode]));
         }
+
+	    [RantFunction("plural", "pl")]
+	    [RantDescription("Infers and prints the plural form of the specified word.")]
+	    private static void Plural(Sandbox sb, string word)
+	    {
+		    sb.Print(sb.Format.Pluralizer.Pluralize(word));
+	    }
     }
 }

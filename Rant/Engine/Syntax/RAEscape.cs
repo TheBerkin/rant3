@@ -24,8 +24,8 @@ namespace Rant.Engine.Syntax
 			{'s', (sb, c) => sb.Print(new string(' ', c))},
 			{'d', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(48, 58)), c)},
 			{'D', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(49, 58)), c)},
-			{'c', (sb, c) => sb.PrintMany(() => Char.ToLowerInvariant(sb.Format.Letters[sb.RNG.Next(sb.Format.Letters.Length)]), c)},
-			{'C', (sb, c) => sb.PrintMany(() => Char.ToUpperInvariant(sb.Format.Letters[sb.RNG.Next(sb.Format.Letters.Length)]), c)},
+			{'c', (sb, c) => sb.PrintMany(() => Char.ToLowerInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)},
+			{'C', (sb, c) => sb.PrintMany(() => Char.ToUpperInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)},
 			{'x', (sb, c) => sb.PrintMany(() => "0123456789abcdef"[sb.RNG.Next(16)], c)},
 			{'X', (sb, c) => sb.PrintMany(() => "0123456789ABCDEF"[sb.RNG.Next(16)], c)},
 			{
@@ -34,9 +34,9 @@ namespace Rant.Engine.Syntax
 					int i;
 					sb.PrintMany(() =>
 					{
-						i = sb.RNG.Next(sb.Format.Letters.Length + 10);
+						i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
 						return i >= 10 
-						? Char.ToLowerInvariant(sb.Format.Letters[i - 10]) 
+						? Char.ToLowerInvariant(sb.Format.LettersInternal[i - 10]) 
 						: Convert.ToChar(i + 48);
 					}, c);
 				}
@@ -47,9 +47,9 @@ namespace Rant.Engine.Syntax
 					int i;
 					sb.PrintMany(() =>
 					{
-						i = sb.RNG.Next(sb.Format.Letters.Length + 10);
+						i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
 						return i >= 10
-						? Char.ToUpperInvariant(sb.Format.Letters[i - 10])
+						? Char.ToUpperInvariant(sb.Format.LettersInternal[i - 10])
 						: Convert.ToChar(i + 48);
 					}, c);
 				}

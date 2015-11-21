@@ -296,12 +296,13 @@
     <Compile Include="Engine\Syntax\RAText.cs" />
     <Compile Include="Engine\Formatters\Endianness.cs" />
     <Compile Include="Engine\Formatters\HexFormat.cs" />
-    <Compile Include="Engine\Formatters\OutputFormatter.cs" />
     <Compile Include="Engine\Formatters\NumberFormatter.cs" />
     <Compile Include="Engine\ObjectModel\ObjectTable.cs" />
     <Compile Include="Engine\ObjectModel\RantObject.cs" />
     <Compile Include="Engine\ObjectModel\ObjectStack.cs" />
     <Compile Include="Engine\ObjectModel\RantObjectType.cs" />
+    <Compile Include="Formats\EnglishPluralizer.cs" />
+    <Compile Include="Formats\Pluralizer.cs" />
     <Compile Include="IO\Bson\BsonDocument.cs" />
     <Compile Include="IO\Bson\BsonItem.cs" />
     <Compile Include="IO\Bson\BsonStringTableMode.cs" />
@@ -331,7 +332,6 @@
     <Compile Include="Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
-    <Compile Include="Formats\RantUserFormat.cs" />
     <Compile Include="IO\BitField.cs" />
     <Compile Include="IO\EasyReader.cs" />
     <Compile Include="IO\EasyWriter.cs" />
