@@ -42,7 +42,7 @@ namespace Rant.Formats
 			{"vertex", "vertices"},
 			{"criterion", "criteria"},
 			{"passerby", "passersby"},
-
+			{"ox", "oxen"},
 			{"alumnus", "alumni"},
 			{"cactus", "cacti"},
 			{"fungus", "fungi"},
@@ -70,7 +70,9 @@ namespace Rant.Formats
 			"plankton",
 			"salmon",
 			"squid",
-			"swine"
+			"swine",
+			"swiss",
+			"chinese"
 		};
 
 
@@ -85,12 +87,15 @@ namespace Rant.Formats
 			if (irregulars.TryGetValue(input, out result)) return result;
 			if ((result = irregulars.Keys.FirstOrDefault(w => input.EndsWith(w))) != null)
 				return input.Substring(0, l - result.Length) + irregulars[result];
+			
+			if (consonants.Contains(input[l - 2]))
+			{
+				// With nouns ending in o preceded by a consonant, the plural in many cases is spelled by adding -es...
+				if (input.EndsWith("o")) return input + "es";
 
-			// With nouns ending in o preceded by a consonant, the plural in many cases is spelled by adding -es...
-			if (input.EndsWith("o") && consonants.Contains(input[l - 2])) return input + "es";
-
-			// Nouns ending in a y preceded by a consonant usually drop the y and add -ies...
-			if ((input.EndsWith("y") || input.EndsWith("quy")) && consonants.Contains(input[l - 2])) return input.Substring(0, l - 1) + "ies";
+				// Nouns ending in a y preceded by a consonant usually drop the y and add -ies...
+				if (input.EndsWith("y") || input.EndsWith("quy")) return input.Substring(0, l - 1) + "ies";
+			}
 
 			// Plurals of words ending in "man" end in "men"
 			if (input.EndsWith("man")) return input.Substring(0, l - 2) + "en";
