@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 
 using Rant;
+using Rant.Common;
 using Rant.Vocabulary;
 
 using static System.Console;
@@ -16,7 +17,6 @@ namespace RantConsole
     class Program
     {
         public const double PATTERN_TIMEOUT = 10.0;
-        public static readonly string FILE = Property("file");
         public static readonly string DIC_PATH = Property("dict");
         public static readonly string PKG_PATH = Property("package");
         public static readonly long SEED;
@@ -29,11 +29,13 @@ namespace RantConsole
 
         static void Main(string[] args)
         {
-            Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            //Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
             var rant = new RantEngine();
+	        
+	        var FILE = GetPaths().FirstOrDefault();
 
 #if !DEBUG
             try
@@ -41,17 +43,24 @@ namespace RantConsole
 #endif
                 if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
 
-                if (!String.IsNullOrEmpty(PKG_PATH))
-                {
+	            if (!String.IsNullOrEmpty(PKG_PATH))
+	            {
 #if DEBUG
                     Stopwatch timer = Stopwatch.StartNew();
 #endif
-                    rant.LoadPackage(PKG_PATH);
+		            rant.LoadPackage(PKG_PATH);
 #if DEBUG
                     timer.Stop();
                     WriteLine($"Package loading: {timer.ElapsedMilliseconds}ms");
 #endif
-                }
+	            }
+	            else
+	            {
+		            foreach (var pkg in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.rantpkg", SearchOption.AllDirectories))
+		            {
+			            rant.LoadPackage(pkg);
+		            }
+	            }
 #if !DEBUG
             }
             catch (Exception e)
