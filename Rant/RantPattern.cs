@@ -43,12 +43,16 @@ namespace Rant
 
         internal RantAction Action { get; }
 
+		internal RantModule Module { get; }
+
         internal RantPattern(string name, RantPatternOrigin type, string code)
         {
             Name = name;
             Type = type;
             Code = code;
-	        Action = RantCompiler.Compile(name, code);
+			var compiler = new RantCompiler(name, code);
+			Action = compiler.Read();
+			Module = compiler.HasModule ? compiler.Module : null;
         }
 
         /// <summary>

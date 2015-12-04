@@ -14,19 +14,40 @@ namespace Rant.Engine.Compiler.Parselets
         {
             var call = false;
             var nextToken = reader.ReadToken();
+			var inModule = false;
+			string functionName = null;
 
-            // if the first token isn't a square, it's the name of the subroutine call
-            if (nextToken.ID != R.LeftSquare)
-                call = true;
-            else
-                nextToken = reader.Read(R.Text, "subroutine name");
+			// if the first token isn't a square, it's the name of the subroutine call
+			if (nextToken.ID != R.LeftSquare)
+			{
+				call = true;
 
-            // if there's a color here, there's args
+				// probably an in-module subroutine call
+				if (reader.PeekType() == R.Subtype)
+				{
+					reader.ReadToken();
+					var name = reader.Read(R.Text, "subroutine name");
+					functionName = name.Value;
+					inModule = true;
+				}
+			}
+			else
+			{
+				if (reader.PeekType() == R.Subtype)
+				{
+					compiler.HasModule = true;
+					inModule = true;
+					reader.ReadToken();
+				}
+				nextToken = reader.Read(R.Text, "subroutine name");
+			}
+
+            // if there's a colon here, there's args
             var hasArgs = reader.Take(R.Colon);
 
             if (call)
             {
-                foreach (var parselet in SubroutineArgs(token, nextToken))
+                foreach (var parselet in SubroutineArgs(token, nextToken, functionName))
                     yield return parselet;
                 yield break;
             }
@@ -74,6 +95,8 @@ namespace Rant.Engine.Compiler.Parselets
                 yield return parselet;
 
             subroutine.Body = body;
+			if(inModule)
+				compiler.Module.AddActionFunction(subroutine.Name, subroutine);
             AddToOutput(subroutine);
         }
 
@@ -110,7 +133,7 @@ namespace Rant.Engine.Compiler.Parselets
             compiler.SyntaxError(fromToken, "Unterminated function: unexpected end of file");
         }
 
-        private IEnumerable<Parselet> SubroutineArgs(Token<R> fromToken, Token<R> token)
+        private IEnumerable<Parselet> SubroutineArgs(Token<R> fromToken, Token<R> token, string functionName)
         {
             Token<R> funcToken = null;
             var actions = new List<RantAction>();
@@ -141,7 +164,7 @@ namespace Rant.Engine.Compiler.Parselets
                     // add action to args and return
                     sequences.Add(actions.Count == 1 ? actions[0] : new RASequence(actions, funcToken));
 
-                    var subroutine = new RACallSubroutine(token);
+                    var subroutine = new RACallSubroutine(token, functionName);
                     subroutine.Arguments = sequences.Where(x => !(x is RASequence && (x as RASequence).Actions.Count == 0)).ToList();
                     AddToOutput(subroutine);
                     yield break;

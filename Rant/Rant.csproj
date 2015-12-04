@@ -323,6 +323,7 @@
     <Compile Include="RantCompilerException.cs" />
     <Compile Include="RantInternalException.cs" />
     <Compile Include="RantDependencyResolver.cs" />
+    <Compile Include="RantModule.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="RantPackageDependency.cs" />
     <Compile Include="RantPackageVersion.cs" />

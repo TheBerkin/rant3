@@ -39,7 +39,8 @@ namespace Rant
         }
         
         internal readonly ObjectTable Objects = new ObjectTable();
-        
+
+		private readonly Dictionary<string, RantModule> _userModules = new Dictionary<string, RantModule>();
         private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
 	    private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>(); 
 		private RantDependencyResolver _resolver = new RantDependencyResolver();
@@ -56,6 +57,11 @@ namespace Rant
             if (_patternCache.TryGetValue(name, out pattern)) return pattern;
             return _patternCache[name] = RantPattern.FromFile(name);
         }
+
+		/// <summary>
+		/// User-defined Rant modules.
+		/// </summary>
+		public Dictionary<string, RantModule> Modules => _userModules;
 
 		/// <summary>
 		/// Accesses global variables.
@@ -205,6 +211,7 @@ namespace Rant
 
         private RantOutput RunVM(Sandbox vm, double timeout)
         {
+			vm.UserModules = _userModules;
             return vm.Run(timeout);
         }
 

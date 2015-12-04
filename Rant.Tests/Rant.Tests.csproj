@@ -70,6 +70,7 @@
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="Misc\Bson.cs" />
+    <Compile Include="Modules.cs" />
     <Compile Include="PackageVersions.cs" />
     <Compile Include="PatternArgs.cs" />
     <Compile Include="Richard\Arithmetic.cs" />
