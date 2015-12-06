@@ -37,7 +37,7 @@ Rant is a language for procedurally generating text, written in C#. It combines 
 
 **Fill in the blanks**
 ```
-<name-male> likes to <verb-transitive> <noun.plural> with <pron.poss-male> pet <noun-animal> on <timenoun.plural-dayofweek>.
+<name-male> likes to <verb-transitive> <noun.s> with <pron.poss-male> pet <noun-animal> on <timenoun.s-dayofweek>.
 ```
 ```
 Alick likes to mount shuttlecocks with his pet bat on Mondays.

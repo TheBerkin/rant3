@@ -141,6 +141,13 @@ namespace Rant.Engine
 		
 	    public RantPatternArgs PatternArgs => _patternArgs;
 
+		public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
+
+		/// <summary>
+		/// Modules that were not loaded from code, but were provided to RantEngine by the user.
+		/// </summary>
+		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
+
         public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, RantPatternArgs args = null)
         {
             _engine = engine;

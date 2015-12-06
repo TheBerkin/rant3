@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -973,5 +974,29 @@ namespace Rant.Engine
 	    {
 		    sb.Print(sb.Format.Pluralizer.Pluralize(word));
 	    }
+
+		[RantFunction("use")]
+		[RantDescription("Loads a module from the file name.module.rant, name.rant, or name, in that order.")]
+		private static void Use(Sandbox sb, string name)
+		{
+			if(sb.UserModules.ContainsKey(name))
+			{
+				sb.Modules[name] = sb.UserModules[name];
+				return;
+			}
+			string file;
+			if (File.Exists(name + ".module.rant"))
+				file = name + ".module.rant";
+			else if (File.Exists(name + ".rant"))
+				file = name + ".rant";
+			else if (File.Exists(name))
+				file = name;
+			else
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, $"Could not find module '{name}'.");
+			var pattern = RantPattern.FromFile(file);
+			if (pattern.Module == null)
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, $"No module is defined in {file}.");
+			sb.Modules[Path.GetFileNameWithoutExtension(name)] = pattern.Module;
+		}
     }
 }

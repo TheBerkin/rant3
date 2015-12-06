@@ -26,8 +26,8 @@ namespace Rant.Engine.Compiler.Parselets
             var actions = new List<RantAction>();
             var sequences = new List<RantAction>();
 
-	        List<_<int, double>> constantWeights = null;
-			List<_<int, RantAction>> dynamicWeights = null;
+	        List<_<int, double>> constantWeights = new List<_<int, double>>();
+			List<_<int, RantAction>> dynamicWeights = new List<_<int, RantAction>>();
 
             while (!reader.End)
             {
@@ -56,25 +56,18 @@ namespace Rant.Engine.Compiler.Parselets
                     {
                         var strWeight = (weightAction as RAText).Text;
                         double d;
-                        int i;
 
-                        if (!Double.TryParse(strWeight, out d))
+                        if (!Util.ParseDouble(strWeight, out d))
                         {
-                            if (Util.ParseInt(strWeight, out i))
-                                d = 1;
-                            else
-                                compiler.SyntaxError(weightAction.Range, $"Invalid weight value '{strWeight}' - constant must be a number.");
+							compiler.SyntaxError(weightAction.Range, $"Invalid weight value '{strWeight}'.");
                         }
-
-                        if (d < 0)
-                            compiler.SyntaxError(weightAction.Range, $"Invalid weight value '{strWeight}' - constant cannot be a negative.");
-
-                        (constantWeights ?? (constantWeights = new List<_<int, double>>())).Add(_.Create(sequences.Count, d));
+						
+                        constantWeights.Add(_.Create(sequences.Count, d));
                     }
                     else // dynamic
                     {
                         // TODO: there's some weird issue going on with doubles being seen as dynamic weights
-                        (dynamicWeights ?? (dynamicWeights = new List<_<int, RantAction>>())).Add(_.Create(sequences.Count, weightAction));
+                        dynamicWeights.Add(_.Create(sequences.Count, weightAction));
                     }
 
                     continue;

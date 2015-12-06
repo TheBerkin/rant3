@@ -8,14 +8,37 @@ namespace Rant.Engine.Syntax
 {
 	internal class RACallSubroutine : RASubroutine
 	{
-		public RACallSubroutine(Stringe name)
-			: base(name) { }
+		private string _moduleFunctionName = null;
+		private bool _inModule = false;
+
+		public RACallSubroutine(Stringe name, string moduleFunctionName = null)
+			: base(name)
+		{
+			if (moduleFunctionName != null)
+				_inModule = true;
+			_moduleFunctionName = moduleFunctionName;
+		}
 
 		public override IEnumerator<RantAction> Run(Sandbox sb)
 		{
-			if (sb.Objects[Name] == null)
+			if (_inModule)
+			{
+				if (!sb.Modules.ContainsKey(Name))
+					throw new RantRuntimeException(
+						sb.Pattern, 
+						_name, 
+						$"The module '{Name}' does not exist or has not been imported."
+					);
+				if (sb.Modules[Name][_moduleFunctionName] == null)
+					throw new RantRuntimeException(
+						sb.Pattern, 
+						_name, 
+						$"The function '{_moduleFunctionName}' cannot be found in the module '{Name}'."
+					);
+            }
+			else if (sb.Objects[Name] == null)
 				throw new RantRuntimeException(sb.Pattern, _name, $"The subroutine '{Name}' does not exist.");
-			var sub = (RADefineSubroutine)sb.Objects[Name].Value;
+			var sub = (RADefineSubroutine)(_inModule ? sb.Modules[Name][_moduleFunctionName] : sb.Objects[Name].Value);
 			if (sub.Parameters.Keys.Count != Arguments.Count)
 				throw new RantRuntimeException(sb.Pattern, _name, "Argument mismatch on subroutine call.");
 			var action = sub.Body;

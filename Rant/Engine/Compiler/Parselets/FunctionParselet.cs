@@ -27,7 +27,7 @@ namespace Rant.Engine.Compiler.Parselets
                     compiler.SyntaxError(tagToken, "Expected function name, subroutine, regex or a script.");
                     break;
 
-                case R.Text:
+				case R.Text:
                     yield return Parselet.GetParselet("FunctionText", tagToken, AddToOutput);
                     break;
 
@@ -39,7 +39,7 @@ namespace Rant.Engine.Compiler.Parselets
                     AddToOutput(compiler.ReadExpression());
                     break;
 
-                case R.Dollar:
+				case R.Dollar:
                     yield return Parselet.GetParselet("FunctionSubroutine", tagToken, AddToOutput);
                     break;
             }

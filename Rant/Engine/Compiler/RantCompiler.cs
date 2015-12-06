@@ -17,8 +17,13 @@ namespace Rant.Engine.Compiler
         private readonly TokenReader reader;
         private readonly RantExpressionCompiler expressionCompiler;
 
+		internal bool HasModule = false;
+		internal readonly RantModule Module;
+
         public RantCompiler(string sourceName, string source)
         {
+			Module = new RantModule(sourceName);
+
             this.source = source;
             this.sourceName = sourceName;
 
