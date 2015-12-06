@@ -63,6 +63,8 @@ namespace Rant
 		/// </summary>
 		public Dictionary<string, RantModule> Modules => _userModules;
 
+		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+
 		/// <summary>
 		/// Accesses global variables.
 		/// </summary>
@@ -163,8 +165,12 @@ namespace Rant
 
             if (patterns.Any())
             {
-                foreach (var pattern in patterns)
-                    _patternCache[pattern.Name] = pattern;
+				foreach (var pattern in patterns)
+				{
+					_patternCache[pattern.Name] = pattern;
+					if (pattern.Module != null)
+						PackageModules[pattern.Name] = pattern.Module;
+				}
             }
 
             if (tables.Any())
@@ -212,6 +218,7 @@ namespace Rant
         private RantOutput RunVM(Sandbox vm, double timeout)
         {
 			vm.UserModules = _userModules;
+			vm.PackageModules = PackageModules;
             return vm.Run(timeout);
         }
 

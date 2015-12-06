@@ -148,6 +148,11 @@ namespace Rant.Engine
 		/// </summary>
 		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
 
+		/// <summary>
+		/// Modules that were loaded from packages.
+		/// </summary>
+		public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+
         public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, RantPatternArgs args = null)
         {
             _engine = engine;

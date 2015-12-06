@@ -984,6 +984,11 @@ namespace Rant.Engine
 				sb.Modules[name] = sb.UserModules[name];
 				return;
 			}
+			if(sb.PackageModules.ContainsKey(name))
+			{
+				sb.Modules[name] = sb.PackageModules[name];
+				return;
+			}
 			string file;
 			if (File.Exists(name + ".module.rant"))
 				file = name + ".module.rant";

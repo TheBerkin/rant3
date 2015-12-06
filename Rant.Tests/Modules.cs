@@ -24,5 +24,16 @@ namespace Rant.Tests
 			rant.Modules["user_module"] = module;
 			Assert.AreEqual("A Good Test", rant.Do("[use:user_module][$user_module.test]").Main);
 		}
+
+		[Test]
+		public void PackageModules()
+		{
+			var package = new RantPackage();
+			var pattern = RantPattern.FromString("[$[.hello_world]:Hello World]");
+			pattern.Name = "pkg_test";
+			package.AddPattern(pattern);
+			rant.LoadPackage(package);
+			Assert.AreEqual("Hello World", rant.Do("[use:pkg_test][$pkg_test.hello_world]").Main);
+		}
 	}
 }
