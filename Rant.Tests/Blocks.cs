@@ -10,6 +10,12 @@ namespace Rant.Tests
 		private readonly RantEngine rant = new RantEngine();
 
 		[Test]
+		public void ConstantWeights()
+		{
+			Assert.AreEqual("bbbbbbbbbb", rant.Do(@"[r:10]{(0)a|b}").Main);
+		}
+
+		[Test]
 		public void BasicRepeater()
 		{
 			Assert.AreEqual("blahblahblahblahblah",

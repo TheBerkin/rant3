@@ -26,7 +26,26 @@ namespace Rant.Engine.Compiler.Parselets
                     if (!actions.Any())
                         compiler.SyntaxError(funcToken, "Expected weight value");
 
-                    AddToOutput(actions.Count == 1 && actions[0] is RAText ? actions[0] : new RASequence(actions, funcToken));
+					RantAction weightAction;
+					// probably a number
+					if (actions[0] is RAText)
+					{
+						if (actions.Count > 1)
+						{
+							if (!(actions[1] is RAText) || ((RAText)actions[1]).Text != "." || actions.Count != 3)
+								compiler.SyntaxError(actions[1].Range, "Invalid block weight value.");
+							weightAction = new RAText(actions[0].Range,
+								(actions[0] as RAText).Text +
+								(actions[1] as RAText).Text +
+								(actions[2] as RAText).Text);
+						}
+						else
+							weightAction = actions[0];
+					}
+					else
+						weightAction = new RASequence(actions, funcToken);
+
+                    AddToOutput(weightAction);
                     yield break;
                 }
 
