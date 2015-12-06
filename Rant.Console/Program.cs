@@ -17,6 +17,7 @@ namespace RantConsole
     class Program
     {
         public const double PATTERN_TIMEOUT = 10.0;
+	    public static readonly string FILE = GetPaths().FirstOrDefault();
         public static readonly string DIC_PATH = Property("dict");
         public static readonly string PKG_PATH = Property("package");
         public static readonly long SEED;
@@ -34,14 +35,22 @@ namespace RantConsole
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
             var rant = new RantEngine();
-	        
-	        var FILE = GetPaths().FirstOrDefault();
 
 #if !DEBUG
             try
             {
 #endif
-                if (!String.IsNullOrEmpty(DIC_PATH)) rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
+	            if (!String.IsNullOrEmpty(DIC_PATH))
+	            {
+		            rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
+	            }
+	            else
+	            {
+		            foreach (var dic in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dic", SearchOption.AllDirectories))
+		            {
+			            rant.Dictionary.AddTable(RantDictionaryTable.FromFile(dic));
+		            }
+	            }
 
 	            if (!String.IsNullOrEmpty(PKG_PATH))
 	            {

@@ -359,6 +359,8 @@
     <Compile Include="Vocabulary\Emoji.cs" />
     <Compile Include="Vocabulary\EntryTypeDef.cs" />
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
+    <Compile Include="Vocabulary\Queries\EntryVariantHint.cs" />
+    <Compile Include="Vocabulary\Queries\TableSource.cs" />
     <Compile Include="Vocabulary\QueryState.cs" />
     <Compile Include="Vocabulary\DicLexer.cs" />
     <Compile Include="Vocabulary\Range.cs" />

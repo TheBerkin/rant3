@@ -26,8 +26,8 @@ namespace Rant.Engine.Compiler.Parselets
             var actions = new List<RantAction>();
             var sequences = new List<RantAction>();
 
-	        List<_<int, double>> constantWeights = new List<_<int, double>>();
-			List<_<int, RantAction>> dynamicWeights = new List<_<int, RantAction>>();
+	        List<_<int, double>> constantWeights = null;
+			List<_<int, RantAction>> dynamicWeights = null;
 
             while (!reader.End)
             {
@@ -51,6 +51,9 @@ namespace Rant.Engine.Compiler.Parselets
                     // it can do anything with the RantAction, in this case it sets it to our weightAction
                     // :>
                     yield return Parselet.GetParselet("BlockWeight", readToken, a => weightAction = a);
+
+					constantWeights = constantWeights ?? new List<_<int, double>>();
+					dynamicWeights = dynamicWeights ?? new List<_<int, RantAction>>();
 
                     if (weightAction is RAText) // constant
                     {
