@@ -11,7 +11,7 @@ namespace Rant.Engine.Output
 	{
 		private const int InitialCapacity = 256;
 		private static readonly HashSet<char> wordSepChars
-			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '"', '/' });
+			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '"', '/', '-' });
 		private static readonly HashSet<char> sentenceTerminators
 			= new HashSet<char>(new[] { '.', '?', '!' });
 

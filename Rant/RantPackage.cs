@@ -373,7 +373,7 @@ namespace Rant
         public static RantPackage Load(string path)
         {
             if (String.IsNullOrEmpty(Path.GetExtension(path))) path += ".rantpkg";
-            return Load(File.Open(path, FileMode.Open));
+            return Load(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
         }
 
         /// <summary>
