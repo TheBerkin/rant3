@@ -38,7 +38,7 @@ namespace Rant.Vocabulary
                 }
             }
             yield return new Token<DicTokenType>(DicTokenType.EOF, "");
-        }
+		}
 
         private static Stringe ReadRestOfLine(StringeReader reader, bool isDiffmark = false) => isDiffmark
             ? reader.ReadUntilAny('>', '\n', '\r', '#', '@')

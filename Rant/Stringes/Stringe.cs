@@ -179,6 +179,7 @@ namespace Rant.Stringes
         /// <param name="value">The string to turn into a stringe.</param>
         public Stringe(string value)
         {
+			System.IO.File.WriteAllText("len.txt", value.Length.ToString());
             if (value == null) throw new ArgumentNullException(nameof(value));
             _stref = new Stref(this, value);
             _offset = 0;
@@ -727,6 +728,11 @@ namespace Rant.Stringes
                 String = str;
                 Chares = new Chare[str.Length];
                 Bases = new bool[str.Length];
+				if(str.Length == 0)
+				{
+					return;
+				}
+
                 var elems = StringInfo.GetTextElementEnumerator(str);
                 while (elems.MoveNext())
                 {
