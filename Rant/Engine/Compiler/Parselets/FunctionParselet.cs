@@ -36,7 +36,7 @@ namespace Rant.Engine.Compiler.Parselets
                     break;
 
                 case R.At:
-                    AddToOutput(compiler.ReadExpression());
+                    AddToOutput(compiler.ReadScript());
                     break;
 
 				case R.Dollar:

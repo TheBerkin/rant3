@@ -127,6 +127,9 @@ namespace Rant.Engine
         /// </summary>
         public double LastTimeout { get; internal set; }
 
+		/// <summary>
+		/// Gets the current object stack of the Richard engine.
+		/// </summary>
         public Stack<object> ScriptObjectStack => _scriptObjectStack;
 
         /// <summary>
@@ -139,8 +142,14 @@ namespace Rant.Engine
         /// </summary>
         public HashSet<string> ConditionFlags { get; } = new HashSet<string>();
 		
+		/// <summary>
+		/// Gets the arguments passed to the pattern.
+		/// </summary>
 	    public RantPatternArgs PatternArgs => _patternArgs;
 
+		/// <summary>
+		/// Gets the currently loaded modules.
+		/// </summary>
 		public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
 
 		/// <summary>

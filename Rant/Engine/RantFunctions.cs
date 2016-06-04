@@ -950,7 +950,7 @@ namespace Rant.Engine
         private static void Bullet(Sandbox sb) => sb.Print("\x2022");
 
         [RantFunction("ss")]
-        [RantDescription("Prints an eszett (double S).")]
+        [RantDescription("Prints an eszett (ß).")]
         private static void Eszett(Sandbox sb) => sb.Print("\x00df");
 
         [RantFunction("emoji")]
@@ -1003,5 +1003,14 @@ namespace Rant.Engine
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, $"No module is defined in {file}.");
 			sb.Modules[Path.GetFileNameWithoutExtension(name)] = pattern.Module;
 		}
+
+	    [RantFunction]
+	    [RantDescription("Prints the current length of the specified channel, in characters.")]
+	    private static void Len(Sandbox sb, 
+			[RantDescription("The channel for which to retrieve the length.")]
+			string channelName)
+	    {
+		    sb.Print(sb.Output.GetChannelLength(channelName));
+	    }
     }
 }

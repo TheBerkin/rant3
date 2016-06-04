@@ -71,6 +71,19 @@ namespace Rant.Engine.Output
 			}
 		}
 
+		public int GetChannelLength(string channelName)
+		{
+			OutputChain c;
+			if (!chains.TryGetValue(channelName, out c)) return 0;
+			var buffer = c.First;
+			int length = 0;
+			do
+			{
+				length += buffer.Length;
+			} while ((buffer = buffer.Next) != null);
+			return length;
+		}
+
 		public void Capitalize(Capitalization caps) => Do(chain => chain.Last.Caps = caps);
 
 		public void Print(string value) => Do(chain => chain.Print(value));

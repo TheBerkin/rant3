@@ -214,7 +214,7 @@
     <Compile Include="Engine\Compiler\Parselets\FunctionParselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\Parselet.cs" />
     <Compile Include="Engine\Compiler\Parselets\WhitespaceParselet.cs" />
-    <Compile Include="Engine\Compiler\RantExpressionCompiler.cs" />
+    <Compile Include="Engine\Compiler\RichardCompiler.cs" />
     <Compile Include="Engine\Compiler\TokenParserAttribute.cs" />
     <Compile Include="Engine\Constructs\AttribPersistence.cs" />
     <Compile Include="Engine\Constructs\BlockManager.cs" />

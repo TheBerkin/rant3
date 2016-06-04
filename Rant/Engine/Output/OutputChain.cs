@@ -80,11 +80,7 @@ namespace Rant.Engine.Output
 		public string GetTargetValue(string targetName)
 		{
 			OutputChainBuffer buffer;
-			if (targets.TryGetValue(targetName, out buffer))
-			{
-				return buffer.ToString();
-			}
-			return String.Empty;
+			return targets.TryGetValue(targetName, out buffer) ? buffer.ToString() : String.Empty;
 		}
 
 		public void Print(string value)
