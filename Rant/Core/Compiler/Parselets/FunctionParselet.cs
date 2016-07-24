@@ -32,10 +32,6 @@ namespace Rant.Core.Compiler.Parselets
                     yield return Parselet.GetParselet("FunctionRegex", tagToken, AddToOutput);
                     break;
 
-                case R.At:
-                    AddToOutput(compiler.ReadScript());
-                    break;
-
 				case R.Dollar:
                     yield return Parselet.GetParselet("FunctionSubroutine", tagToken, AddToOutput);
                     break;

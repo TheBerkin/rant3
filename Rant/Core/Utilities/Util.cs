@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler;
-using Rant.Core.Compiler.Syntax.Richard;
 using Rant.Core.Stringes;
 
 namespace Rant.Core.Utilities
@@ -35,42 +34,6 @@ namespace Rant.Core.Utilities
 
 	        return longest > 1;
 	    }
-
-        public static string ScriptingObjectType(object obj)
-        {
-            object val = obj;
-            if (obj is ObjectModel.RantObject)
-                val = (obj as ObjectModel.RantObject).Value;
-            string type = "no";
-            if (val is string)
-                type = "string";
-            if (val is double)
-                type = "number";
-            if (val is RichObject)
-                type = "object";
-            if (val is RichList)
-                type = "list";
-            if (val is RichFunction)
-                type = "function";
-            if (val is RichPatternString)
-                type = "pattern string";
-            if (val is bool)
-                type = "bool";
-            if (obj is ObjectModel.RantObject && (obj as ObjectModel.RantObject).Type == ObjectModel.RantObjectType.Undefined)
-                type = "undefined";
-            return type;
-        }
-        
-        public static RichActionBase ConvertToAction(Stringe token, object value)
-        {
-            if (value is double)
-                return new RichNumber((double)value, token);
-            if (value is string)
-                return new RichString((string)value, token);
-            if (value is bool)
-                return new RichBoolean(token, (bool)value);
-            return value as RichActionBase;
-        }
 
         private static void CacheEnum(Type type)
 		{

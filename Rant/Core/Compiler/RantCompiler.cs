@@ -17,7 +17,6 @@ namespace Rant.Core.Compiler
 		private readonly string source;
 		private readonly string sourceName;
 		private readonly TokenReader reader;
-		private readonly RichardCompiler richardCompiler;
 
 		internal bool HasModule = false;
 		internal readonly RantModule Module;
@@ -30,7 +29,6 @@ namespace Rant.Core.Compiler
 			this.sourceName = sourceName;
 
 			reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
-			richardCompiler = new RichardCompiler(sourceName, source, reader, this);
 
 			Parselet.SetCompilerAndReader(this, reader);
 		}
@@ -79,8 +77,6 @@ namespace Rant.Core.Compiler
 			done:
 			return new RASequence(output, token);
 		}
-
-		public RantAction ReadScript() => richardCompiler.Read();
 
 		public RantFunctionSignature GetFunctionInfo(RantFunction group, int argc, Stringe from, Stringe to)
 		{

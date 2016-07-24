@@ -214,7 +214,6 @@
     <Compile Include="Core\Compiler\Parselets\FunctionParselet.cs" />
     <Compile Include="Core\Compiler\Parselets\Parselet.cs" />
     <Compile Include="Core\Compiler\Parselets\WhitespaceParselet.cs" />
-    <Compile Include="Core\Compiler\RichardCompiler.cs" />
     <Compile Include="Core\Compiler\TokenParserAttribute.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
@@ -231,51 +230,6 @@
     <Compile Include="Core\Output\OutputChainBuffer.cs" />
     <Compile Include="Core\Output\OutputWriter.cs" />
     <Compile Include="Core\Framework\RantFunction.cs" />
-    <Compile Include="Core\Framework\RichardFunctions.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichAdditionOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichBooleanAndOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichBooleanOrOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichConcatOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichDivisionOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichEqualityOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichGreaterThanOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichInequalityOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichModuloOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichPostfixIncDec.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichPrefixIncDec.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichPrefixInvert.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichBreak.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichDummy.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichFor.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichFunctionInfo.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichIfStatement.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichLessThanOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichMultiplicationOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichSubtractionOperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichArgumentSeperator.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichBlock.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichBoolean.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichFunction.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichFunctionCall.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichGroup.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichList.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichMaybe.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichNativeFunction.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichNull.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichObject.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichObjectKeyValue.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichObjectProperty.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichObjectPropertyAssignment.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichPatternString.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichReturn.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichString.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichUndefined.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichVariable.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichWhile.cs" />
-    <Compile Include="Core\Compiler\Syntax\RAExpression.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichActionBase.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\RichNumber.cs" />
-    <Compile Include="Core\Compiler\Syntax\Richard\Operators\RichInfixOperator.cs" />
     <Compile Include="Core\Compiler\Syntax\RADefineSubroutine.cs" />
     <Compile Include="Core\Compiler\Syntax\RAEscape.cs" />
     <Compile Include="Core\Compiler\Syntax\RAFunction.cs" />
@@ -413,9 +367,7 @@
     <Compile Include="Core\Framework\RantFunctionRegistry.Loader.cs" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Delegates\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

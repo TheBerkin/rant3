@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Core.Compiler.Syntax.Richard;
 using Rant.Core.Framework;
 using Rant.Metadata;
 
@@ -62,98 +61,6 @@ namespace Rant
         /// <param name="functionName">The function name to retrieve aliases for.</param>
         /// <returns></returns>
         public static IEnumerable<string> GetFunctionAliases(string functionName) => RantFunctionRegistry.GetAliases(functionName);
-
-
-        public static IEnumerable<Type> GetRichardPropertyTypes() => RichardFunctions.GetPropertyTypes();
-        public static IEnumerable<string> GetRichardProperties(Type type) => RichardFunctions.GetProperties(type);
-        public static bool IsRichardPropertyFunction(Type type, string name) => RichardFunctions.GetPropertyFunction(type, name).TreatAsRichardFunction;
-        public static RichardArgumentInfo[] GetRichardPropertyArguments(Type type, string name)
-        {
-            return RichardFunctions
-                .GetPropertyFunction(type, name)
-                .RawParameters
-                .Select(x =>
-                    x.GetCustomAttributes(typeof(RichardPropertyArgument), false).FirstOrDefault() as RichardPropertyArgument
-                )
-                .Where(x => x != null)
-                .Select(x => new RichardArgumentInfo() { Name = x.Name, Description = x.Description, Type = x.Type })
-                .ToArray();
-        }
-        public static RichardPropertyInfo GetRichardPropertyInfo(Type type, string name)
-        {
-            var prop = RichardFunctions.GetPropertyFunction(type, name);
-            var propAttribute = prop.RawMethod.GetCustomAttributes(typeof(RichardProperty), false)[0] as RichardProperty;
-            return new RichardPropertyInfo()
-            {
-                Name = prop.Name,
-                Description = prop.Description,
-                IsFunction = prop.TreatAsRichardFunction,
-                Returns = propAttribute.Returns
-            };
-        }
-        
-
-        public static IEnumerable<string> GetRichardGlobalObjects() => RichardFunctions.GetGlobalObjects();
-        public static IEnumerable<string> GetRichardObjectProperties(string name) => RichardFunctions.GetObjectProperties(name);
-        public static bool IsRichardGlobalObjectPropertyFunction(string name, string prop) => RichardFunctions.GetObjectProperty(name, prop).TreatAsRichardFunction;
-        public static RichardArgumentInfo[] GetRichardObjectPropertyArguments(string name, string prop)
-        {
-            return RichardFunctions
-                .GetObjectProperty(name, prop)
-                .RawParameters
-                .Select(x =>
-                    x.GetCustomAttributes(typeof(RichardPropertyArgument), false).FirstOrDefault() as RichardPropertyArgument
-                )
-                .Where(x => x != null)
-                .Select(x => new RichardArgumentInfo() { Name = x.Name, Description = x.Description, Type = x.Type })
-                .ToArray();
-        }
-        public static RichardPropertyInfo GetRichardObjectPropertyInfo(string name, string prop)
-        {
-            var property = RichardFunctions.GetObjectProperty(name, prop);
-            var propAttribute = property.RawMethod.GetCustomAttributes(typeof(RichardGlobalObject), false)[0] as RichardGlobalObject;
-            return new RichardPropertyInfo()
-            {
-                Name = property.Name,
-                Description = property.Description,
-                IsFunction = property.TreatAsRichardFunction,
-                Returns = propAttribute.Returns
-            };
-        }
-        
-        public static string GetRichardTypeName(Type val)
-        {
-            string type = "No";
-            if(val == typeof(string))
-                type = "String";
-            else if(val == typeof(double))
-                type = "Number";
-            else if(val == typeof(RichList))
-                type = "List";
-            else if(val == typeof(RichObject))
-                type = "Object";
-            else if(val == typeof(RichFunction))
-                type = "Function";
-            else if(val == typeof(RichPatternString))
-                type = "Pattern String";
-            else if(val == typeof(bool))
-                type = "Bool";
-            return type;
-        }
-
-        public class RichardPropertyInfo
-        {
-            public string Name;
-            public string Description;
-            public bool IsFunction;
-            public string Returns;
-        }
-
-        public class RichardArgumentInfo
-        {
-            public string Name;
-            public string Description;
-            public string Type;
-        }
+		
     }
 }

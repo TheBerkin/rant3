@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Compiler.Syntax.Richard;
 using Rant.Core.Constructs;
 using Rant.Core.ObjectModel;
 using Rant.Core.Output;
@@ -262,60 +261,6 @@ namespace Rant.Core
 
         public void SetYield() => shouldYield = true;
 
-        private bool HandleRichardBreak(Stack<IEnumerator<RantAction>> callStack, Stack<RantAction> actionStack, IEnumerator<RantAction> action)
-        {
-            if (action.Current is RichBreak)
-            {
-                // move back up the call stack until we pass something "breakable"
-                while (
-                    callStack.Any() &&
-                    (callStack.Peek().Current is RichActionBase) &&
-                    !(callStack.Peek().Current as RichActionBase).Breakable)
-                {
-                    actionStack.Pop();
-                    callStack.Pop();
-                }
-                // there was nothing to break from
-                if (!callStack.Any() || !(callStack.Peek().Current is RichActionBase))
-                    throw new RantRuntimeException(Pattern, (action.Current as RichBreak).Range, "Nothing to break from.");
-                return true;
-            }
-            return false;
-        }
-
-        private bool HandleRichardReturn(Stack<IEnumerator<RantAction>> callStack, Stack<RantAction> actionStack)
-        {
-            var lastAction = actionStack.Peek();
-            // Special processing for scripts
-            if (lastAction is RichActionBase)
-            {
-                var val = (lastAction as RichActionBase).GetValue(this);
-                if (val != null)
-                    _scriptObjectStack.Push(val);
-            }
-            // i also wish this could be moved to somewhere else 
-            // but someone else figure out how to do that for me
-            if (lastAction is RichReturn)
-            {
-                // same thing as the processing for break
-                // todo: abstract this, DRY
-                while (
-                    actionStack.Any() &&
-                    (actionStack.Peek() is RichActionBase) &&
-                    !(actionStack.Peek() as RichActionBase).Returnable)
-                {
-                    actionStack.Pop();
-                    callStack.Pop();
-                }
-
-                if (!(lastAction as RichReturn).HasReturnValue)
-                    _scriptObjectStack.Push(new RantObject(RantObjectType.Undefined));
-                // if we're not returning from anything, we've returned ourself from the Richard scope
-                return true;
-            }
-            return false;
-        }
-
         public RantOutput EvalPattern(double timeout, RantPattern pattern)
         {
             _outputs.Push(new OutputWriter(this));
@@ -366,16 +311,12 @@ namespace Rant.Core
 
 						if (action.Current == null) break;
 
-						if (HandleRichardBreak(callStack, actionStack, action)) goto top;
-
 						// Push child node onto stack and start over
 						CurrentAction = action.Current;
 						actionStack.Push(CurrentAction);
 						callStack.Push(CurrentAction.Run(this));
 						goto top;
 					}
-
-					if (HandleRichardReturn(callStack, actionStack)) continue;
 
 					// Remove node once finished
 					callStack.Pop();
@@ -432,8 +373,6 @@ namespace Rant.Core
 
 						if (action.Current == null) break;
 
-						if (HandleRichardBreak(callStack, actionStack, action)) goto top;
-
 						// Push child node onto stack and start over
 						CurrentAction = action.Current;
 						actionStack.Push(CurrentAction);
@@ -447,8 +386,6 @@ namespace Rant.Core
 						yield return Return();
 						AddOutputWriter();
 					}
-
-					if (HandleRichardReturn(callStack, actionStack)) continue;
 
 					// Remove node once finished
 					callStack.Pop();
