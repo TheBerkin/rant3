@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-using Rant.Engine;
+using Rant.Internals.Engine.Utilities;
 
 namespace Rant
 {

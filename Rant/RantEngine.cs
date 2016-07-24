@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Rant.Engine;
-using Rant.Engine.ObjectModel;
 using Rant.Formats;
+using Rant.Internals.Engine;
+using Rant.Internals.Engine.Compiler.Parselets;
+using Rant.Internals.Engine.ObjectModel;
+using Rant.Internals.Engine.Utilities;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -22,7 +24,7 @@ namespace Rant
 	    {
 		    RantFunctions.Load();
             RichardFunctions.Load();
-            Engine.Compiler.Parselets.Parselet.Load();
+            Parselet.Load();
 	    }
 
         /// <summary>

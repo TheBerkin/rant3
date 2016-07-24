@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Engine;
-using Rant.Engine.Metadata;
-using Rant.Engine.Syntax.Richard;
+using Rant.Internals.Engine;
+using Rant.Internals.Engine.Compiler.Syntax.Richard;
+using Rant.Internals.Engine.Metadata;
 
 namespace Rant
 {

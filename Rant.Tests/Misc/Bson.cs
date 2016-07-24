@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
-using Rant.IO.Bson;
+
 using System.IO;
+
+using Rant.Internals.IO.Bson;
 
 namespace Rant.Tests.Misc
 {

@@ -1,4 +1,4 @@
-﻿using static Rant.Engine.Util;
+﻿using static Rant.Internals.Engine.Utilities.Util;
 
 namespace Rant
 {

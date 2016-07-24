@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Engine.Output;
+using Rant.Internals.Engine.Output;
 
 namespace Rant
 {

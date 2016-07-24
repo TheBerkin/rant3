@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Rant.Engine;
-using Rant.Engine.Compiler;
-using Rant.Engine.Syntax;
+using Rant.Internals.Engine.Compiler;
+using Rant.Internals.Engine.Compiler.Syntax;
+using Rant.Internals.Engine.Utilities;
 
 namespace Rant
 {

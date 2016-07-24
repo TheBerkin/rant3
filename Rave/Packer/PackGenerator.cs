@@ -6,6 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 
 using Rant;
+using Rant.Internals.IO.Bson;
 using Rant.Vocabulary;
 
 using static Rave.CmdLine;
@@ -47,7 +48,7 @@ namespace Rave.Packer
                 return;
             }
 
-            var modeEnum = (Rant.IO.Bson.BsonStringTableMode)stringTableMode;
+            var modeEnum = (BsonStringTableMode)stringTableMode;
 			
 			Console.WriteLine("Packing...");
 
