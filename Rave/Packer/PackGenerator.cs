@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using Rant;
 using Rant.Internals.IO.Bson;
+using Rant.Resources;
 using Rant.Vocabulary;
 
 using static Rave.CmdLine;

@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-using Rant.Internals.Engine.Compiler.Syntax;
+﻿using Rant.Internals.Engine.Compiler.Syntax;
 using Rant.Internals.Engine.ObjectModel;
 
-namespace Rant
+namespace Rant.Resources
 {
 	public class RantModule
 	{

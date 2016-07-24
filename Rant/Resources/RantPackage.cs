@@ -10,7 +10,7 @@ using Rant.Internals.IO.Bson;
 using Rant.Internals.IO.Compression;
 using Rant.Vocabulary;
 
-namespace Rant
+namespace Rant.Resources
 {
     /// <summary>
     /// Represents a collection of patterns and tables that can be exported to an archive file.

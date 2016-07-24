@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 
 using Rant;
+using Rant.Resources;
 
 namespace Rave.Packer
 {

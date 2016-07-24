@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
+using Rant.Resources;
+
 namespace Rant.Tests
 {
 	[TestFixture]

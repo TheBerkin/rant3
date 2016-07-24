@@ -5,6 +5,7 @@ using System.Linq;
 using Rant.Internals.Engine.Compiler.Parselets;
 using Rant.Internals.Engine.Compiler.Syntax;
 using Rant.Internals.Stringes;
+using Rant.Resources;
 
 namespace Rant.Internals.Engine.Compiler
 {

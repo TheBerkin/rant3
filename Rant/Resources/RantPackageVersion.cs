@@ -3,7 +3,7 @@ using System.Globalization;
 
 using Rant.Internals.Engine.Utilities;
 
-namespace Rant
+namespace Rant.Resources
 {
 	/// <summary>
 	/// Represents a version number for a Rant package.

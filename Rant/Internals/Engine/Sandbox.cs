@@ -12,6 +12,7 @@ using Rant.Internals.Engine.Constructs;
 using Rant.Internals.Engine.ObjectModel;
 using Rant.Internals.Engine.Output;
 using Rant.Internals.Engine.Utilities;
+using Rant.Resources;
 using Rant.Vocabulary;
 
 namespace Rant.Internals.Engine

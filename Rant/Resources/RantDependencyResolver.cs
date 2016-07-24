@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Rant
+namespace Rant.Resources
 {
 	/// <summary>
 	/// Default class for package depdendency resolving.

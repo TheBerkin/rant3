@@ -8,6 +8,7 @@ using Rant.Internals.Engine;
 using Rant.Internals.Engine.Compiler.Parselets;
 using Rant.Internals.Engine.ObjectModel;
 using Rant.Internals.Engine.Utilities;
+using Rant.Resources;
 using Rant.Vocabulary;
 
 namespace Rant
@@ -17,7 +18,8 @@ namespace Rant
     /// </summary>
     public sealed class RantEngine
     {
-        private static int _maxStackSize = 64;
+		#region Static members
+		private static int _maxStackSize = 64;
         private static readonly RNG Seeds = new RNG();
 
         static RantEngine()
@@ -39,33 +41,58 @@ namespace Rant
                 _maxStackSize = value;
             }
         }
-        
-        internal readonly ObjectTable Objects = new ObjectTable();
 
-		private readonly Dictionary<string, RantModule> _userModules = new Dictionary<string, RantModule>();
-        private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
-	    private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>(); 
-		private RantDependencyResolver _resolver = new RantDependencyResolver();
-		private RantDictionary _dictionary = new RantDictionary();
-
-        /// <summary>
-        /// Returns a pattern with the specified name from the engine's cache. If the pattern doesn't exist, it is loaded from file.
-        /// </summary>
-        /// <param name="name">The name or path of the pattern to retrieve.</param>
-        /// <returns></returns>
-        internal RantPattern GetPattern(string name)
-        {
-            RantPattern pattern;
-            if (_patternCache.TryGetValue(name, out pattern)) return pattern;
-            return _patternCache[name] = RantPattern.FromFile(name);
-        }
+		#endregion
 
 		/// <summary>
 		/// User-defined Rant modules.
 		/// </summary>
 		public Dictionary<string, RantModule> Modules => _userModules;
 
+		/// <summary>
+		/// The currently set flags.
+		/// </summary>
+		public readonly HashSet<string> Flags = new HashSet<string>();
+
+		/// <summary>
+		/// The current formatting settings for the engine.
+		/// </summary>
+		public RantFormat Format = RantFormat.English;
+
+		/// <summary>
+		/// The vocabulary associated with this instance.
+		/// </summary>
+		public RantDictionary Dictionary
+		{
+			get { return _dictionary; }
+			set
+			{
+				if (value == null) throw new ArgumentNullException(nameof(value));
+				_dictionary = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the depdendency resolver used for packages.
+		/// </summary>
+		public RantDependencyResolver DependencyResolver
+		{
+			get { return _resolver; }
+			set
+			{
+				if (value == null) throw new ArgumentNullException(nameof(value));
+				_resolver = value;
+			}
+		}
+
+		internal readonly ObjectTable Objects = new ObjectTable();
 		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+
+		private readonly Dictionary<string, RantModule> _userModules = new Dictionary<string, RantModule>();
+        private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
+	    private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>(); 
+		private RantDependencyResolver _resolver = new RantDependencyResolver();
+		private RantDictionary _dictionary = new RantDictionary();
 
 		/// <summary>
 		/// Accesses global variables.
@@ -77,42 +104,6 @@ namespace Rant
             get { return Objects[name]; }
             set { Objects[name] = value; }
         }
-
-        /// <summary>
-        /// The currently set flags.
-        /// </summary>
-        public readonly HashSet<string> Flags = new HashSet<string>();
-
-        /// <summary>
-        /// The current formatting settings for the engine.
-        /// </summary>
-        public RantFormat Format = RantFormat.English;
-
-        /// <summary>
-        /// The vocabulary associated with this instance.
-        /// </summary>
-        public RantDictionary Dictionary
-        {
-            get { return _dictionary; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _dictionary = value;
-            }
-        }
-
-		/// <summary>
-		/// Gets or sets the depdendency resolver used for packages.
-		/// </summary>
-	    public RantDependencyResolver DependencyResolver
-	    {
-		    get { return _resolver; }
-		    set
-		    {
-			    if (value == null) throw new ArgumentNullException(nameof(value));
-			    _resolver = value;
-		    }
-	    }
 
         /// <summary>
         /// Creates a new RantEngine object without a dictionary.
@@ -217,24 +208,36 @@ namespace Rant
 			LoadPackage(RantPackage.Load(path), mergeBehavior);
 		}
 
-        private RantOutput RunVM(Sandbox vm, double timeout)
-        {
+		/// <summary>
+		/// Returns a pattern with the specified name from the engine's cache. If the pattern doesn't exist, it is loaded from file.
+		/// </summary>
+		/// <param name="name">The name or path of the pattern to retrieve.</param>
+		/// <returns></returns>
+		internal RantPattern GetPattern(string name)
+		{
+			RantPattern pattern;
+			if (_patternCache.TryGetValue(name, out pattern)) return pattern;
+			return _patternCache[name] = RantPattern.FromFile(name);
+		}
+
+		#region Do, DoFile
+
+		private RantOutput RunVM(Sandbox vm, double timeout)
+		{
 			vm.UserModules = _userModules;
 			vm.PackageModules = PackageModules;
-            return vm.Run(timeout);
-        }
+			return vm.Run(timeout);
+		}
 
-        #region Do, DoFile
-
-	    /// <summary>
-	    /// Compiles the specified string into a pattern, executes it, and returns the resulting output.
-	    /// </summary>
-	    /// <param name="input">The input string to execute.</param>
-	    /// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
-	    /// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
-	    /// <param name="args">The arguments to pass to the pattern.</param>
-	    /// <returns></returns>
-	    public RantOutput Do(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
+		/// <summary>
+		/// Compiles the specified string into a pattern, executes it, and returns the resulting output.
+		/// </summary>
+		/// <param name="input">The input string to execute.</param>
+		/// <param name="charLimit">The maximum number of characters that can be printed. An exception will be thrown if the limit is exceeded. Set to zero or below for unlimited characters.</param>
+		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
+		/// <param name="args">The arguments to pass to the pattern.</param>
+		/// <returns></returns>
+		public RantOutput Do(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) => 
             RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, args), timeout);
 
 		/// <summary>

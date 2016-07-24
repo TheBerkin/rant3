@@ -2,7 +2,7 @@
 
 using Rant.Internals.Engine.Utilities;
 
-namespace Rant
+namespace Rant.Resources
 {
 	/// <summary>
 	/// Represents a dependency for a Rant package.

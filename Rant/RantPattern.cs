@@ -6,6 +6,7 @@ using System.Linq;
 using Rant.Internals.Engine.Compiler;
 using Rant.Internals.Engine.Compiler.Syntax;
 using Rant.Internals.Engine.Utilities;
+using Rant.Resources;
 
 namespace Rant
 {

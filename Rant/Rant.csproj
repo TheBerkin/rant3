@@ -322,11 +322,11 @@
     <Compile Include="RantArgAttribute.cs" />
     <Compile Include="RantCompilerException.cs" />
     <Compile Include="RantInternalException.cs" />
-    <Compile Include="RantDependencyResolver.cs" />
-    <Compile Include="RantModule.cs" />
+    <Compile Include="Resources\RantDependencyResolver.cs" />
+    <Compile Include="Resources\RantModule.cs" />
     <Compile Include="RantOutputEntry.cs" />
-    <Compile Include="RantPackageDependency.cs" />
-    <Compile Include="RantPackageVersion.cs" />
+    <Compile Include="Resources\RantPackageDependency.cs" />
+    <Compile Include="Resources\RantPackageVersion.cs" />
     <Compile Include="RantPatternArgs.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Internals\Stringes\Lexer.cs" />
@@ -341,7 +341,7 @@
     <Compile Include="Internals\IO\IOExtensions.cs" />
     <Compile Include="Internals\IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
-    <Compile Include="RantPackage.cs" />
+    <Compile Include="Resources\RantPackage.cs" />
     <Compile Include="Unmanaged\ErrorCode.cs" />
     <Compile Include="Unmanaged\Exports.cs" />
     <Compile Include="Unmanaged\PatternOptions.cs" />
