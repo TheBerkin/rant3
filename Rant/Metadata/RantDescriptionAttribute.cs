@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Internals.Engine.Metadata
+namespace Rant.Metadata
 {
 	/// <summary>
 	/// Used for annotating Rant functions and their parameters with descriptions that can be used to generate documentation.

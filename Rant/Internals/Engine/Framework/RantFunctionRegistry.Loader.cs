@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using Rant.Internals.Engine.Metadata;
 using Rant.Internals.Engine.Utilities;
+using Rant.Metadata;
 
 namespace Rant.Internals.Engine.Framework
 {

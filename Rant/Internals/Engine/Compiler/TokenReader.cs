@@ -300,24 +300,24 @@ namespace Rant.Internals.Engine.Compiler
 			return _tokens[_pos++];
 		}
 
-        /// <summary>
-        /// Reads and returns the next token if its type matches any of the given types
-        /// If it does not match, a RantCompilerException is thrown with the expected token names.
-        /// </summary>
-        /// <param name="types">The token types accepted for the read token.</param>
-        /// <returns></returns>
-        public Token<R> ReadAny(params R[] types)
-        {
-            if (End)
-                throw new RantCompilerException(_sourceName, null,
-                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
+		/// <summary>
+		/// Reads and returns the next token if its type matches any of the given types
+		/// If it does not match, a RantCompilerException is thrown with the expected token names.
+		/// </summary>
+		/// <param name="types">The token types accepted for the read token.</param>
+		/// <returns></returns>
+		public Token<R> ReadAny(params R[] types)
+		{
+			if (End)
+				throw new RantCompilerException(_sourceName, null,
+					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
 
-            if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
-                throw new RantCompilerException(_sourceName, _tokens[_pos],
-                    $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
+			if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
+				throw new RantCompilerException(_sourceName, _tokens[_pos],
+					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
 
-            return _tokens[_pos++];
-        }
+			return _tokens[_pos++];
+		}
 
 		/// <summary>
 		/// Reads and returns the next non-whitespace token if its type matches the specified type.

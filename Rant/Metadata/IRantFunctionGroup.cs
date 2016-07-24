@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rant.Internals.Engine.Metadata
+namespace Rant.Metadata
 {
     /// <summary>
     /// Provides access to metadata for a group of overloads for a specific Rant function.

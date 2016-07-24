@@ -33,7 +33,6 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 			}
 			var result = sb.Engine.Dictionary.Query(sb.RNG, _query, sb.QueryState);
 			sb.Print(result);
-			yield break;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rant.Internals.Engine.Metadata
+namespace Rant.Metadata
 {
 	/// <summary>
 	/// Indicates to the Rant engine that a method should be registered as a Rant function.

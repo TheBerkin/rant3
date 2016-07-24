@@ -10,96 +10,96 @@ using Rant.Resources;
 
 namespace Rant.Internals.Engine.Compiler
 {
-    internal class RantCompiler
-    {
-        public static RantAction Compile(string sourceName, string source) => new RantCompiler(sourceName, source).Read();
+	internal class RantCompiler
+	{
+		public static RantAction Compile(string sourceName, string source) => new RantCompiler(sourceName, source).Read();
 
-        private readonly string source;
-        private readonly string sourceName;
-        private readonly TokenReader reader;
-        private readonly RichardCompiler richardCompiler;
+		private readonly string source;
+		private readonly string sourceName;
+		private readonly TokenReader reader;
+		private readonly RichardCompiler richardCompiler;
 
 		internal bool HasModule = false;
 		internal readonly RantModule Module;
 
-        public RantCompiler(string sourceName, string source)
-        {
+		public RantCompiler(string sourceName, string source)
+		{
 			Module = new RantModule(sourceName);
 
-            this.source = source;
-            this.sourceName = sourceName;
+			this.source = source;
+			this.sourceName = sourceName;
 
-            reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
-            richardCompiler = new RichardCompiler(sourceName, source, reader, this);
+			reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
+			richardCompiler = new RichardCompiler(sourceName, source, reader, this);
 
-            Parselet.SetCompilerAndReader(this, reader);
-        }
+			Parselet.SetCompilerAndReader(this, reader);
+		}
 
-        public RantAction Read()
-        {
-            var output = new List<RantAction>();
+		public RantAction Read()
+		{
+			var output = new List<RantAction>();
 
-            // NOTE: since parselets are more like containers for multiple parsers, maybe figure out something to stuff a stack full of rather than parselets
-            //var parseletStack = new Stack<Parselet>();
-            var enumeratorStack = new Stack<IEnumerator<Parselet>>();
+			// NOTE: since parselets are more like containers for multiple parsers, maybe figure out something to stuff a stack full of rather than parselets
+			//var parseletStack = new Stack<Parselet>();
+			var enumeratorStack = new Stack<IEnumerator<Parselet>>();
 
-            Token<R> token = null;
+			Token<R> token = null;
 
-            while (!reader.End)
-            {
-                token = reader.ReadToken();
+			while (!reader.End)
+			{
+				token = reader.ReadToken();
 
-                if (token.ID == R.EOF)
-                    goto done;
+				if (token.ID == R.EOF)
+					goto done;
 
-                var parselet = Parselet.GetParselet(token, output.Add);
-                //parseletStack.Push(parselet);
-                enumeratorStack.Push(parselet.Parse());
+				var parselet = Parselet.GetParselet(token, output.Add);
+				//parseletStack.Push(parselet);
+				enumeratorStack.Push(parselet.Parse());
 
-                top:
-                while (enumeratorStack.Any())
-                {
-                    var enumerator = enumeratorStack.Peek();
+				top:
+				while (enumeratorStack.Any())
+				{
+					var enumerator = enumeratorStack.Peek();
 
-                    while (enumerator.MoveNext())
-                    {
-                        if (enumerator.Current == null)
-                            break;
+					while (enumerator.MoveNext())
+					{
+						if (enumerator.Current == null)
+							break;
 
-                        //parseletStack.Push(enumerator.Current);
-                        enumeratorStack.Push(enumerator.Current.Parse());
-                        goto top;
-                    }
+						//parseletStack.Push(enumerator.Current);
+						enumeratorStack.Push(enumerator.Current.Parse());
+						goto top;
+					}
 
-                    //parseletStack.Pop();
-                    enumeratorStack.Pop();
-                }
-            }
+					//parseletStack.Pop();
+					enumeratorStack.Pop();
+				}
+			}
 
-            done:
-            return new RASequence(output, token);
-        }
+			done:
+			return new RASequence(output, token);
+		}
 
-        public RantAction ReadScript() => richardCompiler.Read();
+		public RantAction ReadScript() => richardCompiler.Read();
 
-        public RantFunctionSignature GetFunctionInfo(RantFunction group, int argc, Stringe from, Stringe to)
-        {
-            var func = group.GetFunction(argc);
+		public RantFunctionSignature GetFunctionInfo(RantFunction group, int argc, Stringe from, Stringe to)
+		{
+			var func = group.GetFunction(argc);
 
-            if (func == null)
-                SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} arguments");
+			if (func == null)
+				SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} arguments");
 
-            return func;
-        }
+			return func;
+		}
 
-        public void SyntaxError(Stringe token, string message)
-        {
-            throw new RantCompilerException(sourceName, token, message);
-        }
+		public void SyntaxError(Stringe token, string message)
+		{
+			throw new RantCompilerException(sourceName, token, message);
+		}
 
-        public void SyntaxError(Stringe token, Exception innerException)
-        {
-            throw new RantCompilerException(sourceName, token, innerException);
-        }
-    }
+		public void SyntaxError(Stringe token, Exception innerException)
+		{
+			throw new RantCompilerException(sourceName, token, innerException);
+		}
+	}
 }

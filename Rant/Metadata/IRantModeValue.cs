@@ -1,4 +1,4 @@
-﻿namespace Rant.Internals.Engine.Metadata
+﻿namespace Rant.Metadata
 {
     /// <summary>
     /// Provides information on Rant's mode values, like number formats and synchronizer types.

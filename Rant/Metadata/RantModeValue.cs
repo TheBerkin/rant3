@@ -1,4 +1,4 @@
-namespace Rant.Internals.Engine.Metadata
+namespace Rant.Metadata
 {
     internal class RantModeValue : IRantModeValue
     {

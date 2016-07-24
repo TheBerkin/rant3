@@ -1,4 +1,4 @@
-﻿using Rant.Internals.Engine.Metadata;
+﻿using Rant.Metadata;
 
 namespace Rant.Internals.Engine.Output
 {

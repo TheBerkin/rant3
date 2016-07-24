@@ -2,7 +2,7 @@
 
 using Rant.Internals.Engine.Framework;
 
-namespace Rant.Internals.Engine.Metadata
+namespace Rant.Metadata
 {
     /// <summary>
     /// Provides access to metadata for a Rant function parameter.
