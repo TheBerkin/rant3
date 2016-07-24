@@ -9,7 +9,7 @@ using Rant.Internals.Engine.Delegates;
 using Rant.Internals.Engine.Metadata;
 using Rant.Internals.IO;
 
-namespace Rant.Internals.Engine
+namespace Rant.Internals.Engine.Framework
 {
     /// <summary>
     /// Contains information for associating a delegate with a Rant function.

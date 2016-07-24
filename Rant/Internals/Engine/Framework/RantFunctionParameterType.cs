@@ -1,4 +1,4 @@
-﻿namespace Rant.Internals.Engine
+﻿namespace Rant.Internals.Engine.Framework
 {
     /// <summary>
     /// Defines parameter types for Rant functions.

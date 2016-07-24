@@ -6,7 +6,7 @@ using System.Reflection;
 using Rant.Internals.Engine.Metadata;
 using Rant.Internals.Engine.Utilities;
 
-namespace Rant.Internals.Engine
+namespace Rant.Internals.Engine.Framework
 {
 	internal static partial class RantFunctionRegistry
 	{

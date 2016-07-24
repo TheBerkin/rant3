@@ -6,6 +6,7 @@ using System.Linq;
 using Rant.Formats;
 using Rant.Internals.Engine;
 using Rant.Internals.Engine.Compiler.Parselets;
+using Rant.Internals.Engine.Framework;
 using Rant.Internals.Engine.ObjectModel;
 using Rant.Internals.Engine.Utilities;
 using Rant.Resources;

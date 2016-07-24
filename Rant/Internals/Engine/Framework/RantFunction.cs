@@ -4,7 +4,7 @@ using System.Linq;
 
 using Rant.Internals.Engine.Metadata;
 
-namespace Rant.Internals.Engine
+namespace Rant.Internals.Engine.Framework
 {
     internal class RantFunction : IRantFunctionGroup
     {

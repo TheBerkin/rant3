@@ -11,7 +11,7 @@ using Rant.Internals.Engine.Output;
 using Rant.Internals.Engine.Utilities;
 using Rant.Vocabulary;
 
-namespace Rant.Internals.Engine
+namespace Rant.Internals.Engine.Framework
 {
     // Methods representing Rant functions must be marked with [RantFunction] attribute to get registered by the engine.
     // They may return either void or IEnumerator<RantAction> depending on your needs.
