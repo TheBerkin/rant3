@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Rant.Core;
+using Rant.Core.Compiler.Parselets;
+using Rant.Core.Framework;
+using Rant.Core.ObjectModel;
+using Rant.Core.Utilities;
 using Rant.Formats;
-using Rant.Internals.Engine;
-using Rant.Internals.Engine.Compiler.Parselets;
-using Rant.Internals.Engine.Framework;
-using Rant.Internals.Engine.ObjectModel;
-using Rant.Internals.Engine.Utilities;
 using Rant.Resources;
 using Rant.Vocabulary;
 

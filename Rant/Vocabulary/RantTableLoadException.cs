@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Rant.Internals.Stringes;
+using Rant.Core.Stringes;
 
 namespace Rant.Vocabulary
 {

@@ -2,7 +2,7 @@
 
 using NUnit.Framework;
 
-using Rant.Internals.Engine.ObjectModel;
+using Rant.Core.ObjectModel;
 
 namespace Rant.Tests
 {

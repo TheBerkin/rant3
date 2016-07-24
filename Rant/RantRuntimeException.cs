@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Internals.Engine.Compiler;
-using Rant.Internals.Stringes;
+using Rant.Core.Compiler;
+using Rant.Core.Stringes;
 
 namespace Rant
 {

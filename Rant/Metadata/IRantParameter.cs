@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using Rant.Internals.Engine.Framework;
+using Rant.Core.Framework;
 
 namespace Rant.Metadata
 {

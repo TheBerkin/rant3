@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Rant.Internals.Engine.Utilities;
+using Rant.Core.Utilities;
 
 namespace Rant.Resources
 {

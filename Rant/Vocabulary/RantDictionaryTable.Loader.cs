@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Rant.Internals.Engine.Utilities;
-using Rant.Internals.Stringes;
+using Rant.Core.Stringes;
+using Rant.Core.Utilities;
 
 namespace Rant.Vocabulary
 {

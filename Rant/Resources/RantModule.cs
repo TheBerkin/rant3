@@ -1,5 +1,5 @@
-﻿using Rant.Internals.Engine.Compiler.Syntax;
-using Rant.Internals.Engine.ObjectModel;
+﻿using Rant.Core.Compiler.Syntax;
+using Rant.Core.ObjectModel;
 
 namespace Rant.Resources
 {

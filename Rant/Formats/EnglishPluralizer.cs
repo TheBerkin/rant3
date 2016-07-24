@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Internals.Engine.Utilities;
+using Rant.Core.Utilities;
 
 namespace Rant.Formats
 {

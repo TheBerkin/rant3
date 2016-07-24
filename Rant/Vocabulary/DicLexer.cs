@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-using Rant.Internals.Stringes;
+using Rant.Core.Stringes;
 
 namespace Rant.Vocabulary
 {

@@ -6,7 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 
 using Rant;
-using Rant.Internals.IO.Bson;
+using Rant.Core.IO.Bson;
 using Rant.Resources;
 using Rant.Vocabulary;
 

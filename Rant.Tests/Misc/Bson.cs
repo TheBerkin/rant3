@@ -2,7 +2,7 @@
 
 using System.IO;
 
-using Rant.Internals.IO.Bson;
+using Rant.Core.IO.Bson;
 
 namespace Rant.Tests.Misc
 {
