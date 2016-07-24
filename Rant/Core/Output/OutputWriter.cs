@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Rant.Core.Formatters;
+using Rant.Core.Formatting;
 
 namespace Rant.Core.Output
 {

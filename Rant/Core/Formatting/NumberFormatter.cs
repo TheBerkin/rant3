@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq;
 
-namespace Rant.Core.Formatters
+namespace Rant.Core.Formatting
 {
     internal class NumberFormatter
     {

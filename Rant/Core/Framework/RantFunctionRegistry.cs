@@ -5,7 +5,7 @@ using System.Linq;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Constructs;
-using Rant.Core.Formatters;
+using Rant.Core.Formatting;
 using Rant.Core.Output;
 using Rant.Core.Utilities;
 using Rant.Metadata;

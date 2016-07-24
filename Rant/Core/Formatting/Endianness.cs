@@ -1,6 +1,6 @@
 ﻿using Rant.Metadata;
 
-namespace Rant.Core.Formatters
+namespace Rant.Core.Formatting
 {
     internal enum Endianness
     {

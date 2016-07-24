@@ -279,7 +279,7 @@
     <Compile Include="Core\Compiler\Syntax\RADefineSubroutine.cs" />
     <Compile Include="Core\Compiler\Syntax\RAEscape.cs" />
     <Compile Include="Core\Compiler\Syntax\RAFunction.cs" />
-    <Compile Include="Core\Delegates\Witchcraft.cs" />
+    <Compile Include="Core\Utilities\Witchcraft.cs" />
     <Compile Include="Core\Framework\RantFunctionParameter.cs" />
     <Compile Include="Core\Framework\RantFunctionParameterType.cs" />
     <Compile Include="Metadata\RantFunctionAttribute.cs" />
@@ -294,9 +294,9 @@
     <Compile Include="Core\Compiler\Syntax\RACallSubroutine.cs" />
     <Compile Include="Core\Compiler\Syntax\RASubroutine.cs" />
     <Compile Include="Core\Compiler\Syntax\RAText.cs" />
-    <Compile Include="Core\Formatters\Endianness.cs" />
-    <Compile Include="Core\Formatters\HexFormat.cs" />
-    <Compile Include="Core\Formatters\NumberFormatter.cs" />
+    <Compile Include="Core\Formatting\Endianness.cs" />
+    <Compile Include="Core\Formatting\HexFormat.cs" />
+    <Compile Include="Core\Formatting\NumberFormatter.cs" />
     <Compile Include="Core\ObjectModel\ObjectTable.cs" />
     <Compile Include="Core\ObjectModel\RantObject.cs" />
     <Compile Include="Core\ObjectModel\ObjectStack.cs" />
@@ -373,11 +373,11 @@
     <Compile Include="Core\Constructs\BlockAttribs.cs" />
     <Compile Include="Core\Utilities\Limit.cs" />
     <Compile Include="RantRuntimeException.cs" />
-    <Compile Include="Core\Formatters\Capitalization.cs" />
+    <Compile Include="Core\Formatting\Capitalization.cs" />
     <Compile Include="Core\Output\ChannelVisibility.cs" />
     <Compile Include="Core\Utilities\Extensions.cs" />
-    <Compile Include="Core\Formatters\NumberFormat.cs" />
-    <Compile Include="Core\Formatters\Numerals.cs" />
+    <Compile Include="Core\Formatting\NumberFormat.cs" />
+    <Compile Include="Core\Formatting\Numerals.cs" />
     <Compile Include="Vocabulary\Query.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -412,6 +412,9 @@
   <ItemGroup>
     <Compile Include="Core\Framework\RantFunctionRegistry.Loader.cs" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Delegates\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Rant.Core.Delegates
+namespace Rant.Core.Utilities
 {
     internal delegate TResult XFunc<out TResult>();
     internal delegate TResult XFunc<in A, out TResult>(A a);

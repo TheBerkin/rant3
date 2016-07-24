@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Rant.Core.Formatters;
+using Rant.Core.Formatting;
 using Rant.Core.IO;
 using Rant.Core.Utilities;
 

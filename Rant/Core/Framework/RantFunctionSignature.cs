@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Text;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Delegates;
 using Rant.Core.IO;
+using Rant.Core.Utilities;
 using Rant.Metadata;
 
 namespace Rant.Core.Framework

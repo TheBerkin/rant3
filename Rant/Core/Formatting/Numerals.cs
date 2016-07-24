@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Rant.Core.Formatters
+namespace Rant.Core.Formatting
 {
     internal static class Numerals
     {
