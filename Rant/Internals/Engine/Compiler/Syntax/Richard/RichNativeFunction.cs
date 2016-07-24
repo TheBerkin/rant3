@@ -9,12 +9,12 @@ namespace Rant.Internals.Engine.Compiler.Syntax.Richard
     {
         private int _argCount;
         public RantObject That;
-        private RantFunctionInfo _function;
+        private RantFunctionSignature _function;
 
         public int ArgCount => _argCount;
-        public RantFunctionInfo Function => _function;
+        public RantFunctionSignature Function => _function;
 
-        public RichNativeFunction(Stringe token, int argCount, RantFunctionInfo info)
+        public RichNativeFunction(Stringe token, int argCount, RantFunctionSignature info)
             : base(token)
         {
             _argCount = argCount;

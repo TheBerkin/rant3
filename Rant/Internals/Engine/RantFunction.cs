@@ -6,24 +6,24 @@ using Rant.Internals.Engine.Metadata;
 
 namespace Rant.Internals.Engine
 {
-    internal class RantFunctionGroup : IRantFunctionGroup
+    internal class RantFunction : IRantFunctionGroup
     {
-        private readonly Dictionary<int, RantFunctionInfo> _functions = new Dictionary<int, RantFunctionInfo>();
-        private RantFunctionInfo _paramsArrayFunc = null;
+        private readonly Dictionary<int, RantFunctionSignature> _overloads = new Dictionary<int, RantFunctionSignature>();
+        private RantFunctionSignature _paramsArrayFunc = null;
 
         public string Name { get; }
 
-        public IEnumerable<IRantFunction> Overloads => _functions.Select(fn => fn.Value as IRantFunction); 
+        public IEnumerable<IRantFunction> Overloads => _overloads.Select(fn => fn.Value as IRantFunction); 
 
-        public RantFunctionGroup(string name)
+        public RantFunction(string name)
         {
             Name = name;
         }
 
-        public void Add(RantFunctionInfo func)
+        public void Add(RantFunctionSignature func)
         {
-            RantFunctionInfo existing;
-            if (_functions.TryGetValue(func.Parameters.Length, out existing))
+            RantFunctionSignature existing;
+            if (_overloads.TryGetValue(func.Parameters.Length, out existing))
                 throw new ArgumentException($"Cannot load function {func} becaue its signature is ambiguous with existing function {existing}.");
             if (_paramsArrayFunc != null)
             {
@@ -33,15 +33,15 @@ namespace Rant.Internals.Engine
                     throw new ArgumentException($"Cannot load function {func} because its signature is ambiguous with {_paramsArrayFunc}.");
             }
 
-            _functions[func.Parameters.Length] = func;
+            _overloads[func.Parameters.Length] = func;
             if (func.HasParamArray) _paramsArrayFunc = func;
         }
 
-        public RantFunctionInfo GetFunction(int argc)
+        public RantFunctionSignature GetFunction(int argc)
         {
             if (_paramsArrayFunc != null && argc >= _paramsArrayFunc.Parameters.Length - 1) return _paramsArrayFunc;
-            RantFunctionInfo func;
-            return _functions.TryGetValue(argc, out func) ? func : null;
+            RantFunctionSignature func;
+            return _overloads.TryGetValue(argc, out func) ? func : null;
         }
     }
 }

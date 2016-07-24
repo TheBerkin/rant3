@@ -14,14 +14,14 @@ namespace Rant.Internals.Engine
     /// <summary>
     /// Contains information for associating a delegate with a Rant function.
     /// </summary>
-    internal class RantFunctionInfo : IRantFunction
+    internal class RantFunctionSignature : IRantFunction
     {
         private readonly Witchcraft _delegate;
-        private readonly RantParameter[] _params;
+        private readonly RantFunctionParameter[] _params;
         private readonly ParameterInfo[] _rawParams;
         private readonly MethodInfo _rawMethod;
 
-        public RantParameter[] Parameters => _params;
+        public RantFunctionParameter[] Parameters => _params;
 
         public ParameterInfo[] RawParameters => _rawParams;
 
@@ -36,7 +36,7 @@ namespace Rant.Internals.Engine
         public bool TreatAsRichardFunction = false;
         public MethodInfo RawMethod => _rawMethod;
 
-        public RantFunctionInfo(string name, string description, MethodInfo method)
+        public RantFunctionSignature(string name, string description, MethodInfo method)
         {
             // Sanity checks
             if (method == null) throw new ArgumentNullException(nameof(method));
@@ -51,10 +51,10 @@ namespace Rant.Internals.Engine
                 throw new ArgumentException($"({method.Name}) The first parameter must be of type '{typeof(Sandbox)}'.");
 
             // Sort out the parameter types for the function
-            _params = new RantParameter[parameters.Length - 1];
+            _params = new RantFunctionParameter[parameters.Length - 1];
             _rawParams = parameters;
             Type type;
-            RantParameterType rantType;
+            RantFunctionParameterType rantType;
             for (int i = 1; i < parameters.Length; i++)
             {
                 // Resolve Rant parameter type from .NET type
@@ -64,25 +64,25 @@ namespace Rant.Internals.Engine
 
                 if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
                 {
-                    rantType = RantParameterType.Pattern;
+                    rantType = RantFunctionParameterType.Pattern;
                 }
                 else if (type == typeof(string))
                 {
-                    rantType = RantParameterType.String;
+                    rantType = RantFunctionParameterType.String;
                 }
                 else if (type.IsEnum)
                 {
                     rantType = type.GetCustomAttributes(typeof(FlagsAttribute), false).Any()
-                        ? RantParameterType.Flags
-                        : RantParameterType.Mode;
+                        ? RantFunctionParameterType.Flags
+                        : RantFunctionParameterType.Mode;
                 }
                 else if (IOUtil.IsNumericType(type))
                 {
-                    rantType = RantParameterType.Number;
+                    rantType = RantFunctionParameterType.Number;
                 }
                 else if (type == typeof(ObjectModel.RantObject))
                 {
-                    rantType = RantParameterType.RantObject;
+                    rantType = RantFunctionParameterType.RantObject;
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace Rant.Internals.Engine
                 string paramDescription = (parameters[i].GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute)?.Description ?? "";
 
                 // Create Rant parameter
-                _params[i - 1] = new RantParameter(parameters[i].Name, type, rantType,
+                _params[i - 1] = new RantFunctionParameter(parameters[i].Name, type, rantType,
                     HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).FirstOrDefault() != null))
                 {
                     Description = paramDescription

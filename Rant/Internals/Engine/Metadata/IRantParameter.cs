@@ -10,7 +10,7 @@ namespace Rant.Internals.Engine.Metadata
         /// <summary>
         /// Gets the data type accepted by the parameter.
         /// </summary>
-        RantParameterType RantType { get; } 
+        RantFunctionParameterType RantType { get; } 
 
         /// <summary>
         /// Gets the name of the parameter.

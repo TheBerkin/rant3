@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines parameter types for Rant functions.
     /// </summary>
-	public enum RantParameterType
+	public enum RantFunctionParameterType
     {
         /// <summary>
         /// Parameter is a static string.

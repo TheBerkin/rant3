@@ -7,9 +7,9 @@ using Rant.Internals.Engine.Utilities;
 
 namespace Rant.Internals.Engine
 {
-	internal class RantParameter : IRantParameter
+	internal class RantFunctionParameter : IRantParameter
 	{
-		public RantParameterType RantType { get; private set; }
+		public RantFunctionParameterType RantType { get; private set; }
 		public Type NativeType { get; private set; }
 		public string Name { get; private set; }
         public bool IsParams { get; private set; }
@@ -24,7 +24,7 @@ namespace Rant.Internals.Engine
 	        }
 	    }
 
-	    public RantParameter(string name, Type nativeType, RantParameterType rantType, bool isParams = false)
+	    public RantFunctionParameter(string name, Type nativeType, RantFunctionParameterType rantType, bool isParams = false)
 		{
 			Name = name;
 			NativeType = nativeType;

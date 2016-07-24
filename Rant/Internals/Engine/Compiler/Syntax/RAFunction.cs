@@ -9,11 +9,11 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 {
 	internal class RAFunction : RantAction
 	{
-		private readonly RantFunctionInfo _funcInfo;
+		private readonly RantFunctionSignature _funcInfo;
 		private readonly List<RantAction> _argActions;
 		private readonly int _argc;
 
-		public RAFunction(Stringe range, RantFunctionInfo funcInfo, List<RantAction> argActions)
+		public RAFunction(Stringe range, RantFunctionSignature funcInfo, List<RantAction> argActions)
 			: base(range)
 		{
 			_funcInfo = funcInfo;
@@ -21,7 +21,7 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 			_argc = argActions.Count;
 		}
 
-	    private RantParameter GetParameter(int index)
+	    private RantFunctionParameter GetParameter(int index)
 	    {
 	        if (index >= _funcInfo.Parameters.Length - 1 && _funcInfo.HasParamArray)
 	            return _funcInfo.Parameters[_funcInfo.Parameters.Length - 1];
@@ -34,26 +34,26 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 		    int paramc = _funcInfo.Parameters.Length;
 			var args = new object[_argc];
 			double d;
-		    RantParameter p;
+		    RantFunctionParameter p;
 			for (int i = 0; i < _argc; i++)
 			{
 			    p = GetParameter(i);
 				switch (p.RantType)
 				{
 					// Patterns are passed right to the method
-					case RantParameterType.Pattern:
+					case RantFunctionParameterType.Pattern:
 						args[i] = _argActions[i];
 						break;
 
 					// Strings are evaluated
-					case RantParameterType.String:
+					case RantFunctionParameterType.String:
 						sb.AddOutputWriter();
 						yield return _argActions[i];
 						args[i] = sb.Return().Main;
 						break;
 
 					// Numbers are evaluated, verified, and converted
-					case RantParameterType.Number:
+					case RantFunctionParameterType.Number:
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
@@ -69,7 +69,7 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 					}
 
 					// Modes are parsed into enumeration members
-					case RantParameterType.Mode:
+					case RantFunctionParameterType.Mode:
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
@@ -85,7 +85,7 @@ namespace Rant.Internals.Engine.Compiler.Syntax
 					}
 
                     // Flags are parsed from strings to enum members and combined with OR.
-					case RantParameterType.Flags:
+					case RantFunctionParameterType.Flags:
 					{
 						var enumType = p.NativeType;
 						sb.AddOutputWriter();

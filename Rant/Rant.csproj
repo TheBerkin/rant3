@@ -230,7 +230,7 @@
     <Compile Include="Internals\Engine\Output\OutputChainArticleBuffer.cs" />
     <Compile Include="Internals\Engine\Output\OutputChainBuffer.cs" />
     <Compile Include="Internals\Engine\Output\OutputWriter.cs" />
-    <Compile Include="Internals\Engine\RantFunctionGroup.cs" />
+    <Compile Include="Internals\Engine\RantFunction.cs" />
     <Compile Include="Internals\Engine\RichardFunctions.cs" />
     <Compile Include="Internals\Engine\Compiler\Syntax\Richard\Operators\RichAdditionOperator.cs" />
     <Compile Include="Internals\Engine\Compiler\Syntax\Richard\Operators\RichBooleanAndOperator.cs" />
@@ -280,11 +280,11 @@
     <Compile Include="Internals\Engine\Compiler\Syntax\RAEscape.cs" />
     <Compile Include="Internals\Engine\Compiler\Syntax\RAFunction.cs" />
     <Compile Include="Internals\Engine\Delegates\Witchcraft.cs" />
-    <Compile Include="Internals\Engine\RantParameter.cs" />
-    <Compile Include="Internals\Engine\RantParameterType.cs" />
+    <Compile Include="Internals\Engine\RantFunctionParameter.cs" />
+    <Compile Include="Internals\Engine\RantFunctionParameterType.cs" />
     <Compile Include="Internals\Engine\Metadata\RantFunctionAttribute.cs" />
-    <Compile Include="Internals\Engine\RantFunctionInfo.cs" />
-    <Compile Include="Internals\Engine\RantFunctions.cs" />
+    <Compile Include="Internals\Engine\RantFunctionSignature.cs" />
+    <Compile Include="Internals\Engine\RantFunctionRegistry.cs" />
     <Compile Include="Internals\Engine\Sandbox.cs" />
     <Compile Include="Internals\Engine\Compiler\Syntax\RABlock.cs" />
     <Compile Include="Internals\Engine\Compiler\Syntax\RantAction.cs" />
@@ -410,6 +410,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Internals\Engine\RantFunctionRegistry.Loader.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

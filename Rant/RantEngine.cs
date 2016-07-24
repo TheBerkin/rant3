@@ -24,7 +24,7 @@ namespace Rant
 
         static RantEngine()
 	    {
-		    RantFunctions.Load();
+		    RantFunctionRegistry.Load();
             RichardFunctions.Load();
             Parselet.Load();
 	    }

@@ -20,7 +20,7 @@ namespace Rant
         /// <returns></returns>
         public static bool FunctionExists(string functionName)
         {
-            return RantFunctions.FunctionExists(functionName);
+            return RantFunctionRegistry.FunctionExists(functionName);
         }
 
         /// <summary>
@@ -28,25 +28,25 @@ namespace Rant
         /// </summary>
         /// <param name="functionName">The name of the function to retrieve.</param>
         /// <returns></returns>
-        public static IRantFunctionGroup GetFunction(string functionName) => RantFunctions.GetFunctionGroup(functionName);
+        public static IRantFunctionGroup GetFunction(string functionName) => RantFunctionRegistry.GetFunctionGroup(functionName);
 
         /// <summary>
         /// Enumerates the names of all available Rant functions.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> GetFunctionNames() => RantFunctions.GetFunctionNames();
+        public static IEnumerable<string> GetFunctionNames() => RantFunctionRegistry.GetFunctionNames();
 
         /// <summary>
         /// Enumerates all function names and their aliases.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> GetFunctionNamesAndAliases() => RantFunctions.GetFunctionNamesAndAliases(); 
+        public static IEnumerable<string> GetFunctionNamesAndAliases() => RantFunctionRegistry.GetFunctionNamesAndAliases(); 
 
         /// <summary>
         /// Enumerates the available functions.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<IRantFunctionGroup> GetFunctions() => RantFunctions.GetFunctions();
+        public static IEnumerable<IRantFunctionGroup> GetFunctions() => RantFunctionRegistry.GetFunctions();
 
         /// <summary>
         /// Returns the description for the function with the specified name.
@@ -54,14 +54,14 @@ namespace Rant
         /// <param name="functionName">The name of the function to get the description for.</param>
         /// <param name="argc">The number of arguments in the overload to get the description for.</param>
         /// <returns></returns>
-        public static string GetFunctionDescription(string functionName, int argc) => RantFunctions.GetFunctionDescription(functionName, argc);
+        public static string GetFunctionDescription(string functionName, int argc) => RantFunctionRegistry.GetFunctionDescription(functionName, argc);
         
         /// <summary>
         /// Enumerates the aliases assigned to the specified function name.
         /// </summary>
         /// <param name="functionName">The function name to retrieve aliases for.</param>
         /// <returns></returns>
-        public static IEnumerable<string> GetFunctionAliases(string functionName) => RantFunctions.GetAliases(functionName);
+        public static IEnumerable<string> GetFunctionAliases(string functionName) => RantFunctionRegistry.GetAliases(functionName);
 
 
         public static IEnumerable<Type> GetRichardPropertyTypes() => RichardFunctions.GetPropertyTypes();

@@ -11,7 +11,7 @@ namespace Rant.Internals.Engine.Compiler.Parselets
         private IEnumerable<Parselet> FunctionText(Token<R> token)
         {
             var name = token.Value;
-            var group = RantFunctions.GetFunctionGroup(name);
+            var group = RantFunctionRegistry.GetFunctionGroup(name);
 
             if (group == null)
                 compiler.SyntaxError(token, $"Unknown function: '{name}'");
@@ -28,7 +28,7 @@ namespace Rant.Internals.Engine.Compiler.Parselets
             }
         }
 
-        private IEnumerable<Parselet> FuncArgs(Token<R> fromToken, RantFunctionGroup group)
+        private IEnumerable<Parselet> FuncArgs(Token<R> fromToken, RantFunction group)
         { 
             Token<R> funcToken = null;
             var actions = new List<RantAction>();

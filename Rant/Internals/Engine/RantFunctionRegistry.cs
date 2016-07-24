@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 using Rant.Internals.Engine.Compiler.Syntax;
 using Rant.Internals.Engine.Constructs;
@@ -16,83 +15,8 @@ namespace Rant.Internals.Engine
 {
     // Methods representing Rant functions must be marked with [RantFunction] attribute to get registered by the engine.
     // They may return either void or IEnumerator<RantAction> depending on your needs.
-    internal static class RantFunctions
+    internal static partial class RantFunctionRegistry
     {
-        private static bool Loaded = false;
-        private static readonly Dictionary<string, RantFunctionGroup> FunctionTable =
-            new Dictionary<string, RantFunctionGroup>(StringComparer.InvariantCultureIgnoreCase);
-        private static readonly Dictionary<string, string> AliasTable =
-            new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-
-        static RantFunctions()
-        {
-            Load();
-        }
-
-        internal static void Load()
-        {
-            if (Loaded) return;
-            foreach (var method in typeof(RantFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
-            {
-                if (!method.IsStatic) continue;
-                var attr = method.GetCustomAttributes(typeof(RantFunctionAttribute), false).FirstOrDefault() as RantFunctionAttribute;
-                if (attr == null) continue;
-                var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
-                var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute;
-                var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
-                if (Util.ValidateName(name)) RegisterFunction(info);
-                foreach (var alias in attr.Aliases.Where(Util.ValidateName))
-                    RegisterAlias(alias, info.Name);
-            }
-            Loaded = true;
-        }
-
-        public static IEnumerable<string> GetAliases(string funcName) =>
-            AliasTable.Where(pair => String.Equals(funcName, pair.Value, StringComparison.InvariantCultureIgnoreCase))
-                .Select(pair => pair.Key);
-
-        private static void RegisterAlias(string alias, string funcName)
-        {
-            AliasTable[alias] = funcName;
-        }
-
-        private static string ResolveAlias(string alias)
-        {
-            string name;
-            return AliasTable.TryGetValue(alias, out name) ? name : alias;
-        }
-
-        private static void RegisterFunction(RantFunctionInfo func)
-        {
-            RantFunctionGroup group;
-            if (!FunctionTable.TryGetValue(func.Name, out group))
-                group = FunctionTable[func.Name] = new RantFunctionGroup(func.Name);
-            group.Add(func);
-        }
-
-        public static bool FunctionExists(string name) =>
-            AliasTable.ContainsKey(name) || FunctionTable.ContainsKey(name);
-
-        public static IEnumerable<IRantFunctionGroup> GetFunctions() => FunctionTable.Select(item => item.Value as IRantFunctionGroup);
-
-        public static IEnumerable<string> GetFunctionNames() =>
-            FunctionTable.Select(item => item.Key);
-
-        public static IEnumerable<string> GetFunctionNamesAndAliases() =>
-            FunctionTable.Select(item => item.Key).Concat(AliasTable.Keys);
-
-        public static string GetFunctionDescription(string funcName, int paramc) =>
-            GetFunctionGroup(funcName)?.GetFunction(paramc)?.Description ?? String.Empty;
-
-        public static RantFunctionGroup GetFunctionGroup(string name)
-        {
-            RantFunctionGroup group;
-            return !FunctionTable.TryGetValue(ResolveAlias(name), out group) ? null : group;
-        }
-
-        public static RantFunctionInfo GetFunction(string name, int paramc) =>
-            GetFunctionGroup(name)?.GetFunction(paramc);
-
         [RantFunction("num", "n")]
         [RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
         private static void Number(Sandbox sb,
@@ -330,7 +254,7 @@ namespace Rant.Internals.Engine
                 // Is all-caps?
                 if (Util.IsUppercase(sample))
                 {
-                    output.Capitalize(Formatters.Capitalization.Upper);
+                    output.Capitalize(Capitalization.Upper);
                     return;
                 }
 

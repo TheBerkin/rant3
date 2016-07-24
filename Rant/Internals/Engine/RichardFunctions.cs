@@ -15,7 +15,7 @@ namespace Rant.Internals.Engine
     internal class RichardFunctions
     {
         private static bool _loaded = false;
-        private static Dictionary<Type, Dictionary<string, RantFunctionInfo>> _properties;
+        private static Dictionary<Type, Dictionary<string, RantFunctionSignature>> _properties;
         private static Dictionary<string, RichObject> _globalObjects;
 
         static RichardFunctions()
@@ -27,7 +27,7 @@ namespace Rant.Internals.Engine
         {
             if (_loaded) return;
 
-            _properties = new Dictionary<Type, Dictionary<string, RantFunctionInfo>>();
+            _properties = new Dictionary<Type, Dictionary<string, RantFunctionSignature>>();
             _globalObjects = new Dictionary<string, RichObject>();
 
             foreach (var method in typeof(RichardFunctions).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
@@ -40,7 +40,7 @@ namespace Rant.Internals.Engine
                     if (objectAttr == null) continue;
                     var name = String.IsNullOrEmpty(objectAttr.Property) ? method.Name.ToLower() : objectAttr.Property;
                     var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), true).OfType<RantDescriptionAttribute>().FirstOrDefault();
-                    var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
+                    var info = new RantFunctionSignature(name, descAttr?.Description ?? String.Empty, method);
                     info.TreatAsRichardFunction = objectAttr.IsFunction;
                     if (Util.ValidateName(name)) RegisterGlobalObject(objectAttr.Name, objectAttr.Property, info);
                 }
@@ -48,7 +48,7 @@ namespace Rant.Internals.Engine
                 {
                     var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
                     var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), true).OfType<RantDescriptionAttribute>().FirstOrDefault();
-                    var info = new RantFunctionInfo(name, descAttr?.Description ?? String.Empty, method);
+                    var info = new RantFunctionSignature(name, descAttr?.Description ?? String.Empty, method);
                     info.TreatAsRichardFunction = attr.IsFunction;
                     if (Util.ValidateName(name)) RegisterProperty(attr.ObjectType, info);
                 }
@@ -57,11 +57,11 @@ namespace Rant.Internals.Engine
             _loaded = true;
         }
 
-        private static void RegisterProperty(Type objectType, RantFunctionInfo info)
+        private static void RegisterProperty(Type objectType, RantFunctionSignature info)
         {
             var dictionary = _properties.ContainsKey(objectType) ?
                 _properties[objectType] :
-                new Dictionary<string, RantFunctionInfo>();
+                new Dictionary<string, RantFunctionSignature>();
             dictionary.Add(info.Name, info);
             _properties[objectType] = dictionary;
         }
@@ -69,14 +69,14 @@ namespace Rant.Internals.Engine
         public static bool HasProperty(Type objectType, string name) =>
             _properties.ContainsKey(objectType) ? _properties[objectType].ContainsKey(name) : false;
 
-        public static RantFunctionInfo GetProperty(Type objectType, string name)
+        public static RantFunctionSignature GetProperty(Type objectType, string name)
         {
             if (!HasProperty(objectType, name))
                 return null;
             return _properties[objectType][name];
         }
 
-        private static void RegisterGlobalObject(string name, string property, RantFunctionInfo info)
+        private static void RegisterGlobalObject(string name, string property, RantFunctionSignature info)
         {
             if (!_globalObjects.ContainsKey(name))
                 _globalObjects[name] = new RichObject(null);
@@ -97,11 +97,11 @@ namespace Rant.Internals.Engine
 
         public static IEnumerable<Type> GetPropertyTypes() => _properties.Keys;
         public static IEnumerable<string> GetProperties(Type type) => _properties[type].Keys;
-        public static RantFunctionInfo GetPropertyFunction(Type type, string name) => _properties[type][name];
+        public static RantFunctionSignature GetPropertyFunction(Type type, string name) => _properties[type][name];
 
         public static IEnumerable<string> GetGlobalObjects() => _globalObjects.Keys;
         public static IEnumerable<string> GetObjectProperties(string name) => _globalObjects[name].Values.Keys;
-        public static RantFunctionInfo GetObjectProperty(string name, string prop)
+        public static RantFunctionSignature GetObjectProperty(string name, string prop)
         {
             var property = _globalObjects[name].Values[prop];
             if (property is RichFunctionInfo)

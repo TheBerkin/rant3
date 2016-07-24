@@ -81,7 +81,7 @@ namespace Rant.Internals.Engine.Compiler
 
         public RantAction ReadScript() => richardCompiler.Read();
 
-        public RantFunctionInfo GetFunctionInfo(RantFunctionGroup group, int argc, Stringe from, Stringe to)
+        public RantFunctionSignature GetFunctionInfo(RantFunction group, int argc, Stringe from, Stringe to)
         {
             var func = group.GetFunction(argc);
 

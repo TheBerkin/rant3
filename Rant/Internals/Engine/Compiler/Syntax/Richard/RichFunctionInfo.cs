@@ -8,11 +8,11 @@ namespace Rant.Internals.Engine.Compiler.Syntax.Richard
     // like an REAFunctionCall but executes a RantFunctionInfo
     internal class RichFunctionInfo : RichActionBase
     {
-        RantFunctionInfo _function;
+        RantFunctionSignature _function;
 
-        public RantFunctionInfo Function => _function;
+        public RantFunctionSignature Function => _function;
 
-        public RichFunctionInfo(Stringe token, RantFunctionInfo function)
+        public RichFunctionInfo(Stringe token, RantFunctionSignature function)
              : base(token)
         {
             _function = function;
