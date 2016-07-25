@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Compiler\CompileContext.cs" />
+    <Compile Include="Core\Compiler\Parsing\QueryParser.cs" />
     <Compile Include="Core\Compiler\Parsing\SequenceParser.cs" />
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />

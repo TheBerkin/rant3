@@ -18,6 +18,10 @@ namespace Rant.Core.Compiler.Parsing
 
 				switch (token.ID)
 				{
+					case R.LeftAngle:
+						yield return Get<QueryParser>();
+						break;
+
 					case R.LeftSquare:
 						// TODO: Tags
 						break;
