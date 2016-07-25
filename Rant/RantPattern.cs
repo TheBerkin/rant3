@@ -52,7 +52,7 @@ namespace Rant
             Type = type;
             Code = code;
 			var compiler = new RantCompiler(name, code);
-			Action = compiler.Read();
+			Action = compiler.Compile();
 			Module = compiler.HasModule ? compiler.Module : null;
         }
 

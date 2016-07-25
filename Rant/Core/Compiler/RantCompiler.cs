@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Core.Compiler.Parselets;
+using Rant.Core.Compiler.Parsing;
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Framework;
 using Rant.Core.Stringes;
@@ -12,11 +12,12 @@ namespace Rant.Core.Compiler
 {
 	internal class RantCompiler
 	{
-		public static RantAction Compile(string sourceName, string source) => new RantCompiler(sourceName, source).Read();
+		private readonly Stringe _source;
+		private readonly string _sourceName;
+		private readonly TokenReader _reader;
 
-		private readonly string source;
-		private readonly string sourceName;
-		private readonly TokenReader reader;
+		private CompileContext _nextContext = CompileContext.DefaultSequence;
+		private Action<RantAction> _nextActionCallback = null;
 
 		internal bool HasModule = false;
 		internal readonly RantModule Module;
@@ -25,77 +26,52 @@ namespace Rant.Core.Compiler
 		{
 			Module = new RantModule(sourceName);
 
-			this.source = source;
-			this.sourceName = sourceName;
+			_sourceName = sourceName;
 
-			reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, source.ToStringe()));
-
-			Parselet.SetCompilerAndReader(this, reader);
+			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, _source = source.ToStringe()));
 		}
 
-		public RantAction Read()
+		public void SetNextContext(CompileContext context) => _nextContext = context;
+
+		public void SetNextActionCallback(Action<RantAction> callback) => _nextActionCallback = callback;
+
+		public RantAction Compile()
 		{
-			var output = new List<RantAction>();
+			var parser = Parser.Get<SequenceParser>();
+			var stack = new Stack<IEnumerator<Parser>>();
+			var actionList = new List<RantAction>();
 
-			// NOTE: since parselets are more like containers for multiple parsers, maybe figure out something to stuff a stack full of rather than parselets
-			//var parseletStack = new Stack<Parselet>();
-			var enumeratorStack = new Stack<IEnumerator<Parselet>>();
+			_nextActionCallback = a => actionList.Add(a);
 
-			Token<R> token = null;
+			stack.Push(parser.Parse(this, _nextContext, _reader, _nextActionCallback));
 
-			while (!reader.End)
+			top:
+			while (stack.Any())
 			{
-				token = reader.ReadToken();
+				var p = stack.Peek();
 
-				if (token.ID == R.EOF)
-					goto done;
-
-				var parselet = Parselet.GetParselet(token, output.Add);
-				//parseletStack.Push(parselet);
-				enumeratorStack.Push(parselet.Parse());
-
-				top:
-				while (enumeratorStack.Any())
+				while (p.MoveNext())
 				{
-					var enumerator = enumeratorStack.Peek();
+					if (p.Current == null) continue;
 
-					while (enumerator.MoveNext())
-					{
-						if (enumerator.Current == null)
-							break;
-
-						//parseletStack.Push(enumerator.Current);
-						enumeratorStack.Push(enumerator.Current.Parse());
-						goto top;
-					}
-
-					//parseletStack.Pop();
-					enumeratorStack.Pop();
+					stack.Push(p.Current.Parse(this, _nextContext, _reader, _nextActionCallback));
+					goto top;
 				}
+
+				stack.Pop();
 			}
 
-			done:
-			return new RASequence(output, token);
-		}
-
-		public RantFunctionSignature GetFunctionInfo(RantFunction group, int argc, Stringe from, Stringe to)
-		{
-			var func = group.GetFunction(argc);
-
-			if (func == null)
-				SyntaxError(Stringe.Between(from, to), $"No overload of function '{group.Name}' can take {argc} arguments");
-
-			return func;
+			return new RASequence(actionList, _source);
 		}
 
 		public void SyntaxError(Stringe token, string message)
 		{
-			throw new RantCompilerException(sourceName, token, message);
+			throw new RantCompilerException(_sourceName, token, message);
 		}
 
 		public void SyntaxError(Stringe token, Exception innerException)
 		{
-			throw new RantCompilerException(sourceName, token, innerException);
+			throw new RantCompilerException(_sourceName, token, innerException);
 		}
 	}
 }

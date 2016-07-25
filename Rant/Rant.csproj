@@ -199,22 +199,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Compiler\DefaultParseletAttribute.cs" />
-    <Compile Include="Core\Compiler\DefaultParserAttribute.cs" />
-    <Compile Include="Core\Compiler\Parselets\BlockWeightParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\FunctionRegexParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\FunctionSubroutineParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\FunctionTextParselet.cs" />
+    <Compile Include="Core\Compiler\CompileContext.cs" />
+    <Compile Include="Core\Compiler\Parsing\SequenceParser.cs" />
+    <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
-    <Compile Include="Core\Compiler\Parselets\ConstantLiteralParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\DefaultParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\EscapeSequenceParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\QueryParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\BlockParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\FunctionParselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\Parselet.cs" />
-    <Compile Include="Core\Compiler\Parselets\WhitespaceParselet.cs" />
-    <Compile Include="Core\Compiler\TokenParserAttribute.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
