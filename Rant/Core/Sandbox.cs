@@ -262,12 +262,6 @@ namespace Rant.Core
 
         public void SetYield() => shouldYield = true;
 
-        public RantOutput EvalPattern(double timeout, RantPattern pattern)
-        {
-            _outputs.Push(new OutputWriter(this));
-            return Run(timeout, pattern);
-        }
-
         public RantOutput Run(double timeout, RantPattern pattern = null)
         {
 	        lock (_patternArgs ?? fallbackArgsLockObj)
@@ -285,12 +279,10 @@ namespace Rant.Core
 
 				_scriptObjectStack.Clear();
 				var callStack = new Stack<IEnumerator<RantAction>>();
-				var actionStack = new Stack<RantAction>();
 				IEnumerator<RantAction> action;
 
 				// Push the AST root
 				CurrentAction = pattern.Action;
-				actionStack.Push(CurrentAction);
 				callStack.Push(pattern.Action.Run(this));
 
 				top:
@@ -314,14 +306,12 @@ namespace Rant.Core
 
 						// Push child node onto stack and start over
 						CurrentAction = action.Current;
-						actionStack.Push(CurrentAction);
 						callStack.Push(CurrentAction.Run(this));
 						goto top;
 					}
 
 					// Remove node once finished
 					callStack.Pop();
-					actionStack.Pop();
 				}
 
 				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
@@ -347,12 +337,10 @@ namespace Rant.Core
 
 				_scriptObjectStack.Clear();
 				var callStack = new Stack<IEnumerator<RantAction>>();
-				var actionStack = new Stack<RantAction>();
 				IEnumerator<RantAction> action;
 
 				// Push the AST root
 				CurrentAction = pattern.Action;
-				actionStack.Push(CurrentAction);
 				callStack.Push(pattern.Action.Run(this));
 
 				top:
@@ -376,7 +364,6 @@ namespace Rant.Core
 
 						// Push child node onto stack and start over
 						CurrentAction = action.Current;
-						actionStack.Push(CurrentAction);
 						callStack.Push(CurrentAction.Run(this));
 						goto top;
 					}
@@ -390,7 +377,6 @@ namespace Rant.Core
 
 					// Remove node once finished
 					callStack.Pop();
-					actionStack.Pop();
 				}
 
 				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
