@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Rant.Core.Stringes;
 using Rant.Vocabulary;
+using Rant.Vocabulary.Querying;
 
 namespace Rant.Core.Compiler.Syntax
 {

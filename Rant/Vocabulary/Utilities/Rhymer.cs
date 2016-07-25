@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Metadata;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Utilities
 {
     internal class Rhymer
     {

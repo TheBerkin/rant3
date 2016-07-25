@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Querying
 {
 	/// <summary>
 	/// Defines a set of class filtering rules for a query.

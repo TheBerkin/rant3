@@ -5,6 +5,7 @@ using System.Linq;
 
 using Rant.Core.Stringes;
 using Rant.Core.Utilities;
+using Rant.Vocabulary.Utilities;
 
 namespace Rant.Vocabulary
 {

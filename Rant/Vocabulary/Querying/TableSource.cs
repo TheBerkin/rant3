@@ -1,4 +1,4 @@
-﻿namespace Rant.Vocabulary.Queries
+﻿namespace Rant.Vocabulary.Querying
 {
 	internal class TableSource
 	{

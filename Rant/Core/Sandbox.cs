@@ -13,6 +13,7 @@ using Rant.Core.Utilities;
 using Rant.Formats;
 using Rant.Resources;
 using Rant.Vocabulary;
+using Rant.Vocabulary.Querying;
 
 namespace Rant.Core
 {

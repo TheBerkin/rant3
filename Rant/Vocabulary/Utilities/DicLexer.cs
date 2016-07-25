@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 
 using Rant.Core.Stringes;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Utilities
 {
     internal static class DicLexer
     {

@@ -1,4 +1,4 @@
-﻿namespace Rant.Vocabulary
+﻿namespace Rant.Vocabulary.Querying
 {
     /// <summary>
     /// Defines carrier types for queries.

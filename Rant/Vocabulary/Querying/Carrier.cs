@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Querying
 {
     /// <summary>
     /// Represents information that can be used to synchronize query selections based on certain criteria.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rant.Vocabulary
+namespace Rant.Core.Formatting
 {
     /// <summary>
     /// A list of emoji.

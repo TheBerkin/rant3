@@ -291,22 +291,22 @@
     <Compile Include="Unmanaged\UnmanagedOutput.cs" />
     <Compile Include="Unmanaged\UnmanagedPattern.cs" />
     <Compile Include="Unmanaged\UnmanagedRantContext.cs" />
-    <Compile Include="Vocabulary\Carrier.cs" />
+    <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Core\Compiler\RantLexer.cs" />
-    <Compile Include="Vocabulary\CarrierComponent.cs" />
-    <Compile Include="Vocabulary\ClassFilter.cs" />
-    <Compile Include="Vocabulary\ClassFilterRule.cs" />
-    <Compile Include="Vocabulary\Diff.cs" />
-    <Compile Include="Vocabulary\DoubleMetaphone.cs" />
-    <Compile Include="Vocabulary\Emoji.cs" />
+    <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
+    <Compile Include="Vocabulary\Querying\ClassFilterRule.cs" />
+    <Compile Include="Vocabulary\Utilities\Diff.cs" />
+    <Compile Include="Vocabulary\Utilities\DoubleMetaphone.cs" />
+    <Compile Include="Core\Formatting\Emoji.cs" />
     <Compile Include="Vocabulary\EntryTypeDef.cs" />
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
-    <Compile Include="Vocabulary\Queries\EntryVariantHint.cs" />
-    <Compile Include="Vocabulary\Queries\TableSource.cs" />
-    <Compile Include="Vocabulary\QueryState.cs" />
-    <Compile Include="Vocabulary\DicLexer.cs" />
-    <Compile Include="Vocabulary\Range.cs" />
+    <Compile Include="Vocabulary\Querying\EntryVariantHint.cs" />
+    <Compile Include="Vocabulary\Querying\TableSource.cs" />
+    <Compile Include="Vocabulary\Querying\QueryState.cs" />
+    <Compile Include="Vocabulary\Utilities\DicLexer.cs" />
+    <Compile Include="Vocabulary\Querying\Range.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
@@ -321,7 +321,7 @@
     <Compile Include="Core\Utilities\Extensions.cs" />
     <Compile Include="Core\Formatting\NumberFormat.cs" />
     <Compile Include="Core\Formatting\Numerals.cs" />
-    <Compile Include="Vocabulary\Query.cs" />
+    <Compile Include="Vocabulary\Querying\Query.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
@@ -340,9 +340,9 @@
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
-    <Compile Include="Vocabulary\Rhymer.cs" />
+    <Compile Include="Vocabulary\Utilities\Rhymer.cs" />
     <Compile Include="Vocabulary\TableMergeBehavior.cs" />
-    <Compile Include="Vocabulary\VocabUtils.cs" />
+    <Compile Include="Vocabulary\Utilities\VocabUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">

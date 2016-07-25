@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Utilities;
+using Rant.Vocabulary.Querying;
 
 namespace Rant.Vocabulary
 {
@@ -74,6 +75,8 @@ namespace Rant.Vocabulary
         {
             foreach (var entry in _entries) yield return entry;
         }
+
+
 
         /// <summary>
         /// The subtypes used by the table entries.

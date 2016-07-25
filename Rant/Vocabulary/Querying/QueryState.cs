@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Utilities;
+using Rant.Vocabulary.Utilities;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Querying
 {
     /// <summary>
     /// Maintains state information used by queries.

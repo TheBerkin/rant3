@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Querying
 {
 	/// <summary>
 	/// Defines a set of boundaries that can be used to enforce range requirements on numeric values.
 	/// </summary>
-	public class Range
+	public sealed class Range
 	{
 		private int? _min, _max;
 

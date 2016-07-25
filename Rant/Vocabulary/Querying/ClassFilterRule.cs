@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Rant.Vocabulary
+﻿namespace Rant.Vocabulary.Querying
 {
 	/// <summary>
 	/// Defines a query filter for a single dictionary entry class.

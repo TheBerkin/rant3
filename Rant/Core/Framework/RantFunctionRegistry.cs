@@ -10,6 +10,7 @@ using Rant.Core.Output;
 using Rant.Core.Utilities;
 using Rant.Metadata;
 using Rant.Vocabulary;
+using Rant.Vocabulary.Utilities;
 
 namespace Rant.Core.Framework
 {

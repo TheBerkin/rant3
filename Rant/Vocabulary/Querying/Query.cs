@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Rant.Vocabulary
+namespace Rant.Vocabulary.Querying
 {
     /// <summary>
     /// Represents a set of search criteria for a Rant dictionary.

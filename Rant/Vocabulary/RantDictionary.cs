@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using Rant.Core.Utilities;
+using Rant.Vocabulary.Querying;
 
 namespace Rant.Vocabulary
 {
