@@ -145,7 +145,7 @@ namespace Rant.Vocabulary
 				case TableMergeBehavior.RemoveEntryDuplicates: // TODO: Make this NOT O(n^2*subtypes) -- speed up with HashSet?
 					{
 						var otherEntries =
-							other._entries.Where(e => !_entries.Any(ee => ee.Terms.SequenceEqual(e.Terms))).ToArray();
+							other._entries.Where(e => !_entries.Any(ee => ee.GetTerms().SequenceEqual(e.GetTerms()))).ToArray();
 						Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
 						Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
 						break;
@@ -153,7 +153,7 @@ namespace Rant.Vocabulary
 				case TableMergeBehavior.RemoveFirstTermDuplicates: // TODO: Make this NOT O(n^2)
 					{
 						var otherEntries =
-							other._entries.Where(e => _entries.All(ee => ee.Terms[0] != e.Terms[0])).ToArray();
+							other._entries.Where(e => _entries.All(ee => ee[0] != e[0])).ToArray();
 						Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
 						Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
 						break;
@@ -180,14 +180,14 @@ namespace Rant.Vocabulary
 			}
 
 			if (query.RegexFilters.Any())
-				pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e.Terms[index].Value)));
+				pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
 
 			if (query.SyllablePredicate != null)
-				pool = pool.Where(e => query.SyllablePredicate.Test(e.Terms[index].SyllableCount));
+				pool = pool.Where(e => query.SyllablePredicate.Test(e[index].SyllableCount));
 
 			if (!pool.Any()) return MissingTerm;
 
-			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index] ?? MissingTerm;
+			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index].Value ?? MissingTerm;
 		}
 	}
 }

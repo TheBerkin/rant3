@@ -158,8 +158,8 @@ namespace Rant.Vocabulary
 												.ToArray();
 										if (subtypes.Length == pron.Length)
 										{
-											for (int i = 0; i < entry.Terms.Length; i++)
-												entry.Terms[i].Pronunciation = pron[i];
+											for (int i = 0; i < entry.TermCount; i++)
+												entry[i].Pronunciation = pron[i];
 										}
 									}
 									break;

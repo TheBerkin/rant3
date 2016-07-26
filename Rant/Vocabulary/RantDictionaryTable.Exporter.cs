@@ -172,19 +172,19 @@ namespace Rant.Vocabulary
 				foreach (string key in this.Children.Keys.OrderBy(x => x))
 					this.Children[key].Render(writer, level + 1, diffmark);
 
-				foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x.Terms[0].Value))
+				foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x[0].Value))
 				{
-					if (entry.Terms.Length > 1 && diffmark)
+					if (entry.TermCount > 1 && diffmark)
 					{
-						writer.WriteLine(leadingWhitespacer + ">> {0}", entry.Terms.Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry.Terms[0].Value, t.Value)).Aggregate((c, n) => c + "/" + n));
+						writer.WriteLine(leadingWhitespacer + ">> {0}", entry.GetTerms().Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry[0].Value, t.Value)).Aggregate((c, n) => c + "/" + n));
 					}
 					else
 					{
-						writer.WriteLine(leadingWhitespacer + "> {0}", entry.Terms.Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
+						writer.WriteLine(leadingWhitespacer + "> {0}", entry.GetTerms().Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
 					}
 
-					if (!Util.IsNullOrWhiteSpace(entry.Terms[0].Pronunciation))
-						writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.Terms.Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
+					if (!Util.IsNullOrWhiteSpace(entry[0].Pronunciation))
+						writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.GetTerms().Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
 					string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).OrderBy(x => x).ToArray();
 					if (uniqueClasses.Length > 0)

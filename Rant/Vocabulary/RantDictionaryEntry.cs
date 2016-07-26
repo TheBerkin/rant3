@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Vocabulary.Utilities;
@@ -13,6 +14,7 @@ namespace Rant.Vocabulary
 		private RantDictionaryTerm[] _terms;
 		private readonly HashSet<string> _classes;
 		private readonly HashSet<string> _optionalClasses;
+		private readonly int _numTerms;
 
 		/// <summary>
 		/// Creates a new RantDictionaryEntry object from the specified data.
@@ -21,7 +23,7 @@ namespace Rant.Vocabulary
 		/// <param name="classes">The classes associated with the entry.</param>
 		/// <param name="weight">The weight of the entry.</param>
 		public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, int weight = 1)
-			: this(terms.Select(s => new RantDictionaryTerm(s)).ToArray(), classes, weight)
+			: this(terms.Select(s => new RantDictionaryTerm(s)), classes, weight)
 		{
 		}
 
@@ -31,9 +33,11 @@ namespace Rant.Vocabulary
 		/// <param name="terms">The terms in the entry.</param>
 		/// <param name="classes">The classes associated with the entry.</param>
 		/// <param name="weight">The weight of the entry.</param>
-		public RantDictionaryEntry(RantDictionaryTerm[] terms, IEnumerable<string> classes, int weight = 1)
+		public RantDictionaryEntry(IEnumerable<RantDictionaryTerm> terms, IEnumerable<string> classes, int weight = 1)
 		{
-			_terms = terms;
+			if (terms == null) throw new ArgumentNullException(nameof(terms));
+			_terms = terms.ToArray();
+			_numTerms = _terms.Length;
 			_classes = new HashSet<string>();
 			_optionalClasses = new HashSet<string>();
 			foreach (var c in classes)
@@ -53,19 +57,31 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Gets the value for the specified term index in the entry. If the index is out of range, [Missing Term] will be returned.
+		/// Enumerates the terms stored in the current entry.
 		/// </summary>
-		/// <param name="index">The index of the term whose value to request.</param>
 		/// <returns></returns>
-		public string this[int index] => (index < 0 || index >= _terms.Length) ? "[Missing Term]" : _terms[index].Value;
+		public IEnumerable<RantDictionaryTerm> GetTerms() => _terms.AsEnumerable(); 
 
 		/// <summary>
-		/// The terms in the entry.
+		/// Gets the number of terms stored in the current entry.
 		/// </summary>
-		public RantDictionaryTerm[] Terms
+		public int TermCount => _numTerms;
+
+		/// <summary>
+		/// Gets or sets the term at the specified index.
+		/// </summary>
+		/// <param name="index">The index of the term to access.</param>
+		/// <returns></returns>
+		public RantDictionaryTerm this[int index]
 		{
-			get { return _terms; }
-			set { _terms = value ?? new RantDictionaryTerm[0]; }
+			get { return (index < 0 || index >= _terms.Length) ? null : _terms[index]; }
+			set
+			{
+				if (index < 0 || index <= _terms.Length)
+					throw new IndexOutOfRangeException("Index was outside of the bounds of the entry's term list.");
+
+				_terms[index] = value;
+			}
 		}
 
 		/// <summary>

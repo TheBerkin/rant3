@@ -183,18 +183,18 @@ namespace Rave.DicDoc
                     writer.AddAttribute(HtmlTextWriterAttribute.Class, "termset");
                     writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                    for (int i = 0; i < e.Terms.Length; i++)
+                    for (int i = 0; i < e.TermCount; i++)
                     {
                         writer.AddAttribute(HtmlTextWriterAttribute.Class, "term");
                         writer.RenderBeginTag(HtmlTextWriterTag.Span);
-                        writer.WriteEncodedText(e.Terms[i].Value);
+                        writer.WriteEncodedText(e[i].Value);
 
-                        if (e.Terms[i].PronunciationParts.Length > 0)
+                        if (e[i].PronunciationParts.Length > 0)
                         {
                             writer.AddAttribute(HtmlTextWriterAttribute.Class, "terminfo");
                             writer.RenderBeginTag(HtmlTextWriterTag.Span);
                             writer.RenderBeginTag(HtmlTextWriterTag.I);
-                            writer.WriteEncodedText(" [" + e.Terms[i].Pronunciation + "]");
+                            writer.WriteEncodedText(" [" + e[i].Pronunciation + "]");
                             writer.RenderEndTag(); // </i>
                             writer.RenderEndTag(); // </span>
                         }
@@ -214,9 +214,9 @@ namespace Rave.DicDoc
                     var notes = new List<HtmlGenFunc>();
                     var otherClasses = e.GetClasses().Where(cl => cl != tableClass);
 
-                    if (e.Terms.All(t => t.PronunciationParts.Length > 0))
+                    if (e.GetTerms().All(t => t.PronunciationParts.Length > 0))
                         notes.Add(html => html.WriteEncodedText("Full pronunciation"));
-                    else if (e.Terms.Any(t => t.PronunciationParts.Length > 0))
+                    else if (e.GetTerms().Any(t => t.PronunciationParts.Length > 0))
                         notes.Add(html => html.WriteEncodedText("Partial pronunciation"));
 
                     if (e.Weight != 1) notes.Add(html => html.WriteEncodedText("Weight: " + e.Weight));

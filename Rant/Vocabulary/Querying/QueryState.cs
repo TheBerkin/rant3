@@ -141,17 +141,17 @@ namespace Rant.Vocabulary.Querying
                 if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
                 {
                     result = pool
-                        .Where(e => !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation))
+                        .Where(e => !Util.IsNullOrWhiteSpace(e[subtypeIndex].Pronunciation))
                         .PickEntry(rng);
                     if (result == null) return null;
-                    _rhymeTable[rhyme] = _.Create(result.Terms[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
+                    _rhymeTable[rhyme] = _.Create(result[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
                 }
                 result =
                     pool.Except(rhymeState.Item2)
                         .Where(e =>
-                                !Util.IsNullOrWhiteSpace(e.Terms[subtypeIndex].Pronunciation) &&
-                                _rhymer.Rhyme(rhymeState.Item1, e.Terms[subtypeIndex]))
+                                !Util.IsNullOrWhiteSpace(e[subtypeIndex].Pronunciation) &&
+                                _rhymer.Rhyme(rhymeState.Item1, e[subtypeIndex]))
                         .PickEntry(rng);
 
                 if (result != null) rhymeState.Item2.Add(result);
