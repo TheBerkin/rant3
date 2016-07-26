@@ -41,6 +41,6 @@ namespace Rant.Vocabulary.Querying
 	    /// <summary>
         /// The regex filters to search by.
         /// </summary>
-        public IEnumerable<_<bool, Regex>> RegexFilters { get; set; }
+        public List<_<bool, Regex>> RegexFilters { get; set; }
 	}
 }

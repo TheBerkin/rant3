@@ -295,6 +295,7 @@
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Core\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilterRule.cs" />
     <Compile Include="Vocabulary\Utilities\Diff.cs" />
@@ -304,11 +305,12 @@
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
     <Compile Include="Vocabulary\Querying\EntryVariantHint.cs" />
     <Compile Include="Vocabulary\Querying\TableSource.cs" />
-    <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Utilities\DicLexer.cs" />
     <Compile Include="Vocabulary\Querying\Range.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />
-    <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs" />
+    <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Core\Constructs\BlockAttribs.cs" />

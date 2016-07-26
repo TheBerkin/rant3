@@ -64,7 +64,7 @@ namespace Rant.Core.Compiler
 			return new RASequence(actionList, _source);
 		}
 
-		public void SyntaxError(Stringe token, string message)
+		public void SyntaxError(Stringe token, string message, bool fatal = true)
 		{
 			throw new RantCompilerException(_sourceName, token, message);
 		}

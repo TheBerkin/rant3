@@ -12,7 +12,7 @@ namespace Rant.Core.Compiler.Parsing
 		public static T Get<T>() where T : Parser
 		{
 			Parser parser;
-			if (_parserMap.TryGetValue(typeof(T), out parser))
+			if (!_parserMap.TryGetValue(typeof(T), out parser))
 			{
 				parser = _parserMap[typeof(T)] = Activator.CreateInstance(typeof(T)) as T;
 			}
