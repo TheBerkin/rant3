@@ -65,8 +65,6 @@ namespace Rant.Vocabulary
 										  String.Join(", ",
 											  subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
 
-
-
 			_subtypes = subtypes;
 			_name = name;
 			_entriesHash.AddRange(entries);
@@ -183,7 +181,7 @@ namespace Rant.Vocabulary
 			return true;
 		}
 
-		internal string Query(RantDictionary dictionary, RNG rng, Query query, QueryState syncState)
+		internal string Query(RantDictionary dictionary, RNG rng, Query query, CarrierState syncState)
 		{
 			var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
 			if (index == -1) return "[Bad Subtype]";

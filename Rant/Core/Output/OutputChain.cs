@@ -93,7 +93,7 @@ namespace Rant.Core.Output
 		{
 			if (_last.GetType() != typeof(OutputChainBuffer)) AddBuffer();
 			_last.Print(obj);
-		} 
+		}
 
 		public OutputChainBuffer AddArticleBuffer()
 		{

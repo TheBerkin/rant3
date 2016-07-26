@@ -9,7 +9,7 @@ namespace Rant.Vocabulary.Querying
     /// <summary>
     /// Maintains state information used by queries.
     /// </summary>
-    internal sealed class QueryState
+    internal sealed class CarrierState
     {
         /// <summary>
         /// Distinct carrier table.

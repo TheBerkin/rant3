@@ -129,7 +129,7 @@ namespace Rant.Vocabulary
 		/// <param name="query">The search criteria to use.</param>
 		/// <param name="syncState">The state object to use for carrier synchronization.</param>
 		/// <returns></returns>
-		internal string Query(RNG rng, Query query, QueryState syncState)
+		internal string Query(RNG rng, Query query, CarrierState syncState)
 		{
 			RantDictionaryTable table;
 			return !_tables.TryGetValue(query.Name, out table)

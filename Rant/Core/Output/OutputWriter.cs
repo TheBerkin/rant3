@@ -9,7 +9,7 @@ namespace Rant.Core.Output
 	{
 		private readonly Sandbox sandbox;
 		private readonly OutputChain mainChain;
-		private readonly Dictionary<string, OutputChain> chains = new Dictionary<string, OutputChain>(); 
+		private readonly Dictionary<string, OutputChain> chains = new Dictionary<string, OutputChain>();
 		private readonly Stack<OutputChain> chainStack = new Stack<OutputChain>();
 		private readonly HashSet<OutputChain> activeChains = new HashSet<OutputChain>();
 

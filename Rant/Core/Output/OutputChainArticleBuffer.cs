@@ -6,8 +6,8 @@ namespace Rant.Core.Output
 {
 	internal class OutputChainArticleBuffer : OutputChainBuffer
 	{
-		private static readonly HashSet<char> vowels = 
-			new HashSet<char>(new[] {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'é', 'É'}); 
+		private static readonly HashSet<char> vowels =
+			new HashSet<char>(new[] { 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'é', 'É' });
 
 		private static readonly string[] ignorePrefixes =
 			{ "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" };

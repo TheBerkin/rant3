@@ -304,7 +304,7 @@
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
     <Compile Include="Vocabulary\Querying\EntryVariantHint.cs" />
     <Compile Include="Vocabulary\Querying\TableSource.cs" />
-    <Compile Include="Vocabulary\Querying\QueryState.cs" />
+    <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Utilities\DicLexer.cs" />
     <Compile Include="Vocabulary\Querying\Range.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />

@@ -13,29 +13,29 @@ namespace Rant.Core.Utilities
 	{
 		private static readonly Dictionary<Type, HashSet<string>> _enumTable = new Dictionary<Type, HashSet<string>>();
 
-	    public static bool IsUppercase(string sample)
-	    {
-            // All-caps?
-	        if (!sample.Where(Char.IsLetter).All(Char.IsUpper)) return false;
+		public static bool IsUppercase(string sample)
+		{
+			// All-caps?
+			if (!sample.Where(Char.IsLetter).All(Char.IsUpper)) return false;
 
-            int longest = 0;
-            int curLength = 0;
-            for (int i = 0; i < sample.Length; i++)
-            {
-                if (Char.IsUpper(sample[i]))
-                {
-                    if (++curLength > longest) longest++;
-                }
-                else
-                {
-                    curLength = 0;
-                }
-            }
+			int longest = 0;
+			int curLength = 0;
+			for (int i = 0; i < sample.Length; i++)
+			{
+				if (Char.IsUpper(sample[i]))
+				{
+					if (++curLength > longest) longest++;
+				}
+				else
+				{
+					curLength = 0;
+				}
+			}
 
-	        return longest > 1;
-	    }
+			return longest > 1;
+		}
 
-        private static void CacheEnum(Type type)
+		private static void CacheEnum(Type type)
 		{
 			if (!type.IsEnum || _enumTable.ContainsKey(type)) return;
 			_enumTable[type] = new HashSet<string>(Enum.GetNames(type));
@@ -47,7 +47,7 @@ namespace Rant.Core.Utilities
 			if (!enumType.IsEnum) throw new ArgumentException("TEnum must be an enumerated type.");
 			CacheEnum(enumType);
 			var name = SnakeToCamel(modeString.Trim());
-            var cache = _enumTable[enumType];
+			var cache = _enumTable[enumType];
 			if (!cache.Contains(name)) return false;
 			value = Enum.Parse(enumType, name, true);
 			return true;
@@ -201,26 +201,26 @@ namespace Rant.Core.Utilities
 			return sb.ToString();
 		}
 
-	    public static string CamelToSnake(string camelName)
-	    {
-            var name = camelName.Trim();
-            if (Util.IsNullOrWhiteSpace(name)) return name;
-	        if (name.Length == 1) return name.ToLower();
-            var sb = new StringBuilder();
-	        bool a, b;
-	        bool last = false;
-	        for (int i = 0; i < name.Length - 1; i++)
-	        {
-	            a = Char.IsUpper(name[i]);
-	            b = Char.IsUpper(name[i + 1]);
-	            if ((last && a && !b)) sb.Append('-');
-	            sb.Append(Char.ToLower(name[i]));
-	            if (!a && b) sb.Append('-');
-	            last = a;
-	        }
-            sb.Append(Char.ToLower(name[name.Length - 1]));
-            return sb.ToString();
-	    }
+		public static string CamelToSnake(string camelName)
+		{
+			var name = camelName.Trim();
+			if (Util.IsNullOrWhiteSpace(name)) return name;
+			if (name.Length == 1) return name.ToLower();
+			var sb = new StringBuilder();
+			bool a, b;
+			bool last = false;
+			for (int i = 0; i < name.Length - 1; i++)
+			{
+				a = Char.IsUpper(name[i]);
+				b = Char.IsUpper(name[i + 1]);
+				if ((last && a && !b)) sb.Append('-');
+				sb.Append(Char.ToLower(name[i]));
+				if (!a && b) sb.Append('-');
+				last = a;
+			}
+			sb.Append(Char.ToLower(name[name.Length - 1]));
+			return sb.ToString();
+		}
 
 		public static Regex ParseRegex(string regexLiteral)
 		{
@@ -230,8 +230,8 @@ namespace Rant.Core.Utilities
 			var literal = regexLiteral.TrimEnd('i');
 			if (!literal.StartsWith("`") || !literal.EndsWith("`"))
 				throw new FormatException("Regex literal was not in the correct format.");
-			
-			return new Regex(literal.Substring(1, literal.Length - 2), 
+
+			return new Regex(literal.Substring(1, literal.Length - 2),
 				(noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 		}
 
