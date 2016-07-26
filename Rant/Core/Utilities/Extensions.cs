@@ -32,5 +32,10 @@ namespace Rant.Core.Utilities
 	    {
 		    foreach (var item in items) hashset.Add(item);
 	    }
+
+	    public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
+	    {
+		    foreach (var item in items) hashset.Add(item);
+	    }
     }
 }

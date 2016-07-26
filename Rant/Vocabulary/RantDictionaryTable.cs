@@ -15,10 +15,11 @@ namespace Rant.Vocabulary
 		internal const string MissingTerm = "[?]";
 
 		private readonly string _name;
-		private readonly string _language = "en-US";
+		private readonly string _language = "en_US";
 		private readonly string[] _subtypes;
 		private readonly HashSet<string> _hidden = new HashSet<string>();
-		private RantDictionaryEntry[] _entries;
+		private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
+		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>();
 
 		/// <summary>
 		/// Creates a new RantDictionaryTable with the specified entries.
@@ -28,6 +29,9 @@ namespace Rant.Vocabulary
 		/// <param name="entries">The entries to add to the table.</param>
 		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries)
 		{
+			if (subtypes == null) throw new ArgumentNullException(nameof(subtypes));
+			if (entries == null) throw new ArgumentNullException(nameof(entries));
+
 			if (!Util.ValidateName(name))
 				throw new FormatException($"Invalid table name: '{name}'");
 
@@ -38,7 +42,8 @@ namespace Rant.Vocabulary
 
 			_subtypes = subtypes;
 			_name = name;
-			_entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
+			_entriesHash.AddRange(entries);
+			_entriesList.AddRange(entries);
 		}
 
 		/// <summary>
@@ -50,6 +55,7 @@ namespace Rant.Vocabulary
 		/// <param name="hiddenClasses">The classes to hide.</param>
 		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries, IEnumerable<string> hiddenClasses)
 		{
+			if (entries == null) throw new ArgumentNullException(nameof(entries));
 			if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));
 			if (!Util.ValidateName(name))
 				throw new FormatException($"Invalid table name: '{name}'");
@@ -63,7 +69,8 @@ namespace Rant.Vocabulary
 
 			_subtypes = subtypes;
 			_name = name;
-			_entries = (entries as RantDictionaryEntry[]) ?? entries.ToArray();
+			_entriesHash.AddRange(entries);
+			_entriesList.AddRange(entries);
 			foreach (var hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
 		}
 
@@ -73,7 +80,31 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<RantDictionaryEntry> GetEntries()
 		{
-			foreach (var entry in _entries) yield return entry;
+			foreach (var entry in _entriesHash) yield return entry;
+		}
+
+		/// <summary>
+		/// Adds the specified entry to the table.
+		/// </summary>
+		/// <param name="entry">The entry to add to the table.</param>
+		/// <returns>True if successfully added; otherwise, False.</returns>
+		public bool AddEntry(RantDictionaryEntry entry)
+		{
+			if (!_entriesHash.Add(entry)) return false;
+			_entriesList.Add(entry);
+			return true;
+		}
+
+		/// <summary>
+		/// Removes the specified entry from the table.
+		/// </summary>
+		/// <param name="entry">The entry to remove from the table.</param>
+		/// <returns>True if successfully removed; otherwise, False.</returns>
+		public bool RemoveEntry(RantDictionaryEntry entry)
+		{
+			if (!_entriesHash.Remove(entry)) return false;
+			_entriesList.Remove(entry);
+			return true;
 		}
 
 		/// <summary>
@@ -84,11 +115,11 @@ namespace Rant.Vocabulary
 		{
 			var lstClasses = new HashSet<string>();
 
-			foreach (var c in _entries.SelectMany(e => e.GetClasses()))
+			foreach (var c in _entriesHash.SelectMany(e => e.GetClasses()))
 			{
 				if (lstClasses.Add(c)) yield return c;
 			}
-		} 
+		}
 
 		/// <summary>
 		/// The subtypes used by the table entries.
@@ -113,7 +144,7 @@ namespace Rant.Vocabulary
 		/// <summary>
 		/// The number of entries stored in the table.
 		/// </summary>
-		public int EntryCount => _entries.Length;
+		public int EntryCount => _entriesHash.Count;
 
 		private int GetSubtypeIndex(string subtype)
 		{
@@ -129,37 +160,13 @@ namespace Rant.Vocabulary
 		/// Adds another table's entries to the current table, given that they share the same name and subtypes.
 		/// </summary>
 		/// <param name="other">The table whose entries will be added to the current instance.</param>
-		/// <param name="mergeBehavior">The merging strategy to employ.</param>
 		/// <returns>True if merge succeeded; otherwise, False.</returns>
-		public bool Merge(RantDictionaryTable other, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public bool Merge(RantDictionaryTable other)
 		{
 			if (other._name != _name || other == this) return false;
 			if (!other._subtypes.SequenceEqual(_subtypes)) return false;
-			int oldLength = _entries.Length;
-			switch (mergeBehavior)
-			{
-				case TableMergeBehavior.Naive:
-					Array.Resize(ref _entries, _entries.Length + other._entries.Length);
-					Array.Copy(other._entries, 0, _entries, oldLength, other._entries.Length);
-					break;
-				case TableMergeBehavior.RemoveEntryDuplicates: // TODO: Make this NOT O(n^2*subtypes) -- speed up with HashSet?
-					{
-						var otherEntries =
-							other._entries.Where(e => !_entries.Any(ee => ee.GetTerms().SequenceEqual(e.GetTerms()))).ToArray();
-						Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
-						Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
-						break;
-					}
-				case TableMergeBehavior.RemoveFirstTermDuplicates: // TODO: Make this NOT O(n^2)
-					{
-						var otherEntries =
-							other._entries.Where(e => _entries.All(ee => ee[0] != e[0])).ToArray();
-						Array.Resize(ref _entries, _entries.Length + otherEntries.Length);
-						Array.Copy(otherEntries, 0, _entries, oldLength, otherEntries.Length);
-						break;
-					}
-			}
-
+			_entriesHash.AddRange(other._entriesHash);
+			_entriesList.AddRange(other._entriesHash);
 			return true;
 		}
 
@@ -169,8 +176,8 @@ namespace Rant.Vocabulary
 			if (index == -1) return "[Bad Subtype]";
 
 			var pool = query.ClassFilter.IsEmpty
-				? _entries
-				: _entries.Where(e => query.ClassFilter.Test(e, query.Exclusive));
+				? _entriesHash
+				: _entriesHash.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
 			if (_hidden.Any())
 			{

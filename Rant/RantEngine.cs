@@ -145,8 +145,7 @@ namespace Rant
 		/// Loads the specified package into the engine.
 		/// </summary>
 		/// <param name="package">The package to load.</param>
-		/// <param name="mergeBehavior">The table merging strategy to employ.</param>
-		public void LoadPackage(RantPackage package, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public void LoadPackage(RantPackage package)
 		{
 			if (package == null) throw new ArgumentNullException(nameof(package));
 			if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
@@ -168,13 +167,13 @@ namespace Rant
 			{
 				if (_dictionary == null)
 				{
-					_dictionary = new RantDictionary(tables, mergeBehavior);
+					_dictionary = new RantDictionary(tables);
 				}
 				else
 				{
 					foreach (var table in tables)
 					{
-						_dictionary.AddTable(table, mergeBehavior);
+						_dictionary.AddTable(table);
 					}
 				}
 			}
@@ -186,7 +185,7 @@ namespace Rant
 				RantPackage pkg;
 				if (!_resolver.TryResolvePackage(dependency, out pkg))
 					throw new FileNotFoundException($"Package '{package}' was unable to resolve dependency '{dependency}'");
-				LoadPackage(pkg, mergeBehavior);
+				LoadPackage(pkg);
 			}
 		}
 
@@ -194,8 +193,7 @@ namespace Rant
 		/// Loads the package at the specified file path into the engine.
 		/// </summary>
 		/// <param name="path">The path to the package to load.</param>
-		/// <param name="mergeBehavior">The table merging strategy to employ.</param>
-		public void LoadPackage(string path, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public void LoadPackage(string path)
 		{
 			if (Util.IsNullOrWhiteSpace(path))
 				throw new ArgumentException("Path cannot be null nor empty.");
@@ -203,7 +201,7 @@ namespace Rant
 			if (Util.IsNullOrWhiteSpace(Path.GetExtension(path)))
 				path += ".rantpkg";
 
-			LoadPackage(RantPackage.Load(path), mergeBehavior);
+			LoadPackage(RantPackage.Load(path));
 		}
 
 		/// <summary>

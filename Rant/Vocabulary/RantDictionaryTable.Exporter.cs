@@ -26,7 +26,7 @@ namespace Rant.Vocabulary
 				// TODO: Export types for tables
 				writer.WriteLine();
 
-				WriteEntries(writer, _entries, useDiffmark);
+				WriteEntries(writer, _entriesHash, useDiffmark);
 			}
 		}
 

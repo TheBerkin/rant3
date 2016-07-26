@@ -28,7 +28,7 @@ namespace Rant.Vocabulary
 		/// </summary>
 		/// <param name="tables">The tables to store in the dictionary.</param>
 		/// <param name="mergeBehavior">The merging strategy to employ.</param>
-		public RantDictionary(IEnumerable<RantDictionaryTable> tables, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public RantDictionary(IEnumerable<RantDictionaryTable> tables)
 		{
 			_tables = new Dictionary<string, RantDictionaryTable>();
 
@@ -39,7 +39,7 @@ namespace Rant.Vocabulary
 			{
 				if (_tables.TryGetValue(list.Name, out table))
 				{
-					table.Merge(list, mergeBehavior);
+					table.Merge(list);
 				}
 				else
 				{
@@ -79,13 +79,12 @@ namespace Rant.Vocabulary
 		/// Adds a new RantDictionaryTable object to the collection.
 		/// </summary>
 		/// <param name="table"></param>
-		/// <param name="mergeBehavior">The merging strategy to employ.</param>
-		public void AddTable(RantDictionaryTable table, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public void AddTable(RantDictionaryTable table)
 		{
 			RantDictionaryTable oldTable;
 			if (_tables.TryGetValue(table.Name, out oldTable))
 			{
-				oldTable.Merge(table, mergeBehavior);
+				oldTable.Merge(table);
 			}
 			else
 			{
@@ -108,9 +107,9 @@ namespace Rant.Vocabulary
 		/// <param name="directory">The directory from which to load dictionaries.</param>
 		/// <param name="mergeBehavior">The merging strategy to employ.</param>
 		/// <returns></returns>
-		public static RantDictionary FromDirectory(string directory, TableMergeBehavior mergeBehavior = TableMergeBehavior.Naive)
+		public static RantDictionary FromDirectory(string directory)
 		{
-			return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList(), mergeBehavior);
+			return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList());
 		}
 
 		/// <summary>
@@ -121,17 +120,6 @@ namespace Rant.Vocabulary
 		public static RantDictionary FromMultiDirectory(params string[] directories)
 		{
 			return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(RantDictionaryTable.FromFile));
-		}
-
-		/// <summary>
-		/// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the loaded data.
-		/// </summary>
-		/// <param name="directories">The directories from which to load dictionaries.</param>
-		/// <param name="mergeBehavior">The merging strategy to employ.</param>
-		/// <returns></returns>
-		public static RantDictionary FromMultiDirectory(string[] directories, TableMergeBehavior mergeBehavior)
-		{
-			return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(RantDictionaryTable.FromFile), mergeBehavior);
 		}
 
 		/// <summary>
