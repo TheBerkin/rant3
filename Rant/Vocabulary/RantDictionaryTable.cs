@@ -90,6 +90,7 @@ namespace Rant.Vocabulary
 		/// <returns>True if successfully added; otherwise, False.</returns>
 		public bool AddEntry(RantDictionaryEntry entry)
 		{
+			if (entry == null) throw new ArgumentNullException(nameof(entry));
 			if (!_entriesHash.Add(entry)) return false;
 			_entriesList.Add(entry);
 			return true;
@@ -102,9 +103,21 @@ namespace Rant.Vocabulary
 		/// <returns>True if successfully removed; otherwise, False.</returns>
 		public bool RemoveEntry(RantDictionaryEntry entry)
 		{
+			if (entry == null) throw new ArgumentNullException(nameof(entry));
 			if (!_entriesHash.Remove(entry)) return false;
 			_entriesList.Remove(entry);
 			return true;
+		}
+
+		/// <summary>
+		/// Checks if the table contains the specified entry.
+		/// </summary>
+		/// <param name="entry">The entry to search for.</param>
+		/// <returns>True if found, False if not.</returns>
+		public bool ContainsEntry(RantDictionaryEntry entry)
+		{
+			if (entry == null) throw new ArgumentNullException(nameof(entry));
+			return _entriesHash.Contains(entry);
 		}
 
 		/// <summary>
