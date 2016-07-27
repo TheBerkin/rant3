@@ -55,6 +55,16 @@ namespace Rant.Resources
 		}
 
 		/// <summary>
+		/// Determines whether the package contains any patterns.
+		/// </summary>
+		public bool HasPatterns => _patterns.Count > 0;
+
+		/// <summary>
+		/// Determines whether the package contains any tables.
+		/// </summary>
+		public bool HasDictionary => _tables.Count > 0;
+
+		/// <summary>
 		/// The description for the package.
 		/// </summary>
 		public string Description { get; set; } = "";

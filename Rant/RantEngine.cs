@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Rant.Core;
 using Rant.Core.Framework;
@@ -186,7 +186,7 @@ namespace Rant
 			var patterns = package.GetPatterns();
 			var tables = package.GetTables();
 
-			if (patterns.Any())
+			if (package.HasPatterns)
 			{
 				foreach (var pattern in patterns)
 				{
@@ -196,7 +196,7 @@ namespace Rant
 				}
 			}
 
-			if (tables.Any())
+			if (package.HasDictionary)
 			{
 				if (_dictionary == null)
 				{
@@ -251,6 +251,9 @@ namespace Rant
 
 		#region Do, DoFile
 
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 		private RantOutput RunVM(Sandbox vm, double timeout)
 		{
 			vm.UserModules = _userModules;
