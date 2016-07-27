@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Rant.Localization
@@ -103,6 +104,11 @@ namespace Rant.Localization
 				Console.WriteLine($"Txtres error: {ex.Message}");
 #endif
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+		public static void ForceLoad()
+		{
 		}
 
 		public static string GetString(string name)

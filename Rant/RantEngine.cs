@@ -8,10 +8,11 @@ using Rant.Core.Framework;
 using Rant.Core.ObjectModel;
 using Rant.Core.Utilities;
 using Rant.Formats;
-using Rant.Localization;
 using Rant.Resources;
 using Rant.Vocabulary;
 using Rant.Vocabulary.Querying;
+
+using static Rant.Localization.Txtres;
 
 namespace Rant
 {
@@ -26,7 +27,7 @@ namespace Rant
 
 		static RantEngine()
 		{
-			Txtres.Load();
+			Rant.Localization.Txtres.ForceLoad();	
 			RantFunctionRegistry.Load();
 		}
 
@@ -38,7 +39,7 @@ namespace Rant
 			get { return _maxStackSize; }
 			set
 			{
-				if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), "Value must be greater than zero.");
+				if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), GetString("err-zero-or-negative"));
 				_maxStackSize = value;
 			}
 		}
@@ -219,7 +220,7 @@ namespace Rant
 			{
 				RantPackage pkg;
 				if (!_resolver.TryResolvePackage(dependency, out pkg))
-					throw new FileNotFoundException($"Package '{package}' was unable to resolve dependency '{dependency}'");
+					throw new FileNotFoundException(GetString("err-unresolvable-package", package, dependency));
 				LoadPackage(pkg);
 			}
 		}
@@ -231,7 +232,7 @@ namespace Rant
 		public void LoadPackage(string path)
 		{
 			if (Util.IsNullOrWhiteSpace(path))
-				throw new ArgumentException("Path cannot be null nor empty.");
+				throw new ArgumentException(GetString("err-empty-path"));
 
 			if (Util.IsNullOrWhiteSpace(Path.GetExtension(path)))
 				path += ".rantpkg";

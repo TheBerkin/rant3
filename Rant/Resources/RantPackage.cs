@@ -10,6 +10,8 @@ using Rant.Core.IO.Compression;
 using Rant.Core.Utilities;
 using Rant.Vocabulary;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Resources
 {
 	/// <summary>
@@ -24,8 +26,8 @@ namespace Rant.Resources
 		private HashSet<RantDictionaryTable> _tables;
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
-		private string _title = "Untitled Package";
-		private string _id = "Package";
+		private string _title = GetString("untitled-package");
+		private string _id = GetString("default-package-id");
 
 		/// <summary>
 		/// The display name of the package.
@@ -336,11 +338,11 @@ namespace Rant.Resources
 			{
 				var magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
 				if (magic != MAGIC)
-					throw new InvalidDataException("File is corrupt.");
+					throw new InvalidDataException(GetString("err-file-corrupt"));
 				var package = new RantPackage();
 				var version = reader.ReadUInt32();
 				if (version != PACKAGE_VERSION)
-					throw new InvalidDataException("Invalid package version: " + version);
+					throw new InvalidDataException(GetString("err-invalid-package-version"));
 				var compress = reader.ReadBoolean();
 				var size = reader.ReadInt32();
 				var data = reader.ReadBytes(size);
@@ -350,7 +352,7 @@ namespace Rant.Resources
 
 				var info = doc["info"];
 				if (info == null)
-					throw new InvalidDataException("Metadata is missing from package.");
+					throw new InvalidDataException(GetString("err-missing-package-meta"));
 
 				package.Title = info["title"];
 				package.ID = info["id"];

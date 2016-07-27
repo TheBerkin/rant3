@@ -1,5 +1,5 @@
 ﻿untitled-package="Untitled Package"
-default-package-name="Package"
+default-package-id="Package"
 
 err-zero-or-negative="Value must be greater than zero."
 err-empty-path="File path cannot be null or empty."

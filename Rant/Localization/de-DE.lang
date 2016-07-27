@@ -1,5 +1,5 @@
 ﻿untitled-package="Unbenanntes Paket"
-default-package-name="Paket"
+default-package-id="Paket"
 
 err-zero-or-negative="Wert muss größer als null sein."
 err-empty-path="Der Dateipfad kann nicht leer oder NULL sein."
