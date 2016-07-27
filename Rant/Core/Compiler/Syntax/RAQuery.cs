@@ -29,10 +29,10 @@ namespace Rant.Core.Compiler.Syntax
 			{
 				foreach (CarrierComponent type in Enum.GetValues(typeof(CarrierComponent)))
 					foreach (string name in _query.Carrier.GetCarriers(type))
-						sb.QueryState.RemoveType(type, name);
+						sb.CarrierState.RemoveType(type, name);
 				yield break;
 			}
-			var result = sb.Engine.Dictionary.Query(sb.RNG, _query, sb.QueryState);
+			var result = sb.Engine.Dictionary.Query(sb.RNG, _query, sb.CarrierState);
 			sb.Print(result);
 		}
 	}

@@ -496,7 +496,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The rhyme types to use.")]
 			RhymeFlags flags)
 		{
-			sb.QueryState.Rhymer.AllowedRhymes = flags;
+			sb.CarrierState.Rhymer.AllowedRhymes = flags;
 		}
 
 		[RantFunction("sync", "x")]
