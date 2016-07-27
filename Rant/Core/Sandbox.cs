@@ -14,6 +14,8 @@ using Rant.Formats;
 using Rant.Resources;
 using Rant.Vocabulary.Querying;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core
 {
 	/// <summary>
@@ -295,11 +297,11 @@ namespace Rant.Core
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"The pattern has timed out ({timeout}s).");
+								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;
 
@@ -353,11 +355,11 @@ namespace Rant.Core
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"The pattern has timed out ({timeout}s).");
+								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;
 
