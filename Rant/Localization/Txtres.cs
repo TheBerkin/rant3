@@ -10,7 +10,7 @@ namespace Rant.Localization
 {
 	internal static class Txtres
 	{
-		public const string LanguageResourceNamespace = "Localization";
+		public const string LanguageResourceNamespace = "Rant.Localization";
 		public const string FallbackLanguageCode = "en-US";
 
 		private static readonly Dictionary<string, string> _stringTable = new Dictionary<string, string>();
@@ -29,8 +29,10 @@ namespace Rant.Localization
 		{
 			try
 			{
-				using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{CultureInfo.CurrentCulture.Name}.lang")
-					?? Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{FallbackLanguageCode}.lang"))
+				var ass = Assembly.GetExecutingAssembly();
+				using (var stream = 
+					ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{CultureInfo.CurrentCulture.Name}.lang")
+					?? ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{FallbackLanguageCode}.lang"))
 				{
 					if (stream == null)
 					{
