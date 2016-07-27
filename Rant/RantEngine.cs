@@ -118,6 +118,14 @@ namespace Rant
 		}
 
 		/// <summary>
+		/// Deletes all state data in the engine's persisted carrier state, if available.
+		/// </summary>
+		public void ResetCarrierState()
+		{
+			_carrierState?.Reset();
+		}
+
+		/// <summary>
 		/// Accesses global variables.
 		/// </summary>
 		/// <param name="name">The name of the variable to access.</param>

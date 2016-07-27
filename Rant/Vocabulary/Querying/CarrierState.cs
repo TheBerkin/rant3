@@ -45,6 +45,14 @@ namespace Rant.Vocabulary.Querying
 
         internal Rhymer Rhymer => _rhymer;
 
+	    public void Reset()
+	    {
+		    _rhymeTable.Clear();
+			_matchTable.Clear();
+			_assocTable.Clear();
+			_uniqueTable.Clear();
+	    }
+
         internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng)
         {
             if (carrier == null) return pool.PickEntry(rng);
