@@ -8,6 +8,7 @@ using Rant.Core.Framework;
 using Rant.Core.ObjectModel;
 using Rant.Core.Utilities;
 using Rant.Formats;
+using Rant.Localization;
 using Rant.Resources;
 using Rant.Vocabulary;
 using Rant.Vocabulary.Querying;
@@ -25,6 +26,7 @@ namespace Rant
 
 		static RantEngine()
 		{
+			Txtres.Load();
 			RantFunctionRegistry.Load();
 		}
 
@@ -210,7 +212,7 @@ namespace Rant
 					}
 				}
 			}
-
+			
 			_loadedPackages.Add(RantPackageDependency.Create(package));
 
 			foreach (var dependency in package.GetDependencies())

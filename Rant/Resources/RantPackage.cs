@@ -17,7 +17,6 @@ namespace Rant.Resources
 	/// </summary>
 	public sealed class RantPackage
 	{
-		private const string OLD_MAGIC = "RPKG";
 		private const string MAGIC = "RANT";
 		private const byte PACKAGE_VERSION = 2;
 
@@ -229,6 +228,8 @@ namespace Rant.Resources
 		/// Saves the package to the specified file path.
 		/// </summary>
 		/// <param name="path">The path to the file to create.</param>
+		/// <param name="compress">Specifies whether to compress the package contents.</param>
+		/// <param name="stringTableMode">Specifies string table behavior for the package.</param>
 		public void Save(
 			string path,
 			bool compress = true,
@@ -314,68 +315,6 @@ namespace Rant.Resources
 		}
 
 		/// <summary>
-		/// Saves the package using the old Rant package format to the specified file path.
-		/// </summary>
-		/// <param name="path">The path to the file to create.</param>
-		public void SaveOld(string path)
-		{
-			if (String.IsNullOrEmpty(Path.GetExtension(path)))
-			{
-				path += ".rantpkg";
-			}
-
-			using (var writer = new EasyWriter(File.Create(path)))
-			{
-				// Magic
-				writer.WriteBytes(Encoding.ASCII.GetBytes(OLD_MAGIC));
-
-				// Counts
-				writer.Write(_patterns?.Count ?? 0);
-				writer.Write(_tables?.Count ?? 0);
-
-				// Patterns
-				if (_patterns != null)
-				{
-					foreach (var pattern in _patterns)
-					{
-						writer.Write(pattern.Name);
-						writer.Write(pattern.Code);
-					}
-				}
-
-				// Tables
-				if (_tables != null)
-				{
-					foreach (var table in _tables)
-					{
-						writer
-						.Write(table.Name)
-						.Write(table.Subtypes)
-						.Write(table.EntryCount)
-						.Write(table.HiddenClasses.ToArray());
-
-						foreach (var entry in table.GetEntries())
-						{
-							writer
-								.Write(entry.Weight)
-								.Write(false) // Used to be the NSFW field, will use for something else in the future!
-								.Write(entry.TermCount);
-
-							for (int i = 0; i < entry.TermCount; i++)
-							{
-								writer
-									.Write(entry[i].Value)
-									.Write(entry[i].Pronunciation);
-							}
-
-							writer.Write(entry.GetClasses().ToArray());
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
 		/// Loads a package from the specified path and returns it as a RantPackage object.
 		/// </summary>
 		/// <param name="path">The path to the package file to load.</param>
@@ -396,8 +335,6 @@ namespace Rant.Resources
 			using (var reader = new EasyReader(source))
 			{
 				var magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
-				if (magic == OLD_MAGIC)
-					return LoadOldPackage(reader);
 				if (magic != MAGIC)
 					throw new InvalidDataException("File is corrupt.");
 				var package = new RantPackage();
@@ -489,59 +426,6 @@ namespace Rant.Resources
 
 				return package;
 			}
-		}
-
-		private static RantPackage LoadOldPackage(EasyReader reader)
-		{
-			int numPatterns = reader.ReadInt32();
-			int numTables = reader.ReadInt32();
-
-			if (numPatterns < 0 || numTables < 0)
-				throw new InvalidDataException("File is corrupt.");
-
-			var pkg = new RantPackage();
-
-			// Patterns
-			for (int i = 0; i < numPatterns; i++)
-			{
-				var name = reader.ReadString();
-				var code = reader.ReadString();
-
-				pkg.AddPattern(new RantPattern(name, RantPatternOrigin.String, code));
-			}
-
-			// Tables
-			for (int i = 0; i < numTables; i++)
-			{
-				var name = reader.ReadString();
-				var subs = reader.ReadStringArray();
-				int numEntries = reader.ReadInt32();
-				var hiddenClasses = reader.ReadStringArray();
-				var entries = new RantDictionaryEntry[numEntries];
-
-				for (int j = 0; j < numEntries; j++)
-				{
-					int weight = reader.ReadInt32();
-					bool flags = reader.ReadBoolean(); // unused
-					int numTerms = reader.ReadInt32();
-					var terms = new RantDictionaryTerm[numTerms];
-
-					for (int k = 0; k < numTerms; k++)
-					{
-						var value = reader.ReadString();
-						var pron = reader.ReadString();
-						terms[k] = new RantDictionaryTerm(value, pron);
-					}
-
-					var classes = reader.ReadStringArray();
-
-					entries[j] = new RantDictionaryEntry(terms, classes, weight);
-				}
-
-				pkg.AddTable(new RantDictionaryTable(name, subs, entries, hiddenClasses));
-			}
-
-			return pkg;
 		}
 
 		public override string ToString() => $"{Title}, v{Version}";

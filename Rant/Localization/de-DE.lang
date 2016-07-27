@@ -1,0 +1,16 @@
+﻿untitled-package="Unbenanntes Paket"
+default-package-name="Paket"
+
+err-zero-or-negative="Wert muss größer als null sein."
+err-empty-path="Der Dateipfad kann nicht leer oder NULL sein."
+err-unresolvable-package="Das Paket '{0}' konnte nicht den Verweis '{1}' auflösen."
+err-invalid-package-version="Diese Paketversion ({0}) ist nicht unterstützt."
+err-missing-package-meta="Dieses Paket hat keine Metadaten."
+err-empty-pkg-title="Der Pakettitel muss nicht leer sein."
+err-empty-pkg-id="Der Paketbezeichner (ID) muss nicht leer sein."
+err-file-corrupt="Die Datei ist fehlerhaft oder das Datenformat ist nicht unterstützt."
+err-invalid-tablename="Ungültiger Tabellename: {0}"
+err-invalid-subtypes="Ein oder mehrere der angegebenen Subtypnamen sind ungültig: {0}"
+
+missing-table="[Fehlende Tabelle]"
+bad-subtype="[Ungültiger Subtyp]"
