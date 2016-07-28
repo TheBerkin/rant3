@@ -14,6 +14,8 @@ using Rant.Formats;
 using Rant.Resources;
 using Rant.Vocabulary.Querying;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core
 {
 	/// <summary>
@@ -34,7 +36,7 @@ namespace Rant.Core
 		private readonly Limit _sizeLimit;
 		private readonly Stack<BlockState> _blocks;
 		private readonly Stack<Match> _matches;
-		private readonly CarrierState _queryState;
+		private readonly CarrierState _carrierState;
 		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
 		private readonly SyncManager _syncManager;
 		private readonly Stack<object> _scriptObjectStack;
@@ -99,7 +101,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the current query state.
 		/// </summary>
-		public CarrierState QueryState => _queryState;
+		public CarrierState CarrierState => _carrierState;
 
 		/// <summary>
 		/// Gets the current RantPattern.
@@ -163,7 +165,7 @@ namespace Rant.Core
 		/// </summary>
 		public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
 
-		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, RantPatternArgs args = null)
+		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null, RantPatternArgs args = null)
 		{
 			_engine = engine;
 			_format = engine.Format;
@@ -177,7 +179,7 @@ namespace Rant.Core
 			_objects = new ObjectStack(engine.Objects);
 			_blocks = new Stack<BlockState>();
 			_matches = new Stack<Match>();
-			_queryState = new CarrierState();
+			_carrierState = carrierState ?? new CarrierState();
 			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
 			_syncManager = new SyncManager(this);
 			_blockManager = new BlockManager();
@@ -295,11 +297,11 @@ namespace Rant.Core
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"The pattern has timed out ({timeout}s).");
+								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;
 
@@ -353,11 +355,11 @@ namespace Rant.Core
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"The pattern has timed out ({timeout}s).");
+								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
 							throw new RantRuntimeException(pattern, action.Current.Range,
-								$"Exceeded the maximum stack size ({RantEngine.MaxStackSize}).");
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;
 

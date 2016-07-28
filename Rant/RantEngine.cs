@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Rant.Core;
 using Rant.Core.Framework;
@@ -10,6 +10,9 @@ using Rant.Core.Utilities;
 using Rant.Formats;
 using Rant.Resources;
 using Rant.Vocabulary;
+using Rant.Vocabulary.Querying;
+
+using static Rant.Localization.Txtres;
 
 namespace Rant
 {
@@ -24,6 +27,7 @@ namespace Rant
 
 		static RantEngine()
 		{
+			Rant.Localization.Txtres.ForceLoad();	
 			RantFunctionRegistry.Load();
 		}
 
@@ -35,12 +39,24 @@ namespace Rant
 			get { return _maxStackSize; }
 			set
 			{
-				if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), "Value must be greater than zero.");
+				if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), GetString("err-zero-or-negative"));
 				_maxStackSize = value;
 			}
 		}
 
 		#endregion
+
+		internal readonly ObjectTable Objects = new ObjectTable();
+		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+
+		private readonly Dictionary<string, RantModule> _userModules = new Dictionary<string, RantModule>();
+		private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
+		private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>();
+		private RantDependencyResolver _resolver = new RantDependencyResolver();
+		private RantDictionary _dictionary = new RantDictionary();
+		private RantFormat _format = RantFormat.English;
+		private bool _preserveCarrierState = false;
+		private CarrierState _carrierState = null;
 
 		/// <summary>
 		/// User-defined Rant modules.
@@ -55,7 +71,15 @@ namespace Rant
 		/// <summary>
 		/// The current formatting settings for the engine.
 		/// </summary>
-		public RantFormat Format = RantFormat.English;
+		public RantFormat Format
+		{
+			get { return _format; }
+			set
+			{
+				if (value == null) throw new ArgumentNullException(nameof(value));
+				_format = value;
+			}
+		}
 
 		/// <summary>
 		/// The vocabulary associated with this instance.
@@ -83,14 +107,26 @@ namespace Rant
 			}
 		}
 
-		internal readonly ObjectTable Objects = new ObjectTable();
-		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+		/// <summary>
+		/// Specifies whether to preserve carrier states between patterns.
+		/// </summary>
+		public bool PreserveCarrierState
+		{
+			get { return _preserveCarrierState; }
+			set
+			{
+				if (!value) _carrierState = null;
+				_preserveCarrierState = value;
+			}
+		}
 
-		private readonly Dictionary<string, RantModule> _userModules = new Dictionary<string, RantModule>();
-		private readonly Dictionary<string, RantPattern> _patternCache = new Dictionary<string, RantPattern>();
-		private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>();
-		private RantDependencyResolver _resolver = new RantDependencyResolver();
-		private RantDictionary _dictionary = new RantDictionary();
+		/// <summary>
+		/// Deletes all state data in the engine's persisted carrier state, if available.
+		/// </summary>
+		public void ResetCarrierState()
+		{
+			_carrierState?.Reset();
+		}
 
 		/// <summary>
 		/// Accesses global variables.
@@ -153,7 +189,7 @@ namespace Rant
 			var patterns = package.GetPatterns();
 			var tables = package.GetTables();
 
-			if (patterns.Any())
+			if (package.HasPatterns)
 			{
 				foreach (var pattern in patterns)
 				{
@@ -163,7 +199,7 @@ namespace Rant
 				}
 			}
 
-			if (tables.Any())
+			if (package.HasDictionary)
 			{
 				if (_dictionary == null)
 				{
@@ -177,14 +213,14 @@ namespace Rant
 					}
 				}
 			}
-
+			
 			_loadedPackages.Add(RantPackageDependency.Create(package));
 
 			foreach (var dependency in package.GetDependencies())
 			{
 				RantPackage pkg;
 				if (!_resolver.TryResolvePackage(dependency, out pkg))
-					throw new FileNotFoundException($"Package '{package}' was unable to resolve dependency '{dependency}'");
+					throw new FileNotFoundException(GetString("err-unresolvable-package", package, dependency));
 				LoadPackage(pkg);
 			}
 		}
@@ -196,7 +232,7 @@ namespace Rant
 		public void LoadPackage(string path)
 		{
 			if (Util.IsNullOrWhiteSpace(path))
-				throw new ArgumentException("Path cannot be null nor empty.");
+				throw new ArgumentException(GetString("err-empty-path"));
 
 			if (Util.IsNullOrWhiteSpace(Path.GetExtension(path)))
 				path += ".rantpkg";
@@ -218,12 +254,19 @@ namespace Rant
 
 		#region Do, DoFile
 
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 		private RantOutput RunVM(Sandbox vm, double timeout)
 		{
 			vm.UserModules = _userModules;
 			vm.PackageModules = PackageModules;
+			if (_preserveCarrierState && _carrierState == null)
+				_carrierState = vm.CarrierState;
 			return vm.Run(timeout);
 		}
+
+		private CarrierState GetPreservedCarrierState() => _preserveCarrierState ? _carrierState : null;
 
 		/// <summary>
 		/// Compiles the specified string into a pattern, executes it, and returns the resulting output.
@@ -234,7 +277,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Loads the file located at the specified path and executes it, returning the resulting output.
@@ -245,7 +288,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Compiles the specified string into a pattern, executes it using a custom seed, and returns the resulting output.
@@ -257,7 +300,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
@@ -269,7 +312,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput DoFile(string path, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromFile(path), new RNG(seed), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Compiles the specified string into a pattern, executes it using a custom RNG, and returns the resulting output.
@@ -281,7 +324,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromString(input), rng, charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Loads the file located at the specified path and executes it using a custom seed, returning the resulting output.
@@ -293,7 +336,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput DoFile(string path, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit, args), timeout);
+			RunVM(new Sandbox(this, RantPattern.FromFile(path), rng, charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns the resulting output.
@@ -304,7 +347,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(RantPattern input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, args), timeout);
+			RunVM(new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Executes the specified pattern using a custom seed and returns the resulting output.
@@ -316,7 +359,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(RantPattern input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, input, new RNG(seed), charLimit, args), timeout);
+			RunVM(new Sandbox(this, input, new RNG(seed), charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Executes the specified pattern using a custom random number generator and returns the resulting output.
@@ -328,7 +371,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public RantOutput Do(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			RunVM(new Sandbox(this, input, rng, charLimit, args), timeout);
+			RunVM(new Sandbox(this, input, rng, charLimit, GetPreservedCarrierState(), args), timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -339,7 +382,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantPattern input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, args).RunSerial(timeout);
+			new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -351,7 +394,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantPattern input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, input, new RNG(seed), charLimit, args).RunSerial(timeout);
+			new Sandbox(this, input, new RNG(seed), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -363,7 +406,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantPattern input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, input, rng, charLimit, args).RunSerial(timeout);
+			new Sandbox(this, input, rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -374,7 +417,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, args).RunSerial(timeout);
+			new Sandbox(this, RantPattern.FromString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -386,7 +429,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, long seed, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, args).RunSerial(timeout);
+			new Sandbox(this, RantPattern.FromString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -398,7 +441,7 @@ namespace Rant
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, RNG rng, int charLimit = 0, double timeout = -1, RantPatternArgs args = null) =>
-			new Sandbox(this, RantPattern.FromString(input), rng, charLimit, args).RunSerial(timeout);
+			new Sandbox(this, RantPattern.FromString(input), rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes a pattern that has been loaded from a package and returns the resulting output.
@@ -413,7 +456,7 @@ namespace Rant
 			if (!PatternExists(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
-			return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(Seeds.NextRaw()), charLimit, args), timeout);
+			return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args), timeout);
 		}
 
 		/// <summary>
@@ -430,7 +473,7 @@ namespace Rant
 			if (!PatternExists(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
-			return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit, args), timeout);
+			return RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit, GetPreservedCarrierState(), args), timeout);
 		}
 
 		/// <summary>
@@ -447,7 +490,7 @@ namespace Rant
 			if (!PatternExists(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
-			return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit, args), timeout);
+			return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit, GetPreservedCarrierState(), args), timeout);
 		}
 		#endregion
 	}

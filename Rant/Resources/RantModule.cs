@@ -3,24 +3,28 @@ using Rant.Core.ObjectModel;
 
 namespace Rant.Resources
 {
-	public class RantModule
+	/// <summary>
+	/// Represents a collection of subroutines that can be loaded and used by other patterns.
+	/// </summary>
+	public sealed class RantModule
 	{
-		private ObjectStack _objects = new ObjectStack(new ObjectTable());
+		private readonly ObjectStack _objects = new ObjectStack(new ObjectTable());
 
-		public string Name { get; private set; }
+		/// <summary>
+		/// The name of the module.
+		/// </summary>
+		public string Name { get; }
 
+		/// <summary>
+		/// Creates a new RantModule with the specified name.
+		/// </summary>
+		/// <param name="name">The name to assign to the module.</param>
 		public RantModule(string name)
 		{
 			Name = name;
 		}
 
-		internal RantAction this[string name]
-		{
-			get
-			{
-				return (RantAction)_objects[name].Value;
-			}
-		}
+		internal RantAction this[string name] => (RantAction)_objects[name].Value;
 
 		/// <summary>
 		/// Adds a RantPattern containing a subroutine to this module.
@@ -29,8 +33,8 @@ namespace Rant.Resources
 		/// <param name="pattern">The pattern that will make up the body of the function.</param>
 		public void AddSubroutineFunction(string name, RantPattern pattern)
 		{
-			var action = (pattern.Action.GetType() == typeof(RASequence) ? 
-				((RASequence)pattern.Action).Actions[0] : 
+			var action = (pattern.Action.GetType() == typeof(RASequence) ?
+				((RASequence)pattern.Action).Actions[0] :
 				pattern.Action);
 			if (action.GetType() != typeof(RADefineSubroutine))
 				throw new RantRuntimeException(pattern, pattern.Code, "Attempted to add non-subroutine pattern to a module.");
