@@ -13,7 +13,7 @@ err-invalid-tablename = "Ungültiger Tabellename: {0}"
 err-invalid-subtypes = "Ein oder mehrere der angegebenen Subtypnamen sind ungültig: {0}"
 
 err-pattern-timeout = "Die Ausführung ist abgelaufen ({0} Sekunden)."
-err-stack-overflow = "Die Stapelspeicherbegrenzung ist übergelaufen ({0})."
+err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten (Höchstgrenze: {0})."
 
 missing-table = "[Fehlende Tabelle]"
 bad-subtype = "[Ungültiger Subtyp]"

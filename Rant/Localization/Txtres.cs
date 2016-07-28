@@ -50,7 +50,7 @@ namespace Rant.Localization
 						{
 							var line = reader.ReadLine();
 							if (line == null || line.Length == 0) continue;
-							var kv = line.Split(new[] { '=' }, 1);
+							var kv = line.Split(new[] { '=' }, 2);
 							if (kv.Length != 2) continue;
 							var key = kv[0].Trim();
 							if (!key.All(c => Char.IsLetterOrDigit(c) || c == '-' || c == '_')) continue;
@@ -61,7 +61,12 @@ namespace Rant.Localization
 							int len = valueLiteral.Length;
 							while (i < len)
 							{
-								if ((i == 0 || i == valueLiteral.Length - 1) && valueLiteral[i] != '"') goto loop;
+								if ((i == 0 || i == valueLiteral.Length - 1))
+								{
+									if (valueLiteral[i] != '"') goto loop;
+									i++;
+									continue;
+								}
 								switch (valueLiteral[i])
 								{
 									case '\\':
@@ -97,6 +102,9 @@ namespace Rant.Localization
 						}
 					}
 				}
+#if DEBUG
+				Console.WriteLine($"Loaded string resources for {CultureInfo.CurrentCulture.Name}");
+#endif
 			}
 			catch (Exception ex)
 			{
