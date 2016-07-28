@@ -76,6 +76,9 @@ namespace Rant.Core.Compiler.Parsing
 						actionCallback(new RAEscape(token));
 						break;
 
+					case R.EOF:
+						yield break;
+
 					default: // Handle text
 						actionCallback(new RAText(token));
 						break;

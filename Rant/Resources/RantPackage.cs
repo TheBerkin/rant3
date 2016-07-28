@@ -22,8 +22,8 @@ namespace Rant.Resources
 		private const string MAGIC = "RANT";
 		private const byte PACKAGE_VERSION = 2;
 
-		private HashSet<RantPattern> _patterns;
-		private HashSet<RantDictionaryTable> _tables;
+		private HashSet<RantPattern> _patterns = new HashSet<RantPattern>();
+		private HashSet<RantDictionaryTable> _tables = new HashSet<RantDictionaryTable>();
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
 		private string _title = GetString("untitled-package");
