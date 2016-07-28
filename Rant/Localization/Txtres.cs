@@ -15,23 +15,13 @@ namespace Rant.Localization
 		public const string FallbackLanguageCode = "en-US";
 
 		private static readonly Dictionary<string, string> _stringTable = new Dictionary<string, string>();
-		private static readonly Dictionary<char, char> _escapeMap = new Dictionary<char, char>
-		{
-			{'a', '\a'},
-			{'b', '\b'},
-			{'f', '\f'},
-			{'n', '\n'},
-			{'r', '\r'},
-			{'t', '\t'},
-			{'v', '\v'}
-		};
 
 		static Txtres()
 		{
 			try
 			{
 				var ass = Assembly.GetExecutingAssembly();
-				using (var stream = 
+				using (var stream =
 					ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{CultureInfo.CurrentCulture.Name}.lang")
 					?? ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{FallbackLanguageCode}.lang"))
 				{
@@ -70,28 +60,49 @@ namespace Rant.Localization
 								switch (valueLiteral[i])
 								{
 									case '\\':
-										if (i == valueLiteral.Length - 1) goto loop;
-										if (_escapeMap.TryGetValue(valueLiteral[i + 1], out esc))
 										{
-											sb.Append(esc);
-										}
-										else if (valueLiteral[i + 1] == 'u')
-										{
-											if (i + 5 >= valueLiteral.Length) goto loop;
-											short code;
-											if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
-												NumberStyles.AllowHexSpecifier,
-												CultureInfo.InvariantCulture, out code)) goto loop;
-											sb.Append((char)code);
-											i += 6;
+											if (i == valueLiteral.Length - 1) goto loop;
+											switch (valueLiteral[i + 1])
+											{
+												case 'a':
+													sb.Append('\a');
+													break;
+												case 'b':
+													sb.Append('\b');
+													break;
+												case 'f':
+													sb.Append('\f');
+													break;
+												case 'n':
+													sb.Append('\n');
+													break;
+												case 'r':
+													sb.Append('\r');
+													break;
+												case 't':
+													sb.Append('\t');
+													break;
+												case 'v':
+													sb.Append('\v');
+													break;
+												case 'u':
+													{
+														if (i + 5 >= valueLiteral.Length) goto loop;
+														short code;
+														if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
+															NumberStyles.AllowHexSpecifier,
+															CultureInfo.InvariantCulture, out code)) goto loop;
+														sb.Append((char)code);
+														i += 6;
+														continue;
+													}
+												default:
+													sb.Append(valueLiteral[i + 1]);
+													break;
+											}
+											i += 2;
 											continue;
 										}
-										else
-										{
-											sb.Append(valueLiteral[i + 1]);
-										}
-										i += 2;
-										continue;
 									default:
 										sb.Append(valueLiteral[i]);
 										break;
