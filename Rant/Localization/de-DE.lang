@@ -3,8 +3,8 @@ default-package-id = "Paket"
 
 src-line-col = "({0}: Z {1} S {2})"
 
-err-zero-or-negative = "Wert muss größer als null sein."
-err-empty-path = "Der Dateipfad kann nicht leer oder NULL sein."
+err-zero-or-negative = "Wert muss größer als Null sein."
+err-empty-path = "Der Dateipfad darf nicht leer oder NULL sein."
 err-unresolvable-package = "Der Verweis '{1}' im Paket '{0}' konnte nicht aufgelöst werden."
 err-invalid-package-version = "Die Paketversion ({0}) ist nicht unterstützt."
 err-missing-package-meta = "Paket mit fehlenden Metadaten gefunden."
