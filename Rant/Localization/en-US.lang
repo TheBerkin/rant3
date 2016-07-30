@@ -1,6 +1,8 @@
 ﻿untitled-package = "Untitled Package"
 default-package-id = "Package"
 
+src-line-col = "({0}: Ln {1} Col {2})"
+
 err-zero-or-negative = "Value must be greater than zero."
 err-empty-path = "File path cannot be null or empty."
 err-unresolvable-package = "Package '{0}' was unable to resolve dependency '{1}'"
@@ -14,6 +16,16 @@ err-invalid-subtypes = "Invalid subtype name(s) found: {0}"
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
 err-stack-overflow = "Exceeded the maximum stack size ({0})."
+
+err-generic-runtime = "An unspecified runtime error was encountered."
+err-generic-compiler = "An unspecified compiler error was encountered."
+err-unknown-flag = "Unknown flag value: '{0}'"
+
+err-compiler-eof = "Unexpected end of file."
+err-compiler-unexpected-token = "Unexpected token found: '{0}'"
+err-compiler-nonexistent-function = "The specified function '{0}' does not exist."
+err-compiler-missing-token = "Expected {0}."
+err-compiler-bad-escape = "Invalid escape sequence: {0}"
 
 missing-table = "[Missing Table]"
 bad-subtype = "[Bad Subtype]"
