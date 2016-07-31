@@ -12,7 +12,7 @@ err-empty-pkg-title = "Der Pakettitel darf nicht leer sein."
 err-empty-pkg-id = "Der Paketbezeichner (ID) darf nicht leer sein."
 err-file-corrupt = "Die Datei ist fehlerhaft oder das Datenformat wird nicht unterstützt."
 err-invalid-tablename = "Ungültiger Tabellename: {0}"
-err-invalid-subtypes = "Ein oder mehrere der angegebenen Subtypnamen sind ungültig: {0}"
+err-invalid-subtypes = "Ein oder mehrere Subtypnamen sind ungültig: {0}"
 
 err-pattern-timeout = "Der Ausführungszeitraum ist abgelaufen ({0} Sekunden)."
 err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten (Maximaltiefe: {0})."
@@ -29,3 +29,12 @@ err-compiler-bad-escape = "Unerkannte Escapesequenz: {0}"
 
 missing-table = "[Fehlende Tabelle]"
 bad-subtype = "[Ungültiger Subtyp]"
+
+func-num-desc = "Gibt eine Zufallszahl zwischen einem Minimal- und Maximalwert aus."
+func-num-min-desc = "Der inklusive untere Grenze der ausgegebenen Zufallszahl."
+func-num-max-desc = "Der inklusive obere Grenze der ausgegebenen Zufallszahl."
+
+func-rep-desc = "Setzt die aktuelle Wiederholungsanzahl des nächsten Blockes."
+func-rep-times-desc = "Die gewünschte Wiederholungsanzahl des nächsten Blockes."
+
+func-repeach-desc = "Legt die Wiederholungsanzahl des nächsten Blockes auf die Anzahl seiner Elemente fest."

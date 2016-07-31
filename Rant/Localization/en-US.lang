@@ -29,3 +29,12 @@ err-compiler-bad-escape = "Invalid escape sequence: {0}"
 
 missing-table = "[Missing Table]"
 bad-subtype = "[Bad Subtype]"
+
+func-num-desc = "Prints a random number between the specified minimum and maximum bounds."
+func-num-min-desc = "The inclusive minimum value."
+func-num-max-desc = "The inclusive maximum value."
+
+func-rep-desc = "Sets the repetition count for the next block."
+func-rep-times-desc = "The number of times to repeat the next block."
+
+func-repeach-desc = "Sets the repetition count to the number of items in the next block."
