@@ -34,7 +34,28 @@ func-num-desc = "Gibt eine Zufallszahl zwischen einem Minimal- und Maximalwert a
 func-num-min-desc = "Der inklusive untere Grenze der ausgegebenen Zufallszahl."
 func-num-max-desc = "Der inklusive obere Grenze der ausgegebenen Zufallszahl."
 
-func-rep-desc = "Setzt die aktuelle Wiederholungsanzahl des nächsten Blockes."
+func-rep-desc = "Setzt die Wiederholungsanzahl des nächsten Blockes."
 func-rep-times-desc = "Die gewünschte Wiederholungsanzahl des nächsten Blockes."
 
 func-repeach-desc = "Legt die Wiederholungsanzahl des nächsten Blockes auf die Anzahl seiner Elemente fest."
+
+func-sep-desc = "Setzt den Wiederholungstrenner des nächsten Blockes."
+func-sep-separator-desc = "Der gewünschte Wiederholungstrenner des nächsten Blockes."
+
+func-sepconj-desc = "Markiert den nächsten Block als Auflistung und setzt seinen Wiederholungstrenner und seine Konjunktionsvorlage."
+func-sepconj-separator-desc = "Der gewünschte Wiederholungstrenner des nächsten Blockes."
+func-sepconj-conjunction-desc = "Die gewünschte Konjunktionsvorlage des nächsten Blockes."
+
+func-sepoxford-desc = "Markiert den nächsten Block als Auflistung mit Oxford-Komma und setzt seinen Wiederholungstrenner, seine Konjunktionsvorlage und seine Oxford-Komma-Vorlage."
+func-sepoxford-separator-desc = "Der gewünschte Wiederholungstrenner des nächsten Blockes."
+func-sepoxford-oxford-desc = "Die gewünschte Oxford-Komma-Vorlage des nächsten Blockes."
+func-sepoxford-conjunction-desc = "Die gewünschte Konjunktionsvorlage des nächsten Blockes."
+
+func-caps-desc = "Ändert den Großschreibungsmodus aller offenen Ausgabekanäle."
+func-caps-mode-desc = "Der gewünschte Großschreibungsmodus."
+
+func-chance-desc = "Setzt die Wahrscheinlichkeit der Ausführung des nächsten Blockes."
+func-chance-chance-desc = "Die gewünschte Wahrscheinlichkeit als Prozent."
+
+func-capsinfer-desc = "Leitet die Großschreibung der angegebenen Zeichenkette her und legt den Großschreibungsmodus darauf fest."
+func-capsinfer-sample-desc = "Die zu analysiernde Zeichenkette."

@@ -38,3 +38,24 @@ func-rep-desc = "Sets the repetition count for the next block."
 func-rep-times-desc = "The number of times to repeat the next block."
 
 func-repeach-desc = "Sets the repetition count to the number of items in the next block."
+
+func-sep-desc = "Sets the separator pattern for the next block."
+func-sep-separator-desc = "The separator pattern to run between iterations of the next block."
+
+func-sepconj-desc = "Flags the next block as a series and sets the separator and conjunction patterns."
+func-sepconj-separator-desc = "The separator pattern to run between iterations of the next block."
+func-sepconj-conjunction-desc = "The conjunction pattern to run before the last item."
+
+func-sepoxford-desc = "Flags the next block as a series and sets the separator, Oxford comma, and conjunction patterns."
+func-sepoxford-separator-desc = "The separator pattern to run between items."
+func-sepoxford-oxford-desc = "The Oxford comma pattern to run before the last item."
+func-sepoxford-conjunction-desc = "The conjunction pattern to run before the last item in the series."
+
+func-caps-desc = "Changes the capitalization mode for all open channels."
+func-caps-mode-desc = "The capitalization mode to use."
+
+func-chance-desc = "Sets the probability that the next block will be executed."
+func-chance-chance-desc = "The probability value [0, 100]."
+
+func-capsinfer-desc = "Infers the capitalization of a given string and sets the capitalization mode to match it."
+func-capsinfer-sample-desc = "The string to analyze."
