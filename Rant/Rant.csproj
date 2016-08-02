@@ -43,7 +43,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Install|AnyCPU' ">
     <OutputPath>C:\rant\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\Rant.xml</DocumentationFile>
+    <DocumentationFile>C:\rant\Rant.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -126,7 +126,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|AnyCPU'">
     <OutputPath>..\bin\UnityBuild\</OutputPath>
     <DefineConstants>TRACE;UNITY</DefineConstants>
-    <DocumentationFile>..\bin\UnityBuild\Rant.xml</DocumentationFile>
+    <DocumentationFile>..\bin\UnityBuild\Rant-Unity.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -134,9 +134,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|x86'">
-    <OutputPath>bin\x86\Unity\</OutputPath>
+    <OutputPath>..\bin\UnityBuild\x86\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
+    <DocumentationFile>..\bin\UnityBuild\x86\Rant-Unity.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -144,9 +144,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|x64'">
-    <OutputPath>bin\x64\Unity\</OutputPath>
+    <OutputPath>..\bin\UnityBuild\x64\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
+    <DocumentationFile>..\bin\UnityBuild\x64\Rant-Unity.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -171,6 +171,7 @@
     <Compile Include="Core\Compiler\Parsing\SequenceParser.cs" />
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
+    <Compile Include="Core\Compiler\TokenLocation.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
