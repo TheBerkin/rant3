@@ -42,6 +42,22 @@ func-repeach-desc = "Sets the repetition count to the number of items in the nex
 func-sep-desc = "Sets the separator pattern for the next block."
 func-sep-separator-desc = "The separator pattern to run between iterations of the next block."
 
+func-rs-desc = "Sets the repetition count and separator pattern for the next block."
+func-rs-times-desc = "The number of times to repeat the next block."
+func-rs-separator-desc = "The separator pattern for the next block."
+
+func-before-desc = "Sets the iteration prefix of the next block."
+func-before-pattern-desc = "The iteration prefix pattern to execute on the next block."
+
+func-after-desc = "Sets the iteration suffix of the next block."
+func-after-pattern-desc = "The iteration suffix pattern to execute on the next block."
+
+func-first-desc = "Runs the specified pattern if the current block is on its first iteration. Otherwise, does nothing."
+func-first-pattern-desc = "The pattern to run if the condition is met."
+
+func-last-desc = "Runs the specified pattern if the current block is on its last iteration. Otherwise, does nothing."
+func-last-pattern-desc = "The pattern to run if the condition is met."
+
 func-sepconj-desc = "Flags the next block as a series and sets the separator and conjunction patterns."
 func-sepconj-separator-desc = "The separator pattern to run between iterations of the next block."
 func-sepconj-conjunction-desc = "The conjunction pattern to run before the last item."

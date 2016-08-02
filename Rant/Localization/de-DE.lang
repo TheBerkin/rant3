@@ -42,6 +42,22 @@ func-repeach-desc = "Legt die Wiederholungsanzahl des nächsten Blockes auf die 
 func-sep-desc = "Setzt den Wiederholungstrenner des nächsten Blockes."
 func-sep-separator-desc = "Der gewünschte Wiederholungstrenner des nächsten Blockes."
 
+func-rs-desc = "Setzt die Wiederholungsanzahl und den Wiederholungstrenner des nächsten Blockes."
+func-rs-times-desc = "Die Wiederholungsanzahl des nächsten Blockes."
+func-rs-separator-desc = "Der Wiederholungstrenner des nächsten Blockes."
+
+func-before-desc = "Setzt das Wiederholungspräfix des nächsten Blockes."
+func-before-pattern-desc = "Das gewünschte Wiederholungspräfix des nächsten Blockes."
+
+func-after-desc = "Setzt das Wiederholungssuffix des nächsten Blockes."
+func-after-pattern-desc = "Das gewünschte Wiederholungssuffix des nächsten Blockes."
+
+func-first-desc = "Führt eine angegebene Vorlage aus, wenn der aktuelle Block auf der ersten Iteration läuft."
+func-first-pattern-desc = "Die gewünschte Vorlage, die ausgeführt werden wird, wenn die Bedingung erfüllt ist."
+
+func-last-desc = "Führt eine angegebene Vorlage aus, wenn der aktuelle Block auf der letzten Iteration läuft."
+func-last-pattern-desc = "Die gewünschte Vorlage, die ausgeführt werden wird, wenn die Bedingung erfüllt ist."
+
 func-sepconj-desc = "Markiert den nächsten Block als Auflistung und setzt seinen Wiederholungstrenner und seine Konjunktionsvorlage."
 func-sepconj-separator-desc = "Der gewünschte Wiederholungstrenner des nächsten Blockes."
 func-sepconj-conjunction-desc = "Die gewünschte Konjunktionsvorlage des nächsten Blockes."
