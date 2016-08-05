@@ -1,6 +1,8 @@
 ﻿untitled-package = "Untitled Package"
 default-package-id = "Package"
 
+src-line-col = "({0}: Ln {1} Col {2})"
+
 err-zero-or-negative = "Value must be greater than zero."
 err-empty-path = "File path cannot be null or empty."
 err-unresolvable-package = "Package '{0}' was unable to resolve dependency '{1}'"
@@ -15,5 +17,61 @@ err-invalid-subtypes = "Invalid subtype name(s) found: {0}"
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
 err-stack-overflow = "Exceeded the maximum stack size ({0})."
 
+err-generic-runtime = "An unspecified runtime error was encountered."
+err-generic-compiler = "An unspecified compiler error was encountered."
+err-unknown-flag = "Unknown flag value: '{0}'"
+
+err-compiler-eof = "Unexpected end of file."
+err-compiler-unexpected-token = "Unexpected token found: '{0}'"
+err-compiler-nonexistent-function = "The specified function '{0}' does not exist."
+err-compiler-missing-token = "Expected {0}."
+err-compiler-bad-escape = "Invalid escape sequence: {0}"
+
 missing-table = "[Missing Table]"
 bad-subtype = "[Bad Subtype]"
+
+func-num-desc = "Prints a random number between the specified minimum and maximum bounds."
+func-num-min-desc = "The inclusive minimum value."
+func-num-max-desc = "The inclusive maximum value."
+
+func-rep-desc = "Sets the repetition count for the next block."
+func-rep-times-desc = "The number of times to repeat the next block."
+
+func-repeach-desc = "Sets the repetition count to the number of items in the next block."
+
+func-sep-desc = "Sets the separator pattern for the next block."
+func-sep-separator-desc = "The separator pattern to run between iterations of the next block."
+
+func-rs-desc = "Sets the repetition count and separator pattern for the next block."
+func-rs-times-desc = "The number of times to repeat the next block."
+func-rs-separator-desc = "The separator pattern for the next block."
+
+func-before-desc = "Sets the iteration prefix of the next block."
+func-before-pattern-desc = "The iteration prefix pattern to execute on the next block."
+
+func-after-desc = "Sets the iteration suffix of the next block."
+func-after-pattern-desc = "The iteration suffix pattern to execute on the next block."
+
+func-first-desc = "Runs the specified pattern if the current block is on its first iteration. Otherwise, does nothing."
+func-first-pattern-desc = "The pattern to run if the condition is met."
+
+func-last-desc = "Runs the specified pattern if the current block is on its last iteration. Otherwise, does nothing."
+func-last-pattern-desc = "The pattern to run if the condition is met."
+
+func-sepconj-desc = "Flags the next block as a series and sets the separator and conjunction patterns."
+func-sepconj-separator-desc = "The separator pattern to run between iterations of the next block."
+func-sepconj-conjunction-desc = "The conjunction pattern to run before the last item."
+
+func-sepoxford-desc = "Flags the next block as a series and sets the separator, Oxford comma, and conjunction patterns."
+func-sepoxford-separator-desc = "The separator pattern to run between items."
+func-sepoxford-oxford-desc = "The Oxford comma pattern to run before the last item."
+func-sepoxford-conjunction-desc = "The conjunction pattern to run before the last item in the series."
+
+func-caps-desc = "Changes the capitalization mode for all open channels."
+func-caps-mode-desc = "The capitalization mode to use."
+
+func-chance-desc = "Sets the probability that the next block will be executed."
+func-chance-chance-desc = "The probability value [0, 100]."
+
+func-capsinfer-desc = "Infers the capitalization of a given string and sets the capitalization mode to match it."
+func-capsinfer-sample-desc = "The string to analyze."

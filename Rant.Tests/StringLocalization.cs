@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 
 using NUnit.Framework;
 
@@ -10,9 +12,12 @@ namespace Rant.Tests
 		[Test]
 		public void StaticString()
 		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
 			var str = Rant.Localization.Txtres.GetString("bad-subtype");
-			Console.WriteLine(str);
-			Assert.AreNotEqual("bad-subtype", str);
+			Assert.AreEqual("[Bad Subtype]", str);
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+			str = Rant.Localization.Txtres.GetString("bad-subtype");
+			Assert.AreEqual("[Ungültiger Subtyp]", str);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Rant.Core.Stringes;
-using Rant.Vocabulary;
+using Rant.Localization;
 using Rant.Vocabulary.Querying;
 
 namespace Rant.Core.Compiler.Syntax
@@ -21,7 +21,7 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			if (sb.Engine.Dictionary == null)
 			{
-				sb.Print("[Missing Table]");
+				sb.Print(Txtres.GetString("missing-table"));
 				yield break;
 			}
 			// carrier erase query

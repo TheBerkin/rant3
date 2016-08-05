@@ -198,9 +198,9 @@ namespace Rant.Core.Framework
 		[RantDescription("Changes the capitalization mode for all open channels.")]
 		private static void Case(Sandbox sb,
 			[RantDescription("The capitalization mode to use.")]
-			Capitalization textCase)
+			Capitalization mode)
 		{
-			sb.Output.Capitalize(textCase);
+			sb.Output.Capitalize(mode);
 		}
 
 		[RantFunction]
