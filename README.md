@@ -1,5 +1,5 @@
 <p align="center">
-<img src="http://i.imgur.com/Vx7LyRP.png" alt="Rant logo"></img>
+<img src="http://i.imgur.com/Vx7LyRP.png" alt="Rant logo" height="275px" width="275px"></img>
 </p>
 
 <p align="center">
