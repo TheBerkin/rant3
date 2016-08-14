@@ -12,11 +12,11 @@ namespace Rant.Core.Compiler.Parsing
 		{
 			Token<R> token;
 
-			while (!reader.End)
+			while(!reader.End)
 			{
 				token = reader.ReadToken();
 
-				switch (token.ID)
+				switch(token.ID)
 				{
 					case R.LeftAngle:
 						yield return Get<QueryParser>();
@@ -32,7 +32,7 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					case R.Pipe:
-						if (context == CompileContext.BlockSequence)
+						if(context == CompileContext.BlockSequence)
 						{
 							yield break;
 						}
@@ -42,7 +42,7 @@ namespace Rant.Core.Compiler.Parsing
 						}
 
 					case R.RightCurly:
-						if (context == CompileContext.BlockSequence)
+						if(context == CompileContext.BlockSequence)
 						{
 							compiler.LeaveContext();
 							yield break;
@@ -88,10 +88,10 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					case R.Whitespace:
-						switch (context)
+						switch(context)
 						{
 							case CompileContext.BlockSequence:
-								switch (reader.PeekType())
+								switch(reader.PeekType())
 								{
 									case R.Pipe:
 									case R.RightCurly:
@@ -103,7 +103,7 @@ namespace Rant.Core.Compiler.Parsing
 								break;
 						}
 						break;
-						
+
 					case R.EscapeSequence: // Handle escape sequences
 						actionCallback(new RAEscape(token));
 						break;

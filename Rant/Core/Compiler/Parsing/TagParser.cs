@@ -79,7 +79,7 @@ namespace Rant.Core.Compiler.Parsing
 			if(reader.PeekType() == R.Colon)
 			{
 				reader.ReadToken();
-				
+
 				var iterator = ReadArguments(compiler, reader, arguments);
 				while(iterator.MoveNext())
 				{
@@ -107,7 +107,7 @@ namespace Rant.Core.Compiler.Parsing
 			}
 
 			actionCallback(new RAFunction(functionName, sig, arguments));
-			yield break; 
+			yield break;
 		}
 
 		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)

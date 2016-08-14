@@ -71,7 +71,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.Question:
 						{
 							bool blacklist = (token.ID == R.Without);
-							
+
 							var regexFilter = reader.Read(R.Regex, "regex filter rule");
 							var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
 							query.RegexFilters.Add(rule);
@@ -98,7 +98,7 @@ namespace Rant.Core.Compiler.Parsing
 							{
 								compiler.SyntaxError(firstNumberToken, "syllable range value is not a valid integer");
 							}
-							
+
 							// (a-) or (a-b)
 							if(reader.PeekLooseToken().ID == R.Hyphen)
 							{
@@ -173,7 +173,7 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 				}
 			}
-			
+
 			if(!endOfQueryReached)
 			{
 				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
@@ -230,7 +230,7 @@ namespace Rant.Core.Compiler.Parsing
 								if(carrierType == CarrierComponent.Associative)
 								{
 									carrierType = CarrierComponent.MatchAssociative;
-								} 
+								}
 								else if(carrierType == CarrierComponent.Dissociative)
 								{
 									carrierType = CarrierComponent.MatchDissociative;

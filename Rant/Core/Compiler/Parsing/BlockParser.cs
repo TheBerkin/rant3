@@ -32,7 +32,7 @@ namespace Rant.Core.Compiler.Parsing
 				if(reader.PeekLooseToken().ID == R.LeftParen)
 				{
 					Stringes.Stringe firstToken = reader.ReadLooseToken();
-					
+
 					// constant weight
 					if(reader.PeekLooseToken().ID == R.Text)
 					{
