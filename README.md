@@ -106,6 +106,6 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
 
 ## Donate
-If you love my work and want to support it by donating, you can do so [here](paypal.me/nicholasfleck).
+If you love my work and want to support it by donating, you can do so [here](http://paypal.me/nicholasfleck).
 Donations help me afford better software and equipment for my projects, and any amount is very appreciated.
 Thank you!
