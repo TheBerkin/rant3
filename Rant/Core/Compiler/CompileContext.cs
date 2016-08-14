@@ -18,6 +18,26 @@
 		/// <summary>
 		/// Point of execution is inside of a block.
 		/// </summary>
-		BlockSequence
+		BlockSequence,
+
+		/// <summary>
+		/// We're reading a block weight.
+		/// </summary>
+		BlockWeight,
+
+		/// <summary>
+		/// We're reading a subroutine body.
+		/// </summary>
+		SubroutineBody,
+
+		/// <summary>
+		/// The end of a block.
+		/// </summary>
+		BlockEndSequence,
+
+		/// <summary>
+		/// The end of function arguments.
+		/// </summary>
+		FunctionEndContext
 	}
 }

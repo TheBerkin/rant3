@@ -63,7 +63,7 @@ namespace Rant.Tests
         [Test]
         public void Whitespace()
         {
-            Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s  }   ").Main);
+            Assert.AreEqual(rant.Do(@"  { \s \s \4,s  }   ").Main, "        ");
         }
 
         [Test]

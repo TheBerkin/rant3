@@ -16,11 +16,12 @@ namespace Rant.Core.Compiler
 		private readonly string _sourceName;
 		private readonly TokenReader _reader;
 
-		private CompileContext _nextContext = CompileContext.DefaultSequence;
+		private Stack<CompileContext> _contextStack = new Stack<CompileContext>();
 		private Action<RantAction> _nextActionCallback = null;
 
 		internal bool HasModule = false;
 		internal readonly RantModule Module;
+		internal CompileContext NextContext => _contextStack.Peek();
 
 		public RantCompiler(string sourceName, string source)
 		{
@@ -31,7 +32,9 @@ namespace Rant.Core.Compiler
 			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, _source = source.ToStringe()));
 		}
 
-		public void SetNextContext(CompileContext context) => _nextContext = context;
+		public void AddContext(CompileContext context) => _contextStack.Push(context);
+
+		public void LeaveContext() => _contextStack.Pop();
 
 		public void SetNextActionCallback(Action<RantAction> callback) => _nextActionCallback = callback;
 
@@ -40,10 +43,11 @@ namespace Rant.Core.Compiler
 			var parser = Parser.Get<SequenceParser>();
 			var stack = new Stack<IEnumerator<Parser>>();
 			var actionList = new List<RantAction>();
+			_contextStack.Push(CompileContext.DefaultSequence);
 
 			_nextActionCallback = a => actionList.Add(a);
 
-			stack.Push(parser.Parse(this, _nextContext, _reader, _nextActionCallback));
+			stack.Push(parser.Parse(this, NextContext, _reader, _nextActionCallback));
 
 			top:
 			while (stack.Any())
@@ -54,7 +58,7 @@ namespace Rant.Core.Compiler
 				{
 					if (p.Current == null) continue;
 
-					stack.Push(p.Current.Parse(this, _nextContext, _reader, _nextActionCallback));
+					stack.Push(p.Current.Parse(this, NextContext, _reader, _nextActionCallback));
 					goto top;
 				}
 

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 
 using System.IO;
+using System.Linq;
 
 using Rant.Core.IO.Bson;
 
@@ -33,7 +34,8 @@ namespace Rant.Tests.Misc
             var data = document.ToByteArray();
             File.WriteAllBytes("TestOutput.bson", data); // write the data for debugging purposes
             var exampleData = File.ReadAllBytes("TestFile.bson");
-            CompareByteArrays(data, exampleData);
+			// we skip the first byte to account for the string table
+            CompareByteArrays(data.Skip(1).ToArray(), exampleData);
         }
         [Test(Description = "Compares a complex generated file to an example file.")]
         public void BsonComplexByteAccurate()
@@ -53,7 +55,7 @@ namespace Rant.Tests.Misc
             var data = document.ToByteArray();
             File.WriteAllBytes("ComplexTestOutput.bson", data);
             var exampleData = File.ReadAllBytes("ComplexTestFile.bson");
-            CompareByteArrays(data, exampleData);
+            CompareByteArrays(data.Skip(1).ToArray(), exampleData);
         }
 
         [Test]

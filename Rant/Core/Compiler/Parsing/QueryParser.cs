@@ -20,10 +20,11 @@ namespace Rant.Core.Compiler.Parsing
 			query.Carrier = new Carrier();
 			bool exclusiveRead = false;
 			bool subtypeRead = false;
+			bool endOfQueryReached = false;
 
-			while(!reader.End)
+			while(!reader.End && !endOfQueryReached)
 			{
-				var token = reader.ReadToken();
+				var token = reader.ReadLooseToken();
 
 				switch(token.ID)
 				{
@@ -49,6 +50,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					// read class filter
 					case R.Hyphen:
+						do
 						{
 							bool blacklist = false;
 							// check if it's a blacklist filter
@@ -61,6 +63,7 @@ namespace Rant.Core.Compiler.Parsing
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
 						}
+						while(reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
 						break;
 
 					// read regex filter
@@ -152,13 +155,15 @@ namespace Rant.Core.Compiler.Parsing
 
 					// read carriers
 					case R.DoubleColon:
-						ReadCarriers(reader, query.Carrier);
+						ReadCarriers(reader, query.Carrier, compiler);
 						// this should be the last part of the query, so go to the end
-						goto end_of_loop;
+						endOfQueryReached = true;
+						break;
 
 					// end of query
 					case R.RightAngle:
-						goto end_of_loop;
+						endOfQueryReached = true;
+						break;
 
 					case R.Whitespace:
 						break;
@@ -168,18 +173,21 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 				}
 			}
-
-			end_of_loop:
+			
+			if(!endOfQueryReached)
+			{
+				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
+			}
 
 			actionCallback(new RAQuery(query, tableName));
 			yield break;
 		}
 
-		private void ReadCarriers(TokenReader reader, Carrier carrier)
+		private void ReadCarriers(TokenReader reader, Carrier carrier, RantCompiler compiler)
 		{
 			while(!reader.End)
 			{
-				var token = reader.ReadToken();
+				var token = reader.ReadLooseToken();
 
 				switch(token.ID)
 				{
@@ -270,6 +278,10 @@ namespace Rant.Core.Compiler.Parsing
 					// we're done, go away
 					case R.RightAngle:
 						return;
+
+					default:
+						compiler.SyntaxError(token, "unexpected token");
+						break;
 				}
 			}
 		}

@@ -167,11 +167,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Compiler\CompileContext.cs" />
+    <Compile Include="Core\Compiler\Parsing\BlockParser.cs" />
     <Compile Include="Core\Compiler\Parsing\QueryParser.cs" />
     <Compile Include="Core\Compiler\Parsing\SequenceParser.cs" />
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
+    <Compile Include="Core\Compiler\Parsing\TagParser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
-    <Compile Include="Core\Compiler\TokenLocation.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
