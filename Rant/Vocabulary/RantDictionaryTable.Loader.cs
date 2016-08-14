@@ -59,14 +59,6 @@ namespace Rant.Vocabulary
 									if (!header) LoadError(path, token, "The #hidden directive may only be used in the file header.");
 									if (Util.ValidateName(args[0])) hiddenClasses.Add(args[0]);
 									break;
-								// Deprecated, remove in Rant 3
-								case "nsfw":
-									scopedClassSet.Add("nsfw");
-									break;
-								// Deprecated, remove in Rant 3
-								case "sfw":
-									scopedClassSet.Remove("nsfw");
-									break;
 								case "class":
 									{
 										if (args.Length < 2) LoadError(path, token, "The #class directive expects an operation and at least one value.");

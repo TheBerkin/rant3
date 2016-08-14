@@ -189,7 +189,7 @@ namespace Rave.DicDoc
                         writer.RenderBeginTag(HtmlTextWriterTag.Span);
                         writer.WriteEncodedText(e[i].Value);
 
-                        if (e[i].PronunciationParts.Length > 0)
+                        if (e[i].SyllableCount > 0)
                         {
                             writer.AddAttribute(HtmlTextWriterAttribute.Class, "terminfo");
                             writer.RenderBeginTag(HtmlTextWriterTag.Span);
@@ -214,9 +214,9 @@ namespace Rave.DicDoc
                     var notes = new List<HtmlGenFunc>();
                     var otherClasses = e.GetClasses().Where(cl => cl != tableClass);
 
-                    if (e.GetTerms().All(t => t.PronunciationParts.Length > 0))
+                    if (e.GetTerms().All(t => t.SyllableCount > 0))
                         notes.Add(html => html.WriteEncodedText("Full pronunciation"));
-                    else if (e.GetTerms().Any(t => t.PronunciationParts.Length > 0))
+                    else if (e.GetTerms().Any(t => t.SyllableCount > 0))
                         notes.Add(html => html.WriteEncodedText("Partial pronunciation"));
 
                     if (e.Weight != 1) notes.Add(html => html.WriteEncodedText("Weight: " + e.Weight));

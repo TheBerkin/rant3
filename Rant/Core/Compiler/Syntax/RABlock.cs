@@ -114,6 +114,7 @@ namespace Rant.Core.Compiler.Syntax
 				block.Next(next);
 
 				sb.Blocks.Pop(); // Don't allow separator to access block state
+
 				// Separator
 				if (i > 0 && attribs.Separator != null)
 				{

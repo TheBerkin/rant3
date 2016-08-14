@@ -9,7 +9,10 @@
   <ToolsOptions>
     <ToolsOptionsCategory name="TextEditor">
       <ToolsOptionsSubCategory name="CSharp-Specific">
+        <PropertyValue name="AddImport_SuggestForTypesInNuGetPackages">0</PropertyValue>
+        <PropertyValue name="AddImport_SuggestForTypesInReferenceAssemblies">0</PropertyValue>
         <PropertyValue name="AutoComment">1</PropertyValue>
+        <PropertyValue name="AutoInsertAsteriskForNewLinesOfBlockComments">1</PropertyValue>
         <PropertyValue name="CSharpClosedFileDiagnostics">0</PropertyValue>
         <PropertyValue name="ClosedFileDiagnostics">0</PropertyValue>
         <PropertyValue name="DisplayLineSeparators">0</PropertyValue>
@@ -69,7 +72,7 @@
         <PropertyValue name="Style_PreferIntrinsicPredefinedTypeKeywordInMemberAccess">1</PropertyValue>
         <PropertyValue name="Style_QualifyMemberAccessWithThisOrMe">0</PropertyValue>
         <PropertyValue name="Style_UseVarWhenDeclaringLocals">1</PropertyValue>
-        <PropertyValue name="WarnOnBuildErrors">1</PropertyValue>
+        <PropertyValue name="WarnOnBuildErrors">0</PropertyValue>
         <PropertyValue name="Wrapping_IgnoreSpacesAroundBinaryOperators">0</PropertyValue>
         <PropertyValue name="Wrapping_IgnoreSpacesAroundVariableDeclaration">0</PropertyValue>
         <PropertyValue name="Wrapping_KeepStatementsOnSingleLine">1</PropertyValue>

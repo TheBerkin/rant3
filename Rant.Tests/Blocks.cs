@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -53,7 +54,11 @@ namespace Rant.Tests
 		[Test]
 		public void LockedSynchronizer()
 		{
-			Assert.IsTrue(rant.Do(@"[r:10k][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}").Main.Distinct().Count() == 1);
+			var output =
+				rant.Do(@"[r:100][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}", seed: 0)
+					.Main;
+			Console.WriteLine(output);
+			Assert.IsTrue(output.Distinct().Count() == 1);
 		}
 
 		[Test]

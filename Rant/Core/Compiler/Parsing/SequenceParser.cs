@@ -97,7 +97,7 @@ namespace Rant.Core.Compiler.Parsing
 									case R.RightCurly:
 										continue; // Ignore whitespace at the end of block elements
 								}
-								break;
+								goto default;
 							default:
 								actionCallback(new RAText(token));
 								break;

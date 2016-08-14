@@ -42,6 +42,12 @@ namespace Rant.Tests
             Assert.AreEqual("[Lorem ipsum]", rant.Do(@"\[Lorem ipsum\]").Main);
         }
 
+	    [Test]
+	    public void EscapedSpaces()
+	    {
+		    Assert.AreEqual("    ", rant.Do(@"\s\s\s\s").Main);
+	    }
+
 		[Test]
 	    public void UnicodeCharacters()
 	    {
@@ -63,8 +69,12 @@ namespace Rant.Tests
         [Test]
         public void Whitespace()
         {
-            Assert.AreEqual(rant.Do(@"  { \s \s \4,s  }   ").Main, "        ");
-        }
+			Assert.AreEqual("        ", rant.Do(@"\s \s \4,s").Main);
+			Assert.AreEqual("        ", rant.Do(@"{\s\s\6,s}").Main);
+			Assert.AreEqual("        ", rant.Do(@"{\s \s \4,s}").Main);
+			Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s}   ").Main);
+			Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s  }   ").Main);
+		}
 
         [Test]
         public void SymbolFunctions()

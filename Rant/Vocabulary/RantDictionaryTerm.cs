@@ -1,5 +1,7 @@
 ﻿using System;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Vocabulary
 {
 	/// <summary>
@@ -8,10 +10,11 @@ namespace Rant.Vocabulary
 	public sealed class RantDictionaryTerm
 	{
 		private string _value;
-		private string _pronunciation;
-		private string[] _pronParts;
+		private string _pronunciation = String.Empty;
 		private string[] _syllables;
 		private int _syllableCount;
+		private int _valueSplitIndex = -1;
+		private int _pronSplitIndex = -1;
 
 		/// <summary>
 		/// Creates a new dictionary term with the specified value.
@@ -19,19 +22,40 @@ namespace Rant.Vocabulary
 		/// <param name="value">The value of the term.</param>
 		public RantDictionaryTerm(string value)
 		{
-			Value = value;
-			Pronunciation = "";
+			if (value == null) throw new ArgumentNullException(nameof(value));
+			_value = value;
 		}
 
 		/// <summary>
 		/// Creates a new dictionary term with the specified value and pronunciation.
 		/// </summary>
 		/// <param name="value">The value of the term.</param>
-		/// <param name="pronunciation">The pronunciation of the term.</param>
+		/// <param name="pronunciation">The pronunciation of the term value.</param>
 		public RantDictionaryTerm(string value, string pronunciation)
 		{
-			Value = value;
-			Pronunciation = pronunciation ?? "";
+			if (value == null) throw new ArgumentNullException(nameof(value));
+			_value = value;
+			_pronunciation = pronunciation ?? String.Empty;
+		}
+
+		/// <summary>
+		/// Creates a new dictionary term with the specified value, pronunciation, and split indices.
+		/// </summary>
+		/// <param name="value">The value of the term.</param>
+		/// <param name="pronunciation">The pronunciation of the term value.</param>
+		/// <param name="valueSplitIndex">The split index of the term value. Specify -1 for no split.</param>
+		/// <param name="pronSplitIndex">The split index of the term pronunciation string. Specify -1 for no split. Must be positive if the value is split and pronunciation data is present.</param>
+		public RantDictionaryTerm(string value, string pronunciation, int valueSplitIndex, int pronSplitIndex)
+		{
+			if (value == null) throw new ArgumentNullException(nameof(value));
+			if (valueSplitIndex < 0 != pronSplitIndex < 0) throw new ArgumentException(GetString("err-incomplete-term-split"));
+			if (valueSplitIndex > _value.Length) throw new ArgumentException(GetString("err-invalid-term-split"), nameof(valueSplitIndex));
+			if (pronSplitIndex > pronunciation?.Length) throw new ArgumentException(GetString("err-invalid-term-split"), nameof(pronSplitIndex));
+
+			_value = value;
+			_pronunciation = pronunciation ?? String.Empty;
+			_valueSplitIndex = valueSplitIndex;
+			_pronSplitIndex = pronSplitIndex;
 		}
 
 		/// <summary>
@@ -40,7 +64,34 @@ namespace Rant.Vocabulary
 		public string Value
 		{
 			get { return _value; }
-			set { _value = value; }
+			set
+			{
+				if (value == null) throw new ArgumentNullException(nameof(value));
+				_value = value;
+			}
+		}
+
+		/// <summary>
+		/// Determines whether the term is a split word.
+		/// </summary>
+		public bool IsSplit => _valueSplitIndex > -1;
+
+		/// <summary>
+		/// Gets the split index of the term value.
+		/// </summary>
+		public int ValueSplitIndex
+		{
+			get { return _valueSplitIndex; }
+			set { _valueSplitIndex = value; }
+		}
+
+		/// <summary>
+		/// Gets the split index of the term pronunciation string.
+		/// </summary>
+		public int PronunciationSplitIndex
+		{
+			get { return _pronSplitIndex; }
+			set { _pronSplitIndex = value; }
 		}
 
 		/// <summary>
@@ -52,26 +103,14 @@ namespace Rant.Vocabulary
 			set
 			{
 				_pronunciation = value ?? "";
-				if (_pronParts != null) CreatePronParts();
 				if (_syllables != null) CreateSyllables();
 			}
 		}
 
 		/// <summary>
-		/// An array containing the individual elements of the pronunciation string. Used by the rhyming system.
-		/// </summary>
-		public string[] PronunciationParts
-		{
-			get { return _pronParts ?? CreatePronParts(); }
-		}
-
-		/// <summary>
 		/// An array containing the individual syllables of the pronunciation string.
 		/// </summary>
-		public string[] Syllables
-		{
-			get { return _syllables ?? CreateSyllables(); }
-		}
+		public string[] Syllables => _syllables ?? CreateSyllables();
 
 		/// <summary>
 		/// The number of syllables in the pronunciation string.
@@ -83,11 +122,6 @@ namespace Rant.Vocabulary
 				if (_syllables == null) CreateSyllables();
 				return _syllableCount;
 			}
-		}
-
-		private string[] CreatePronParts()
-		{
-			return _pronParts = _pronunciation.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		private string[] CreateSyllables()

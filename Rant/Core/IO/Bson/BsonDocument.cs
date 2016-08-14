@@ -45,10 +45,10 @@ namespace Rant.Core.IO.Bson
 
 		public Dictionary<int, string> ReverseStringTable => _reverseStringTable;
 
-		private Dictionary<string, int> _stringTable;
-		private Dictionary<int, string> _reverseStringTable; // for reading
+		private readonly Dictionary<string, int> _stringTable;
+		private readonly Dictionary<int, string> _reverseStringTable; // for reading
 		private int _stringTableIndex = 0;
-		private BsonStringTableMode _stringTableMode = BsonStringTableMode.None;
+		private readonly BsonStringTableMode _stringTableMode = BsonStringTableMode.None;
 
 		/// <summary>
 		/// Creates an empty BSON document.
@@ -137,14 +137,12 @@ namespace Rant.Core.IO.Bson
 		internal void WriteStringTable(EasyWriter writer, bool include)
 		{
 			writer.Write(include);
-			if (include)
-			{
-				writer.Write((byte)_stringTableMode);
-				writer.Write((byte)STRING_TABLE_VERSION);
-				var stringTableBytes = GenerateStringTable();
-				writer.Write(stringTableBytes.Length);
-				writer.Write(stringTableBytes);
-			}
+			if (!include) return;
+			writer.Write((byte)_stringTableMode);
+			writer.Write((byte)STRING_TABLE_VERSION);
+			var stringTableBytes = GenerateStringTable();
+			writer.Write(stringTableBytes.Length);
+			writer.Write(stringTableBytes);
 		}
 
 		private void WriteItem(EasyWriter writer, BsonItem item, string name, bool isTop = false, bool isArray = false)

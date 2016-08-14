@@ -111,6 +111,17 @@ namespace Rant.Core.Stringes
 		}
 
 		/// <summary>
+		/// Reads to the end of the current line.
+		/// </summary>
+		/// <returns></returns>
+		public Stringe ReadRestOfLine()
+		{
+			int start = _pos;
+			while (_pos < _stringe.Length && !"\r\n".Contains(_stringe[_pos].Character)) _pos++;
+			return _stringe.Substringe(start, _pos - start);
+		}
+
+		/// <summary>
 		/// Indicates whether the specified character occurs at the reader's current position, and consumes it.
 		/// </summary>
 		/// <param name="value">The character to test for.</param>

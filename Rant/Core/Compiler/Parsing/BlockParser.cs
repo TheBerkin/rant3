@@ -18,27 +18,33 @@ namespace Rant.Core.Compiler.Parsing
 			var actions = new List<RantAction>();
 
 			// "why are these not lists or arrays" i yell into the void, too lazy to find out why
-			var constantWeights = new List<_<int, double>>();
-			var dynamicWeights = new List<_<int, RantAction>>();
+			List<_<int, double>> constantWeights = null;
+			List<_<int, RantAction>> dynamicWeights = null;
 			var blockNumber = 0;
 			Action<RantAction> itemCallback = (action) => actions.Add(action);
 
 			compiler.SetNextActionCallback(itemCallback);
 			compiler.AddContext(CompileContext.BlockEndSequence);
 			compiler.AddContext(CompileContext.BlockSequence);
-			while(compiler.NextContext == CompileContext.BlockSequence)
+
+			//reader.SkipSpace();
+
+			while (compiler.NextContext == CompileContext.BlockSequence)
 			{
 				// block weight
-				if(reader.PeekLooseToken().ID == R.LeftParen)
+				if (reader.PeekLooseToken().ID == R.LeftParen)
 				{
+					constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
+					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RantAction>>());
+
 					Stringes.Stringe firstToken = reader.ReadLooseToken();
 
 					// constant weight
-					if(reader.PeekLooseToken().ID == R.Text)
+					if (reader.PeekLooseToken().ID == R.Text)
 					{
 						var value = reader.ReadLooseToken().Value;
 						double doubleValue;
-						if(!double.TryParse(value, out doubleValue))
+						if (!double.TryParse(value, out doubleValue))
 						{
 							compiler.SyntaxError(value, "invalid constant weight");
 						}
@@ -55,7 +61,7 @@ namespace Rant.Core.Compiler.Parsing
 						compiler.AddContext(CompileContext.BlockWeight);
 						yield return Get<SequenceParser>();
 
-						if(weightActions.Count > 0)
+						if (weightActions.Count > 0)
 						{
 							firstToken = weightActions[0].Range;
 						}
@@ -77,7 +83,6 @@ namespace Rant.Core.Compiler.Parsing
 			compiler.SetNextActionCallback(actionCallback);
 
 			actionCallback(new RABlock(blockStartToken, items, dynamicWeights, constantWeights));
-			yield break;
 		}
 	}
 }
