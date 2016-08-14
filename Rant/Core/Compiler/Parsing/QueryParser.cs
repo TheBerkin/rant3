@@ -18,7 +18,7 @@ namespace Rant.Core.Compiler.Parsing
 			query.ClassFilter = new ClassFilter();
 			query.RegexFilters = new List<_<bool, Regex>>();
 			query.Carrier = new Carrier();
-			bool exclusiveRead = false;
+			query.Exclusive = reader.TakeLoose(R.Dollar);
 			bool subtypeRead = false;
 			bool endOfQueryReached = false;
 
@@ -34,13 +34,6 @@ namespace Rant.Core.Compiler.Parsing
 						if(subtypeRead)
 						{
 							compiler.SyntaxError(token, "multiple subtypes in a query", false);
-							reader.Read(R.Text, "query subtype name");
-							break;
-						}
-						// if the exclusive sign has already been read, throw an error and ignore it
-						if(exclusiveRead)
-						{
-							compiler.SyntaxError(token, "subtype should be before exclusive query sign.", false);
 							reader.Read(R.Text, "query subtype name");
 							break;
 						}
@@ -76,12 +69,6 @@ namespace Rant.Core.Compiler.Parsing
 							var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
 							query.RegexFilters.Add(rule);
 						}
-						break;
-
-					// read exclusive sign
-					case R.Dollar:
-						exclusiveRead = true;
-						query.Exclusive = true;
 						break;
 
 					// read syllable range
