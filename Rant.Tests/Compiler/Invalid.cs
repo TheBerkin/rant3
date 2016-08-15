@@ -8,6 +8,13 @@ namespace Rant.Tests.Compiler
 	{
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
+		public void IncompleteEscape()
+		{
+			RantPattern.FromString(@"\");
+		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
 		public void UnterminatedBlock()
 		{
 			RantPattern.FromString(@"{");

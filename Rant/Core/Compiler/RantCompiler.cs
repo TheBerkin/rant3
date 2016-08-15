@@ -15,10 +15,11 @@ namespace Rant.Core.Compiler
 		private readonly Stringe _source;
 		private readonly string _sourceName;
 		private readonly TokenReader _reader;
-
 		private readonly Stack<CompileContext> _contextStack = new Stack<CompileContext>();
 		private Action<RantAction> _nextActionCallback = null;
 
+		private List<RantCompilerMessage> _errors;
+		// private List<RantCompilerMessage> _warnings;
 		internal bool HasModule = false;
 		internal readonly RantModule Module;
 		internal CompileContext NextContext => _contextStack.Peek();
@@ -28,9 +29,11 @@ namespace Rant.Core.Compiler
 			Module = new RantModule(sourceName);
 
 			_sourceName = sourceName;
-
-			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, _source = source.ToStringe()));
+			_source = source.ToStringe();
+			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, _source, SyntaxError), this);
 		}
+
+		public Stringe Source => _source;
 
 		public void AddContext(CompileContext context) => _contextStack.Push(context);
 
@@ -40,42 +43,56 @@ namespace Rant.Core.Compiler
 
 		public RantAction Compile()
 		{
-			var parser = Parser.Get<SequenceParser>();
-			var stack = new Stack<IEnumerator<Parser>>();
-			var actionList = new List<RantAction>();
-			_contextStack.Push(CompileContext.DefaultSequence);
-
-			_nextActionCallback = a => actionList.Add(a);
-
-			stack.Push(parser.Parse(this, NextContext, _reader, _nextActionCallback));
-
-			top:
-			while (stack.Any())
+			try
 			{
-				var p = stack.Peek();
+				var parser = Parser.Get<SequenceParser>();
+				var stack = new Stack<IEnumerator<Parser>>();
+				var actionList = new List<RantAction>();
+				_contextStack.Push(CompileContext.DefaultSequence);
 
-				while (p.MoveNext())
+				_nextActionCallback = a => actionList.Add(a);
+
+				stack.Push(parser.Parse(this, NextContext, _reader, _nextActionCallback));
+
+				top:
+				while (stack.Any())
 				{
-					if (p.Current == null) continue;
+					var p = stack.Peek();
 
-					stack.Push(p.Current.Parse(this, NextContext, _reader, _nextActionCallback));
-					goto top;
+					while (p.MoveNext())
+					{
+						if (p.Current == null) continue;
+
+						stack.Push(p.Current.Parse(this, NextContext, _reader, _nextActionCallback));
+						goto top;
+					}
+
+					stack.Pop();
 				}
 
-				stack.Pop();
-			}
+				if (_errors?.Count > 0)
+					throw new RantCompilerException(_sourceName, _errors);
 
-			return new RASequence(actionList, _source);
+				return new RASequence(actionList, _source);
+			}
+			catch (RantCompilerException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new RantCompilerException(_sourceName, _errors, ex);
+			}
 		}
 
 		public void SyntaxError(Stringe token, string message, bool fatal = true)
 		{
-			throw new RantCompilerException(_sourceName, token, message);
-		}
-
-		public void SyntaxError(Stringe token, Exception innerException)
-		{
-			throw new RantCompilerException(_sourceName, token, innerException);
+			if (_errors == null) _errors = new List<RantCompilerMessage>();
+			_errors.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, message, token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
+			if (fatal)
+			{
+				throw new RantCompilerException(_sourceName, _errors);
+			}
 		}
 	}
 }

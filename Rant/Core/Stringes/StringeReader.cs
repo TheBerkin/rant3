@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using Rant.Core.Compiler;
+
 namespace Rant.Core.Stringes
 {
 	/// <summary>
@@ -11,6 +13,7 @@ namespace Rant.Core.Stringes
 	{
 		private readonly Stringe _stringe;
 		private int _pos;
+		private readonly StringeErrorDelegate _errorCallback;
 
 		/// <summary>
 		/// Gets or sets a string describing where the stringe originated from. Used for exception messages.
@@ -42,10 +45,18 @@ namespace Rant.Core.Stringes
 			_pos = 0;
 		}
 
+		public StringeReader(Stringe value, StringeErrorDelegate errorCallback)
+		{
+			_stringe = value;
+			_errorCallback = errorCallback;
+		}
+
 		/// <summary>
 		/// Indicates whether the reader position is at the end of the input string.
 		/// </summary>
 		public bool EndOfStringe => _pos >= _stringe.Length;
+
+		public void Error(Stringe token, string message, bool fatal) => _errorCallback?.Invoke(token, message, fatal);
 
 		/// <summary>
 		/// Reads a charactere from the input and advances the position by one.

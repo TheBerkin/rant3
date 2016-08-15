@@ -727,16 +727,10 @@ namespace Rant.Core.Stringes
 				String = str;
 				Chares = new Chare[str.Length];
 				Bases = new bool[str.Length];
-				if (str.Length == 0)
-				{
-					return;
-				}
+				if (str.Length == 0) return;
 
 				var elems = StringInfo.GetTextElementEnumerator(str);
-				while (elems.MoveNext())
-				{
-					Bases[elems.ElementIndex] = true;
-				}
+				while (elems.MoveNext()) Bases[elems.ElementIndex] = true;
 				var length = str.Length;
 				int line = 1;
 				int col = 1;
@@ -746,12 +740,13 @@ namespace Rant.Core.Stringes
 					{
 						line++;
 						col = 1;
+						Chares[i] = new Chare(stringe, str[i], i, line, col);
 					}
 					else if (Bases[i]) // Advance column only for non-combining characters
 					{
+						Chares[i] = new Chare(stringe, str[i], i, line, col);
 						col++;
 					}
-					Chares[i] = new Chare(stringe, str[i], i, line, col);
 				}
 			}
 		}

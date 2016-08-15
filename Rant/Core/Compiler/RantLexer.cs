@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Rant.Core.Stringes;
+using Rant.Localization;
 
 namespace Rant.Core.Compiler
 {
@@ -66,12 +67,20 @@ namespace Rant.Core.Compiler
 					reader =>
 					{
 						if (!reader.Eat('\\')) return false;
+						if (reader.EndOfStringe)
+						{
+							reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), Txtres.GetString("err-compiler-incomplete-escape"), true);
+							return false;
+						}
 						if (reader.EatWhile(Char.IsDigit))
 						{
 							if (reader.Eat('.')) reader.EatWhile(Char.IsDigit);
 							reader.EatAny('k', 'M', 'B');
 							if (!reader.Eat(','))
-								throw new RantCompilerException(reader.Origin, reader.Stringe.Substringe(reader.Position - 1, 1), "Expected ',' after quantifier.");
+							{
+								reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), "Expected ',' after quantifier.", false);
+								return true;
+							}
 						}
 						if (reader.Eat('u'))
 						{
@@ -101,7 +110,10 @@ namespace Rant.Core.Compiler
 							if (reader.ReadChare() == '`') break;
 						}
 						if (reader.EndOfStringe)
-							throw new RantCompilerException(reader.Origin, token, "Unterminated regular expression.");
+						{
+							reader.Error(token, "Unterminated regular expression.", true);
+							return false;
+						}
 						reader.Eat('i');
 						return true;
 					}, R.Regex
@@ -117,7 +129,8 @@ namespace Rant.Core.Compiler
 							reader.EatAll("\"\"");
 							if (reader.ReadChare() == '"') return true;
 						}
-						throw new RantCompilerException(reader.Origin, token, "Unterminated constant literal.");
+						reader.Error(token, "Unterminated constant literal.", true);
+						return false;
 					}, R.ConstantLiteral
 				},
 				{"[", R.LeftSquare}, {"]", R.RightSquare},
@@ -153,15 +166,9 @@ namespace Rant.Core.Compiler
 			Rules.Ignore(R.Ignore);
 		}
 
-		/// <summary>
-		/// Generates beautiful tokens.
-		/// </summary>
-		/// <param name="name">The source name of the input.</param>
-		/// <param name="input">The input string to tokenize.</param>
-		/// <returns></returns>
-		public static IEnumerable<Token<R>> GenerateTokens(string name, Stringe input)
+		public static IEnumerable<Token<R>> GenerateTokens(string name, Stringe input, StringeErrorDelegate errorCallback)
 		{
-			var reader = new StringeReader(input)
+			var reader = new StringeReader(input, errorCallback)
 			{
 				Origin = name
 			};

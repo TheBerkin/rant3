@@ -4,17 +4,21 @@ using System.Linq;
 
 using Rant.Core.Stringes;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core.Compiler
 {
 	internal class TokenReader
 	{
 		private readonly string _sourceName;
 		private readonly Token<R>[] _tokens;
+		private readonly RantCompiler _compiler;
 		private int _pos;
 
-		public TokenReader(string sourceName, IEnumerable<Token<R>> tokens)
+		public TokenReader(string sourceName, IEnumerable<Token<R>> tokens, RantCompiler compiler)
 		{
 			_sourceName = sourceName;
+			_compiler = compiler;
 			_tokens = tokens.ToArray();
 			_pos = 0;
 		}
@@ -58,7 +62,11 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public Token<R> ReadToken()
 		{
-			if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
+			if (End)
+			{
+				_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+				return null;
+			}
 			return _tokens[_pos++];
 		}
 
@@ -77,7 +85,11 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public Token<R> PeekLooseToken()
 		{
-			if (End) throw new RantCompilerException(_sourceName, null, "Unexpected end of file.");
+			if (End)
+			{
+				_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+				return null;
+			}
 			int pos = _pos;
 			SkipSpace();
 			var token = _tokens[_pos];
@@ -129,7 +141,10 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				if (!allowEof)
-					throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
+				{
+					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					return false;
+				}
 				return false;
 			}
 			if (_tokens[_pos].ID != type) return false;
@@ -148,7 +163,10 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				if (!allowEof)
-					throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
+				{
+					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					return false;
+				}
 				return false;
 			}
 			SkipSpace();
@@ -247,7 +265,10 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				if (!allowEof)
-					throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
+				{
+					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					return false;
+				}
 				return false;
 			}
 			if (_tokens[_pos].ID != type) return false;
@@ -269,7 +290,10 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				if (!allowEof)
-					throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
+				{
+					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					return false;
+				}
 				return false;
 			}
 			SkipSpace();
@@ -292,10 +316,14 @@ namespace Rant.Core.Compiler
 		public Token<R> Read(R type, string expectedTokenName = null)
 		{
 			if (End)
-				throw new RantCompilerException(_sourceName, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+			{
+				_compiler.SyntaxError(null, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				return null;
+			}
 			if (_tokens[_pos].ID != type)
 			{
-				throw new RantCompilerException(_sourceName, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
+				_compiler.SyntaxError(_tokens[_pos], $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				return null;
 			}
 			return _tokens[_pos++];
 		}
@@ -309,12 +337,17 @@ namespace Rant.Core.Compiler
 		public Token<R> ReadAny(params R[] types)
 		{
 			if (End)
-				throw new RantCompilerException(_sourceName, null,
+			{
+				_compiler.SyntaxError(null, 
 					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
+				return null;
+			}
 
 			if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
-				throw new RantCompilerException(_sourceName, _tokens[_pos],
-					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
+			{
+				_compiler.SyntaxError(_tokens[_pos], $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
+				return null;
+			}
 
 			return _tokens[_pos++];
 		}
@@ -329,11 +362,17 @@ namespace Rant.Core.Compiler
 		public Token<R> ReadLoose(R type, string expectedTokenName = null)
 		{
 			if (End)
-				throw new RantCompilerException(_sourceName, null, "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'") + ", but hit end of file.");
+			{
+				_compiler.SyntaxError(null,
+					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				return null;
+			}
 			SkipSpace();
 			if (_tokens[_pos].ID != type)
 			{
-				throw new RantCompilerException(_sourceName, _tokens[_pos], "Expected " + (expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'"));
+				_compiler.SyntaxError(_tokens[_pos],
+					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}");
+				return null;
 			}
 			var t = _tokens[_pos++];
 			SkipSpace();
@@ -397,7 +436,10 @@ namespace Rant.Core.Compiler
 		public Token<R> ReadLooseToken()
 		{
 			if (End)
-				throw new RantCompilerException(_sourceName, null, "Expected token, but hit end of file.");
+			{
+				_compiler.SyntaxError(null, GetString("err-compiler-eof"));
+				return null;
+			}
 			SkipSpace();
 			var token = _tokens[_pos++];
 			SkipSpace();
@@ -416,7 +458,9 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				if (!allowEof)
-					throw new RantCompilerException(_sourceName, null, "Unexpected end-of-file.");
+				{
+					_compiler.SyntaxError(null, GetString("err-compiler-eof"));
+				}
 				return false;
 			}
 

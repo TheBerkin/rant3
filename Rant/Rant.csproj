@@ -176,6 +176,7 @@
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
+    <Compile Include="Core\Stringes\StringeErrorDelegate.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
     <Compile Include="Metadata\IRantFunctionGroup.cs" />
@@ -234,6 +235,8 @@
     <Compile Include="Core\IO\Compression\RangeCoder\RangeCoderBitTree.cs" />
     <Compile Include="RantArgAttribute.cs" />
     <Compile Include="RantCompilerException.cs" />
+    <Compile Include="RantCompilerMessage.cs" />
+    <Compile Include="RantCompilerMessageType.cs" />
     <Compile Include="RantInternalException.cs" />
     <Compile Include="Resources\RantDependencyResolver.cs" />
     <Compile Include="Resources\RantModule.cs" />

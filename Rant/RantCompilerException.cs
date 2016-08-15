@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using Rant.Core.Stringes;
+
+using static Rant.Localization.Txtres;
 
 namespace Rant
 {
@@ -9,46 +14,77 @@ namespace Rant
 	/// </summary>
 	public sealed class RantCompilerException : Exception
 	{
-		/// <summary>
-		/// The line on which the error occurred.
-		/// </summary>
-		public int Line { get; private set; }
-		/// <summary>
-		/// The column on which the error occurred.
-		/// </summary>
-		public int Column { get; private set; }
-		/// <summary>
-		/// The character index on which the error occurred.
-		/// </summary>
-		public int Index { get; private set; }
-		/// <summary>
-		/// The length of the token(s) on which the error occurred.
-		/// </summary>
-		public int Length { get; private set; }
+		private readonly List<RantCompilerMessage> _errorList;
 
-		internal RantCompilerException(string name, Stringe source, string message) 
-			: base(source != null 
-				  ? $"{name} @ Line {source.Line}, Col {source.Column}: {message}"
-				  : $"{name}: {message}")
+		public string SourceName { get; }
+		public bool InternalError { get; }
+
+		internal RantCompilerException(string sourceName, List<RantCompilerMessage> errorList)
+			: base(GenerateErrorString(errorList))
 		{
-			if (source == null) return;
-			Line = source.Line;
-			Column = source.Column;
-			Index = source.Offset;
-			Length = source.Length;
+			_errorList = errorList;
+			SourceName = sourceName;
+			InternalError = false;
 		}
 
-		internal RantCompilerException(string name, Stringe source, Exception innerException)
-			: base(source != null 
-				  ? $"{name} @ Line {source.Line}, Col {source.Column}: {innerException.Message}"
-				  : $"{name}: {innerException.Message}",
-				  innerException)
+		internal RantCompilerException(string sourceName, List<RantCompilerMessage> errorList, Exception innerException)
+			: base(GenerateErrorStringWithInnerEx(errorList, innerException), innerException)
 		{
-			if (source == null) return;
-			Line = source.Line;
-			Column = source.Column;
-			Index = source.Offset;
-			Length = source.Length;
+			_errorList = errorList;
+			SourceName = sourceName;
+			InternalError = true;
+		}
+
+		private static string GenerateErrorString(List<RantCompilerMessage> list)
+		{
+			var writer = new StringBuilder();
+			if (list.Count > 1)
+			{
+				writer.AppendLine(GetString("compiler-errors-found", list.Count));
+				foreach (var error in list)
+				{
+					writer.Append('\t');
+					writer.AppendLine(error.ToString());
+				}
+			}
+			else
+			{
+				writer.Append(list.First());
+			}
+			return writer.ToString();
+		}
+
+		private static string GenerateErrorStringWithInnerEx(List<RantCompilerMessage> list, Exception inner)
+		{
+			var writer = new StringBuilder();
+			writer.AppendLine($"Compiler encountered an unexpected internal error of type '{inner.GetType().Name}'. See InnerException for details.");
+			
+			if (list != null && list.Any())
+			{
+				writer.AppendLine();
+				if (list.Count > 1)
+				{
+					writer.AppendLine(GetString("compiler-errors-also-found", list.Count));
+					foreach (var error in list)
+					{
+						writer.Append('\t');
+						writer.AppendLine(error.ToString());
+					}
+				}
+				else
+				{
+					writer.AppendLine(GetString("compiler-error-also-found"));
+					writer.Append('\t');
+					writer.AppendLine(list.First().ToString());
+				}
+			}
+			return writer.ToString();
+		}
+
+		public IEnumerable<RantCompilerMessage> GetErrors()
+		{
+			if (_errorList == null) yield break;
+			foreach (var error in _errorList) yield return error;
 		}
 	}
 }

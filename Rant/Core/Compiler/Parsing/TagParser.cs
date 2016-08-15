@@ -6,6 +6,7 @@ using Rant.Core.Compiler.Syntax;
 using Rant.Vocabulary.Querying;
 using Rant.Core.Utilities;
 using Rant.Core.Framework;
+using Rant.Localization;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -95,7 +96,7 @@ namespace Rant.Core.Compiler.Parsing
 
 			if (!RantFunctionRegistry.FunctionExists(functionName.Value))
 			{
-				compiler.SyntaxError(functionName, "function " + functionName.Value + " does not exist.", false);
+				compiler.SyntaxError(functionName, Txtres.GetString("err-compiler-nonexistent-function", functionName.Value), false);
 				yield break;
 			}
 
