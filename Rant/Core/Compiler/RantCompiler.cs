@@ -16,7 +16,7 @@ namespace Rant.Core.Compiler
 		private readonly string _sourceName;
 		private readonly TokenReader _reader;
 
-		private Stack<CompileContext> _contextStack = new Stack<CompileContext>();
+		private readonly Stack<CompileContext> _contextStack = new Stack<CompileContext>();
 		private Action<RantAction> _nextActionCallback = null;
 
 		internal bool HasModule = false;

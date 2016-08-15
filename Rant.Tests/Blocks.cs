@@ -74,5 +74,19 @@ namespace Rant.Tests
 			Assert.AreEqual("dogs, dogs, dogs, and dogs",
 				rant.Do(@"[r:4][s:,;,;and]{dogs}").Main);
 		}
+
+		[Test]
+		public void FormattedOxfordSeries()
+		{
+			Assert.AreEqual("Dogs, dogs, dogs, dogs, and dogs. Cats are also pretty neat.",
+				rant.Do(@"[case:sentence][r:5][s:,;,;and]{dogs}. cats are also pretty neat.").Main);
+		}
+
+		[Test]
+		public void EnumerateItems()
+		{
+			Assert.AreEqual("ABCDEFGH", 
+				rant.Do(@"[repeach][x:_;ordered]{A|B|C|D|E|F|G|H}").Main);
+		}
     }
 }

@@ -16,7 +16,7 @@ namespace Rant.Core.Compiler.Parsing
 			var nextType = reader.PeekType();
 
 			// replacer
-			if(nextType == R.Regex)
+			if (nextType == R.Regex)
 			{
 				var regex = reader.Read(R.Regex, "replacer regex");
 				reader.Read(R.Colon);
@@ -24,19 +24,19 @@ namespace Rant.Core.Compiler.Parsing
 				var arguments = new List<RantAction>();
 
 				var iterator = ReadArguments(compiler, reader, arguments);
-				while(iterator.MoveNext())
+				while (iterator.MoveNext())
 				{
 					yield return iterator.Current;
 				}
 
 				compiler.SetNextActionCallback(actionCallback);
-				if(arguments.Count < 2)
+				if (arguments.Count < 2)
 				{
 					compiler.SyntaxError(regex, "replacer requires source text and replacement pattern.", false);
 					reader.Read(R.RightSquare, "replacer end");
 					yield break;
 				}
-				else if(arguments.Count > 2)
+				else if (arguments.Count > 2)
 				{
 					compiler.SyntaxError(arguments[2].Range, "replacer only takes two arguments.", false);
 					reader.Read(R.RightSquare, "replacer end");
@@ -47,11 +47,11 @@ namespace Rant.Core.Compiler.Parsing
 				yield break;
 			}
 			// subroutine
-			else if(nextType == R.Dollar)
+			else if (nextType == R.Dollar)
 			{
 				reader.ReadToken();
 				var e = ParseSubroutine(compiler, context, reader, actionCallback);
-				while(e.MoveNext())
+				while (e.MoveNext())
 				{
 					yield return e.Current;
 				}
@@ -61,7 +61,7 @@ namespace Rant.Core.Compiler.Parsing
 			else
 			{
 				var e = ParseFunction(compiler, context, reader, actionCallback);
-				while(e.MoveNext())
+				while (e.MoveNext())
 				{
 					yield return e.Current;
 				}
@@ -76,12 +76,12 @@ namespace Rant.Core.Compiler.Parsing
 
 			var arguments = new List<RantAction>();
 
-			if(reader.PeekType() == R.Colon)
+			if (reader.PeekType() == R.Colon)
 			{
 				reader.ReadToken();
 
 				var iterator = ReadArguments(compiler, reader, arguments);
-				while(iterator.MoveNext())
+				while (iterator.MoveNext())
 				{
 					yield return iterator.Current;
 				}
@@ -93,14 +93,14 @@ namespace Rant.Core.Compiler.Parsing
 				reader.Read(R.RightSquare, "function tag end");
 			}
 
-			if(!RantFunctionRegistry.FunctionExists(functionName.Value))
+			if (!RantFunctionRegistry.FunctionExists(functionName.Value))
 			{
 				compiler.SyntaxError(functionName, "function " + functionName.Value + " does not exist.", false);
 				yield break;
 			}
 
 			var sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count);
-			if(sig == null)
+			if (sig == null)
 			{
 				compiler.SyntaxError(functionName, "function " + functionName.Value + " has no overload with " + arguments.Count + " arguments.", false);
 				yield break;
@@ -113,11 +113,11 @@ namespace Rant.Core.Compiler.Parsing
 		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
 		{
 			// subroutine definition
-			if(reader.TakeLoose(R.LeftSquare, false))
+			if (reader.TakeLoose(R.LeftSquare, false))
 			{
 				var inModule = false;
 
-				if(reader.TakeLoose(R.Subtype))
+				if (reader.TakeLoose(R.Subtype))
 				{
 					inModule = true;
 					compiler.HasModule = true;
@@ -126,20 +126,20 @@ namespace Rant.Core.Compiler.Parsing
 				var subroutine = new RADefineSubroutine(subroutineName);
 				subroutine.Parameters = new Dictionary<string, SubroutineParameterType>();
 
-				if(reader.PeekLooseToken().ID == R.Colon)
+				if (reader.PeekLooseToken().ID == R.Colon)
 				{
 					reader.ReadLooseToken();
 
 					do
 					{
 						var type = SubroutineParameterType.Greedy;
-						if(reader.TakeLoose(R.At))
+						if (reader.TakeLoose(R.At))
 						{
 							type = SubroutineParameterType.Loose;
 						}
 
 						subroutine.Parameters[reader.ReadLoose(R.Text, "argument name").Value] = type;
-					} while(reader.TakeLoose(R.Semicolon, false));
+					} while (reader.TakeLoose(R.Semicolon, false));
 				}
 
 				reader.ReadLoose(R.RightSquare, "end of subroutine definition arguments");
@@ -154,7 +154,7 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SetNextActionCallback(actionCallback);
 
 				subroutine.Body = new RASequence(actions, bodyStart);
-				if(inModule)
+				if (inModule)
 				{
 					compiler.Module.AddActionFunction(subroutineName.Value, subroutine);
 				}
@@ -167,19 +167,19 @@ namespace Rant.Core.Compiler.Parsing
 				var subroutineName = reader.Read(R.Text, "subroutine name");
 				string moduleFunctionName = null;
 
-				if(reader.TakeLoose(R.Subtype, false))
+				if (reader.TakeLoose(R.Subtype, false))
 				{
 					moduleFunctionName = reader.Read(R.Text, "module function name").Value;
 				}
 
 				var arguments = new List<RantAction>();
 
-				if(reader.PeekType() == R.Colon)
+				if (reader.PeekType() == R.Colon)
 				{
 					reader.ReadToken();
 
 					var iterator = ReadArguments(compiler, reader, arguments);
-					while(iterator.MoveNext())
+					while (iterator.MoveNext())
 					{
 						yield return iterator.Current;
 					}
@@ -208,7 +208,7 @@ namespace Rant.Core.Compiler.Parsing
 			compiler.AddContext(CompileContext.FunctionEndContext);
 			compiler.AddContext(CompileContext.ArgumentSequence);
 
-			while(compiler.NextContext == CompileContext.ArgumentSequence)
+			while (compiler.NextContext == CompileContext.ArgumentSequence)
 			{
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();

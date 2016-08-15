@@ -12,11 +12,11 @@ namespace Rant.Core.Compiler.Parsing
 		{
 			Token<R> token;
 
-			while(!reader.End)
+			while (!reader.End)
 			{
 				token = reader.ReadToken();
 
-				switch(token.ID)
+				switch (token.ID)
 				{
 					case R.LeftAngle:
 						yield return Get<QueryParser>();
@@ -32,7 +32,7 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					case R.Pipe:
-						if(context == CompileContext.BlockSequence)
+						if (context == CompileContext.BlockSequence)
 						{
 							yield break;
 						}
@@ -42,7 +42,7 @@ namespace Rant.Core.Compiler.Parsing
 						}
 
 					case R.RightCurly:
-						if(context == CompileContext.BlockSequence)
+						if (context == CompileContext.BlockSequence)
 						{
 							compiler.LeaveContext();
 							yield break;
@@ -55,7 +55,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					// end of argument
 					case R.Semicolon:
-						if(context == CompileContext.ArgumentSequence)
+						if (context == CompileContext.ArgumentSequence)
 						{
 							yield break;
 						}
@@ -65,7 +65,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					case R.RightSquare:
 						// end of arguments
-						if(context == CompileContext.ArgumentSequence || context == CompileContext.SubroutineBody)
+						if (context == CompileContext.ArgumentSequence || context == CompileContext.SubroutineBody)
 						{
 							compiler.LeaveContext();
 							yield break;
@@ -79,7 +79,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					// the end of a block weight, maybe
 					case R.RightParen:
-						if(context == CompileContext.BlockWeight)
+						if (context == CompileContext.BlockWeight)
 						{
 							compiler.LeaveContext();
 							yield break;
@@ -88,10 +88,10 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					case R.Whitespace:
-						switch(context)
+						switch (context)
 						{
 							case CompileContext.BlockSequence:
-								switch(reader.PeekType())
+								switch (reader.PeekType())
 								{
 									case R.Pipe:
 									case R.RightCurly:
@@ -109,7 +109,7 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					case R.EOF:
-						if(context != CompileContext.DefaultSequence)
+						if (context != CompileContext.DefaultSequence)
 						{
 							compiler.SyntaxError(token, "unexpected end-of-pattern");
 						}
@@ -121,7 +121,7 @@ namespace Rant.Core.Compiler.Parsing
 				}
 			}
 
-			if(reader.End && context != CompileContext.DefaultSequence)
+			if (reader.End && context != CompileContext.DefaultSequence)
 			{
 				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
 			}
