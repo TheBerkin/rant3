@@ -8,7 +8,7 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class SequenceParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			Token<R> token;
 
@@ -36,10 +36,7 @@ namespace Rant.Core.Compiler.Parsing
 						{
 							yield break;
 						}
-						else
-						{
-							goto default; // Print it if we're not in a block
-						}
+						goto default; // Print it if we're not in a block
 
 					case R.RightCurly:
 						if (context == CompileContext.BlockSequence)
@@ -60,15 +57,18 @@ namespace Rant.Core.Compiler.Parsing
 							yield break;
 						}
 						// this is probably just a semicolon in text
-						actionCallback(new RAText(token));
+						actionCallback(new RstText(token));
 						break;
 
 					case R.RightSquare:
-						// end of arguments
-						if (context == CompileContext.ArgumentSequence || context == CompileContext.SubroutineBody)
+						// end of arguments / direct object in query
+						switch (context)
 						{
-							compiler.LeaveContext();
-							yield break;
+							case CompileContext.ArgumentSequence:
+							case CompileContext.SubroutineBody:
+							case CompileContext.QueryComplement:
+								compiler.LeaveContext();
+								yield break;
 						}
 						compiler.SyntaxError(token, "Unexpected tag end", false);
 						break;
@@ -84,7 +84,7 @@ namespace Rant.Core.Compiler.Parsing
 							compiler.LeaveContext();
 							yield break;
 						}
-						actionCallback(new RAText(token));
+						actionCallback(new RstText(token));
 						break;
 
 					case R.Whitespace:
@@ -99,13 +99,13 @@ namespace Rant.Core.Compiler.Parsing
 								}
 								goto default;
 							default:
-								actionCallback(new RAText(token));
+								actionCallback(new RstText(token));
 								break;
 						}
 						break;
 
 					case R.EscapeSequence: // Handle escape sequences
-						actionCallback(new RAEscape(token));
+						actionCallback(new RstEscape(token));
 						break;
 
 					case R.EOF:
@@ -116,7 +116,7 @@ namespace Rant.Core.Compiler.Parsing
 						yield break;
 
 					default: // Handle text
-						actionCallback(new RAText(token));
+						actionCallback(new RstText(token));
 						break;
 				}
 			}

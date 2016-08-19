@@ -16,7 +16,7 @@ namespace Rant.Core.Compiler
 		private readonly string _sourceName;
 		private readonly TokenReader _reader;
 		private readonly Stack<CompileContext> _contextStack = new Stack<CompileContext>();
-		private Action<RantAction> _nextActionCallback = null;
+		private Action<RST> _nextActionCallback = null;
 
 		private List<RantCompilerMessage> _errors;
 		// private List<RantCompilerMessage> _warnings;
@@ -39,15 +39,15 @@ namespace Rant.Core.Compiler
 
 		public void LeaveContext() => _contextStack.Pop();
 
-		public void SetNextActionCallback(Action<RantAction> callback) => _nextActionCallback = callback;
+		public void SetNextActionCallback(Action<RST> callback) => _nextActionCallback = callback;
 
-		public RantAction Compile()
+		public RST Compile()
 		{
 			try
 			{
 				var parser = Parser.Get<SequenceParser>();
 				var stack = new Stack<IEnumerator<Parser>>();
-				var actionList = new List<RantAction>();
+				var actionList = new List<RST>();
 				_contextStack.Push(CompileContext.DefaultSequence);
 
 				_nextActionCallback = a => actionList.Add(a);
@@ -73,7 +73,7 @@ namespace Rant.Core.Compiler
 				if (_errors?.Count > 0)
 					throw new RantCompilerException(_sourceName, _errors);
 
-				return new RASequence(actionList, _source);
+				return new RstSequence(actionList, _source);
 			}
 			catch (RantCompilerException)
 			{

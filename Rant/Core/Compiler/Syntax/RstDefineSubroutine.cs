@@ -5,15 +5,15 @@ using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RADefineSubroutine : RASubroutine
+	internal class RstDefineSubroutine : RstSubroutine
 	{
 		public Dictionary<string, SubroutineParameterType> Parameters;
 
-		public RADefineSubroutine(Stringe name)
+		public RstDefineSubroutine(Stringe name)
 			: base(name)
 		{ }
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			sb.Objects[Name] = new RantObject(this);
 			yield break;

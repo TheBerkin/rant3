@@ -7,7 +7,7 @@ using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RAEscape : RantAction
+	internal class RstEscape : RST
 	{
 		private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = new Dictionary<char, Action<Sandbox, int>>
 		{
@@ -65,7 +65,7 @@ namespace Rant.Core.Compiler.Syntax
 		private readonly int _times;
 		private readonly bool _unicode;
 
-		public RAEscape(Stringe escapeSequence) : base(escapeSequence)
+		public RstEscape(Stringe escapeSequence) : base(escapeSequence)
 		{
 			var escape = escapeSequence.Value;
 
@@ -102,7 +102,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		}
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			if (_unicode)
 			{

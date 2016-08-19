@@ -37,7 +37,7 @@ namespace Rant.Core
 		private readonly Stack<BlockState> _blocks;
 		private readonly Stack<Match> _matches;
 		private readonly CarrierState _carrierState;
-		private readonly Stack<Dictionary<string, RantAction>> _subroutineArgs;
+		private readonly Stack<Dictionary<string, RST>> _subroutineArgs;
 		private readonly SyncManager _syncManager;
 		private readonly Stack<object> _scriptObjectStack;
 		private readonly Stopwatch _stopwatch;
@@ -108,7 +108,7 @@ namespace Rant.Core
 		/// </summary>
 		public RantPattern Pattern => _pattern;
 
-		public Stack<Dictionary<string, RantAction>> SubroutineArgs => _subroutineArgs;
+		public Stack<Dictionary<string, RST>> SubroutineArgs => _subroutineArgs;
 
 		/// <summary>
 		/// Gets the synchronizer manager instance for the current Sandbox.
@@ -123,7 +123,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the current RantAction being executed.
 		/// </summary>
-		public RantAction CurrentAction { get; private set; }
+		public RST CurrentAction { get; private set; }
 
 		/// <summary>
 		/// Gets the last used timeout.
@@ -180,7 +180,7 @@ namespace Rant.Core
 			_blocks = new Stack<BlockState>();
 			_matches = new Stack<Match>();
 			_carrierState = carrierState ?? new CarrierState();
-			_subroutineArgs = new Stack<Dictionary<string, RantAction>>();
+			_subroutineArgs = new Stack<Dictionary<string, RST>>();
 			_syncManager = new SyncManager(this);
 			_blockManager = new BlockManager();
 			_scriptObjectStack = new Stack<object>();
@@ -236,7 +236,7 @@ namespace Rant.Core
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
 		/// </summary>
 		/// <returns></returns>
-		public BlockAttribs NextAttribs(RABlock block)
+		public BlockAttribs NextAttribs(RstBlock block)
 		{
 			BlockAttribs attribs = _newAttribs;
 
@@ -279,8 +279,8 @@ namespace Rant.Core
 				}
 
 				_scriptObjectStack.Clear();
-				var callStack = new Stack<IEnumerator<RantAction>>();
-				IEnumerator<RantAction> action;
+				var callStack = new Stack<IEnumerator<RST>>();
+				IEnumerator<RST> action;
 
 				// Push the AST root
 				CurrentAction = pattern.Action;
@@ -337,8 +337,8 @@ namespace Rant.Core
 				}
 
 				_scriptObjectStack.Clear();
-				var callStack = new Stack<IEnumerator<RantAction>>();
-				IEnumerator<RantAction> action;
+				var callStack = new Stack<IEnumerator<RST>>();
+				IEnumerator<RST> action;
 
 				// Push the AST root
 				CurrentAction = pattern.Action;

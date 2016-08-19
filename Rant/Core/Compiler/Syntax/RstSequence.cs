@@ -8,20 +8,20 @@ namespace Rant.Core.Compiler.Syntax
 	/// <summary>
 	/// Performs a sequence of actions.
 	/// </summary>
-	internal class RASequence : RantAction
+	internal class RstSequence : RST
 	{
-		private readonly List<RantAction> _actions = new List<RantAction>();
+		private readonly List<RST> _actions = new List<RST>();
 
-		public List<RantAction> Actions => _actions;
+		public List<RST> Actions => _actions;
 
-		public RASequence(List<RantAction> actions, Stringe defaultRange)
+		public RstSequence(List<RST> actions, Stringe defaultRange)
 			: base(actions.Any() ? Stringe.Range(actions[0].Range, actions[actions.Count - 1].Range) : defaultRange)
 		{
 			if (actions == null) return;
 			_actions.AddRange(actions);
 		}
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			return _actions.GetEnumerator();
 		}

@@ -5,13 +5,13 @@ using Rant.Core.Stringes;
 namespace Rant.Core.Compiler.Syntax
 {
 	/// <summary>
-	/// Represents an Abstract Syntax Tree (AST) node for a Rant pattern. This is the base class for all Rant actions.
+	/// Represents a Rant Syntax Tree (RST) node for a Rant pattern. This is the base class for all Rant actions.
 	/// </summary>
-	internal abstract class RantAction
+	internal abstract class RST
 	{
 		internal Stringe Range;
 
-		protected RantAction(Stringe range)
+		protected RST(Stringe range)
 		{
 			Range = range;
 		}
@@ -21,6 +21,6 @@ namespace Rant.Core.Compiler.Syntax
 		/// </summary>
 		/// <param name="sb">The sandbox on which to operate.</param>
 		/// <returns></returns>
-		public abstract IEnumerator<RantAction> Run(Sandbox sb);
+		public abstract IEnumerator<RST> Run(Sandbox sb);
 	}
 }

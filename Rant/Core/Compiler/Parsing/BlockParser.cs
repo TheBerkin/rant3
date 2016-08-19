@@ -11,17 +11,17 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class BlockParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			var blockStartToken = reader.PrevLooseToken;
-			var items = new List<RantAction>();
-			var actions = new List<RantAction>();
+			var items = new List<RST>();
+			var actions = new List<RST>();
 
 			// "why are these not lists or arrays" i yell into the void, too lazy to find out why
 			List<_<int, double>> constantWeights = null;
-			List<_<int, RantAction>> dynamicWeights = null;
+			List<_<int, RST>> dynamicWeights = null;
 			var blockNumber = 0;
-			Action<RantAction> itemCallback = (action) => actions.Add(action);
+			Action<RST> itemCallback = (action) => actions.Add(action);
 
 			compiler.SetNextActionCallback(itemCallback);
 			compiler.AddContext(CompileContext.BlockEndSequence);
@@ -35,7 +35,7 @@ namespace Rant.Core.Compiler.Parsing
 				if (reader.PeekLooseToken().ID == R.LeftParen)
 				{
 					constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
-					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RantAction>>());
+					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RST>>());
 
 					Stringes.Stringe firstToken = reader.ReadLooseToken();
 
@@ -53,9 +53,9 @@ namespace Rant.Core.Compiler.Parsing
 					// dynamic weight
 					else
 					{
-						var weightActions = new List<RantAction>();
+						var weightActions = new List<RST>();
 
-						Action<RantAction> weightActionCallback = (action) => weightActions.Add(action);
+						Action<RST> weightActionCallback = (action) => weightActions.Add(action);
 
 						compiler.SetNextActionCallback(weightActionCallback);
 						compiler.AddContext(CompileContext.BlockWeight);
@@ -66,7 +66,7 @@ namespace Rant.Core.Compiler.Parsing
 							firstToken = weightActions[0].Range;
 						}
 
-						dynamicWeights.Add(new _<int, RantAction>(blockNumber, new RASequence(weightActions, firstToken)));
+						dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, firstToken)));
 					}
 
 					reader.Read(R.RightParen, "end of weight");
@@ -74,7 +74,7 @@ namespace Rant.Core.Compiler.Parsing
 
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
-				items.Add(new RASequence(actions, startToken));
+				items.Add(new RstSequence(actions, startToken));
 				actions.Clear();
 				blockNumber++;
 			}
@@ -82,7 +82,7 @@ namespace Rant.Core.Compiler.Parsing
 			compiler.LeaveContext();
 			compiler.SetNextActionCallback(actionCallback);
 
-			actionCallback(new RABlock(blockStartToken, items, dynamicWeights, constantWeights));
+			actionCallback(new RstBlock(blockStartToken, items, dynamicWeights, constantWeights));
 		}
 	}
 }

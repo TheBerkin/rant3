@@ -21,7 +21,7 @@ namespace Rant.Core.ObjectModel
 		private List<RantObject> _list = null;
 		private bool _boolean = false;
 		private RantPattern _pattern = null;
-		private RantAction _action = null;
+		private RST _action = null;
 
 		/// <summary>
 		/// The type of the object.
@@ -105,7 +105,7 @@ namespace Rant.Core.ObjectModel
 			_number = num;
 		}
 
-		internal RantObject(RantAction action)
+		internal RantObject(RST action)
 		{
 			Type = RantObjectType.Action;
 			_action = action;
@@ -148,9 +148,9 @@ namespace Rant.Core.ObjectModel
 			{
 				_pattern = (RantPattern)obj;
 			}
-			else if (obj is RantAction)
+			else if (obj is RST)
 			{
-				_action = (RantAction)obj;
+				_action = (RST)obj;
 				Type = RantObjectType.Action;
 			}
 		}

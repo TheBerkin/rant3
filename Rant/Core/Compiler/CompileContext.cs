@@ -38,6 +38,11 @@
 		/// <summary>
 		/// The end of function arguments.
 		/// </summary>
-		FunctionEndContext
+		FunctionEndContext,
+
+		/// <summary>
+		/// Complement pattern for queries.
+		/// </summary>
+		QueryComplement
 	}
 }

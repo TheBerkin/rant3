@@ -8,13 +8,13 @@ using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RAFunction : RantAction
+	internal class RstFunction : RST
 	{
 		private readonly RantFunctionSignature _funcInfo;
-		private readonly List<RantAction> _argActions;
+		private readonly List<RST> _argActions;
 		private readonly int _argc;
 
-		public RAFunction(Stringe range, RantFunctionSignature funcInfo, List<RantAction> argActions)
+		public RstFunction(Stringe range, RantFunctionSignature funcInfo, List<RST> argActions)
 			: base(range)
 		{
 			_funcInfo = funcInfo;
@@ -29,7 +29,7 @@ namespace Rant.Core.Compiler.Syntax
 	        return _funcInfo.Parameters[index];
 	    }
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			// Convert arguments to their native types
 		    int paramc = _funcInfo.Parameters.Length;
@@ -108,7 +108,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 
             // Invoke the function
-		    IEnumerator<RantAction> requester;
+		    IEnumerator<RST> requester;
 		    if (_funcInfo.HasParamArray)
 		    {
 		        int required = paramc - 1;

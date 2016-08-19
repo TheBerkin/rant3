@@ -10,9 +10,9 @@ namespace Rant.Core.Compiler.Syntax
 	/// <summary>
 	/// Represents a block construct, which provides multiple options to the interpreter for the next sequence, one of which is chosen.
 	/// </summary>
-	internal class RABlock : RantAction
+	internal class RstBlock : RST
 	{
-		private readonly List<RantAction> _items = new List<RantAction>();
+		private readonly List<RST> _items = new List<RST>();
 		private readonly int _count;
 
 		// Item weights.
@@ -20,26 +20,26 @@ namespace Rant.Core.Compiler.Syntax
 		// Constant weights can be used directly. This is used for optimization.
 		// TODO: Move _weights to local scope for thread safety
 		private readonly double[] _weights = null;
-		private readonly List<_<int, RantAction>> _dynamicWeights = null;
+		private readonly List<_<int, RST>> _dynamicWeights = null;
 		private readonly double _constantWeightSum;
 		private readonly bool _weighted = false;
 
-		public RABlock(Stringe range, params RantAction[] items)
+		public RstBlock(Stringe range, params RST[] items)
 			: base(range)
 		{
 			_items.AddRange(items);
 			_count = items.Length;
 		}
 
-		public RABlock(Stringe range, List<RantAction> items)
+		public RstBlock(Stringe range, List<RST> items)
 			: base(range)
 		{
 			_items.AddRange(items);
 			_count = items.Count;
 		}
 
-		public RABlock(Stringe range, List<RantAction> items,
-			List<_<int, RantAction>> dynamicWeights, List<_<int, double>> constantWeights)
+		public RstBlock(Stringe range, List<RST> items,
+			List<_<int, RST>> dynamicWeights, List<_<int, double>> constantWeights)
 			: base(range)
 		{
 			_items.AddRange(items);
@@ -58,7 +58,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		}
 
-        public override IEnumerator<RantAction> Run(Sandbox sb)
+        public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			var attribs = sb.NextAttribs(this);
 

@@ -20,13 +20,13 @@ namespace Rant.Core.Constructs
 
 		public bool IsSeries { get; set; }
 		public bool RepEach { get; set; }
-        public RantAction Separator { get; set; }
-		public RantAction EndSeparator { get; set; }
-		public RantAction EndConjunction { get; set; }
-		public RantAction Start { get; set; }
-        public RantAction Before { get; set; }
-        public RantAction After { get; set; }
-		public RantAction End { get; set; }
+        public RST Separator { get; set; }
+		public RST EndSeparator { get; set; }
+		public RST EndConjunction { get; set; }
+		public RST Start { get; set; }
+        public RST Before { get; set; }
+        public RST After { get; set; }
+		public RST End { get; set; }
         public Synchronizer Sync { get; set; }
 		public double Chance { get; set; }
 		public AttribPersistence Persistence { get; set; }

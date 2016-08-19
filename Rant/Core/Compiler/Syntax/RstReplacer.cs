@@ -8,20 +8,20 @@ namespace Rant.Core.Compiler.Syntax
 	/// <summary>
 	/// Replaces text in a pattern output according to a regular expression and evaluator pattern.
 	/// </summary>
-	internal class RAReplacer : RantAction
+	internal class RstReplacer : RST
 	{
-		private readonly RantAction _sourceAction;
-		private readonly RantAction _matchEvalAction;
+		private readonly RST _sourceAction;
+		private readonly RST _matchEvalAction;
 		private readonly Regex _regex;
 
-		public RAReplacer(Stringe range, Regex regex, RantAction sourceAction, RantAction matchEvalAction) : base(range)
+		public RstReplacer(Stringe range, Regex regex, RST sourceAction, RST matchEvalAction) : base(range)
 		{
 			_regex = regex;
 			_sourceAction = sourceAction;
 			_matchEvalAction = matchEvalAction;
 		}
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			sb.AddOutputWriter();
 			yield return _sourceAction;

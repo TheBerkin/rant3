@@ -12,7 +12,7 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class TagParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			var nextType = reader.PeekType();
 
@@ -22,7 +22,7 @@ namespace Rant.Core.Compiler.Parsing
 				var regex = reader.Read(R.Regex, "replacer regex");
 				reader.Read(R.Colon);
 
-				var arguments = new List<RantAction>();
+				var arguments = new List<RST>();
 
 				var iterator = ReadArguments(compiler, reader, arguments);
 				while (iterator.MoveNext())
@@ -44,7 +44,7 @@ namespace Rant.Core.Compiler.Parsing
 					yield break;
 				}
 
-				actionCallback(new RAReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
+				actionCallback(new RstReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
 				yield break;
 			}
 			// subroutine
@@ -71,11 +71,11 @@ namespace Rant.Core.Compiler.Parsing
 			}
 		}
 
-		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			var functionName = reader.Read(R.Text, "function name");
 
-			var arguments = new List<RantAction>();
+			var arguments = new List<RST>();
 
 			if (reader.PeekType() == R.Colon)
 			{
@@ -107,11 +107,11 @@ namespace Rant.Core.Compiler.Parsing
 				yield break;
 			}
 
-			actionCallback(new RAFunction(functionName, sig, arguments));
+			actionCallback(new RstFunction(functionName, sig, arguments));
 			yield break;
 		}
 
-		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			// subroutine definition
 			if (reader.TakeLoose(R.LeftSquare, false))
@@ -124,7 +124,7 @@ namespace Rant.Core.Compiler.Parsing
 					compiler.HasModule = true;
 				}
 				var subroutineName = reader.ReadLoose(R.Text, "subroutine name");
-				var subroutine = new RADefineSubroutine(subroutineName);
+				var subroutine = new RstDefineSubroutine(subroutineName);
 				subroutine.Parameters = new Dictionary<string, SubroutineParameterType>();
 
 				if (reader.PeekLooseToken().ID == R.Colon)
@@ -146,15 +146,15 @@ namespace Rant.Core.Compiler.Parsing
 				reader.ReadLoose(R.RightSquare, "end of subroutine definition arguments");
 				var bodyStart = reader.ReadLoose(R.Colon);
 
-				var actions = new List<RantAction>();
-				Action<RantAction> bodyActionCallback = (action) => actions.Add(action);
+				var actions = new List<RST>();
+				Action<RST> bodyActionCallback = (action) => actions.Add(action);
 
 				compiler.AddContext(CompileContext.SubroutineBody);
 				compiler.SetNextActionCallback(bodyActionCallback);
 				yield return Get<SequenceParser>();
 				compiler.SetNextActionCallback(actionCallback);
 
-				subroutine.Body = new RASequence(actions, bodyStart);
+				subroutine.Body = new RstSequence(actions, bodyStart);
 				if (inModule)
 				{
 					compiler.Module.AddActionFunction(subroutineName.Value, subroutine);
@@ -173,7 +173,7 @@ namespace Rant.Core.Compiler.Parsing
 					moduleFunctionName = reader.Read(R.Text, "module function name").Value;
 				}
 
-				var arguments = new List<RantAction>();
+				var arguments = new List<RST>();
 
 				if (reader.PeekType() == R.Colon)
 				{
@@ -192,7 +192,7 @@ namespace Rant.Core.Compiler.Parsing
 					reader.Read(R.RightSquare, "function tag end");
 				}
 
-				var subroutine = new RACallSubroutine(subroutineName, moduleFunctionName);
+				var subroutine = new RstCallSubroutine(subroutineName, moduleFunctionName);
 				subroutine.Arguments = arguments;
 
 				actionCallback(subroutine);
@@ -200,11 +200,11 @@ namespace Rant.Core.Compiler.Parsing
 			}
 		}
 
-		private IEnumerator<Parser> ReadArguments(RantCompiler compiler, TokenReader reader, List<RantAction> arguments)
+		private IEnumerator<Parser> ReadArguments(RantCompiler compiler, TokenReader reader, List<RST> arguments)
 		{
-			var actions = new List<RantAction>();
+			var actions = new List<RST>();
 
-			Action<RantAction> argActionCallback = (action) => actions.Add(action);
+			Action<RST> argActionCallback = (action) => actions.Add(action);
 			compiler.SetNextActionCallback(argActionCallback);
 			compiler.AddContext(CompileContext.FunctionEndContext);
 			compiler.AddContext(CompileContext.ArgumentSequence);
@@ -213,7 +213,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
-				arguments.Add(new RASequence(actions, startToken));
+				arguments.Add(new RstSequence(actions, startToken));
 				actions.Clear();
 			}
 

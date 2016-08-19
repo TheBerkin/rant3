@@ -8,14 +8,14 @@ namespace Rant.Core.Constructs
 {
 	internal class BlockManager
 	{
-        private readonly Dictionary<BlockAttribs, List<RABlock>> _blockList;
+        private readonly Dictionary<BlockAttribs, List<RstBlock>> _blockList;
 
         private BlockAttribs _prevAttribs;
         private int _prevCount = 0;
 
 		public BlockManager()
 		{
-            _blockList = new Dictionary<BlockAttribs, List<RABlock>>();
+            _blockList = new Dictionary<BlockAttribs, List<RstBlock>>();
 		}
 
         public BlockAttribs SetPrevAttribs(BlockAttribs attribs)
@@ -37,10 +37,10 @@ namespace Rant.Core.Constructs
 	        return new BlockAttribs();
         }
 
-        public void Add(BlockAttribs attribs, RABlock block)
+        public void Add(BlockAttribs attribs, RstBlock block)
         {
             if (!_blockList.ContainsKey(attribs))
-                _blockList.Add(attribs, new List<RABlock>() { block });
+                _blockList.Add(attribs, new List<RstBlock>() { block });
             else
                 _blockList[attribs].Add(block);
         }
@@ -53,7 +53,7 @@ namespace Rant.Core.Constructs
             _blockList.Remove(attribs);
         }
 
-        public void RemoveBlock(BlockAttribs attribs, RABlock block)
+        public void RemoveBlock(BlockAttribs attribs, RstBlock block)
         {
             if (!_blockList.ContainsKey(attribs))
                 throw new InvalidOperationException("Attribs don't exist");
@@ -64,6 +64,6 @@ namespace Rant.Core.Constructs
             _blockList[attribs].Remove(block);
         }
 
-        public BlockAttribs GetAttribs(RABlock block) => _blockList.Single(p => p.Value.Contains(block)).Key;
+        public BlockAttribs GetAttribs(RstBlock block) => _blockList.Single(p => p.Value.Contains(block)).Key;
 	}
 }

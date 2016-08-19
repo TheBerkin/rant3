@@ -5,12 +5,12 @@ using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RACallSubroutine : RASubroutine
+	internal class RstCallSubroutine : RstSubroutine
 	{
 		private string _moduleFunctionName = null;
 		private bool _inModule = false;
 
-		public RACallSubroutine(Stringe name, string moduleFunctionName = null)
+		public RstCallSubroutine(Stringe name, string moduleFunctionName = null)
 			: base(name)
 		{
 			if (moduleFunctionName != null)
@@ -18,7 +18,7 @@ namespace Rant.Core.Compiler.Syntax
 			_moduleFunctionName = moduleFunctionName;
 		}
 
-		public override IEnumerator<RantAction> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			if (_inModule)
 			{
@@ -37,11 +37,11 @@ namespace Rant.Core.Compiler.Syntax
             }
 			else if (sb.Objects[Name] == null)
 				throw new RantRuntimeException(sb.Pattern, _name, $"The subroutine '{Name}' does not exist.");
-			var sub = (RADefineSubroutine)(_inModule ? sb.Modules[Name][_moduleFunctionName] : sb.Objects[Name].Value);
+			var sub = (RstDefineSubroutine)(_inModule ? sb.Modules[Name][_moduleFunctionName] : sb.Objects[Name].Value);
 			if (sub.Parameters.Keys.Count != Arguments.Count)
 				throw new RantRuntimeException(sb.Pattern, _name, "Argument mismatch on subroutine call.");
 			var action = sub.Body;
-			var args = new Dictionary<string, RantAction>();
+			var args = new Dictionary<string, RST>();
 			var parameters = sub.Parameters.Keys.ToArray();
 			for (var i = 0; i < Arguments.Count; i++)
 			{
@@ -50,7 +50,7 @@ namespace Rant.Core.Compiler.Syntax
 					sb.AddOutputWriter();
 					yield return Arguments[i];
 					var output = sb.Return();
-					args[parameters[i]] = new RAText(_name, output.Main);
+					args[parameters[i]] = new RstText(_name, output.Main);
 				}
 				else
 					args[parameters[i]] = Arguments[i];

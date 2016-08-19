@@ -181,5 +181,11 @@ namespace Rant.Tests.Compiler
 		{
 			RantPattern.FromString(@"[`\s*`:this is a test]");
 		}
+
+		[Test]
+		[ExpectedException(typeof(RantCompilerException))]
+		{
+			RantPattern.FromString(@"<verb.ing [the <noun>>");
+		}
 	}
 }

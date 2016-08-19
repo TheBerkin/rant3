@@ -42,7 +42,7 @@ namespace Rant
 		/// </summary>
 		public string Code { get; }
 
-        internal RantAction Action { get; }
+        internal RST Action { get; }
 
 		internal RantModule Module { get; }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Stringes;
 using Rant.Vocabulary.Querying;
 using Rant.Core.Utilities;
 
@@ -10,9 +11,9 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class QueryParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RantAction> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
-			var tableName = reader.Read(R.Text, "query table name");
+			var tableName = reader.ReadLoose(R.Text, "query table name");
 			var query = new Query();
 			query.Name = tableName.Value;
 			query.ClassFilter = new ClassFilter();
@@ -20,34 +21,45 @@ namespace Rant.Core.Compiler.Parsing
 			query.Carrier = new Carrier();
 			query.Exclusive = reader.TakeLoose(R.Dollar);
 			bool subtypeRead = false;
+			bool directObjectRead = false;
 			bool endOfQueryReached = false;
 
-			while(!reader.End && !endOfQueryReached)
+			while (!reader.End && !endOfQueryReached)
 			{
 				var token = reader.ReadLooseToken();
 
-				switch(token.ID)
+				switch (token.ID)
 				{
 					// read subtype
 					case R.Subtype:
 						// if there's already a subtype, throw an error and ignore it
-						if(subtypeRead)
+						if (subtypeRead)
 						{
-							compiler.SyntaxError(token, "multiple subtypes in a query", false);
+							compiler.SyntaxError(token, "multiple subtypes in query", false);
 							reader.Read(R.Text, "query subtype name");
 							break;
 						}
 						query.Subtype = reader.Read(R.Text, "query subtype").Value;
 						subtypeRead = true;
 						break;
-
+					// complement
+					case R.LeftSquare:
+						{
+							var seq = new List<RST>();
+							compiler.AddContext(CompileContext.QueryComplement);
+							compiler.SetNextActionCallback(seq.Add);
+							yield return Get<SequenceParser>();
+							compiler.SetNextActionCallback(actionCallback);
+							query.Complement = new RstSequence(seq, Stringe.Between(token, reader.PrevToken));
+						}
+						break;
 					// read class filter
 					case R.Hyphen:
 						do
 						{
 							bool blacklist = false;
 							// check if it's a blacklist filter
-							if(reader.PeekType() == R.Exclamation)
+							if (reader.PeekType() == R.Exclamation)
 							{
 								blacklist = true;
 								reader.ReadToken();
@@ -56,7 +68,7 @@ namespace Rant.Core.Compiler.Parsing
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
 						}
-						while(reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
+						while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
 						break;
 
 					// read regex filter
@@ -77,25 +89,25 @@ namespace Rant.Core.Compiler.Parsing
 						// (a), (a-), (-b), (a-b)
 
 						// either (a), (a-), or (a-b)
-						if(reader.PeekLooseToken().ID == R.Text)
+						if (reader.PeekLooseToken().ID == R.Text)
 						{
 							var firstNumberToken = reader.ReadLooseToken();
 							int firstNumber;
-							if(!Util.ParseInt(firstNumberToken.Value, out firstNumber))
+							if (!Util.ParseInt(firstNumberToken.Value, out firstNumber))
 							{
 								compiler.SyntaxError(firstNumberToken, "syllable range value is not a valid integer");
 							}
 
 							// (a-) or (a-b)
-							if(reader.PeekLooseToken().ID == R.Hyphen)
+							if (reader.PeekLooseToken().ID == R.Hyphen)
 							{
 								reader.ReadLooseToken();
 								// (a-b)
-								if(reader.PeekLooseToken().ID == R.Text)
+								if (reader.PeekLooseToken().ID == R.Text)
 								{
 									var secondNumberToken = reader.ReadLooseToken();
 									int secondNumber;
-									if(!Util.ParseInt(secondNumberToken.Value, out secondNumber))
+									if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
 									{
 										compiler.SyntaxError(secondNumberToken, "syllable range value is not a valid integer");
 									}
@@ -115,19 +127,19 @@ namespace Rant.Core.Compiler.Parsing
 							}
 						}
 						// (-b)
-						else if(reader.PeekLooseToken().ID == R.Hyphen)
+						else if (reader.PeekLooseToken().ID == R.Hyphen)
 						{
 							reader.ReadLooseToken();
 							var secondNumberToken = reader.ReadLoose(R.Text, "syllable range value");
 							int secondNumber;
-							if(!Util.ParseInt(secondNumberToken.Value, out secondNumber))
+							if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
 							{
 								compiler.SyntaxError(secondNumberToken, "syllable range value is not a valid integer");
 							}
 							query.SyllablePredicate = new Range(null, secondNumber);
 						}
 						// ()
-						else if(reader.PeekLooseToken().ID == R.RightParen)
+						else if (reader.PeekLooseToken().ID == R.RightParen)
 						{
 							compiler.SyntaxError(token, "empty syllable range", false);
 						}
@@ -161,22 +173,22 @@ namespace Rant.Core.Compiler.Parsing
 				}
 			}
 
-			if(!endOfQueryReached)
+			if (!endOfQueryReached)
 			{
 				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
 			}
 
-			actionCallback(new RAQuery(query, tableName));
+			actionCallback(new RstQuery(query, tableName));
 			yield break;
 		}
 
 		private void ReadCarriers(TokenReader reader, Carrier carrier, RantCompiler compiler)
 		{
-			while(!reader.End)
+			while (!reader.End)
 			{
 				var token = reader.ReadLooseToken();
 
-				switch(token.ID)
+				switch (token.ID)
 				{
 					// match carrier
 					case R.Equal:
@@ -194,39 +206,39 @@ namespace Rant.Core.Compiler.Parsing
 						{
 							var carrierType = CarrierComponent.Associative;
 							// disassociative
-							if(reader.PeekToken().ID == R.Exclamation)
+							if (reader.PeekToken().ID == R.Exclamation)
 							{
 								carrierType = CarrierComponent.Dissociative;
 								reader.ReadToken();
 							}
 							// divergent
-							else if(reader.PeekToken().ID == R.Plus)
+							else if (reader.PeekToken().ID == R.Plus)
 							{
 								carrierType = CarrierComponent.Divergent;
 								reader.ReadToken();
 							}
-							else if(reader.PeekToken().ID == R.Question)
+							else if (reader.PeekToken().ID == R.Question)
 							{
 								carrierType = CarrierComponent.Relational;
 								reader.ReadToken();
 							}
 
 							// match
-							if(reader.PeekToken().ID == R.Equal)
+							if (reader.PeekToken().ID == R.Equal)
 							{
-								if(carrierType == CarrierComponent.Associative)
+								if (carrierType == CarrierComponent.Associative)
 								{
 									carrierType = CarrierComponent.MatchAssociative;
 								}
-								else if(carrierType == CarrierComponent.Dissociative)
+								else if (carrierType == CarrierComponent.Dissociative)
 								{
 									carrierType = CarrierComponent.MatchDissociative;
 								}
-								else if(carrierType == CarrierComponent.Divergent)
+								else if (carrierType == CarrierComponent.Divergent)
 								{
 									carrierType = CarrierComponent.MatchDivergent;
 								}
-								else if(carrierType == CarrierComponent.Relational)
+								else if (carrierType == CarrierComponent.Relational)
 								{
 									carrierType = CarrierComponent.MatchRelational;
 								}
@@ -243,7 +255,7 @@ namespace Rant.Core.Compiler.Parsing
 						{
 							var carrierType = CarrierComponent.Unique;
 							// match unique
-							if(reader.PeekToken().ID == R.Equal)
+							if (reader.PeekToken().ID == R.Equal)
 							{
 								carrierType = CarrierComponent.MatchUnique;
 								reader.ReadToken();

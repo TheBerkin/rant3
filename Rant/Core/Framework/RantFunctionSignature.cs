@@ -62,7 +62,7 @@ namespace Rant.Core.Framework
 				if (type.IsArray && i == parameters.Length - 1)
 					type = type.GetElementType();
 
-				if (type == typeof(RantAction) || type.IsSubclassOf(typeof(RantAction)))
+				if (type == typeof(RST) || type.IsSubclassOf(typeof(RST)))
 				{
 					rantType = RantFunctionParameterType.Pattern;
 				}
@@ -104,12 +104,12 @@ namespace Rant.Core.Framework
 			Description = description;
 		}
 
-		public IEnumerator<RantAction> Invoke(Sandbox sb, object[] arguments)
+		public IEnumerator<RST> Invoke(Sandbox sb, object[] arguments)
 		{
-			return _delegate.Invoke(sb, arguments) as IEnumerator<RantAction> ?? CreateEmptyIterator();
+			return _delegate.Invoke(sb, arguments) as IEnumerator<RST> ?? CreateEmptyIterator();
 		}
 
-		private static IEnumerator<RantAction> CreateEmptyIterator()
+		private static IEnumerator<RST> CreateEmptyIterator()
 		{
 			yield break;
 		}

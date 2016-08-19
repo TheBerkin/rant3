@@ -4,16 +4,16 @@ using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal abstract class RASubroutine : RantAction
+	internal abstract class RstSubroutine : RST
 	{
 		protected readonly Stringe _name;
 
 		public string Name => _name.Value;
-		public List<RantAction> Arguments;
-		public RantAction Body;
+		public List<RST> Arguments;
+		public RST Body;
 		public RantPattern Source;
 
-		public RASubroutine(Stringe name)
+		public RstSubroutine(Stringe name)
 			: base(name)
 		{
 			_name = name;

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Rant.Core.Compiler.Syntax;
+
 namespace Rant.Vocabulary.Querying
 {
     /// <summary>
@@ -37,10 +39,15 @@ namespace Rant.Vocabulary.Querying
         /// The class filter to search by.
         /// </summary>
         public ClassFilter ClassFilter { get; set; }
-
+		
 	    /// <summary>
         /// The regex filters to search by.
         /// </summary>
         public List<_<bool, Regex>> RegexFilters { get; set; }
+
+		/// <summary>
+		/// Complement for phrasal verbs. Not yet available in public API.
+		/// </summary>
+		internal RST Complement { get; set; }
 	}
 }

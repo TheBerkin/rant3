@@ -50,11 +50,11 @@ namespace Rant.Core.Framework
 
 		[RantFunction("numfmt")]
 		[RantDescription("Runs the specified pattern under a specific number formatting mode.")]
-		private static IEnumerator<RantAction> NumberFormatRange(Sandbox sb,
+		private static IEnumerator<RST> NumberFormatRange(Sandbox sb,
 			[RantDescription("The number format to use.")]
 			NumberFormat format,
 			[RantDescription("The pattern to run.")]
-			RantAction rangeAction)
+			RST rangeAction)
 		{
 			var oldFmtMap = new Dictionary<OutputChain, NumberFormat>();
 
@@ -118,7 +118,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the separator pattern for the next block.")]
 		private static void Sep(Sandbox sb,
 			[RantDescription("The separator pattern to run between iterations of the next block.")]
-			RantAction separator)
+			RST separator)
 		{
 			sb.CurrentBlockAttribs.IsSeries = false;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -128,9 +128,9 @@ namespace Rant.Core.Framework
 		[RantDescription("Flags the next block as a series and sets the separator and conjunction patterns.")]
 		private static void Sep(Sandbox sb,
 			[RantDescription("The separator pattern to run between items.")]
-			RantAction separator,
+			RST separator,
 			[RantDescription("The conjunction pattern to run before the last item.")]
-			RantAction conjunction)
+			RST conjunction)
 		{
 			sb.CurrentBlockAttribs.IsSeries = true;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -141,11 +141,11 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the separator, Oxford comma, and conjunction patterns for the next series.")]
 		private static void Sep(Sandbox sb,
 			[RantDescription("The separator pattern to run between items.")]
-			RantAction separator,
+			RST separator,
 			[RantDescription("The Oxford comma pattern to run before the last item.")]
-			RantAction oxford,
+			RST oxford,
 			[RantDescription("The conjunction pattern to run before the last item in the series.")]
-			RantAction conjunction)
+			RST conjunction)
 		{
 			sb.CurrentBlockAttribs.IsSeries = true;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -159,7 +159,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The number of times to repeat the next block.")]
 			int times,
 			[RantDescription("The separator pattern to run between iterations of the next block.")]
-			RantAction separator)
+			RST separator)
 		{
 			sb.CurrentBlockAttribs.IsSeries = false;
 			sb.CurrentBlockAttribs.Repetitions = times;
@@ -170,7 +170,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb,
 			[RantDescription("The pattern to run before each iteration of the next block.")]
-			RantAction beforeAction)
+			RST beforeAction)
 		{
 			sb.CurrentBlockAttribs.Before = beforeAction;
 		}
@@ -179,7 +179,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the postfix pattern for the next block.")]
 		private static void After(Sandbox sb,
 			[RantDescription("The pattern to run after each iteration of the next block.")]
-			RantAction afterAction)
+			RST afterAction)
 		{
 			sb.CurrentBlockAttribs.After = afterAction;
 		}
@@ -313,9 +313,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the first.")]
-		private static IEnumerator<RantAction> First(Sandbox sb,
+		private static IEnumerator<RST> First(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration == 1) yield return action;
@@ -323,9 +323,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
-		private static IEnumerator<RantAction> NotFirst(Sandbox sb,
+		private static IEnumerator<RST> NotFirst(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration > 1) yield return action;
@@ -333,9 +333,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the last.")]
-		private static IEnumerator<RantAction> Last(Sandbox sb,
+		private static IEnumerator<RST> Last(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -344,9 +344,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
-		private static IEnumerator<RantAction> NotLast(Sandbox sb,
+		private static IEnumerator<RST> NotLast(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -355,9 +355,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
-		private static IEnumerator<RantAction> Middle(Sandbox sb,
+		private static IEnumerator<RST> Middle(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -366,9 +366,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
-		private static IEnumerator<RantAction> Ends(Sandbox sb,
+		private static IEnumerator<RST> Ends(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -442,9 +442,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an odd number.")]
-		private static IEnumerator<RantAction> Odd(Sandbox sb,
+		private static IEnumerator<RST> Odd(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 != 0) yield return action;
@@ -452,9 +452,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an even number.")]
-		private static IEnumerator<RantAction> Even(Sandbox sb,
+		private static IEnumerator<RST> Even(Sandbox sb,
 			[RantDescription("The pattern to run when the condition is met.")]
-			RantAction action)
+			RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
@@ -462,7 +462,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Returns the specified argument from the current subroutine.")]
-		private static IEnumerator<RantAction> Arg(Sandbox sb,
+		private static IEnumerator<RST> Arg(Sandbox sb,
 			[RantDescription("The name of the argument to retrieve.")]
 			string name)
 		{
@@ -548,9 +548,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction("quote", "q")]
 		[RantDescription("Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
-		private static IEnumerator<RantAction> Quote(Sandbox sb,
+		private static IEnumerator<RST> Quote(Sandbox sb,
 			[RantDescription("The pattern to run whose output will be surrounded in quotes.")]
-			RantAction quoteAction)
+			RST quoteAction)
 		{
 			sb.IncreaseQuote();
 			sb.PrintOpeningQuote();
@@ -561,7 +561,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Opens a channel for writing and executes the specified pattern inside of it.")]
-		private static IEnumerator<RantAction> Chan(Sandbox sb, string channelName, ChannelVisibility visibility, RantAction pattern)
+		private static IEnumerator<RST> Chan(Sandbox sb, string channelName, ChannelVisibility visibility, RST pattern)
 		{
 			sb.Output.OpenChannel(channelName, visibility);
 			yield return pattern;
@@ -620,11 +620,11 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
-		private static IEnumerator<RantAction> Nth(Sandbox sb,
+		private static IEnumerator<RST> Nth(Sandbox sb,
 			[RantDescription("The interval at which the pattern should be run.")]
 			int interval,
 			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RantAction pattern)
+			RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval != 0) yield break;
@@ -633,13 +633,13 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number offset by a specific amount.")]
-		private static IEnumerator<RantAction> NthO(Sandbox sb,
+		private static IEnumerator<RST> NthO(Sandbox sb,
 			[RantDescription("The interval at which the pattern should be run.")]
 			int interval,
 			[RantDescription("The number of iterations to offset the interval by.")]
 			int offset,
 			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RantAction pattern)
+			RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) != 0) yield break;
@@ -648,11 +648,11 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number.")]
-		private static IEnumerator<RantAction> NotNth(Sandbox sb,
+		private static IEnumerator<RST> NotNth(Sandbox sb,
 			[RantDescription("The interval at which the pattern should not be run.")]
 			int interval,
 			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RantAction pattern)
+			RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval == 0) yield break;
@@ -661,13 +661,13 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount.")]
-		private static IEnumerator<RantAction> NotNthO(Sandbox sb,
+		private static IEnumerator<RST> NotNthO(Sandbox sb,
 			[RantDescription("The interval at which the pattern should not be run.")]
 			int interval,
 			[RantDescription("The number of iterations to offset the interval by.")]
 			int offset,
 			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RantAction pattern)
+			RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) == 0) yield break;
@@ -678,7 +678,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets a pattern that will run before the next block.")]
 		private static void Start(Sandbox sb,
 			[RantDescription("The pattern to run before the next block.")]
-			RantAction beforePattern)
+			RST beforePattern)
 		{
 			sb.CurrentBlockAttribs.Start = beforePattern;
 		}
@@ -687,7 +687,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets a pattern that will run after the next block.")]
 		private static void End(Sandbox sb,
 			[RantDescription("The pattern to run after the next block.")]
-			RantAction endPattern)
+			RST endPattern)
 		{
 			sb.CurrentBlockAttribs.End = endPattern;
 		}
@@ -702,11 +702,11 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Loads and runs a pattern from cache or file.")]
-		private static IEnumerator<RantAction> Import(Sandbox sb,
+		private static IEnumerator<RST> Import(Sandbox sb,
 			[RantDescription("The name or path of the pattern to load.")]
 			string name)
 		{
-			RantAction action;
+			RST action;
 
 			try
 			{
@@ -793,7 +793,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Executes a pattern if the current flag condition passes.")]
-		private static IEnumerator<RantAction> Then(Sandbox sb, RantAction conditionPassPattern)
+		private static IEnumerator<RST> Then(Sandbox sb, RST conditionPassPattern)
 		{
 			if (sb.Engine.Flags.All(flag => sb.ConditionFlags.Contains(flag) == sb.FlagConditionExpectedResult))
 			{
@@ -803,7 +803,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Executes a pattern if the current flag condition fails.")]
-		private static IEnumerator<RantAction> Else(Sandbox sb, RantAction conditionFailPattern)
+		private static IEnumerator<RST> Else(Sandbox sb, RST conditionFailPattern)
 		{
 			if (sb.Engine.Flags.Any(flag => sb.ConditionFlags.Contains(flag) != sb.FlagConditionExpectedResult))
 			{
@@ -827,7 +827,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG, executes the specified action, and then merges the branch.")]
-		private static IEnumerator<RantAction> Branch(Sandbox sb, string id, RantAction branchAction)
+		private static IEnumerator<RST> Branch(Sandbox sb, string id, RST branchAction)
 		{
 			sb.RNG.Branch(id.Hash());
 			yield return branchAction;

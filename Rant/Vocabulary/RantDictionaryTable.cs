@@ -181,15 +181,17 @@ namespace Rant.Vocabulary
 			return true;
 		}
 
-		internal string Query(RantDictionary dictionary, RNG rng, Query query, CarrierState syncState)
+		internal RantDictionaryTerm Query(RantDictionary dictionary, RNG rng, Query query, CarrierState syncState)
 		{
 			var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
-			if (index == -1) return "[Bad Subtype]";
+			if (index == -1) return null;
 
+			// Apply class filter
 			var pool = query.ClassFilter.IsEmpty
 				? _entriesHash
 				: _entriesHash.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
+			// Apply class hiding
 			if (_hidden.Any())
 			{
 				var hide = _hidden.Where(hc => !query.ClassFilter.AllowsClass(hc))
@@ -197,15 +199,16 @@ namespace Rant.Vocabulary
 				pool = pool.Where(e => !hide.Any(e.ContainsClass));
 			}
 
+			// Apply regex filters
 			if (query.RegexFilters.Any())
 				pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
 
 			if (query.SyllablePredicate != null)
 				pool = pool.Where(e => query.SyllablePredicate.Test(e[index].SyllableCount));
 
-			if (!pool.Any()) return MissingTerm;
+			if (!pool.Any()) return null;
 
-			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index].Value ?? MissingTerm;
+			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index];
 		}
 	}
 }

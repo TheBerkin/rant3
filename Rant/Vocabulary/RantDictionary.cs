@@ -6,6 +6,8 @@ using System.Linq;
 using Rant.Core.Utilities;
 using Rant.Vocabulary.Querying;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Vocabulary
 {
 	/// <summary>
@@ -129,11 +131,11 @@ namespace Rant.Vocabulary
 		/// <param name="query">The search criteria to use.</param>
 		/// <param name="syncState">The state object to use for carrier synchronization.</param>
 		/// <returns></returns>
-		internal string Query(RNG rng, Query query, CarrierState syncState)
+		internal RantDictionaryTerm Query(RNG rng, Query query, CarrierState syncState)
 		{
 			RantDictionaryTable table;
 			return !_tables.TryGetValue(query.Name, out table)
-				? "[Missing Table]"
+				? null
 				: table.Query(this, rng, query, syncState);
 		}
 	}
