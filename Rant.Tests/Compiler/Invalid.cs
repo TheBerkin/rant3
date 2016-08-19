@@ -184,6 +184,7 @@ namespace Rant.Tests.Compiler
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
+		public void UnterminatedQueryComplement()
 		{
 			RantPattern.FromString(@"<verb.ing [the <noun>>");
 		}
