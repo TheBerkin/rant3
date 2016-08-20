@@ -58,7 +58,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		}
 
-        public override IEnumerator<RST> Run(Sandbox sb)
+		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			var attribs = sb.NextAttribs(this);
 
@@ -88,7 +88,7 @@ namespace Rant.Core.Compiler.Syntax
 					weightSum += _weights[dw.Item1];
 				}
 			}
-	        
+
 			sb.Blocks.Push(block);
 			for (int i = 0; i < reps; i++)
 			{
