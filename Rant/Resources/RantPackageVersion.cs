@@ -3,6 +3,8 @@ using System.Globalization;
 
 using Rant.Core.Utilities;
 
+#pragma warning disable 1591 // I am *not* writing XML docs for operator overloads with blatantly obvious usages.
+
 namespace Rant.Resources
 {
 	/// <summary>

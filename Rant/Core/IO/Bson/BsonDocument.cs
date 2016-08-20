@@ -52,7 +52,7 @@ namespace Rant.Core.IO.Bson
 
 		/// <summary>
 		/// Creates an empty BSON document.
-		/// <param name="useStringTable">Whether or not to generate and use a string table.</param>
+		/// <param>Whether or not to generate and use a string table.</param>
 		/// </summary>
 		public BsonDocument(
 			BsonStringTableMode mode = BsonStringTableMode.None,
@@ -95,6 +95,7 @@ namespace Rant.Core.IO.Bson
 		/// Writes this BSON document to the specified path.
 		/// </summary>
 		/// <param name="path">The path to write to.</param>
+		/// <param name="includeStringTable"></param>
 		public void Write(string path, bool includeStringTable = false)
 		{
 			var stream = File.Open(path, FileMode.Create);

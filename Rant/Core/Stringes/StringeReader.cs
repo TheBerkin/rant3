@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Rant.Core.Compiler;
-
 namespace Rant.Core.Stringes
 {
 	/// <summary>
@@ -56,7 +54,7 @@ namespace Rant.Core.Stringes
 		/// </summary>
 		public bool EndOfStringe => _pos >= _stringe.Length;
 
-		public void Error(Stringe token, string message, bool fatal) => _errorCallback?.Invoke(token, message, fatal);
+		public void Error(Stringe token, bool fatal, string messageType, params object[] args) => _errorCallback?.Invoke(token, fatal, messageType, args);
 
 		/// <summary>
 		/// Reads a charactere from the input and advances the position by one.
@@ -260,7 +258,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool Eat(Regex regex, out Stringe result)
 		{
-			if (regex == null) throw new ArgumentNullException("regex");
+			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			result = null;
 			var match = regex.Match(_stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
@@ -306,7 +304,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool IsNext(Regex regex)
 		{
-			if (regex == null) throw new ArgumentNullException("regex");
+			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			var match = regex.Match(_stringe.Value, _pos);
 			return match.Success && match.Index == _pos;
 		}
@@ -319,7 +317,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool IsNext(Regex regex, out Stringe result)
 		{
-			if (regex == null) throw new ArgumentNullException("regex");
+			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			result = null;
 			var match = regex.Match(_stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
@@ -511,6 +509,8 @@ namespace Rant.Core.Stringes
 					throw new InvalidOperationException(String.Concat("(Ln ", bad.Line, ", Col ", bad.Column, ") Invalid token '", bad, "'"));
 				}
 
+				// ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+				// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 			} while (captureUndef);
 
 			throw new InvalidOperationException("This should never happen.");
@@ -526,7 +526,7 @@ namespace Rant.Core.Stringes
 			{
 				if (value < 0 || value > _stringe.Length)
 				{
-					throw new ArgumentOutOfRangeException("value");
+					throw new ArgumentOutOfRangeException(nameof(value));
 				}
 				_pos = value;
 			}

@@ -46,7 +46,7 @@ namespace Rant.Core.Compiler.Parsing
 						double doubleValue;
 						if (!double.TryParse(value, out doubleValue))
 						{
-							compiler.SyntaxError(value, "invalid constant weight");
+							compiler.SyntaxError(value, false, "invalid constant weight");
 						}
 						constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
 					}
@@ -62,7 +62,7 @@ namespace Rant.Core.Compiler.Parsing
 						yield return Get<SequenceParser>();
 
 						if (weightActions.Count == 0)
-							compiler.SyntaxError(firstToken, "err-compiler-empty-weight", false);
+							compiler.SyntaxError(firstToken, false, "err-compiler-empty-weight");
 
 						dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
 					}

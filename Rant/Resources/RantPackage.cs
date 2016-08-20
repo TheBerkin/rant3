@@ -430,6 +430,10 @@ namespace Rant.Resources
 			}
 		}
 
+		/// <summary>
+		/// Returns a string containing the title and version of the package.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString() => $"{Title}, v{Version}";
 	}
 }

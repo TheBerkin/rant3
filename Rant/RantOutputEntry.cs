@@ -17,6 +17,9 @@ namespace Rant
         /// </summary>
         public string Value { get; }
 
+        /// <summary>
+        /// The visibility of the channel that created the output entry.
+        /// </summary>
         public ChannelVisibility Visiblity { get; }
 
         internal RantOutputEntry(string name, string value, ChannelVisibility visiblity)

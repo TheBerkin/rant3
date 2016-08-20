@@ -14,7 +14,7 @@ namespace Rant.Localization
 		public const string LanguageResourceNamespace = "Rant.Localization";
 		public const string FallbackLanguageCode = "en-US";
 
-		private static readonly Dictionary<string, Dictionary<string, string>> _languages = new Dictionary<string, Dictionary<string, string>>(); 
+		private static readonly Dictionary<string, Dictionary<string, string>> _languages = new Dictionary<string, Dictionary<string, string>>();
 		private static Dictionary<string, string> _currentTable = new Dictionary<string, string>();
 		private static string _langName = CultureInfo.CurrentCulture.Name;
 
@@ -42,6 +42,7 @@ namespace Rant.Localization
 				Console.WriteLine($"Loaded string resources for {CultureInfo.CurrentCulture.Name}");
 #endif
 			}
+
 			catch (Exception ex)
 			{
 #if DEBUG

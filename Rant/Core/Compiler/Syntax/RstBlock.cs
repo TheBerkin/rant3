@@ -5,6 +5,8 @@ using System.Linq;
 using Rant.Core.Constructs;
 using Rant.Core.Stringes;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core.Compiler.Syntax
 {
 	/// <summary>
@@ -83,8 +85,8 @@ namespace Rant.Core.Compiler.Syntax
 					yield return dw.Item2;
 					var strWeight = sb.Return().Main;
 					if (!Double.TryParse(strWeight, out _weights[dw.Item1]))
-						throw new RantRuntimeException(sb.Pattern, dw.Item2.Location,
-							$"Dynamic weight returned invalid weight value: '{strWeight}'");
+						throw new RantRuntimeException(sb.Pattern, dw.Item2.Location, GetString("err-runtime-invalid-dynamic-weight", strWeight));
+					
 					weightSum += _weights[dw.Item1];
 				}
 			}

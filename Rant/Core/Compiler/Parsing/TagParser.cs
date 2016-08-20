@@ -36,14 +36,14 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SetNextActionCallback(actionCallback);
 				if (arguments.Count < 2)
 				{
-					compiler.SyntaxError(regex, "replacer requires source text and replacement pattern.", false);
+					compiler.SyntaxError(regex, false, "replacer requires source text and replacement pattern.");
 					reader.Read(R.RightSquare, "replacer end");
 					yield break;
 				}
 
 				if (arguments.Count > 2)
 				{
-					compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), "replacer only takes two arguments.", false);
+					compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), false, "replacer only takes two arguments.");
 					reader.Read(R.RightSquare, "replacer end");
 					yield break;
 				}
@@ -96,14 +96,14 @@ namespace Rant.Core.Compiler.Parsing
 
 			if (!RantFunctionRegistry.FunctionExists(functionName.Value))
 			{
-				compiler.SyntaxError(functionName, Txtres.GetString("err-compiler-nonexistent-function", functionName.Value), false);
+				compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
 				yield break;
 			}
 
 			var sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count);
 			if (sig == null)
 			{
-				compiler.SyntaxError(functionName, "function " + functionName.Value + " has no overload with " + arguments.Count + " arguments.", false);
+				compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName.Value, arguments.Count);
 				yield break;
 			}
 

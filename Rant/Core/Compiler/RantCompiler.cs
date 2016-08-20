@@ -85,10 +85,10 @@ namespace Rant.Core.Compiler
 			}
 		}
 
-		public void SyntaxError(Stringe token, string message, bool fatal = true)
+		public void SyntaxError(Stringe token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
 		{
 			if (_errors == null) _errors = new List<RantCompilerMessage>();
-			_errors.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, message, token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
+			_errors.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, errorMessageType, token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
 			if (fatal)
 			{
 				throw new RantCompilerException(_sourceName, _errors);

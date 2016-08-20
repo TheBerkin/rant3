@@ -29,7 +29,6 @@ namespace Rant.Vocabulary
 		/// Creates a new RantDictionary object from the specified dictionary collection.
 		/// </summary>
 		/// <param name="tables">The tables to store in the dictionary.</param>
-		/// <param name="mergeBehavior">The merging strategy to employ.</param>
 		public RantDictionary(IEnumerable<RantDictionaryTable> tables)
 		{
 			_tables = new Dictionary<string, RantDictionaryTable>();
@@ -107,7 +106,6 @@ namespace Rant.Vocabulary
 		/// Loads all dictionary (.dic) files from the specified directory and returns a RantDictionary object that contains the loaded data.
 		/// </summary>
 		/// <param name="directory">The directory from which to load dictionaries.</param>
-		/// <param name="mergeBehavior">The merging strategy to employ.</param>
 		/// <returns></returns>
 		public static RantDictionary FromDirectory(string directory)
 		{

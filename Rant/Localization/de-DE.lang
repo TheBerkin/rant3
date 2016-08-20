@@ -38,7 +38,11 @@ err-compiler-missing-token = "{0} erwartet."
 err-compiler-bad-escape = "Unerkannte Escapesequenz: {0}"
 err-compiler-empty-sylrange = "Leerer Silbenbereich."
 err-compiler-bad-sylrange-value = "Silbenbereichswert muss Ganzzahl sein."
+err-compiler-incomplete-escape = "Unvollständige Escapesequenz gefunden."
 err-compiler-multiple-subtypes = "Mehrere Subtypen in Anfrage gefunden."
+err-compiler-nonexistent-overload = "Funktion '{0}' hat keine Überladung mit {1} Argument(en)."
+
+err-runtime-invalid-dynamic-weight = "Vorlage für dynamisches Blockelementgewicht hat ein ungültiges Gewichtswert zurückgegeben: '{0}'"
 
 token-carrier-name = "Anfragezustandspeichernamen"
 token-table-name = "Tabellenamen"

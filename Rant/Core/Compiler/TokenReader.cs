@@ -64,7 +64,7 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+				_compiler.SyntaxError(null, true, GetString("err-compiler-eof"));
 				return null;
 			}
 			return _tokens[_pos++];
@@ -87,7 +87,7 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+				_compiler.SyntaxError(null, true, "err-compiler-eof");
 				return null;
 			}
 			int pos = _pos;
@@ -142,7 +142,7 @@ namespace Rant.Core.Compiler
 			{
 				if (!allowEof)
 				{
-					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					_compiler.SyntaxError(null, true, "err-compiler-eof");
 					return false;
 				}
 				return false;
@@ -164,7 +164,7 @@ namespace Rant.Core.Compiler
 			{
 				if (!allowEof)
 				{
-					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					_compiler.SyntaxError(null, true, "err-compiler-eof");
 					return false;
 				}
 				return false;
@@ -266,7 +266,7 @@ namespace Rant.Core.Compiler
 			{
 				if (!allowEof)
 				{
-					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					_compiler.SyntaxError(null, true, "err-compiler-eof");
 					return false;
 				}
 				return false;
@@ -291,7 +291,7 @@ namespace Rant.Core.Compiler
 			{
 				if (!allowEof)
 				{
-					_compiler.SyntaxError(null, GetString("err-compiler-eof"), true);
+					_compiler.SyntaxError(null, true, "err-compiler-eof");
 					return false;
 				}
 				return false;
@@ -317,12 +317,12 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				_compiler.SyntaxError(null, true, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
 				return null;
 			}
 			if (_tokens[_pos].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos], $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				_compiler.SyntaxError(_tokens[_pos], true, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
 				return null;
 			}
 			return _tokens[_pos++];
@@ -338,14 +338,14 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, 
+				_compiler.SyntaxError(null, true,
 					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
 				return null;
 			}
 
 			if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
 			{
-				_compiler.SyntaxError(_tokens[_pos], $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
+				_compiler.SyntaxError(_tokens[_pos], true, $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
 				return null;
 			}
 
@@ -363,14 +363,14 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null,
+				_compiler.SyntaxError(null, true,
 					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
 				return null;
 			}
 			SkipSpace();
 			if (_tokens[_pos].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos],
+				_compiler.SyntaxError(_tokens[_pos], true,
 					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}");
 				return null;
 			}
@@ -437,7 +437,7 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, GetString("err-compiler-eof"));
+				_compiler.SyntaxError(null, true, "err-compiler-eof");
 				return null;
 			}
 			SkipSpace();
@@ -459,7 +459,7 @@ namespace Rant.Core.Compiler
 			{
 				if (!allowEof)
 				{
-					_compiler.SyntaxError(null, GetString("err-compiler-eof"));
+					_compiler.SyntaxError(null, true, "err-compiler-eof");
 				}
 				return false;
 			}

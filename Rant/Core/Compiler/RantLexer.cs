@@ -69,7 +69,7 @@ namespace Rant.Core.Compiler
 						if (!reader.Eat('\\')) return false;
 						if (reader.EndOfStringe)
 						{
-							reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), Txtres.GetString("err-compiler-incomplete-escape"), true);
+							reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), true, "err-compiler-incomplete-escape");
 							return false;
 						}
 						if (reader.EatWhile(Char.IsDigit))
@@ -78,7 +78,7 @@ namespace Rant.Core.Compiler
 							reader.EatAny('k', 'M', 'B');
 							if (!reader.Eat(','))
 							{
-								reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), "Expected ',' after quantifier.", false);
+								reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), true, "Expected ',' after quantifier."); // TODO: Localize error message
 								return true;
 							}
 						}
@@ -111,7 +111,7 @@ namespace Rant.Core.Compiler
 						}
 						if (reader.EndOfStringe)
 						{
-							reader.Error(token, "Unterminated regular expression.", true);
+							reader.Error(token, true, "Unterminated regular expression."); // TODO: Localize error message
 							return false;
 						}
 						reader.Eat('i');
@@ -129,7 +129,7 @@ namespace Rant.Core.Compiler
 							reader.EatAll("\"\"");
 							if (reader.ReadChare() == '"') return true;
 						}
-						reader.Error(token, "Unterminated constant literal.", true);
+						reader.Error(token, true, "Unterminated constant literal."); // TODO: Localize error message
 						return false;
 					}, R.ConstantLiteral
 				},

@@ -17,6 +17,9 @@ namespace Rant
 
 		private readonly Dictionary<string, string> _args = new Dictionary<string, string>();
 
+		/// <summary>
+		/// Create a new, empty RantPatternArgs instance.
+		/// </summary>
 		public RantPatternArgs()
 		{
 			

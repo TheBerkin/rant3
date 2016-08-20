@@ -44,10 +44,7 @@ namespace Rant.Core.Compiler.Parsing
 							compiler.LeaveContext();
 							yield break;
 						}
-						else
-						{
-							compiler.SyntaxError(token, "Unexpected block terminator");
-						}
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-block-end");
 						break;
 
 					// end of argument
@@ -70,11 +67,11 @@ namespace Rant.Core.Compiler.Parsing
 								compiler.LeaveContext();
 								yield break;
 						}
-						compiler.SyntaxError(token, "Unexpected tag end", false);
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-tag-end");
 						break;
 
 					case R.RightAngle:
-						compiler.SyntaxError(token, "Unexpected query end.");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-query-end");
 						break;
 
 					// the end of a block weight, maybe
@@ -111,7 +108,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.EOF:
 						if (context != CompileContext.DefaultSequence)
 						{
-							compiler.SyntaxError(token, "unexpected end-of-pattern");
+							compiler.SyntaxError(token, true, "err-compiler-eof");
 						}
 						yield break;
 
@@ -123,7 +120,7 @@ namespace Rant.Core.Compiler.Parsing
 
 			if (reader.End && context != CompileContext.DefaultSequence)
 			{
-				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
+				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
 			}
 		}
 	}

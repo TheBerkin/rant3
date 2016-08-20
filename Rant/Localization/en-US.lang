@@ -37,7 +37,12 @@ err-compiler-nonexistent-function = "The specified function '{0}' does not exist
 err-compiler-missing-token = "Expected {0}."
 err-compiler-bad-escape = "Invalid escape sequence: {0}"
 err-compiler-empty-sylrange = "Empty syllable range."
+err-compiler-bad-sylrange-value = "Syllable range values can only be integers."
 err-compiler-incomplete-escape = "Incomplete escape sequence."
+err-compiler-multiple-subtypes = "Too many subtypes in query. Only one is allowed."
+err-compiler-nonexistent-overload = "Function '{0}' has no overload that takes {1} argument(s)."
+
+err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 
 token-carrier-name = "carrier name"
 token-table-name = "table name"

@@ -16,7 +16,14 @@ namespace Rant
 	{
 		private readonly List<RantCompilerMessage> _errorList;
 
+		/// <summary>
+		/// The name of the source pattern on which the error occurred.
+		/// </summary>
 		public string SourceName { get; }
+
+		/// <summary>
+		/// Indicates whether the exception is the result of an internal engine error.
+		/// </summary>
 		public bool InternalError { get; }
 
 		internal RantCompilerException(string sourceName, List<RantCompilerMessage> errorList)

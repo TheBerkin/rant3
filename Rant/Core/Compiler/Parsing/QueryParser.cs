@@ -21,7 +21,7 @@ namespace Rant.Core.Compiler.Parsing
 			query.Carrier = new Carrier();
 			query.Exclusive = reader.TakeLoose(R.Dollar);
 			bool subtypeRead = false;
-			bool directObjectRead = false;
+			bool complementRead = false;
 			bool endOfQueryReached = false;
 
 			while (!reader.End && !endOfQueryReached)
@@ -35,7 +35,7 @@ namespace Rant.Core.Compiler.Parsing
 						// if there's already a subtype, throw an error and ignore it
 						if (subtypeRead)
 						{
-							compiler.SyntaxError(token, "multiple subtypes in query", false);
+							compiler.SyntaxError(token, false, "err-compiler-multiple-subtypes");
 							reader.Read(R.Text, "query subtype name");
 							break;
 						}
@@ -45,12 +45,14 @@ namespace Rant.Core.Compiler.Parsing
 					// complement
 					case R.LeftSquare:
 						{
+							if (complementRead) compiler.SyntaxError(token, false, "err-compiler-multiple-complements");
 							var seq = new List<RST>();
 							compiler.AddContext(CompileContext.QueryComplement);
 							compiler.SetNextActionCallback(seq.Add);
 							yield return Get<SequenceParser>();
 							compiler.SetNextActionCallback(actionCallback);
 							query.Complement = new RstSequence(seq, Stringe.Between(token, reader.PrevToken));
+							complementRead = true;
 						}
 						break;
 					// read class filter
@@ -95,7 +97,7 @@ namespace Rant.Core.Compiler.Parsing
 							int firstNumber;
 							if (!Util.ParseInt(firstNumberToken.Value, out firstNumber))
 							{
-								compiler.SyntaxError(firstNumberToken, "syllable range value is not a valid integer");
+								compiler.SyntaxError(firstNumberToken, false, "err-compiler-bad-sylrange-value");
 							}
 
 							// (a-) or (a-b)
@@ -109,7 +111,7 @@ namespace Rant.Core.Compiler.Parsing
 									int secondNumber;
 									if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
 									{
-										compiler.SyntaxError(secondNumberToken, "syllable range value is not a valid integer");
+										compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
 									}
 
 									query.SyllablePredicate = new Range(firstNumber, secondNumber);
@@ -134,19 +136,19 @@ namespace Rant.Core.Compiler.Parsing
 							int secondNumber;
 							if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
 							{
-								compiler.SyntaxError(secondNumberToken, "syllable range value is not a valid integer");
+								compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
 							}
 							query.SyllablePredicate = new Range(null, secondNumber);
 						}
 						// ()
 						else if (reader.PeekLooseToken().ID == R.RightParen)
 						{
-							compiler.SyntaxError(token, "empty syllable range", false);
+							compiler.SyntaxError(token, false, "err-compiler-empty-sylrange");
 						}
 						// (something else)
 						else
 						{
-							compiler.SyntaxError(reader.PeekLooseToken(), "unexpected token in syllable range");
+							compiler.SyntaxError(reader.PeekLooseToken(), false, "err-compiler-unknown-sylrange-token");
 						}
 
 						reader.ReadLoose(R.RightParen, "syllable range end");
@@ -168,18 +170,17 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 
 					default:
-						compiler.SyntaxError(token, "unexpected token");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-token");
 						break;
 				}
 			}
 
 			if (!endOfQueryReached)
 			{
-				compiler.SyntaxError(reader.PrevToken, "unexpected end-of-pattern");
+				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
 			}
 
 			actionCallback(new RstQuery(query, tableName));
-			yield break;
 		}
 
 		private void ReadCarriers(TokenReader reader, Carrier carrier, RantCompiler compiler)
@@ -279,7 +280,7 @@ namespace Rant.Core.Compiler.Parsing
 						return;
 
 					default:
-						compiler.SyntaxError(token, "unexpected token");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-token");
 						break;
 				}
 			}
