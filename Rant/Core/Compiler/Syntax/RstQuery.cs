@@ -11,8 +11,8 @@ namespace Rant.Core.Compiler.Syntax
 	{
 		private readonly Query _query;
 
-		public RstQuery(Query query, Stringe range)
-			: base(range)
+		public RstQuery(Query query, Stringe location)
+			: base(location)
 		{
 			_query = query;
 		}

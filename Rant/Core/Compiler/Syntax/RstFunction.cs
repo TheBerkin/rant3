@@ -14,8 +14,8 @@ namespace Rant.Core.Compiler.Syntax
 		private readonly List<RST> _argActions;
 		private readonly int _argc;
 
-		public RstFunction(Stringe range, RantFunctionSignature funcInfo, List<RST> argActions)
-			: base(range)
+		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> argActions)
+			: base(location)
 		{
 			_funcInfo = funcInfo;
 			_argActions = argActions;
@@ -78,7 +78,7 @@ namespace Rant.Core.Compiler.Syntax
 						object value;
 						if (!Util.TryParseEnum(p.NativeType, strMode, out value))
 						{
-							throw new RantRuntimeException(sb.Pattern, _argActions[i].Range,
+							throw new RantRuntimeException(sb.Pattern, _argActions[i].Location,
 								$"Unknown mode value '{strMode}'.");
 						}
 						args[i] = value;
@@ -97,7 +97,7 @@ namespace Rant.Core.Compiler.Syntax
 						foreach(var flag in strFlags.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries))
 						{
 							if (!Util.TryParseEnum(enumType, flag, out value))
-								throw new RantRuntimeException(sb.Pattern, _argActions[i].Range,
+								throw new RantRuntimeException(sb.Pattern, _argActions[i].Location,
 									$"Unknown flag value '{flag}'.");
 							flags |= Convert.ToInt64(value);
 						}

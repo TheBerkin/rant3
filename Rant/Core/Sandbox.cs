@@ -283,8 +283,8 @@ namespace Rant.Core
 				IEnumerator<RST> action;
 
 				// Push the AST root
-				CurrentAction = pattern.Action;
-				callStack.Push(pattern.Action.Run(this));
+				CurrentAction = pattern.SyntaxTree;
+				callStack.Push(pattern.SyntaxTree.Run(this));
 
 				top:
 				while (callStack.Any())
@@ -296,11 +296,11 @@ namespace Rant.Core
 					while (action.MoveNext())
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-							throw new RantRuntimeException(pattern, action.Current.Range,
+							throw new RantRuntimeException(pattern, action.Current.Location,
 								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
-							throw new RantRuntimeException(pattern, action.Current.Range,
+							throw new RantRuntimeException(pattern, action.Current.Location,
 								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;
@@ -341,8 +341,8 @@ namespace Rant.Core
 				IEnumerator<RST> action;
 
 				// Push the AST root
-				CurrentAction = pattern.Action;
-				callStack.Push(pattern.Action.Run(this));
+				CurrentAction = pattern.SyntaxTree;
+				callStack.Push(pattern.SyntaxTree.Run(this));
 
 				top:
 				while (callStack.Any())
@@ -354,11 +354,11 @@ namespace Rant.Core
 					while (action.MoveNext())
 					{
 						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-							throw new RantRuntimeException(pattern, action.Current.Range,
+							throw new RantRuntimeException(pattern, action.Current.Location,
 								GetString("err-pattern-timeout", timeout));
 
 						if (callStack.Count >= RantEngine.MaxStackSize)
-							throw new RantRuntimeException(pattern, action.Current.Range,
+							throw new RantRuntimeException(pattern, action.Current.Location,
 								GetString("err-stack-overflow", RantEngine.MaxStackSize));
 
 						if (action.Current == null) break;

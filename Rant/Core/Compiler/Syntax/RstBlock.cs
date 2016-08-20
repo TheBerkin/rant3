@@ -24,23 +24,23 @@ namespace Rant.Core.Compiler.Syntax
 		private readonly double _constantWeightSum;
 		private readonly bool _weighted = false;
 
-		public RstBlock(Stringe range, params RST[] items)
-			: base(range)
+		public RstBlock(Stringe location, params RST[] items)
+			: base(location)
 		{
 			_items.AddRange(items);
 			_count = items.Length;
 		}
 
-		public RstBlock(Stringe range, List<RST> items)
-			: base(range)
+		public RstBlock(Stringe location, List<RST> items)
+			: base(location)
 		{
 			_items.AddRange(items);
 			_count = items.Count;
 		}
 
-		public RstBlock(Stringe range, List<RST> items,
+		public RstBlock(Stringe location, List<RST> items,
 			List<_<int, RST>> dynamicWeights, List<_<int, double>> constantWeights)
-			: base(range)
+			: base(location)
 		{
 			_items.AddRange(items);
 			_count = items.Count;
@@ -83,7 +83,7 @@ namespace Rant.Core.Compiler.Syntax
 					yield return dw.Item2;
 					var strWeight = sb.Return().Main;
 					if (!Double.TryParse(strWeight, out _weights[dw.Item1]))
-						throw new RantRuntimeException(sb.Pattern, dw.Item2.Range,
+						throw new RantRuntimeException(sb.Pattern, dw.Item2.Location,
 							$"Dynamic weight returned invalid weight value: '{strWeight}'");
 					weightSum += _weights[dw.Item1];
 				}

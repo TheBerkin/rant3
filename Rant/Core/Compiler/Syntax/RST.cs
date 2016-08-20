@@ -9,11 +9,16 @@ namespace Rant.Core.Compiler.Syntax
 	/// </summary>
 	internal abstract class RST
 	{
-		internal Stringe Range;
+		internal TokenLocation Location;
 
-		protected RST(Stringe range)
+		protected RST(Stringe location)
 		{
-			Range = range;
+			Location = TokenLocation.FromStringe(location);
+		}
+
+		protected RST(TokenLocation location)
+		{
+			Location = location;
 		}
 
 		/// <summary>

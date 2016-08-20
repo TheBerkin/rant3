@@ -710,16 +710,16 @@ namespace Rant.Core.Framework
 
 			try
 			{
-				action = sb.Engine.GetPattern(name).Action;
+				action = sb.Engine.GetPattern(name).SyntaxTree;
 			}
 			catch (RantCompilerException e)
 			{
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range,
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location,
 					$"Failed to compile imported pattern '{name}':\n{e.Message}");
 			}
 			catch (Exception e)
 			{
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range,
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location,
 					$"Failed to import '{name}':\n{e.Message}");
 			}
 
@@ -923,10 +923,10 @@ namespace Rant.Core.Framework
 			else if (File.Exists(name))
 				file = name;
 			else
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, $"Could not find module '{name}'.");
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"Could not find module '{name}'.");
 			var pattern = RantPattern.FromFile(file);
 			if (pattern.Module == null)
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Range, $"No module is defined in {file}.");
+				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"No module is defined in {file}.");
 			sb.Modules[Path.GetFileNameWithoutExtension(name)] = pattern.Module;
 		}
 

@@ -46,8 +46,8 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public static Stringe Range(Stringe a, Stringe b)
 		{
-			if (a == null) throw new ArgumentNullException("a");
-			if (b == null) throw new ArgumentNullException("b");
+			if (a == null) throw new ArgumentNullException(nameof(a));
+			if (b == null) throw new ArgumentNullException(nameof(b));
 			if (a._stref != b._stref)
 				throw new ArgumentException("The stringes do not belong to the same parent.");
 
@@ -90,8 +90,8 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public static Stringe Between(Stringe a, Stringe b)
 		{
-			if (a == null) throw new ArgumentNullException("a");
-			if (b == null) throw new ArgumentNullException("b");
+			if (a == null) throw new ArgumentNullException(nameof(a));
+			if (b == null) throw new ArgumentNullException(nameof(b));
 			if (a._stref != b._stref)
 				throw new ArgumentException("The stringes do not belong to the same parent.");
 

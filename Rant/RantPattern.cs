@@ -42,7 +42,7 @@ namespace Rant
 		/// </summary>
 		public string Code { get; }
 
-        internal RST Action { get; }
+        internal RST SyntaxTree { get; }
 
 		internal RantModule Module { get; }
 
@@ -52,7 +52,7 @@ namespace Rant
             Type = type;
             Code = code;
 			var compiler = new RantCompiler(name, code);
-			Action = compiler.Compile();
+			SyntaxTree = compiler.Compile();
 			Module = compiler.HasModule ? compiler.Module : null;
         }
 

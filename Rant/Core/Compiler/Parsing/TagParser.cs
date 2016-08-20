@@ -6,6 +6,7 @@ using Rant.Core.Compiler.Syntax;
 using Rant.Vocabulary.Querying;
 using Rant.Core.Utilities;
 using Rant.Core.Framework;
+using Rant.Core.Stringes;
 using Rant.Localization;
 
 namespace Rant.Core.Compiler.Parsing
@@ -15,6 +16,8 @@ namespace Rant.Core.Compiler.Parsing
 		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
 			var nextType = reader.PeekType();
+
+			var tagStart = reader.PrevToken;
 
 			// replacer
 			if (nextType == R.Regex)
@@ -37,15 +40,15 @@ namespace Rant.Core.Compiler.Parsing
 					reader.Read(R.RightSquare, "replacer end");
 					yield break;
 				}
-				else if (arguments.Count > 2)
+
+				if (arguments.Count > 2)
 				{
-					compiler.SyntaxError(arguments[2].Range, "replacer only takes two arguments.", false);
+					compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), "replacer only takes two arguments.", false);
 					reader.Read(R.RightSquare, "replacer end");
 					yield break;
 				}
 
 				actionCallback(new RstReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
-				yield break;
 			}
 			// subroutine
 			else if (nextType == R.Dollar)
@@ -56,7 +59,6 @@ namespace Rant.Core.Compiler.Parsing
 				{
 					yield return e.Current;
 				}
-				yield break;
 			}
 			// function
 			else
@@ -66,8 +68,6 @@ namespace Rant.Core.Compiler.Parsing
 				{
 					yield return e.Current;
 				}
-
-				yield break;
 			}
 		}
 

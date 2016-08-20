@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Rant.Core.Compiler;
-using Rant.Core.Stringes;
-
 namespace Rant.Core.Utilities
 {
 	internal static class Util
@@ -204,7 +201,7 @@ namespace Rant.Core.Utilities
 		public static string CamelToSnake(string camelName)
 		{
 			var name = camelName.Trim();
-			if (Util.IsNullOrWhiteSpace(name)) return name;
+			if (IsNullOrWhiteSpace(name)) return name;
 			if (name.Length == 1) return name.ToLower();
 			var sb = new StringBuilder();
 			bool a, b;
@@ -254,20 +251,5 @@ namespace Rant.Core.Utilities
 		}
 
 		public static int Mod(int a, int b) => ((a % b) + b) % b;
-
-		internal static RantRuntimeException Error(RantPattern source, Stringe token, string message = "A generic syntax error was encountered.")
-		{
-			return new RantRuntimeException(source, token, message);
-		}
-
-		internal static RantRuntimeException Error(IEnumerable<Token<R>> tokens, RantPattern source, string message = "A generic syntax error was encountered.")
-		{
-			return new RantRuntimeException(tokens, source, message);
-		}
-
-		internal static RantRuntimeException Error(string source, Stringe token, string message = "A generic syntax error was encountered.")
-		{
-			return new RantRuntimeException(source, token, message);
-		}
 	}
 }

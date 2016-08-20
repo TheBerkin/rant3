@@ -14,7 +14,7 @@ namespace Rant.Core.Compiler.Syntax
 		private readonly RST _matchEvalAction;
 		private readonly Regex _regex;
 
-		public RstReplacer(Stringe range, Regex regex, RST sourceAction, RST matchEvalAction) : base(range)
+		public RstReplacer(Stringe location, Regex regex, RST sourceAction, RST matchEvalAction) : base(location)
 		{
 			_regex = regex;
 			_sourceAction = sourceAction;

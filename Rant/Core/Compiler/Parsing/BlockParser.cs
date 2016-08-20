@@ -55,18 +55,16 @@ namespace Rant.Core.Compiler.Parsing
 					{
 						var weightActions = new List<RST>();
 
-						Action<RST> weightActionCallback = (action) => weightActions.Add(action);
+						Action<RST> weightActionCallback = rst => weightActions.Add(rst);
 
 						compiler.SetNextActionCallback(weightActionCallback);
 						compiler.AddContext(CompileContext.BlockWeight);
 						yield return Get<SequenceParser>();
 
-						if (weightActions.Count > 0)
-						{
-							firstToken = weightActions[0].Range;
-						}
+						if (weightActions.Count == 0)
+							compiler.SyntaxError(firstToken, "err-compiler-empty-weight", false);
 
-						dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, firstToken)));
+						dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
 					}
 
 					reader.Read(R.RightParen, "end of weight");
