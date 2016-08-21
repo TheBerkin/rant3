@@ -75,14 +75,17 @@ namespace Rant.Core.Compiler
 
 				return new RstSequence(actionList, _source);
 			}
+			
 			catch (RantCompilerException)
 			{
 				throw;
 			}
+#if !DEBUG
 			catch (Exception ex)
 			{
 				throw new RantCompilerException(_sourceName, _errors, ex);
 			}
+#endif
 		}
 
 		public void SyntaxError(Stringe token, bool fatal, string errorMessageType, params object[] errorMessageArgs)

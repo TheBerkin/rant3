@@ -139,12 +139,12 @@ namespace Rant.Core.Stringes
 		/// <summary>
 		/// The 1-based line number at which the stringe begins.
 		/// </summary>
-		public int Line => _stref.Chares[_offset].Line;
+		public int Line => _stref.String?.Length > 0 ? _stref.Chares[_offset].Line : 1;
 
 		/// <summary>
 		/// The 1-based column at which the stringe begins.
 		/// </summary>
-		public int Column => _stref.Chares[_offset].Column;
+		public int Column => _stref.String?.Length > 0 ? _stref.Chares[_offset].Column : 1;
 
 		/// <summary>
 		/// The index at which the stringe ends in the string.
