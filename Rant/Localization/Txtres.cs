@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+#pragma warning disable 0168
+
 namespace Rant.Localization
 {
 	internal static class Txtres

@@ -277,8 +277,6 @@
     <Compile Include="Core\Formatting\Emoji.cs" />
     <Compile Include="Vocabulary\EntryTypeDef.cs" />
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
-    <Compile Include="Vocabulary\Querying\EntryVariantHint.cs" />
-    <Compile Include="Vocabulary\Querying\TableSource.cs" />
     <Compile Include="Vocabulary\Utilities\DicLexer.cs" />
     <Compile Include="Vocabulary\Querying\Range.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />

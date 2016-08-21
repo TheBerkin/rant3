@@ -64,7 +64,7 @@ namespace Rant
 		private static string GenerateErrorStringWithInnerEx(List<RantCompilerMessage> list, Exception inner)
 		{
 			var writer = new StringBuilder();
-			writer.AppendLine($"Compiler encountered an unexpected internal error of type '{inner.GetType().Name}'. See InnerException for details.");
+			writer.AppendLine(GetString("err-compiler-internal", inner.GetType().Name, inner.Message));
 			
 			if (list != null && list.Any())
 			{
@@ -88,6 +88,10 @@ namespace Rant
 			return writer.ToString();
 		}
 
+		/// <summary>
+		/// Enumerates the errors collected from the compiler.
+		/// </summary>
+		/// <returns></returns>
 		public IEnumerable<RantCompilerMessage> GetErrors()
 		{
 			if (_errorList == null) yield break;

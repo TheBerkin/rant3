@@ -25,10 +25,17 @@ namespace Rant.Formats
                 "are", "you", "why", "from");
         }
 
+	    /// <summary>
+	    /// Creates a new RantFormat instance with default values.
+	    /// </summary>
 	    public RantFormat()
 	    {   
 	    }
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
 	    public RantFormat(CultureInfo culture)
 	    {
 		    Culture = culture;
