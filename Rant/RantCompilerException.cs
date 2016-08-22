@@ -26,10 +26,16 @@ namespace Rant
 		/// </summary>
 		public bool InternalError { get; }
 
+		/// <summary>
+		/// Gets the number of errors returned by the compiler.
+		/// </summary>
+		public int ErrorCount { get; }
+
 		internal RantCompilerException(string sourceName, List<RantCompilerMessage> errorList)
 			: base(GenerateErrorString(errorList))
 		{
 			_errorList = errorList;
+			ErrorCount = _errorList.Count;
 			SourceName = sourceName;
 			InternalError = false;
 		}
@@ -38,6 +44,7 @@ namespace Rant
 			: base(GenerateErrorStringWithInnerEx(errorList, innerException), innerException)
 		{
 			_errorList = errorList;
+			ErrorCount = _errorList.Count;
 			SourceName = sourceName;
 			InternalError = true;
 		}
@@ -48,9 +55,10 @@ namespace Rant
 			if (list.Count > 1)
 			{
 				writer.AppendLine(GetString("compiler-errors-found", list.Count));
-				foreach (var error in list)
+				for (int i = 0; i < list.Count; i++)
 				{
-					writer.Append('\t');
+					var error = list[i];
+					writer.Append($"    {i + 1}. ");
 					writer.AppendLine(error.ToString());
 				}
 			}
@@ -72,16 +80,17 @@ namespace Rant
 				if (list.Count > 1)
 				{
 					writer.AppendLine(GetString("compiler-errors-also-found", list.Count));
-					foreach (var error in list)
+					for (int i = 0; i < list.Count; i++)
 					{
-						writer.Append('\t');
+						var error = list[i];
+						writer.Append($"    {i + 1}. ");
 						writer.AppendLine(error.ToString());
 					}
 				}
 				else
 				{
 					writer.AppendLine(GetString("compiler-error-also-found"));
-					writer.Append('\t');
+					writer.Append("    ");
 					writer.AppendLine(list.First().ToString());
 				}
 			}

@@ -8,6 +8,8 @@ using Rant.Core.Framework;
 using Rant.Core.Stringes;
 using Rant.Resources;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core.Compiler
 {
 	internal class RantCompiler
@@ -75,7 +77,7 @@ namespace Rant.Core.Compiler
 
 				return new RstSequence(actionList, _source);
 			}
-			
+
 			catch (RantCompilerException)
 			{
 				throw;
@@ -90,12 +92,10 @@ namespace Rant.Core.Compiler
 
 		public void SyntaxError(Stringe token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
 		{
-			if (_errors == null) _errors = new List<RantCompilerMessage>();
-			_errors.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, errorMessageType, token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
-			if (fatal)
-			{
-				throw new RantCompilerException(_sourceName, _errors);
-			}
+			(_errors ?? (_errors = new List<RantCompilerMessage>()))
+				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, GetString(errorMessageType, errorMessageArgs),
+					token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
+			if (fatal) throw new RantCompilerException(_sourceName, _errors);
 		}
 	}
 }

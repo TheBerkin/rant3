@@ -1,7 +1,7 @@
 ﻿untitled-package = "Untitled Package"
 default-package-id = "Package"
 
-src-line-col = "({0}: Ln {1} Col {2})"
+src-line-col = "({0}: Ln {1}, Col {2})"
 
 err-zero-or-negative = "Value must be greater than zero."
 err-empty-path = "File path cannot be null or empty."
@@ -42,6 +42,7 @@ err-compiler-bad-sylrange-value = "Syllable range values can only be integers."
 err-compiler-incomplete-escape = "Incomplete escape sequence."
 err-compiler-multiple-subtypes = "Too many subtypes in query. Only one is allowed."
 err-compiler-nonexistent-overload = "Function '{0}' has no overload that takes {1} argument(s)."
+err-compiler-replacer-argcount = "Replacers require exactly two arguments."
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 
