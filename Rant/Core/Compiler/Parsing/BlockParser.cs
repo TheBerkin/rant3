@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Vocabulary.Querying;
-using Rant.Core.Utilities;
-using Rant.Core.Framework;
+using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -37,7 +34,7 @@ namespace Rant.Core.Compiler.Parsing
 					constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
 					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RST>>());
 
-					Stringes.Stringe firstToken = reader.ReadLooseToken();
+					Stringe firstToken = reader.ReadLooseToken();
 
 					// constant weight
 					if (reader.PeekLooseToken().ID == R.Text)
@@ -46,9 +43,13 @@ namespace Rant.Core.Compiler.Parsing
 						double doubleValue;
 						if (!double.TryParse(value, out doubleValue))
 						{
-							compiler.SyntaxError(value, false, "invalid constant weight");
+							compiler.SyntaxError(value, false, "err-compiler-invalid-constweight");
 						}
-						constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
+						else
+						{
+							constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
+						}
+						reader.Read(R.RightParen);
 					}
 					// dynamic weight
 					else
@@ -62,12 +63,16 @@ namespace Rant.Core.Compiler.Parsing
 						yield return Get<SequenceParser>();
 
 						if (weightActions.Count == 0)
+						{
 							compiler.SyntaxError(firstToken, false, "err-compiler-empty-weight");
-
-						dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
+						}
+						else
+						{
+							dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
+						}
 					}
 
-					reader.Read(R.RightParen, "end of weight");
+					
 				}
 
 				var startToken = reader.PeekToken();

@@ -76,7 +76,6 @@ namespace Rant.Core.Compiler
 
 				return new RstSequence(actionList, _source);
 			}
-
 			catch (RantCompilerException)
 			{
 				throw;

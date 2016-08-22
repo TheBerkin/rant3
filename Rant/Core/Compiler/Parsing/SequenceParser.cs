@@ -78,6 +78,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.RightParen:
 						if (context == CompileContext.BlockWeight)
 						{
+							reader.SkipSpace();
 							compiler.LeaveContext();
 							yield break;
 						}

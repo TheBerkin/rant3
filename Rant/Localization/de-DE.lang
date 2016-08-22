@@ -47,6 +47,8 @@ err-compiler-missing-token-eof = "{0} erwartet, aber Dateiende gefunden."
 err-compiler-missing-token-any = "Eines dieser Tokens erwartet: {0}"
 err-compiler-missing-token-any-eof = "Unerwartetes Dateiende. Eines dieser Tokens erwartet: {0}"
 err-compiler-unknown-sylrange-token = "Unerwartetes Token in Silbenbereich gefunden: {0}"
+err-compiler-empty-weight = "Leeres Blockelementgewicht."
+err-compiler-invalid-constweight = "Ungültige Gewichtskonstante. Sie muss eine positive Zahl sein."
 
 err-runtime-invalid-dynamic-weight = "Vorlage für dynamisches Blockelementgewicht hat einen ungültigen Gewichtswert zurückgegeben: '{0}'"
 
