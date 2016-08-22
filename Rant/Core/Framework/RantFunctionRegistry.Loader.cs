@@ -84,6 +84,7 @@ namespace Rant.Core.Framework
 
 		public static RantFunction GetFunctionGroup(string name)
 		{
+			if (name == null) return null;
 			RantFunction group;
 			return !FunctionTable.TryGetValue(ResolveAlias(name), out group) ? null : group;
 		}

@@ -4,7 +4,6 @@ using System.Linq;
 
 using Rant.Core.Compiler.Parsing;
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Framework;
 using Rant.Core.Stringes;
 using Rant.Resources;
 

@@ -317,12 +317,12 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, true, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
 			if (_tokens[_pos].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos], true, $"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
 			return _tokens[_pos++];
@@ -339,13 +339,13 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				_compiler.SyntaxError(null, true,
-					$"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}, but hit end of file.");
+					"err-compiler-missing-token-any-eof", String.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
 				return null;
 			}
 
 			if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
 			{
-				_compiler.SyntaxError(_tokens[_pos], true, $"Expected any from {{{String.Join(", ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray())}}}.");
+				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token-any", String.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
 				return null;
 			}
 
@@ -363,15 +363,13 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, true,
-					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}, but hit end of file.");
+				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
 			SkipSpace();
 			if (_tokens[_pos].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos], true,
-					$"Expected {(expectedTokenName ?? "'" + RantLexer.Rules.GetSymbolForId(type) + "'")}");
+				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
 			var t = _tokens[_pos++];

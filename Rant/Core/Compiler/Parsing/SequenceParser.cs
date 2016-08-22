@@ -44,7 +44,7 @@ namespace Rant.Core.Compiler.Parsing
 							compiler.LeaveContext();
 							yield break;
 						}
-						compiler.SyntaxError(token, false, "err-compiler-unexpected-block-end");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-token", token.Value);
 						break;
 
 					// end of argument
@@ -67,11 +67,11 @@ namespace Rant.Core.Compiler.Parsing
 								compiler.LeaveContext();
 								yield break;
 						}
-						compiler.SyntaxError(token, false, "err-compiler-unexpected-tag-end");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-token", token.Value);
 						break;
 
 					case R.RightAngle:
-						compiler.SyntaxError(token, false, "err-compiler-unexpected-query-end");
+						compiler.SyntaxError(token, false, "err-compiler-unexpected-token", token.Value);
 						break;
 
 					// the end of a block weight, maybe

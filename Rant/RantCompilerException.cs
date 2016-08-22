@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Rant.Core.Stringes;
-
 using static Rant.Localization.Txtres;
 
 namespace Rant
@@ -73,7 +71,7 @@ namespace Rant
 		{
 			var writer = new StringBuilder();
 			writer.AppendLine(GetString("err-compiler-internal", inner.GetType().Name, inner.Message));
-			
+
 			if (list != null && list.Any())
 			{
 				writer.AppendLine();

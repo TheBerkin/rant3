@@ -67,7 +67,7 @@ namespace Rant.Core.Compiler.Parsing
 
 		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
-			var functionName = reader.Read(R.Text, "function name");
+			var functionName = reader.Read(R.Text, "acc-function-name");
 
 			var arguments = new List<RST>();
 
@@ -85,23 +85,29 @@ namespace Rant.Core.Compiler.Parsing
 			}
 			else
 			{
-				reader.Read(R.RightSquare, "function tag end");
+				reader.Read(R.RightSquare);
 			}
 
-			if (!RantFunctionRegistry.FunctionExists(functionName.Value))
+			RantFunctionSignature sig = null;
+
+			if (functionName != null)
 			{
-				compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
-				yield break;
+				if (!RantFunctionRegistry.FunctionExists(functionName.Value))
+				{
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
+					yield break;
+				}
+				
+				if ((sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count)) == null)
+				{
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName?.Value, arguments.Count);
+					yield break;
+				}
+
+				actionCallback(new RstFunction(functionName, sig, arguments));
 			}
 
-			var sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count);
-			if (sig == null)
-			{
-				compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName.Value, arguments.Count);
-				yield break;
-			}
-
-			actionCallback(new RstFunction(functionName, sig, arguments));
+			
 		}
 
 		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
@@ -116,9 +122,11 @@ namespace Rant.Core.Compiler.Parsing
 					inModule = true;
 					compiler.HasModule = true;
 				}
-				var subroutineName = reader.ReadLoose(R.Text, "subroutine name");
-				var subroutine = new RstDefineSubroutine(subroutineName);
-				subroutine.Parameters = new Dictionary<string, SubroutineParameterType>();
+				var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
+				var subroutine = new RstDefineSubroutine(subroutineName)
+				{
+					Parameters = new Dictionary<string, SubroutineParameterType>()
+				};
 
 				if (reader.PeekLooseToken().ID == R.Colon)
 				{
@@ -136,7 +144,8 @@ namespace Rant.Core.Compiler.Parsing
 					} while (reader.TakeLoose(R.Semicolon, false));
 				}
 
-				reader.ReadLoose(R.RightSquare, "end of subroutine definition arguments");
+				reader.ReadLoose(R.RightSquare);
+
 				var bodyStart = reader.ReadLoose(R.Colon);
 
 				var actions = new List<RST>();

@@ -13,9 +13,9 @@ namespace Rant.Core.Compiler.Parsing
 	{
 		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
 		{
-			var tableName = reader.ReadLoose(R.Text, "query table name");
+			var tableName = reader.ReadLoose(R.Text, "acc-table-name");
 			var query = new Query();
-			query.Name = tableName.Value;
+			query.Name = tableName?.Value;
 			query.ClassFilter = new ClassFilter();
 			query.RegexFilters = new List<_<bool, Regex>>();
 			query.Carrier = new Carrier();
@@ -66,7 +66,7 @@ namespace Rant.Core.Compiler.Parsing
 								blacklist = true;
 								reader.ReadToken();
 							}
-							var classFilterName = reader.Read(R.Text, "class filter rule");
+							var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
 						}
@@ -132,7 +132,7 @@ namespace Rant.Core.Compiler.Parsing
 						else if (reader.PeekLooseToken().ID == R.Hyphen)
 						{
 							reader.ReadLooseToken();
-							var secondNumberToken = reader.ReadLoose(R.Text, "syllable range value");
+							var secondNumberToken = reader.ReadLoose(R.Text, "acc-syllable-range-value");
 							int secondNumber;
 							if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
 							{
@@ -148,10 +148,12 @@ namespace Rant.Core.Compiler.Parsing
 						// (something else)
 						else
 						{
-							compiler.SyntaxError(reader.PeekLooseToken(), false, "err-compiler-unknown-sylrange-token");
+							var errorToken = reader.ReadLooseToken();
+							compiler.SyntaxError(errorToken, false, "err-compiler-unknown-sylrange-token", errorToken.Value);
+							reader.TakeAllWhile(t => !reader.IsNext(R.RightParen));
 						}
 
-						reader.ReadLoose(R.RightParen, "syllable range end");
+						reader.ReadLoose(R.RightParen);
 						break;
 
 					// read carriers
@@ -180,7 +182,8 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
 			}
 
-			actionCallback(new RstQuery(query, tableName));
+			if (tableName != null)
+				actionCallback(new RstQuery(query, tableName));
 		}
 
 		private void ReadCarriers(TokenReader reader, Carrier carrier, RantCompiler compiler)
@@ -194,8 +197,9 @@ namespace Rant.Core.Compiler.Parsing
 					// match carrier
 					case R.Equal:
 						{
-							var name = reader.Read(R.Text, "carrier name");
-							carrier.AddComponent(CarrierComponent.Match, name.Value);
+							var name = reader.Read(R.Text, "acc-carrier-name");
+							if (name != null)
+								carrier.AddComponent(CarrierComponent.Match, name.Value);
 						}
 						break;
 
@@ -246,8 +250,9 @@ namespace Rant.Core.Compiler.Parsing
 								reader.ReadToken();
 							}
 
-							var name = reader.Read(R.Text, "carrier name");
-							carrier.AddComponent(carrierType, name.Value);
+							var name = reader.Read(R.Text, "acc-carrier-name");
+							if (name != null)
+								carrier.AddComponent(carrierType, name.Value);
 						}
 						break;
 
@@ -262,16 +267,18 @@ namespace Rant.Core.Compiler.Parsing
 								reader.ReadToken();
 							}
 
-							var name = reader.Read(R.Text, "carrier name");
-							carrier.AddComponent(carrierType, name.Value);
+							var name = reader.Read(R.Text, "acc-carrier-name");
+							if (name != null)
+								carrier.AddComponent(carrierType, name.Value);
 						}
 						break;
 
 					// rhyming
 					case R.Ampersand:
 						{
-							var name = reader.Read(R.Text, "carrier name");
-							carrier.AddComponent(CarrierComponent.Rhyme, name.Value);
+							var name = reader.Read(R.Text, "acc-carrier-name");
+							if (name != null)
+								carrier.AddComponent(CarrierComponent.Rhyme, name.Value);
 						}
 						break;
 
