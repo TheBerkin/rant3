@@ -154,10 +154,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnmanagedExports.1.2.7\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -259,12 +255,6 @@
     <Compile Include="Core\IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Resources\RantPackage.cs" />
-    <Compile Include="Unmanaged\ErrorCode.cs" />
-    <Compile Include="Unmanaged\Exports.cs" />
-    <Compile Include="Unmanaged\PatternOptions.cs" />
-    <Compile Include="Unmanaged\UnmanagedOutput.cs" />
-    <Compile Include="Unmanaged\UnmanagedPattern.cs" />
-    <Compile Include="Unmanaged\UnmanagedRantContext.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Core\Compiler\RantLexer.cs" />
@@ -327,7 +317,6 @@
     <Compile Include="Core\Framework\RantFunctionRegistry.Loader.cs" />
     <EmbeddedResource Include="Localization\en-US.lang" />
     <EmbeddedResource Include="Localization\de-DE.lang" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -335,7 +324,6 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
