@@ -15,6 +15,10 @@ namespace Rant.Core.Constructs
         [RantDescription("Shuffle items and execute in order. Same order is used for each traversal.")]
         Cdeck,
         [RantDescription("Same item is selected each time.")]
-        Locked
+        Locked,
+		[RantDescription("Starting from the first item, iterate through all elements in order and then reverse, without repeating the boundary elements.")]
+		Ping,
+		[RantDescription("Starting from the last item, iterate through all elements backwards and then reverse, without repeating the boundary elements.")]
+		Pong
     }
 }
