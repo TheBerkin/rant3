@@ -88,5 +88,14 @@ namespace Rant.Tests
 			Assert.AreEqual("ABCDEFGH", 
 				rant.Do(@"[repeach][x:_;ordered]{A|B|C|D|E|F|G|H}").Main);
 		}
+
+		[TestCase("ordered", 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+		[TestCase("reverse", 26, "ZYXWVUTSRQPONMLKJIHGFEDCBA")]
+		[TestCase("ping", 51, "ABCDEFGHIJKLMNOPQRSTUVWXYZYXWVUTSRQPONMLKJIHGFEDCBA")]
+		[TestCase("pong", 51, "ZYXWVUTSRQPONMLKJIHGFEDCBABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+		public void Synchronizers(string mode, int reps, string expected)
+		{
+			Assert.AreEqual(expected, rant.Do($"[x:_;{mode}][r:{reps}]{{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z}}", seed: 0).Main);
+		}
     }
 }
