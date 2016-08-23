@@ -33,6 +33,12 @@ namespace Rant.Core.Constructs
 			set { _type = value; }
 		}
 
+		public int Index
+		{
+			get { return _index; }
+			set { _index = value; }
+		}
+
 		public void Reset()
 		{
 			_rng.Reset();
@@ -112,6 +118,7 @@ namespace Rant.Core.Constructs
 				case SyncType.Locked:
 				case SyncType.Deck:
 				case SyncType.Cdeck:
+					for (int i = 0; i < _state.Length; _state[i] = i++) { }
 					ScrambleSlots();
 					break;
 			}

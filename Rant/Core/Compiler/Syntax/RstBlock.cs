@@ -91,10 +91,17 @@ namespace Rant.Core.Compiler.Syntax
 				}
 			}
 
+			if (attribs.Sync?.Index == 0 && attribs.StartIndex >= 0)
+				attribs.Sync.Index = attribs.StartIndex;
+
 			sb.Blocks.Push(block);
 			for (int i = 0; i < reps; i++)
 			{
-				if (_weighted)
+				if (i == 0 && attribs.StartIndex >= 0 && attribs.Sync == null)
+				{	
+					next = attribs.StartIndex > _count ? _count - 1 : attribs.StartIndex;
+				}
+				else if (_weighted)
 				{
 					double choice = sb.RNG.NextDouble(weightSum);
 					for (int j = 0; j < _count; j++)
@@ -113,7 +120,7 @@ namespace Rant.Core.Compiler.Syntax
 				}
 
 				if (next == -1) break;
-
+				
 				block.Next(next); // Set next block index
 
 				sb.Blocks.Pop(); // Don't allow separator to access block state

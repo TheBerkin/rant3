@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Rant.Core.Stringes;
-using Rant.Localization;
 
 namespace Rant.Core.Compiler
 {
@@ -78,7 +77,7 @@ namespace Rant.Core.Compiler
 							reader.EatAny('k', 'M', 'B');
 							if (!reader.Eat(','))
 							{
-								reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), true, "Expected ',' after quantifier."); // TODO: Localize error message
+								reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), true, "err-compiler-missing-quantity-comma");
 								return true;
 							}
 						}
@@ -111,14 +110,14 @@ namespace Rant.Core.Compiler
 						}
 						if (reader.EndOfStringe)
 						{
-							reader.Error(token, true, "Unterminated regular expression."); // TODO: Localize error message
+							reader.Error(token, true, "err-compiler-incomplete-regex");
 							return false;
 						}
 						reader.Eat('i');
 						return true;
 					}, R.Regex
 				},
-                // Constant literal
+                // Verbatim string
                 {
 					reader =>
 					{
@@ -129,20 +128,18 @@ namespace Rant.Core.Compiler
 							reader.EatAll("\"\"");
 							if (reader.ReadChare() == '"') return true;
 						}
-						reader.Error(token, true, "Unterminated constant literal."); // TODO: Localize error message
+						reader.Error(token, true, "err-compiler-incomplete-verbatim");
 						return false;
-					}, R.ConstantLiteral
+					}, R.VerbatimString
 				},
 				{"[", R.LeftSquare}, {"]", R.RightSquare},
 				{"{", R.LeftCurly}, {"}", R.RightCurly},
 				{"<", R.LeftAngle}, {">", R.RightAngle},
-				{"(", R.LeftParen},
-				{")", R.RightParen},
+				{"(", R.LeftParen}, {")", R.RightParen},
 				{"|", R.Pipe},
 				{";", R.Semicolon},
 				{":", R.Colon},
 				{"@", R.At},
-				{"???", R.Undefined },
 				{"?", R.Question},
 				{"::", R.DoubleColon},
 				{"?!", R.Without},
@@ -172,10 +169,7 @@ namespace Rant.Core.Compiler
 			{
 				Origin = name
 			};
-			while (!reader.EndOfStringe)
-			{
-				yield return reader.ReadToken(Rules);
-			}
+			while (!reader.EndOfStringe) yield return reader.ReadToken(Rules);
 		}
 	}
 }

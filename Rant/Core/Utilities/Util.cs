@@ -232,14 +232,6 @@ namespace Rant.Core.Utilities
 				(noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 		}
 
-		public static string UnescapeConstantLiteral(string literal)
-		{
-			if (String.IsNullOrEmpty(literal)) return literal;
-			if (literal.StartsWith("\"")) literal = literal.Substring(1);
-			if (literal.EndsWith("\"")) literal = literal.Substring(0, literal.Length - 1);
-			return Regex.Replace(literal, @"""""", @"""");
-		}
-
 		public static bool ValidateName(string input)
 		{
 			return input.All(c => Char.IsLetterOrDigit(c) || c == '_');

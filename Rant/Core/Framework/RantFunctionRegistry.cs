@@ -98,6 +98,13 @@ namespace Rant.Core.Framework
 			sb.Output.Do(chain => chain.Last.NumberFormatter.Endianness = endianness);
 		}
 
+		[RantFunction("init")]
+		[RantDescription("Sets the index of the element to execute on the next block. Set to -1 to disable.")]
+		private static void Initial(Sandbox sb, int index)
+		{
+			sb.CurrentBlockAttribs.StartIndex = index;
+		}
+
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb,

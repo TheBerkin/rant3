@@ -49,6 +49,8 @@ err-compiler-missing-token-any-eof = "Unexpected end-of-file. One of these token
 err-compiler-unknown-sylrange-token = "Unexpected token in syllable range: {0}"
 err-compiler-empty-weight = "Empty block weight."
 err-compiler-invalid-constweight = "Invalid weight constant."
+err-compiler-incomplete-verbatim = "Incomplete verbatim string."
+err-compiler-missing-quantity-comma = "Expected comma after quantity."
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 

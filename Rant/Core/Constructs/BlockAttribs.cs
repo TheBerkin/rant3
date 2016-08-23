@@ -6,7 +6,7 @@ namespace Rant.Core.Constructs
 {
     internal class BlockAttribs
     {
-	    private int _reps;
+	    private int _reps = 1;
 
 	    public int Repetitions
 	    {
@@ -18,6 +18,7 @@ namespace Rant.Core.Constructs
 		    }
 	    }
 
+	    public int StartIndex { get; set; } = -1;
 		public bool IsSeries { get; set; }
 		public bool RepEach { get; set; }
         public RST Separator { get; set; }
@@ -28,17 +29,13 @@ namespace Rant.Core.Constructs
         public RST After { get; set; }
 		public RST End { get; set; }
         public Synchronizer Sync { get; set; }
-		public double Chance { get; set; }
-		public AttribPersistence Persistence { get; set; }
-
-        public BlockAttribs()
-        {
-	        SetDefaults();
-        }
-
+	    public double Chance { get; set; } = 100.0;
+		public AttribPersistence Persistence { get; set; } = AttribPersistence.Off;
+		
 	    public void SetDefaults()
 	    {
 			Repetitions = 1;
+		    StartIndex = -1;
 		    RepEach = false;
 		    IsSeries = false;
 			Chance = 100;

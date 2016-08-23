@@ -169,7 +169,7 @@
 		/// " ... "
 		/// Used by: Tags
 		/// </summary>
-		ConstantLiteral,
+		VerbatimString,
 		/// <summary>
 		/// Used by: Tags
 		/// </summary>

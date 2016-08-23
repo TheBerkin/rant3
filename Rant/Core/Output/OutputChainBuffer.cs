@@ -12,7 +12,7 @@ namespace Rant.Core.Output
 	{
 		private const int InitialCapacity = 256;
 		private static readonly HashSet<char> wordSepChars
-			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '"', '/', '-' });
+			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '\"', '/', '-' });
 		private static readonly HashSet<char> sentenceTerminators
 			= new HashSet<char>(new[] { '.', '?', '!' });
 
@@ -184,11 +184,20 @@ namespace Rant.Core.Output
 								CapitalizeFirstLetter(ref value);
 								break;
 							}
-
 							// If there is a previous buffer, scan the end.
 							b = _prevItem._buffer;
 						}
-
+						else if (_prevItem == null || _prevItem.Length == 0)
+						{
+							for (int i = b.Length - 1; i >= 0; i--)
+							{
+								if (Char.IsLetterOrDigit(b[i])) break;
+								if (sentenceTerminators.Contains(b[i])) break;
+								if (i == 0)
+									CapitalizeFirstLetter(ref value);
+							}
+						}
+						
 						// Scan buffer end to determine if capitalization is needed
 						for (int i = b.Length - 1; i >= 0; i--)
 						{
