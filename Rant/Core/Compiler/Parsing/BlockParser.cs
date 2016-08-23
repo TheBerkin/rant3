@@ -19,12 +19,9 @@ namespace Rant.Core.Compiler.Parsing
 			List<_<int, RST>> dynamicWeights = null;
 			var blockNumber = 0;
 			Action<RST> itemCallback = (action) => actions.Add(action);
-
-			compiler.SetNextActionCallback(itemCallback);
+			
 			compiler.AddContext(CompileContext.BlockEndSequence);
 			compiler.AddContext(CompileContext.BlockSequence);
-
-			//reader.SkipSpace();
 
 			while (compiler.NextContext == CompileContext.BlockSequence)
 			{
@@ -57,7 +54,7 @@ namespace Rant.Core.Compiler.Parsing
 						var weightActions = new List<RST>();
 
 						Action<RST> weightActionCallback = rst => weightActions.Add(rst);
-
+						
 						compiler.SetNextActionCallback(weightActionCallback);
 						compiler.AddContext(CompileContext.BlockWeight);
 						yield return Get<SequenceParser>();
@@ -71,10 +68,9 @@ namespace Rant.Core.Compiler.Parsing
 							dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
 						}
 					}
-
-					
 				}
 
+				compiler.SetNextActionCallback(itemCallback);
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
 				items.Add(new RstSequence(actions, startToken));

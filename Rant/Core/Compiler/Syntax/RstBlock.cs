@@ -113,7 +113,8 @@ namespace Rant.Core.Compiler.Syntax
 				}
 
 				if (next == -1) break;
-				block.Next(next);
+
+				block.Next(next); // Set next block index
 
 				sb.Blocks.Pop(); // Don't allow separator to access block state
 
