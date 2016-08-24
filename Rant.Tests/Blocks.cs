@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
@@ -55,7 +56,7 @@ namespace Rant.Tests
 		public void LockedSynchronizer()
 		{
 			var output =
-				rant.Do(@"[r:100][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}", seed: 0)
+				rant.Do(@"[r:1000][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}", seed: 0)
 					.Main;
 			Console.WriteLine(output);
 			Assert.IsTrue(output.Distinct().Count() == 1);
@@ -86,16 +87,26 @@ namespace Rant.Tests
 		public void EnumerateItems()
 		{
 			Assert.AreEqual("ABCDEFGH", 
-				rant.Do(@"[repeach][x:_;ordered]{A|B|C|D|E|F|G|H}").Main);
+				rant.Do(@"[repeach][x:_;forward]{A|B|C|D|E|F|G|H}").Main);
 		}
 
-		[TestCase("ordered", 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+		[TestCase("forward", 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
 		[TestCase("reverse", 26, "ZYXWVUTSRQPONMLKJIHGFEDCBA")]
 		[TestCase("ping", 51, "ABCDEFGHIJKLMNOPQRSTUVWXYZYXWVUTSRQPONMLKJIHGFEDCBA")]
 		[TestCase("pong", 51, "ZYXWVUTSRQPONMLKJIHGFEDCBABCDEFGHIJKLMNOPQRSTUVWXYZ")]
-		public void Synchronizers(string mode, int reps, string expected)
+		public void LinearSynchronizers(string mode, int reps, string expected)
 		{
 			Assert.AreEqual(expected, rant.Do($"[x:_;{mode}][r:{reps}]{{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z}}", seed: 0).Main);
+		}
+
+		[Test]
+		public void DeckSynchronizer()
+		{
+			var results = new HashSet<char>();
+			foreach (char c in rant.Do(@"[repeach][x:_;deck]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|0|1|2|3|4|5|6|7|8|9}", seed: 0).Main)
+			{
+				if (!results.Add(c)) Assert.Fail("Duplicate item found.");
+			}
 		}
     }
 }

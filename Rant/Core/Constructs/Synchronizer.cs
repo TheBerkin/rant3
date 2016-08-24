@@ -107,7 +107,7 @@ namespace Rant.Core.Constructs
 		{
 			switch (_type)
 			{
-				case SyncType.Ordered:
+				case SyncType.Forward:
 				case SyncType.Ping:
 					for (int i = 0; i < _state.Length; _state[i] = i++) { }
 					break;
