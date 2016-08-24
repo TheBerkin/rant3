@@ -49,7 +49,7 @@ err-compiler-missing-token-any-eof = "Unerwartetes Dateiende. Eines dieser Token
 err-compiler-unknown-sylrange-token = "Unerwartetes Token in Silbenbereich gefunden: {0}"
 err-compiler-empty-weight = "Leeres Blockelementgewicht."
 err-compiler-invalid-constweight = "Ungültige Gewichtskonstante. Sie muss eine positive Zahl sein."
-err-compiler-incomplete-verbatim = "Unvollständige wortwörtliche Zeichenkette."
+err-compiler-incomplete-verbatim = "Unvollständiges wörtliches Zeichenkettenliteral."
 err-compiler-missing-quantity-comma = "Komma nach der Anzahl erwartet."
 
 err-runtime-invalid-dynamic-weight = "Vorlage für dynamisches Blockelementgewicht hat einen ungültigen Gewichtswert zurückgegeben: '{0}'"

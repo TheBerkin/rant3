@@ -8,10 +8,10 @@ namespace Rant.Core.Constructs
 		None,
 		[RantDescription("Executes from left to right.")]
 		Forward,
-		//[RantDescription("Executes from left to right, but randomly skips elements. This mode can reduce the iteration count when using [repeach].")]
-		//ForwardSkip,
 		[RantDescription("Executes from right to left.")]
 		Reverse,
+		//[RantDescription("Executes from left to right, but randomly skips elements. This mode can reduce the iteration count when using [repeach].")]
+		//ForwardSkip,
 		//[RantDescription("Executes from right to left, but randomly skips elements. This mode can reduce the iteration count when using [repeach].")]
 		//ReverseSkip,
 		[RantDescription("Shuffles items and executes in order. Re-shuffled each time all items are used up.")]
