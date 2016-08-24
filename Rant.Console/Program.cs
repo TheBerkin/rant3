@@ -106,7 +106,11 @@ namespace RantConsole
                 ForegroundColor = Flag("nsfw") ? ConsoleColor.DarkRed : ConsoleColor.Gray;
                 Write("RANT> "); // real number symbol
                 ForegroundColor = ConsoleColor.White;
-                PrintOutput(rant, ReadLine());
+                string input = ReadLine();
+                if(input == null) {
+                    return;
+                }
+                PrintOutput(rant, input);
             }
         }
 
