@@ -103,6 +103,7 @@ namespace Rant.Core.IO.Bson
 		/// Writes this document as BSON to the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream that will be written to.</param>
+		/// <param name="includeStringTable">Specifies whether to include the string table.</param>
 		public void Write(Stream stream, bool includeStringTable = false)
 		{
 			var memoryStream = new MemoryStream();
@@ -204,6 +205,7 @@ namespace Rant.Core.IO.Bson
 		/// This will return the string table key instead if it's enabled.
 		/// </summary>
 		/// <param name="name">The name of the key.</param>
+		/// <param name="value">Determines whether the original key string should be used.</param>
 		/// <returns>The correct name for the provided key.</returns>
 		private string GetKeyName(string name, bool value = false)
 		{
@@ -240,6 +242,8 @@ namespace Rant.Core.IO.Bson
 		/// Reads a BSON document from the specified EasyReader.
 		/// </summary>
 		/// <param name="reader">The reader that will be used to read this document.</param>
+		/// <param name="parent">The parent document.</param>
+		/// <param name="inArray">Specifies whether the document belongs to an array.</param>
 		/// <returns>The document that was read.</returns>
 		internal static BsonDocument Read(EasyReader reader, BsonDocument parent = null, bool inArray = false)
 		{

@@ -66,6 +66,23 @@ namespace Rant.Core.Stringes
 			}
 		}
 
+		private bool Equals(Chare other)
+		{
+			return Character == other.Character;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			return obj is Chare && Equals((Chare)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Character.GetHashCode();
+		}
+
 		private void SetLineCol()
 		{
 			_line = Source.Line;

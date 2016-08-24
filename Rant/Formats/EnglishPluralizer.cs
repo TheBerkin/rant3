@@ -80,6 +80,11 @@ namespace Rant.Formats
 			"chinese"
 		};
 
+		/// <summary>
+		/// Determines the plural form of the specified English noun.
+		/// </summary>
+		/// <param name="input">The singular form of the noun to pluralize.</param>
+		/// <returns></returns>
 		public override string Pluralize(string input)
 		{
 			if (Util.IsNullOrWhiteSpace(input)) return input;

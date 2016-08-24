@@ -255,6 +255,7 @@ namespace Rant.Core.IO
 		/// </summary>
 		/// <param name="value">The string to write to the stream.</param>
 		/// <param name="encoding">The encoding to write the string in.</param>
+		/// <param name="nullTerminated">Specifies whether the string should be null-terminated.</param>
 		public EasyWriter Write(string value, Encoding encoding, bool nullTerminated = false)
 		{
 			var bytes = encoding.GetBytes(value);

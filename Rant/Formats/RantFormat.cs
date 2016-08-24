@@ -41,6 +41,12 @@ namespace Rant.Formats
 			Culture = culture;
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture, standard space, and alphabet.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="stdSpace">The standard space character to use.</param>
+		/// <param name="letters">The alphabet to use with the format.</param>
 		public RantFormat(CultureInfo culture, char stdSpace, IEnumerable<char> letters)
 		{
 			Culture = culture;
@@ -48,6 +54,16 @@ namespace Rant.Formats
 			LettersInternal = letters.ToArray();
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, and quotation marks.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="stdSpace">The standard space character to use.</param>
+		/// <param name="letters">The alphabet to use with the format.</param>
+		/// <param name="openingPrimaryQuote">The opening primary quotation mark to use.</param>
+		/// <param name="closingPrimaryQuote">The closing primary quotation mark to use.</param>
+		/// <param name="openingSecondaryQuote">The opening secondary quotation mark to use.</param>
+		/// <param name="closingSecondaryQuote">The closing secondary quotation mark to use.</param>
 		public RantFormat(CultureInfo culture, char stdSpace, IEnumerable<char> letters,
 			char openingPrimaryQuote, char closingPrimaryQuote, char openingSecondaryQuote, char closingSecondaryQuote)
 		{
@@ -60,12 +76,23 @@ namespace Rant.Formats
 			ClosingSecondaryQuote = closingSecondaryQuote;
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture and title case exclusion list.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
 		public RantFormat(CultureInfo culture, IEnumerable<string> titleCaseExclusions)
 		{
 			Culture = culture;
 			foreach (string word in titleCaseExclusions) TitleCaseExclusions.Add(word);
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture, title case exclusion list, and pluralizer.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
+		/// <param name="pluralizer">The pluralizer to use.</param>
 		public RantFormat(CultureInfo culture, IEnumerable<string> titleCaseExclusions, Pluralizer pluralizer)
 		{
 			Culture = culture;
@@ -73,6 +100,17 @@ namespace Rant.Formats
 			Pluralizer = pluralizer;
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, and title case exclusion list.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="stdSpace">The standard space character to use.</param>
+		/// <param name="letters">The alphabet to use with the format.</param>
+		/// <param name="openingPrimaryQuote">The opening primary quotation mark to use.</param>
+		/// <param name="closingPrimaryQuote">The closing primary quotation mark to use.</param>
+		/// <param name="openingSecondaryQuote">The opening secondary quotation mark to use.</param>
+		/// <param name="closingSecondaryQuote">The closing secondary quotation mark to use.</param>
+		/// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
 		public RantFormat(CultureInfo culture, char stdSpace, IEnumerable<char> letters,
 			char openingPrimaryQuote, char closingPrimaryQuote, char openingSecondaryQuote, char closingSecondaryQuote,
 			IEnumerable<string> titleCaseExclusions)
@@ -87,6 +125,18 @@ namespace Rant.Formats
 			foreach (string word in titleCaseExclusions) TitleCaseExclusions.Add(word);
 		}
 
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, title case exclusion list, and pluralizer.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
+		/// <param name="stdSpace">The standard space character to use.</param>
+		/// <param name="letters">The alphabet to use with the format.</param>
+		/// <param name="openingPrimaryQuote">The opening primary quotation mark to use.</param>
+		/// <param name="closingPrimaryQuote">The closing primary quotation mark to use.</param>
+		/// <param name="openingSecondaryQuote">The opening secondary quotation mark to use.</param>
+		/// <param name="closingSecondaryQuote">The closing secondary quotation mark to use.</param>
+		/// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
+		/// <param name="pluralizer">The pluralizer to use.</param>
 		public RantFormat(CultureInfo culture, char stdSpace, IEnumerable<char> letters,
 			char openingPrimaryQuote, char closingPrimaryQuote, char openingSecondaryQuote, char closingSecondaryQuote,
 			IEnumerable<string> titleCaseExclusions, Pluralizer pluralizer)
