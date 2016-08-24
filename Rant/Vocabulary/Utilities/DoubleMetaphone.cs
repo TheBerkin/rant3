@@ -34,8 +34,8 @@ namespace Rant.Vocabulary.Utilities
 	/// </summary>
 	/// <remarks>
 	/// Original C++ implementation:
-	///		"Double Metaphone (c) 1998, 1999 by Lawrence Philips"
-	///		http://www.ddj.com/cpp/184401251?pgno=1
+	/// "Double Metaphone (c) 1998, 1999 by Lawrence Philips"
+	/// http://www.ddj.com/cpp/184401251?pgno=1
 	/// </remarks>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Metaphone")]
 	internal static class DoubleMetaphoneStringExtension
@@ -45,7 +45,7 @@ namespace Rant.Vocabulary.Utilities
 		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static string GenerateDoubleMetaphone(this string self)
 		{
-			MetaphoneData metaphoneData = new MetaphoneData();
+			var metaphoneData = new MetaphoneData();
 			int current = 0;
 
 			if (self.Length < 1)
@@ -56,8 +56,9 @@ namespace Rant.Vocabulary.Utilities
 
 			string workingString = self.ToUpperInvariant() + "     ";
 
-			bool isSlavoGermanic = (self.IndexOf('W') > -1) || (self.IndexOf('K') > -1) || (self.IndexOf("CZ", StringComparison.OrdinalIgnoreCase) > -1)
-				|| (self.IndexOf("WITZ", StringComparison.OrdinalIgnoreCase) > -1);
+			bool isSlavoGermanic = (self.IndexOf('W') > -1) || (self.IndexOf('K') > -1) ||
+			                       (self.IndexOf("CZ", StringComparison.OrdinalIgnoreCase) > -1)
+			                       || (self.IndexOf("WITZ", StringComparison.OrdinalIgnoreCase) > -1);
 
 			//skip these when at start of word
 			if (workingString.StartsWith(StringComparison.OrdinalIgnoreCase, "GN", "KN", "PN", "WR", "PS"))
@@ -117,7 +118,9 @@ namespace Rant.Vocabulary.Utilities
 					case 'C':
 						//various germanic
 						if ((current > 1) && !IsVowel(workingString[current - 2]) && StringAt(workingString, (current - 1), "ACH")
-							&& ((workingString[current + 2] != 'I') && ((workingString[current + 2] != 'E') || StringAt(workingString, (current - 2), "BACHER", "MACHER"))))
+						    &&
+						    ((workingString[current + 2] != 'I') &&
+						     ((workingString[current + 2] != 'E') || StringAt(workingString, (current - 2), "BACHER", "MACHER"))))
 						{
 							metaphoneData.Add("K");
 							current += 2;
@@ -151,8 +154,10 @@ namespace Rant.Vocabulary.Utilities
 							}
 
 							//greek roots e.g. 'chemistry', 'chorus'
-							if ((current == 0) && (StringAt(workingString, (current + 1), "HARAC", "HARIS") || StringAt(workingString, (current + 1), "HOR", "HYM", "HIA", "HEM"))
-								&& !StringAt(workingString, 0, "CHORE"))
+							if ((current == 0) &&
+							    (StringAt(workingString, (current + 1), "HARAC", "HARIS") ||
+							     StringAt(workingString, (current + 1), "HOR", "HYM", "HIA", "HEM"))
+							    && !StringAt(workingString, 0, "CHORE"))
 							{
 								metaphoneData.Add("K");
 								current += 2;
@@ -160,10 +165,14 @@ namespace Rant.Vocabulary.Utilities
 							}
 
 							//germanic, greek, or otherwise 'ch' for 'kh' sound
-							if ((StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH")) // 'architect but not 'arch', 'orchestra', 'orchid'
-								|| StringAt(workingString, (current - 2), "ORCHES", "ARCHIT", "ORCHID") || StringAt(workingString, (current + 2), "T", "S")
-									|| ((StringAt(workingString, (current - 1), "A", "O", "U", "E") || (current == 0)) //e.g., 'wachtler', 'wechsler', but not 'tichner'
-										&& StringAt(workingString, (current + 2), "L", "R", "N", "M", "B", "H", "F", "V", "W", " ")))
+							if ((StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH"))
+								// 'architect but not 'arch', 'orchestra', 'orchid'
+							    || StringAt(workingString, (current - 2), "ORCHES", "ARCHIT", "ORCHID") ||
+							    StringAt(workingString, (current + 2), "T", "S")
+							    ||
+							    ((StringAt(workingString, (current - 1), "A", "O", "U", "E") || (current == 0))
+								    //e.g., 'wachtler', 'wechsler', but not 'tichner'
+							     && StringAt(workingString, (current + 2), "L", "R", "N", "M", "B", "H", "F", "V", "W", " ")))
 							{
 								metaphoneData.Add("K");
 							}
@@ -212,7 +221,8 @@ namespace Rant.Vocabulary.Utilities
 							if (StringAt(workingString, (current + 2), "I", "E", "H") && !StringAt(workingString, (current + 2), "HU"))
 							{
 								//'accident', 'accede' 'succeed'
-								if (((current == 1) && (workingString[current - 1] == 'A')) || StringAt(workingString, (current - 1), "UCCEE", "UCCES"))
+								if (((current == 1) && (workingString[current - 1] == 'A')) ||
+								    StringAt(workingString, (current - 1), "UCCEE", "UCCES"))
 								{
 									metaphoneData.Add("KS");
 								}
@@ -224,13 +234,10 @@ namespace Rant.Vocabulary.Utilities
 								current += 3;
 								break;
 							}
-							else
-							{
-								//Pierce's rule
-								metaphoneData.Add("K");
-								current += 2;
-								break;
-							}
+							//Pierce's rule
+							metaphoneData.Add("K");
+							current += 2;
+							break;
 						}
 
 						if (StringAt(workingString, current, "CK", "CG", "CQ"))
@@ -283,13 +290,10 @@ namespace Rant.Vocabulary.Utilities
 								current += 3;
 								break;
 							}
-							else
-							{
-								//e.g. 'edgar'
-								metaphoneData.Add("TK");
-								current += 2;
-								break;
-							}
+							//e.g. 'edgar'
+							metaphoneData.Add("TK");
+							current += 2;
+							break;
 						}
 
 						if (StringAt(workingString, current, "DT", "DD"))
@@ -345,27 +349,25 @@ namespace Rant.Vocabulary.Utilities
 							}
 							//Parker's rule (with some further refinements) - e.g., 'hugh'
 							if (((current > 1) && StringAt(workingString, (current - 2), "B", "H", "D")) //e.g., 'bough'
-								|| ((current > 2) && StringAt(workingString, (current - 3), "B", "H", "D")) //e.g., 'broughton'
-									|| ((current > 3) && StringAt(workingString, (current - 4), "B", "H")))
+							    || ((current > 2) && StringAt(workingString, (current - 3), "B", "H", "D")) //e.g., 'broughton'
+							    || ((current > 3) && StringAt(workingString, (current - 4), "B", "H")))
 							{
 								current += 2;
 								break;
 							}
-							else
+							//e.g., 'laugh', 'McLaughlin', 'cough', 'gough', 'rough', 'tough'
+							if ((current > 2) && (workingString[current - 1] == 'U') &&
+							    StringAt(workingString, (current - 3), "C", "G", "L", "R", "T"))
 							{
-								//e.g., 'laugh', 'McLaughlin', 'cough', 'gough', 'rough', 'tough'
-								if ((current > 2) && (workingString[current - 1] == 'U') && StringAt(workingString, (current - 3), "C", "G", "L", "R", "T"))
-								{
-									metaphoneData.Add("F");
-								}
-								else if ((current > 0) && workingString[current - 1] != 'I')
-								{
-									metaphoneData.Add("K");
-								}
+								metaphoneData.Add("F");
+							}
+							else if ((current > 0) && workingString[current - 1] != 'I')
+							{
+								metaphoneData.Add("K");
+							}
 
-								current += 2;
-								break;
-							}
+							current += 2;
+							break;
 						}
 
 						if (workingString[current + 1] == 'N')
@@ -375,15 +377,15 @@ namespace Rant.Vocabulary.Utilities
 								metaphoneData.Add("KN", "N");
 							}
 							else
-								//not e.g. 'cagney'
+							//not e.g. 'cagney'
 								if (!StringAt(workingString, (current + 2), "EY") && (workingString[current + 1] != 'Y') && !isSlavoGermanic)
-							{
-								metaphoneData.Add("N", "KN");
-							}
-							else
-							{
-								metaphoneData.Add("KN");
-							}
+								{
+									metaphoneData.Add("N", "KN");
+								}
+								else
+								{
+									metaphoneData.Add("KN");
+								}
 							current += 2;
 							break;
 						}
@@ -398,7 +400,9 @@ namespace Rant.Vocabulary.Utilities
 
 						//-ges-,-gep-,-gel-, -gie- at beginning
 						if ((current == 0)
-							&& ((workingString[current + 1] == 'Y') || StringAt(workingString, (current + 1), "ES", "EP", "EB", "EL", "EY", "IB", "IL", "IN", "IE", "EI", "ER")))
+						    &&
+						    ((workingString[current + 1] == 'Y') ||
+						     StringAt(workingString, (current + 1), "ES", "EP", "EB", "EL", "EY", "IB", "IL", "IN", "IE", "EI", "ER")))
 						{
 							metaphoneData.Add("K", "J");
 							current += 2;
@@ -406,8 +410,9 @@ namespace Rant.Vocabulary.Utilities
 						}
 
 						// -ger-,  -gy-
-						if ((StringAt(workingString, (current + 1), "ER") || (workingString[current + 1] == 'Y')) && !StringAt(workingString, 0, "DANGER", "RANGER", "MANGER")
-							&& !StringAt(workingString, (current - 1), "E", "I") && !StringAt(workingString, (current - 1), "RGY", "OGY"))
+						if ((StringAt(workingString, (current + 1), "ER") || (workingString[current + 1] == 'Y')) &&
+						    !StringAt(workingString, 0, "DANGER", "RANGER", "MANGER")
+						    && !StringAt(workingString, (current - 1), "E", "I") && !StringAt(workingString, (current - 1), "RGY", "OGY"))
 						{
 							metaphoneData.Add("K", "J");
 							current += 2;
@@ -415,23 +420,25 @@ namespace Rant.Vocabulary.Utilities
 						}
 
 						// italian e.g, 'biaggi'
-						if (StringAt(workingString, (current + 1), "E", "I", "Y") || StringAt(workingString, (current - 1), "AGGI", "OGGI"))
+						if (StringAt(workingString, (current + 1), "E", "I", "Y") ||
+						    StringAt(workingString, (current - 1), "AGGI", "OGGI"))
 						{
 							//obvious germanic
-							if ((StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH")) || StringAt(workingString, (current + 1), "ET"))
+							if ((StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH")) ||
+							    StringAt(workingString, (current + 1), "ET"))
 							{
 								metaphoneData.Add("K");
 							}
 							else
-								//always soft if french ending
+							//always soft if french ending
 								if (StringAt(workingString, (current + 1), "IER "))
-							{
-								metaphoneData.Add("J");
-							}
-							else
-							{
-								metaphoneData.Add("J", "K");
-							}
+								{
+									metaphoneData.Add("J");
+								}
+								else
+								{
+									metaphoneData.Add("J", "K");
+								}
 							current += 2;
 							break;
 						}
@@ -481,19 +488,21 @@ namespace Rant.Vocabulary.Utilities
 							metaphoneData.Add("J", "A"); //Yankelovich/Jankelowicz
 						}
 						else
-							//spanish pron. of e.g. 'bajador'
-							if (IsVowel(workingString[current - 1]) && !isSlavoGermanic && ((workingString[current + 1] == 'A') || (workingString[current + 1] == 'O')))
-						{
-							metaphoneData.Add("J", "H");
-						}
-						else if (current == last)
-						{
-							metaphoneData.Add("J", " ");
-						}
-						else if (!StringAt(workingString, (current + 1), "L", "T", "K", "S", "N", "M", "B", "Z") && !StringAt(workingString, (current - 1), "S", "K", "L"))
-						{
-							metaphoneData.Add("J");
-						}
+						//spanish pron. of e.g. 'bajador'
+							if (IsVowel(workingString[current - 1]) && !isSlavoGermanic &&
+							    ((workingString[current + 1] == 'A') || (workingString[current + 1] == 'O')))
+							{
+								metaphoneData.Add("J", "H");
+							}
+							else if (current == last)
+							{
+								metaphoneData.Add("J", " ");
+							}
+							else if (!StringAt(workingString, (current + 1), "L", "T", "K", "S", "N", "M", "B", "Z") &&
+							         !StringAt(workingString, (current - 1), "S", "K", "L"))
+							{
+								metaphoneData.Add("J");
+							}
 
 						if (workingString[current + 1] == 'J') //it could happen!
 						{
@@ -522,7 +531,9 @@ namespace Rant.Vocabulary.Utilities
 						{
 							//spanish e.g. 'cabrillo', 'gallegos'
 							if (((current == (self.Length - 3)) && StringAt(workingString, (current - 1), "ILLO", "ILLA", "ALLE"))
-								|| ((StringAt(workingString, (last - 1), "AS", "OS") || StringAt(workingString, last, "A", "O")) && StringAt(workingString, (current - 1), "ALLE")))
+							    ||
+							    ((StringAt(workingString, (last - 1), "AS", "OS") || StringAt(workingString, last, "A", "O")) &&
+							     StringAt(workingString, (current - 1), "ALLE")))
 							{
 								metaphoneData.Add("L", " ");
 								current += 2;
@@ -538,8 +549,9 @@ namespace Rant.Vocabulary.Utilities
 						break;
 
 					case 'M':
-						if ((StringAt(workingString, (current - 1), "UMB") && (((current + 1) == last) || StringAt(workingString, (current + 2), "ER"))) //'dumb','thumb'
-							|| (workingString[current + 1] == 'M'))
+						if ((StringAt(workingString, (current - 1), "UMB") &&
+						     (((current + 1) == last) || StringAt(workingString, (current + 2), "ER"))) //'dumb','thumb'
+						    || (workingString[current + 1] == 'M'))
 						{
 							current += 2;
 						}
@@ -601,7 +613,8 @@ namespace Rant.Vocabulary.Utilities
 
 					case 'R':
 						//french e.g. 'rogier', but exclude 'hochmeier'
-						if ((current == last) && !isSlavoGermanic && StringAt(workingString, (current - 2), "IE") && !StringAt(workingString, (current - 4), "ME", "MA"))
+						if ((current == last) && !isSlavoGermanic && StringAt(workingString, (current - 2), "IE") &&
+						    !StringAt(workingString, (current - 4), "ME", "MA"))
 						{
 							metaphoneData.Add("", "R");
 						}
@@ -668,7 +681,8 @@ namespace Rant.Vocabulary.Utilities
 
 						//german & anglicisations, e.g. 'smith' match 'schmidt', 'snider' match 'schneider'
 						//also, -sz- in slavic language altho in hungarian it is pronounced 's'
-						if (((current == 0) && StringAt(workingString, (current + 1), "M", "N", "L", "W")) || StringAt(workingString, (current + 1), "Z"))
+						if (((current == 0) && StringAt(workingString, (current + 1), "M", "N", "L", "W")) ||
+						    StringAt(workingString, (current + 1), "Z"))
 						{
 							metaphoneData.Add("S", "X");
 							if (StringAt(workingString, (current + 1), "Z"))
@@ -702,19 +716,16 @@ namespace Rant.Vocabulary.Utilities
 									current += 3;
 									break;
 								}
+								if ((current == 0) && !IsVowel(workingString[3]) && (workingString[3] != 'W'))
+								{
+									metaphoneData.Add("X", "S");
+								}
 								else
 								{
-									if ((current == 0) && !IsVowel(workingString[3]) && (workingString[3] != 'W'))
-									{
-										metaphoneData.Add("X", "S");
-									}
-									else
-									{
-										metaphoneData.Add("X");
-									}
-									current += 3;
-									break;
+									metaphoneData.Add("X");
 								}
+								current += 3;
+								break;
 							}
 
 							if (StringAt(workingString, (current + 2), "I", "E", "Y"))
@@ -767,7 +778,8 @@ namespace Rant.Vocabulary.Utilities
 						if (StringAt(workingString, current, "TH") || StringAt(workingString, current, "TTH"))
 						{
 							//special case 'thomas', 'thames' or germanic
-							if (StringAt(workingString, (current + 2), "OM", "AM") || StringAt(workingString, 0, "VAN ", "VON ") || StringAt(workingString, 0, "SCH"))
+							if (StringAt(workingString, (current + 2), "OM", "AM") || StringAt(workingString, 0, "VAN ", "VON ") ||
+							    StringAt(workingString, 0, "SCH"))
 							{
 								metaphoneData.Add("T");
 							}
@@ -826,8 +838,9 @@ namespace Rant.Vocabulary.Utilities
 						}
 
 						//Arnow should match Arnoff
-						if (((current == last) && IsVowel(workingString[current - 1])) || StringAt(workingString, (current - 1), "EWSKI", "EWSKY", "OWSKI", "OWSKY")
-							|| StringAt(workingString, 0, "SCH"))
+						if (((current == last) && IsVowel(workingString[current - 1])) ||
+						    StringAt(workingString, (current - 1), "EWSKI", "EWSKY", "OWSKI", "OWSKY")
+						    || StringAt(workingString, 0, "SCH"))
 						{
 							metaphoneData.Add("", "F");
 							current += 1;
@@ -848,7 +861,9 @@ namespace Rant.Vocabulary.Utilities
 
 					case 'X':
 						//french e.g. breaux
-						if (!((current == last) && (StringAt(workingString, (current - 3), "IAU", "EAU") || StringAt(workingString, (current - 2), "AU", "OU"))))
+						if (
+							!((current == last) &&
+							  (StringAt(workingString, (current - 3), "IAU", "EAU") || StringAt(workingString, (current - 2), "AU", "OU"))))
 						{
 							metaphoneData.Add("KS");
 						}
@@ -871,7 +886,8 @@ namespace Rant.Vocabulary.Utilities
 							current += 2;
 							break;
 						}
-						else if (StringAt(workingString, (current + 1), "ZO", "ZI", "ZA") || (isSlavoGermanic && ((current > 0) && workingString[current - 1] != 'T')))
+						if (StringAt(workingString, (current + 1), "ZO", "ZI", "ZA") ||
+						    (isSlavoGermanic && ((current > 0) && workingString[current - 1] != 'T')))
 						{
 							metaphoneData.Add("S", "TS");
 						}
@@ -899,14 +915,12 @@ namespace Rant.Vocabulary.Utilities
 			return metaphoneData.ToString();
 		}
 
-
-		static bool IsVowel(this char self)
+		private static bool IsVowel(this char self)
 		{
 			return (self == 'A') || (self == 'E') || (self == 'I') || (self == 'O') || (self == 'U') || (self == 'Y');
 		}
 
-
-		static bool StartsWith(this string self, StringComparison comparison, params string[] strings)
+		private static bool StartsWith(this string self, StringComparison comparison, params string[] strings)
 		{
 			foreach (string str in strings)
 			{
@@ -918,7 +932,7 @@ namespace Rant.Vocabulary.Utilities
 			return false;
 		}
 
-		static bool StringAt(this string self, int startIndex, params string[] strings)
+		private static bool StringAt(this string self, int startIndex, params string[] strings)
 		{
 			if (startIndex < 0)
 			{
@@ -935,34 +949,10 @@ namespace Rant.Vocabulary.Utilities
 			return false;
 		}
 
-
 		internal class MetaphoneData
 		{
-			readonly StringBuilder _primary = new StringBuilder(5);
-			readonly StringBuilder _secondary = new StringBuilder(5);
-
-
-			#region Properties
-
-			internal bool Alternative { get; set; }
-			internal int PrimaryLength
-			{
-				get
-				{
-					return _primary.Length;
-				}
-			}
-
-			internal int SecondaryLength
-			{
-				get
-				{
-					return _secondary.Length;
-				}
-			}
-
-			#endregion
-
+			private readonly StringBuilder _primary = new StringBuilder(5);
+			private readonly StringBuilder _secondary = new StringBuilder(5);
 
 			internal void Add(string main)
 			{
@@ -1008,6 +998,22 @@ namespace Rant.Vocabulary.Utilities
 
 				return ret;
 			}
+
+			#region Properties
+
+			internal bool Alternative { get; set; }
+
+			internal int PrimaryLength
+			{
+				get { return _primary.Length; }
+			}
+
+			internal int SecondaryLength
+			{
+				get { return _secondary.Length; }
+			}
+
+			#endregion
 		}
 	}
 }

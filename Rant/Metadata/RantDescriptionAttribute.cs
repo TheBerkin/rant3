@@ -7,11 +7,11 @@ namespace Rant.Metadata
 	/// </summary>
 	internal class RantDescriptionAttribute : Attribute
 	{
-		public string Description { get; set; }
-
 		public RantDescriptionAttribute(string desc)
 		{
 			Description = desc;
 		}
+
+		public string Description { get; set; }
 	}
 }

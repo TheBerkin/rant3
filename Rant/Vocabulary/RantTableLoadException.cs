@@ -9,6 +9,15 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantTableLoadException : Exception
 	{
+		internal RantTableLoadException(string origin, Stringe token, string message)
+			: base($"{origin}: (Ln {token.Line}, Col {token.Column}) {message}")
+		{
+			Line = token.Line;
+			Column = token.Column;
+			Offset = token.Offset;
+			Origin = origin;
+		}
+
 		/// <summary>
 		/// Gets the line number on which the error occurred.
 		/// </summary>
@@ -28,14 +37,5 @@ namespace Rant.Vocabulary
 		/// Gets a string describing where the table was loaded from. For tables loaded from disk, this will be the file path.
 		/// </summary>
 		public string Origin { get; }
-
-		internal RantTableLoadException(string origin, Stringe token, string message)
-			: base($"{origin}: (Ln {token.Line}, Col {token.Column}) {message}")
-		{
-			Line = token.Line;
-			Column = token.Column;
-			Offset = token.Offset;
-			Origin = origin;
-		}
 	}
 }

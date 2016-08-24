@@ -8,7 +8,8 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class SequenceParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			Token<R> token;
 

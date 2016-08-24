@@ -16,7 +16,9 @@ namespace Rant.Localization
 		public const string LanguageResourceNamespace = "Rant.Localization";
 		public const string FallbackLanguageCode = "en-US";
 
-		private static readonly Dictionary<string, Dictionary<string, string>> _languages = new Dictionary<string, Dictionary<string, string>>();
+		private static readonly Dictionary<string, Dictionary<string, string>> _languages =
+			new Dictionary<string, Dictionary<string, string>>();
+
 		private static Dictionary<string, string> _currentTable = new Dictionary<string, string>();
 		private static string _langName = CultureInfo.CurrentCulture.Name;
 
@@ -25,7 +27,7 @@ namespace Rant.Localization
 			try
 			{
 				var ass = Assembly.GetExecutingAssembly();
-				var lang = CultureInfo.CurrentCulture.Name;
+				string lang = CultureInfo.CurrentCulture.Name;
 				using (var stream =
 					ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{CultureInfo.CurrentCulture.Name}.lang")
 					?? ass.GetManifestResourceStream($"{LanguageResourceNamespace}.{lang = FallbackLanguageCode}.lang"))
@@ -60,13 +62,13 @@ namespace Rant.Localization
 				loop:
 				while (!reader.EndOfStream)
 				{
-					var line = reader.ReadLine();
+					string line = reader.ReadLine();
 					if (line == null || line.Length == 0) continue;
 					var kv = line.Split(new[] { '=' }, 2);
 					if (kv.Length != 2) continue;
-					var key = kv[0].Trim();
-					if (!key.All(c => Char.IsLetterOrDigit(c) || c == '-' || c == '_')) continue;
-					var valueLiteral = kv[1].Trim();
+					string key = kv[0].Trim();
+					if (!key.All(c => char.IsLetterOrDigit(c) || c == '-' || c == '_')) continue;
+					string valueLiteral = kv[1].Trim();
 					var sb = new StringBuilder();
 					int i = 0;
 					int len = valueLiteral.Length;
@@ -81,49 +83,49 @@ namespace Rant.Localization
 						switch (valueLiteral[i])
 						{
 							case '\\':
+							{
+								if (i == valueLiteral.Length - 1) goto loop;
+								switch (valueLiteral[i + 1])
 								{
-									if (i == valueLiteral.Length - 1) goto loop;
-									switch (valueLiteral[i + 1])
+									case 'a':
+										sb.Append('\a');
+										break;
+									case 'b':
+										sb.Append('\b');
+										break;
+									case 'f':
+										sb.Append('\f');
+										break;
+									case 'n':
+										sb.Append('\n');
+										break;
+									case 'r':
+										sb.Append('\r');
+										break;
+									case 't':
+										sb.Append('\t');
+										break;
+									case 'v':
+										sb.Append('\v');
+										break;
+									case 'u':
 									{
-										case 'a':
-											sb.Append('\a');
-											break;
-										case 'b':
-											sb.Append('\b');
-											break;
-										case 'f':
-											sb.Append('\f');
-											break;
-										case 'n':
-											sb.Append('\n');
-											break;
-										case 'r':
-											sb.Append('\r');
-											break;
-										case 't':
-											sb.Append('\t');
-											break;
-										case 'v':
-											sb.Append('\v');
-											break;
-										case 'u':
-											{
-												if (i + 5 >= valueLiteral.Length) goto loop;
-												short code;
-												if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
-													NumberStyles.AllowHexSpecifier,
-													CultureInfo.InvariantCulture, out code)) goto loop;
-												sb.Append((char)code);
-												i += 6;
-												continue;
-											}
-										default:
-											sb.Append(valueLiteral[i + 1]);
-											break;
+										if (i + 5 >= valueLiteral.Length) goto loop;
+										short code;
+										if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
+											NumberStyles.AllowHexSpecifier,
+											CultureInfo.InvariantCulture, out code)) goto loop;
+										sb.Append((char)code);
+										i += 6;
+										continue;
 									}
-									i += 2;
-									continue;
+									default:
+										sb.Append(valueLiteral[i + 1]);
+										break;
 								}
+								i += 2;
+								continue;
+							}
 							default:
 								sb.Append(valueLiteral[i]);
 								break;
@@ -145,7 +147,9 @@ namespace Rant.Localization
 				Dictionary<string, string> table;
 				if (!_languages.TryGetValue(_langName, out table))
 				{
-					using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{_langName}.lang"))
+					using (
+						var stream =
+							Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{_langName}.lang"))
 					{
 						if (stream == null) return;
 						table = new Dictionary<string, string>();
@@ -180,7 +184,7 @@ namespace Rant.Localization
 			string str;
 			try
 			{
-				return _currentTable.TryGetValue(name, out str) ? String.Format(str, args) : name;
+				return _currentTable.TryGetValue(name, out str) ? string.Format(str, args) : name;
 			}
 			catch
 			{

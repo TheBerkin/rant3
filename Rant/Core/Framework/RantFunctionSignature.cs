@@ -6,6 +6,7 @@ using System.Text;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.IO;
+using Rant.Core.ObjectModel;
 using Rant.Core.Utilities;
 using Rant.Metadata;
 
@@ -17,24 +18,7 @@ namespace Rant.Core.Framework
 	internal class RantFunctionSignature : IRantFunction
 	{
 		private readonly Witchcraft _delegate;
-		private readonly RantFunctionParameter[] _params;
-		private readonly ParameterInfo[] _rawParams;
-		private readonly MethodInfo _rawMethod;
-
-		public RantFunctionParameter[] Parameters => _params;
-
-		public ParameterInfo[] RawParameters => _rawParams;
-
-		public string Name { get; }
-		public string Description { get; }
-		public bool HasParamArray { get; }
-
-		public int ParamCount => _params.Length;
-
-		public IEnumerable<IRantParameter> GetParameters() => _params;
-
 		public bool TreatAsRichardFunction = false;
-		public MethodInfo RawMethod => _rawMethod;
 
 		public RantFunctionSignature(string name, string description, MethodInfo method)
 		{
@@ -42,7 +26,7 @@ namespace Rant.Core.Framework
 			if (method == null) throw new ArgumentNullException(nameof(method));
 			if (!method.IsStatic) throw new ArgumentException($"({method.Name}) Method is not static.");
 
-			_rawMethod = method;
+			RawMethod = method;
 
 			var parameters = method.GetParameters();
 			if (!parameters.Any())
@@ -51,8 +35,8 @@ namespace Rant.Core.Framework
 				throw new ArgumentException($"({method.Name}) The first parameter must be of type '{typeof(Sandbox)}'.");
 
 			// Sort out the parameter types for the function
-			_params = new RantFunctionParameter[parameters.Length - 1];
-			_rawParams = parameters;
+			Parameters = new RantFunctionParameter[parameters.Length - 1];
+			RawParameters = parameters;
 			Type type;
 			RantFunctionParameterType rantType;
 			for (int i = 1; i < parameters.Length; i++)
@@ -80,21 +64,26 @@ namespace Rant.Core.Framework
 				{
 					rantType = RantFunctionParameterType.Number;
 				}
-				else if (type == typeof(ObjectModel.RantObject))
+				else if (type == typeof(RantObject))
 				{
 					rantType = RantFunctionParameterType.RantObject;
 				}
 				else
 				{
-					throw new ArgumentException($"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
+					throw new ArgumentException(
+						$"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
 				}
 
 				// If there is a [RantDescription] attribute on the parameter, retrieve its value. Default to empty string if there isn't one.
-				string paramDescription = (parameters[i].GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute)?.Description ?? "";
+				string paramDescription =
+					(parameters[i].GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as
+						RantDescriptionAttribute)?.Description ?? "";
 
 				// Create Rant parameter
-				_params[i - 1] = new RantFunctionParameter(parameters[i].Name, type, rantType,
-					HasParamArray = (i == parameters.Length - 1 && parameters[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).FirstOrDefault() != null))
+				Parameters[i - 1] = new RantFunctionParameter(parameters[i].Name, type, rantType,
+					HasParamArray =
+						(i == parameters.Length - 1 &&
+						 parameters[i].GetCustomAttributes(typeof(ParamArrayAttribute), false).FirstOrDefault() != null))
 				{
 					Description = paramDescription
 				};
@@ -103,6 +92,15 @@ namespace Rant.Core.Framework
 			Name = name;
 			Description = description;
 		}
+
+		public RantFunctionParameter[] Parameters { get; }
+		public ParameterInfo[] RawParameters { get; }
+		public MethodInfo RawMethod { get; }
+		public string Name { get; }
+		public string Description { get; }
+		public bool HasParamArray { get; }
+		public int ParamCount => Parameters.Length;
+		public IEnumerable<IRantParameter> GetParameters() => Parameters;
 
 		public IEnumerator<RST> Invoke(Sandbox sb, object[] arguments)
 		{

@@ -4,24 +4,29 @@ namespace Rant.Core.Constructs
 {
 	internal class SyncManager
 	{
-		private readonly Dictionary<string, Synchronizer> _syncTable =
-			new Dictionary<string, Synchronizer>();
-		private readonly HashSet<string> _pinQueue = new HashSet<string>(); 
-
+		private readonly HashSet<string> _pinQueue = new HashSet<string>();
 		private readonly Sandbox _sb;
 
-        public bool SynchronizerExists(string name) => _syncTable.ContainsKey(name);
+		private readonly Dictionary<string, Synchronizer> _syncTable =
+			new Dictionary<string, Synchronizer>();
 
 		public SyncManager(Sandbox sb)
 		{
 			_sb = sb;
 		}
 
+		public Synchronizer this[string name]
+		{
+			get { return _syncTable[name]; }
+		}
+
+		public bool SynchronizerExists(string name) => _syncTable.ContainsKey(name);
+
 		public void Create(string name, SyncType type, bool apply)
 		{
 			Synchronizer sync;
 			if (!_syncTable.TryGetValue(name, out sync))
-				sync = _syncTable[name] = 
+				sync = _syncTable[name] =
 					new Synchronizer(type, _sb.RNG.NextRaw())
 					{
 						Pinned = _pinQueue.Remove(name)
@@ -66,13 +71,5 @@ namespace Rant.Core.Constructs
 			if (_syncTable.TryGetValue(name, out sync))
 				sync.Reset();
 		}
-
-        public Synchronizer this[string name]
-        {
-            get
-            {
-                return _syncTable[name];
-            }
-        }
 	}
 }

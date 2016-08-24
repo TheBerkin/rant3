@@ -13,7 +13,8 @@ namespace Rant
 	/// </summary>
 	public sealed class RantPatternArgs
 	{
-		private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> objPropMap = new Dictionary<Type, Dictionary<string, PropertyInfo>>();
+		private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> objPropMap =
+			new Dictionary<Type, Dictionary<string, PropertyInfo>>();
 
 		private readonly Dictionary<string, string> _args = new Dictionary<string, string>();
 
@@ -22,19 +23,6 @@ namespace Rant
 		/// </summary>
 		public RantPatternArgs()
 		{
-			
-		}
-
-		/// <summary>
-		/// Creates a RantPatternArgs instance from the specified object.
-		/// Works with anonymous types!
-		/// </summary>
-		/// <param name="value">The object to create an argument set from.</param>
-		/// <returns></returns>
-		public static RantPatternArgs CreateFrom(object value)
-		{
-			if (value is RantPatternArgs) return value as RantPatternArgs;
-			return new RantPatternArgs(value);
 		}
 
 		internal RantPatternArgs(object value)
@@ -72,7 +60,7 @@ namespace Rant
 				var obj = pair.Value.GetValue(value);
 #endif
 
-				if (obj != null) _args[pair.Key] = Convert.ToString(obj as object, CultureInfo.InvariantCulture);
+				if (obj != null) _args[pair.Key] = Convert.ToString(obj, CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -85,15 +73,27 @@ namespace Rant
 		{
 			get
 			{
-				if (Util.IsNullOrWhiteSpace(key)) return String.Empty;
+				if (Util.IsNullOrWhiteSpace(key)) return string.Empty;
 				string val;
-				return _args.TryGetValue(key, out val) ? val ?? String.Empty : String.Empty;
+				return _args.TryGetValue(key, out val) ? val ?? string.Empty : string.Empty;
 			}
 			set
 			{
-				if (key == null || String.IsNullOrEmpty(value)) return;
+				if (key == null || string.IsNullOrEmpty(value)) return;
 				_args[key] = value;
 			}
+		}
+
+		/// <summary>
+		/// Creates a RantPatternArgs instance from the specified object.
+		/// Works with anonymous types!
+		/// </summary>
+		/// <param name="value">The object to create an argument set from.</param>
+		/// <returns></returns>
+		public static RantPatternArgs CreateFrom(object value)
+		{
+			if (value is RantPatternArgs) return value as RantPatternArgs;
+			return new RantPatternArgs(value);
 		}
 
 		/// <summary>
@@ -101,14 +101,14 @@ namespace Rant
 		/// </summary>
 		/// <param name="key">The name of the argument to search for.</param>
 		/// <returns></returns>
-		public bool Contains(string key) => _args.ContainsKey(key ?? String.Empty);
+		public bool Contains(string key) => _args.ContainsKey(key ?? string.Empty);
 
 		/// <summary>
 		/// Removes the specified argument.
 		/// </summary>
 		/// <param name="key">The name of the argument to remove.</param>
 		/// <returns></returns>
-		public bool Remove(string key) => _args.Remove(key ?? String.Empty);
+		public bool Remove(string key) => _args.Remove(key ?? string.Empty);
 
 		/// <summary>
 		/// Clears all values.

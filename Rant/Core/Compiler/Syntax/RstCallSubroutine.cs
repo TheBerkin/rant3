@@ -7,8 +7,8 @@ namespace Rant.Core.Compiler.Syntax
 {
 	internal class RstCallSubroutine : RstSubroutine
 	{
-		private readonly string _moduleFunctionName = null;
 		private readonly bool _inModule = false;
+		private readonly string _moduleFunctionName = null;
 
 		public RstCallSubroutine(Stringe name, string moduleFunctionName = null)
 			: base(name)
@@ -24,17 +24,17 @@ namespace Rant.Core.Compiler.Syntax
 			{
 				if (!sb.Modules.ContainsKey(Name))
 					throw new RantRuntimeException(
-						sb.Pattern, 
-						this, 
+						sb.Pattern,
+						this,
 						$"The module '{Name}' does not exist or has not been imported."
-					);
+						);
 				if (sb.Modules[Name][_moduleFunctionName] == null)
 					throw new RantRuntimeException(
-						sb.Pattern, 
-						this, 
+						sb.Pattern,
+						this,
 						$"The function '{_moduleFunctionName}' cannot be found in the module '{Name}'."
-					);
-            }
+						);
+			}
 			else if (sb.Objects[Name] == null)
 				throw new RantRuntimeException(sb.Pattern, this, $"The subroutine '{Name}' does not exist.");
 			var sub = (RstDefineSubroutine)(_inModule ? sb.Modules[Name][_moduleFunctionName] : sb.Objects[Name].Value);
@@ -43,7 +43,7 @@ namespace Rant.Core.Compiler.Syntax
 			var action = sub.Body;
 			var args = new Dictionary<string, RST>();
 			var parameters = sub.Parameters.Keys.ToArray();
-			for (var i = 0; i < Arguments.Count; i++)
+			for (int i = 0; i < Arguments.Count; i++)
 			{
 				if (sub.Parameters[parameters[i]] == SubroutineParameterType.Greedy)
 				{
@@ -56,9 +56,8 @@ namespace Rant.Core.Compiler.Syntax
 					args[parameters[i]] = Arguments[i];
 			}
 			sb.SubroutineArgs.Push(args);
-            yield return action;
+			yield return action;
 			sb.SubroutineArgs.Pop();
-			yield break;
 		}
 	}
 }

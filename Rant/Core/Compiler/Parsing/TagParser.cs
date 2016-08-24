@@ -10,7 +10,8 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class TagParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			var nextType = reader.PeekType();
 
@@ -20,52 +21,53 @@ namespace Rant.Core.Compiler.Parsing
 			switch (nextType)
 			{
 				case R.Regex:
+				{
+					var regex = reader.Read(R.Regex, "replacer regex");
+					reader.Read(R.Colon);
+
+					var arguments = new List<RST>();
+
+					var iterator = ReadArguments(compiler, reader, arguments);
+					while (iterator.MoveNext())
 					{
-						var regex = reader.Read(R.Regex, "replacer regex");
-						reader.Read(R.Colon);
-
-						var arguments = new List<RST>();
-
-						var iterator = ReadArguments(compiler, reader, arguments);
-						while (iterator.MoveNext())
-						{
-							yield return iterator.Current;
-						}
-
-						compiler.SetNextActionCallback(actionCallback);
-
-						if (arguments.Count != 2)
-						{
-							compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), false, "err-compiler-replacer-argcount");
-							yield break;
-						}
-
-						actionCallback(new RstReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
+						yield return iterator.Current;
 					}
+
+					compiler.SetNextActionCallback(actionCallback);
+
+					if (arguments.Count != 2)
+					{
+						compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), false, "err-compiler-replacer-argcount");
+						yield break;
+					}
+
+					actionCallback(new RstReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
+				}
 					break;
 				case R.Dollar:
+				{
+					reader.ReadToken();
+					var e = ParseSubroutine(compiler, context, reader, actionCallback);
+					while (e.MoveNext())
 					{
-						reader.ReadToken();
-						var e = ParseSubroutine(compiler, context, reader, actionCallback);
-						while (e.MoveNext())
-						{
-							yield return e.Current;
-						}
+						yield return e.Current;
 					}
+				}
 					break;
 				default:
+				{
+					var e = ParseFunction(compiler, context, reader, actionCallback);
+					while (e.MoveNext())
 					{
-						var e = ParseFunction(compiler, context, reader, actionCallback);
-						while (e.MoveNext())
-						{
-							yield return e.Current;
-						}
+						yield return e.Current;
 					}
+				}
 					break;
 			}
 		}
 
-		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			var functionName = reader.Read(R.Text, "acc-function-name");
 
@@ -97,7 +99,7 @@ namespace Rant.Core.Compiler.Parsing
 					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
 					yield break;
 				}
-				
+
 				if ((sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count)) == null)
 				{
 					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName?.Value, arguments.Count);
@@ -106,16 +108,15 @@ namespace Rant.Core.Compiler.Parsing
 
 				actionCallback(new RstFunction(functionName, sig, arguments));
 			}
-
-			
 		}
 
-		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			// subroutine definition
 			if (reader.TakeLoose(R.LeftSquare, false))
 			{
-				var inModule = false;
+				bool inModule = false;
 
 				if (reader.TakeLoose(R.Subtype))
 				{
@@ -149,7 +150,7 @@ namespace Rant.Core.Compiler.Parsing
 				var bodyStart = reader.ReadLoose(R.Colon);
 
 				var actions = new List<RST>();
-				Action<RST> bodyActionCallback = (action) => actions.Add(action);
+				Action<RST> bodyActionCallback = action => actions.Add(action);
 
 				compiler.AddContext(CompileContext.SubroutineBody);
 				compiler.SetNextActionCallback(bodyActionCallback);
@@ -197,7 +198,6 @@ namespace Rant.Core.Compiler.Parsing
 				subroutine.Arguments = arguments;
 
 				actionCallback(subroutine);
-				yield break;
 			}
 		}
 
@@ -205,7 +205,7 @@ namespace Rant.Core.Compiler.Parsing
 		{
 			var actions = new List<RST>();
 
-			Action<RST> argActionCallback = (action) => actions.Add(action);
+			Action<RST> argActionCallback = action => actions.Add(action);
 			compiler.SetNextActionCallback(argActionCallback);
 			compiler.AddContext(CompileContext.FunctionEndContext);
 			compiler.AddContext(CompileContext.ArgumentSequence);

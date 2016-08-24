@@ -9,19 +9,8 @@ namespace Rant.Core.Stringes
 	/// </summary>
 	internal sealed class StringeReader
 	{
-		private readonly Stringe _stringe;
-		private int _pos;
 		private readonly StringeErrorDelegate _errorCallback;
-
-		/// <summary>
-		/// Gets or sets a string describing where the stringe originated from. Used for exception messages.
-		/// </summary>
-		public string Origin { get; set; } = String.Empty;
-
-		/// <summary>
-		/// The stringe being read by the current instance.
-		/// </summary>
-		public Stringe Stringe => _stringe;
+		private int _pos;
 
 		/// <summary>
 		/// Creates a new StringeReader instance using the specified string as input.
@@ -29,7 +18,7 @@ namespace Rant.Core.Stringes
 		/// <param name="value">The string to use as input. This will be converted to a root-level stringe.</param>
 		public StringeReader(string value)
 		{
-			_stringe = value.ToStringe();
+			Stringe = value.ToStringe();
 			_pos = 0;
 		}
 
@@ -39,22 +28,54 @@ namespace Rant.Core.Stringes
 		/// <param name="value">The stringe to use as input.</param>
 		public StringeReader(Stringe value)
 		{
-			_stringe = value;
+			Stringe = value;
 			_pos = 0;
 		}
 
 		public StringeReader(Stringe value, StringeErrorDelegate errorCallback)
 		{
-			_stringe = value;
+			Stringe = value;
 			_errorCallback = errorCallback;
 		}
 
 		/// <summary>
+		/// Gets or sets a string describing where the stringe originated from. Used for exception messages.
+		/// </summary>
+		public string Origin { get; set; } = string.Empty;
+
+		/// <summary>
+		/// The stringe being read by the current instance.
+		/// </summary>
+		public Stringe Stringe { get; }
+
+		/// <summary>
 		/// Indicates whether the reader position is at the end of the input string.
 		/// </summary>
-		public bool EndOfStringe => _pos >= _stringe.Length;
+		public bool EndOfStringe => _pos >= Stringe.Length;
 
-		public void Error(Stringe token, bool fatal, string messageType, params object[] args) => _errorCallback?.Invoke(token, fatal, messageType, args);
+		/// <summary>
+		/// The current zero-based position of the reader.
+		/// </summary>
+		public int Position
+		{
+			get { return _pos; }
+			set
+			{
+				if (value < 0 || value > Stringe.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(value));
+				}
+				_pos = value;
+			}
+		}
+
+		/// <summary>
+		/// The total length, in characters, of the stringe being read.
+		/// </summary>
+		public int Length => Stringe.Length;
+
+		public void Error(Stringe token, bool fatal, string messageType, params object[] args)
+			=> _errorCallback?.Invoke(token, fatal, messageType, args);
 
 		/// <summary>
 		/// Reads a charactere from the input and advances the position by one.
@@ -62,7 +83,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public Chare ReadChare()
 		{
-			return _stringe[_pos++];
+			return Stringe[_pos++];
 		}
 
 		/// <summary>
@@ -71,7 +92,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public Chare PeekChare()
 		{
-			return EndOfStringe ? null : _stringe[_pos];
+			return EndOfStringe ? null : Stringe[_pos];
 		}
 
 		/// <summary>
@@ -80,7 +101,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public int PeekChar()
 		{
-			return EndOfStringe ? -1 : _stringe[_pos].Character;
+			return EndOfStringe ? -1 : Stringe[_pos].Character;
 		}
 
 		/// <summary>
@@ -92,31 +113,33 @@ namespace Rant.Core.Stringes
 		{
 			int p = _pos;
 			_pos += length;
-			return _stringe.Substringe(p, length);
+			return Stringe.Substringe(p, length);
 		}
 
 		/// <summary>
-		/// Reads a stringe from the current position to the next occurrence of the specified character. If no match is found, it reads to the end.
+		/// Reads a stringe from the current position to the next occurrence of the specified character. If no match is found, it
+		/// reads to the end.
 		/// </summary>
 		/// <param name="value">The character to stop at.</param>
 		/// <returns></returns>
 		public Stringe ReadUntil(char value)
 		{
 			int start = _pos;
-			while (_pos < _stringe.Length && _stringe[_pos] != value) _pos++;
-			return _stringe.Substringe(start, _pos - start);
+			while (_pos < Stringe.Length && Stringe[_pos] != value) _pos++;
+			return Stringe.Substringe(start, _pos - start);
 		}
 
 		/// <summary>
-		/// Reads a stringe from the current position to the next occurrence of any of the specified characters. If no match is found, it reads to the end.
+		/// Reads a stringe from the current position to the next occurrence of any of the specified characters. If no match is
+		/// found, it reads to the end.
 		/// </summary>
 		/// <param name="values">The characters to stop at.</param>
 		/// <returns></returns>
 		public Stringe ReadUntilAny(params char[] values)
 		{
 			int start = _pos;
-			while (_pos < _stringe.Length && !values.Any(c => _stringe[_pos] == c)) _pos++;
-			return _stringe.Substringe(start, _pos - start);
+			while (_pos < Stringe.Length && !values.Any(c => Stringe[_pos] == c)) _pos++;
+			return Stringe.Substringe(start, _pos - start);
 		}
 
 		/// <summary>
@@ -126,8 +149,8 @@ namespace Rant.Core.Stringes
 		public Stringe ReadRestOfLine()
 		{
 			int start = _pos;
-			while (_pos < _stringe.Length && !"\r\n".Contains(_stringe[_pos].Character)) _pos++;
-			return _stringe.Substringe(start, _pos - start);
+			while (_pos < Stringe.Length && !"\r\n".Contains(Stringe[_pos].Character)) _pos++;
+			return Stringe.Substringe(start, _pos - start);
 		}
 
 		/// <summary>
@@ -172,7 +195,7 @@ namespace Rant.Core.Stringes
 
 		public bool EatAny(params char[] values)
 		{
-			if (!EndOfStringe && values.Any(c => _stringe[_pos].Character == c))
+			if (!EndOfStringe && values.Any(c => Stringe[_pos].Character == c))
 			{
 				_pos++;
 				return true;
@@ -183,11 +206,11 @@ namespace Rant.Core.Stringes
 		public bool EatAll(params char[] values)
 		{
 			if (EndOfStringe) return false;
-			if (!values.Any(c => _stringe[_pos].Character == c)) return false;
+			if (!values.Any(c => Stringe[_pos].Character == c)) return false;
 			do
 			{
 				_pos++;
-			} while (values.Any(c => _stringe[_pos].Character == c));
+			} while (values.Any(c => Stringe[_pos].Character == c));
 			return true;
 		}
 
@@ -218,40 +241,41 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool Eat(string value)
 		{
-			if (String.IsNullOrEmpty(value)) return false;
-			if (_stringe.IndexOf(value, _pos) != _pos) return false;
+			if (string.IsNullOrEmpty(value)) return false;
+			if (Stringe.IndexOf(value, _pos) != _pos) return false;
 			_pos += value.Length;
 			return true;
 		}
 
-
 		public bool EatAll(string value)
 		{
-			if (String.IsNullOrEmpty(value)) return false;
-			if (_stringe.IndexOf(value, _pos) != _pos) return false;
+			if (string.IsNullOrEmpty(value)) return false;
+			if (Stringe.IndexOf(value, _pos) != _pos) return false;
 			do
 			{
 				_pos += value.Length;
-			} while (_stringe.IndexOf(value, _pos) == _pos);
+			} while (Stringe.IndexOf(value, _pos) == _pos);
 			return true;
 		}
 
 		/// <summary>
-		/// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is found, the reader consumes it.
+		/// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is
+		/// found, the reader consumes it.
 		/// </summary>
 		/// <param name="regex">The regular expression to test for.</param>
 		/// <returns></returns>
 		public bool Eat(Regex regex)
 		{
 			if (regex == null) throw new ArgumentNullException("regex");
-			var match = regex.Match(_stringe.Value, _pos);
+			var match = regex.Match(Stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
 			_pos += match.Length;
 			return true;
 		}
 
 		/// <summary>
-		/// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is found, the reader consumes it and outputs the result.
+		/// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is
+		/// found, the reader consumes it and outputs the result.
 		/// </summary>
 		/// <param name="regex">The regular expression to test for.</param>
 		/// <param name="result">The stringe to output the result to.</param>
@@ -260,9 +284,9 @@ namespace Rant.Core.Stringes
 		{
 			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			result = null;
-			var match = regex.Match(_stringe.Value, _pos);
+			var match = regex.Match(Stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
-			result = _stringe.Substringe(_pos, match.Length);
+			result = Stringe.Substringe(_pos, match.Length);
 			_pos += match.Length;
 			return true;
 		}
@@ -282,7 +306,7 @@ namespace Rant.Core.Stringes
 		/// </summary>
 		/// <param name="chars"></param>
 		/// <returns></returns>
-		public bool IsNext(params char[] chars) => !EndOfStringe && chars.Any(c => _stringe[_pos].Character == c);
+		public bool IsNext(params char[] chars) => !EndOfStringe && chars.Any(c => Stringe[_pos].Character == c);
 
 		/// <summary>
 		/// Indicates whether the specified string occurs at the reader's current position.
@@ -292,9 +316,9 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
 		{
-			if (String.IsNullOrEmpty(value)) return false;
-			return _pos + value.Length <= _stringe.Length
-				&& String.Equals(_stringe.Substringe(_pos, value.Length).Value, value, strcmp);
+			if (string.IsNullOrEmpty(value)) return false;
+			return _pos + value.Length <= Stringe.Length
+			       && string.Equals(Stringe.Substringe(_pos, value.Length).Value, value, strcmp);
 		}
 
 		/// <summary>
@@ -305,12 +329,13 @@ namespace Rant.Core.Stringes
 		public bool IsNext(Regex regex)
 		{
 			if (regex == null) throw new ArgumentNullException(nameof(regex));
-			var match = regex.Match(_stringe.Value, _pos);
+			var match = regex.Match(Stringe.Value, _pos);
 			return match.Success && match.Index == _pos;
 		}
 
 		/// <summary>
-		/// Indicates whether the specified regular expression matches the input at the reader's current position, and outputs the result.
+		/// Indicates whether the specified regular expression matches the input at the reader's current position, and outputs the
+		/// result.
 		/// </summary>
 		/// <param name="regex">The regular expression to test for.</param>
 		/// <param name="result">The stringe to output the result to.</param>
@@ -319,20 +344,19 @@ namespace Rant.Core.Stringes
 		{
 			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			result = null;
-			var match = regex.Match(_stringe.Value, _pos);
+			var match = regex.Match(Stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
-			result = _stringe.Substringe(_pos, match.Length);
+			result = Stringe.Substringe(_pos, match.Length);
 			return true;
 		}
 
 		/// <summary>
 		/// Advances the reader position past any immediate white space characters.
 		/// </summary>
-
 		public bool SkipWhiteSpace()
 		{
 			int oldPos = _pos;
-			while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
+			while (!EndOfStringe && char.IsWhiteSpace(Stringe.Value[_pos]))
 			{
 				_pos++;
 			}
@@ -344,14 +368,14 @@ namespace Rant.Core.Stringes
 		/// </summary>
 		/// <param name="c">The character to test for.</param>
 		/// <returns></returns>
-		public bool WasLast(char c) => _pos > 0 && _stringe[_pos - 1].Character == c;
+		public bool WasLast(char c) => _pos > 0 && Stringe[_pos - 1].Character == c;
 
 		/// <summary>
 		/// Returns a boolean value indicating whether the previous character matches any of the specified characters.
 		/// </summary>
 		/// <param name="chars">The characters to test for.</param>
 		/// <returns></returns>
-		public bool WasLast(params char[] chars) => _pos > 0 && chars.Any(c => _stringe[_pos - 1].Character == c);
+		public bool WasLast(params char[] chars) => _pos > 0 && chars.Any(c => Stringe[_pos - 1].Character == c);
 
 		/// <summary>
 		/// Reads the next token from the current position, then advances the position past it.
@@ -359,7 +383,6 @@ namespace Rant.Core.Stringes
 		/// <typeparam name="T">The token identifier type to use.</typeparam>
 		/// <param name="rules">The lexer to use.</param>
 		/// <returns></returns>
-
 		public Token<T> ReadToken<T>(Lexer<T> rules) where T : struct
 		{
 			readStart:
@@ -386,7 +409,7 @@ namespace Rant.Core.Stringes
 				if (EndOfStringe && captureUndef && u < _pos)
 				{
 					if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-					return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+					return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, _pos)));
 				}
 
 				if (rules.HasPunctuation(PeekChar()))
@@ -399,11 +422,11 @@ namespace Rant.Core.Stringes
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
 							return new Token<T>(rules.UndefinedCaptureRule.Item2,
-								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+								rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, _pos)));
 						}
 
 						// Return symbol token
-						var c = _stringe.Substringe(_pos, t.Item1.Length);
+						var c = Stringe.Substringe(_pos, t.Item1.Length);
 						_pos += t.Item1.Length;
 						if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
 						return new Token<T>(t.Item2, c);
@@ -421,7 +444,7 @@ namespace Rant.Core.Stringes
 					// Find the longest match, if any.
 					foreach (var re in rules.RegexList)
 					{
-						var match = re.Item1.Match(_stringe.Value, _pos);
+						var match = re.Item1.Match(Stringe.Value, _pos);
 						if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
 						{
 							longestMatch = match;
@@ -436,7 +459,7 @@ namespace Rant.Core.Stringes
 						if (captureUndef && u < _pos)
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-							return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+							return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, _pos)));
 						}
 
 						// Return longest match, narrow down to <value> group if available.
@@ -446,11 +469,11 @@ namespace Rant.Core.Stringes
 						if (group.Success)
 						{
 							if (rules.IgnoreRules.Contains(id)) goto readStart;
-							return new Token<T>(id, _stringe.Substringe(group.Index, group.Length));
+							return new Token<T>(id, Stringe.Substringe(group.Index, group.Length));
 						}
 
 						if (rules.IgnoreRules.Contains(id)) goto readStart;
-						return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
+						return new Token<T>(id, Stringe.Substringe(longestMatch.Index, longestMatch.Length));
 					}
 				}
 
@@ -468,11 +491,11 @@ namespace Rant.Core.Stringes
 								_pos = origPos;
 								if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
 								return new Token<T>(rules.UndefinedCaptureRule.Item2,
-									rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, origPos)));
+									rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, origPos)));
 							}
 
 							if (rules.IgnoreRules.Contains(fn.Item2)) goto readStart;
-							return new Token<T>(fn.Item2, _stringe.Slice(origPos, _pos));
+							return new Token<T>(fn.Item2, Stringe.Slice(origPos, _pos));
 						}
 
 						// Reset for next function
@@ -490,11 +513,11 @@ namespace Rant.Core.Stringes
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
 							return new Token<T>(rules.UndefinedCaptureRule.Item2,
-								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+								rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, _pos)));
 						}
 
 						// Return symbol token
-						var c = _stringe.Substringe(_pos, t.Item1.Length);
+						var c = Stringe.Substringe(_pos, t.Item1.Length);
 						_pos += t.Item1.Length;
 						if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
 						return new Token<T>(t.Item2, c);
@@ -505,8 +528,9 @@ namespace Rant.Core.Stringes
 
 				if (!captureUndef)
 				{
-					var bad = _stringe.Slice(u, _pos);
-					throw new InvalidOperationException(String.Concat("(Ln ", bad.Line, ", Col ", bad.Column, ") Invalid token '", bad, "'"));
+					var bad = Stringe.Slice(u, _pos);
+					throw new InvalidOperationException(string.Concat("(Ln ", bad.Line, ", Col ", bad.Column, ") Invalid token '", bad,
+						"'"));
 				}
 
 				// ReSharper disable once LoopVariableIsNeverChangedInsideLoop
@@ -515,26 +539,5 @@ namespace Rant.Core.Stringes
 
 			throw new InvalidOperationException("This should never happen.");
 		}
-
-		/// <summary>
-		/// The current zero-based position of the reader.
-		/// </summary>
-		public int Position
-		{
-			get { return _pos; }
-			set
-			{
-				if (value < 0 || value > _stringe.Length)
-				{
-					throw new ArgumentOutOfRangeException(nameof(value));
-				}
-				_pos = value;
-			}
-		}
-
-		/// <summary>
-		/// The total length, in characters, of the stringe being read.
-		/// </summary>
-		public int Length => _stringe.Length;
 	}
 }

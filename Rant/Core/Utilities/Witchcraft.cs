@@ -6,29 +6,52 @@ using System.Reflection;
 namespace Rant.Core.Utilities
 {
 	internal delegate TResult XFunc<out TResult>();
+
 	internal delegate TResult XFunc<in A, out TResult>(A a);
+
 	internal delegate TResult XFunc<in A, in B, out TResult>(A a, B b);
+
 	internal delegate TResult XFunc<in A, in B, in C, out TResult>(A a, B b, C c);
+
 	internal delegate TResult XFunc<in A, in B, in C, in D, out TResult>(A a, B b, C c, D d);
+
 	internal delegate TResult XFunc<in A, in B, in C, in D, in E, out TResult>(A a, B b, C c, D d, E e);
+
 	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, out TResult>(A a, B b, C c, D d, E e, F f);
-	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(A a, B b, C c, D d, E e, F f, G g);
-	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h);
-	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(
+		A a, B b, C c, D d, E e, F f, G g);
+
+	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(
+		A a, B b, C c, D d, E e, F f, G g, H h);
+
+	internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(
+		A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
 	internal delegate void XAction();
+
 	internal delegate void XAction<in A>(A a);
+
 	internal delegate void XAction<in A, in B>(A a, B b);
+
 	internal delegate void XAction<in A, in B, in C>(A a, B b, C c);
+
 	internal delegate void XAction<in A, in B, in C, in D>(A a, B b, C c, D d);
+
 	internal delegate void XAction<in A, in B, in C, in D, in E>(A a, B b, C c, D d, E e);
+
 	internal delegate void XAction<in A, in B, in C, in D, in E, in F>(A a, B b, C c, D d, E e, F f);
+
 	internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G>(A a, B b, C c, D d, E e, F f, G g);
+
 	internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H>(A a, B b, C c, D d, E e, F f, G g, H h);
-	internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+	internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(
+		A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
 	/// <summary>
-	/// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
+	/// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed
+	/// arguments.
 	/// </summary>
 	internal abstract class Witchcraft
 	{
@@ -73,13 +96,10 @@ namespace Rant.Core.Utilities
 				{
 					return new WitchcraftNoParamsVoid(methodInfo);
 				}
-				else
-				{
-					return new WitchcraftNoParams(methodInfo);
-				}
+				return new WitchcraftNoParams(methodInfo);
 			}
 
-			Type type = isVoid
+			var type = isVoid
 				? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes)
 				: _funcTypes[argTypes.Length - 1].MakeGenericType(argTypes);
 

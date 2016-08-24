@@ -1,15 +1,16 @@
 // LzOutWindow.cs
 
+using System.IO;
+
 namespace Rant.Core.IO.Compression.LZ
 {
 	internal class OutWindow
 	{
-		byte[] _buffer = null;
-		uint _pos;
-		uint _windowSize = 0;
-		uint _streamPos;
-		System.IO.Stream _stream;
-
+		private byte[] _buffer = null;
+		private uint _pos;
+		private Stream _stream;
+		private uint _streamPos;
+		private uint _windowSize = 0;
 		public uint TrainSize = 0;
 
 		public void Create(uint windowSize)
@@ -24,7 +25,7 @@ namespace Rant.Core.IO.Compression.LZ
 			_streamPos = 0;
 		}
 
-		public void Init(System.IO.Stream stream, bool solid)
+		public void Init(Stream stream, bool solid)
 		{
 			ReleaseStream();
 			_stream = stream;
@@ -35,8 +36,8 @@ namespace Rant.Core.IO.Compression.LZ
 				TrainSize = 0;
 			}
 		}
-	
-		public bool Train(System.IO.Stream stream)
+
+		public bool Train(Stream stream)
 		{
 			long len = stream.Length;
 			uint size = (len < _windowSize) ? (uint)len : _windowSize;

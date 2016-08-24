@@ -9,7 +9,6 @@ using Rant.Core.Formatting;
 using Rant.Core.Output;
 using Rant.Core.Utilities;
 using Rant.Metadata;
-using Rant.Vocabulary;
 using Rant.Vocabulary.Utilities;
 
 namespace Rant.Core.Framework
@@ -21,10 +20,8 @@ namespace Rant.Core.Framework
 		[RantFunction("num", "n")]
 		[RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
 		private static void Number(Sandbox sb,
-			[RantDescription("The minimum value of the number to generate.")]
-			int min,
-			[RantDescription("The maximum value of the number to generate.")]
-			int max)
+			[RantDescription("The minimum value of the number to generate.")] int min,
+			[RantDescription("The maximum value of the number to generate.")] int max)
 		{
 			sb.Print(sb.RNG.Next(min, max + 1));
 		}
@@ -32,8 +29,7 @@ namespace Rant.Core.Framework
 		[RantFunction("num")]
 		[RantDescription("Formats an input string using the current number format settings and prints the result.")]
 		private static void Number(Sandbox sb,
-			[RantDescription("The string to convert into a number.")]
-			string input)
+			[RantDescription("The string to convert into a number.")] string input)
 		{
 			double number;
 			sb.Print(double.TryParse(input, out number) ? number : 0);
@@ -42,8 +38,7 @@ namespace Rant.Core.Framework
 		[RantFunction("numfmt")]
 		[RantDescription("Sets the current number formatting mode.")]
 		private static void NumberFormat(Sandbox sb,
-			[RantDescription("The number format to use.")]
-			NumberFormat format)
+			[RantDescription("The number format to use.")] NumberFormat format)
 		{
 			sb.Output.Do(chain => chain.Last.NumberFormatter.NumberFormat = format);
 		}
@@ -51,10 +46,8 @@ namespace Rant.Core.Framework
 		[RantFunction("numfmt")]
 		[RantDescription("Runs the specified pattern under a specific number formatting mode.")]
 		private static IEnumerator<RST> NumberFormatRange(Sandbox sb,
-			[RantDescription("The number format to use.")]
-			NumberFormat format,
-			[RantDescription("The pattern to run.")]
-			RST rangeAction)
+			[RantDescription("The number format to use.")] NumberFormat format,
+			[RantDescription("The pattern to run.")] RST rangeAction)
 		{
 			var oldFmtMap = new Dictionary<OutputChain, NumberFormat>();
 
@@ -77,10 +70,8 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Specifies the current digit formatting mode for numbers.")]
 		private static void Digits(Sandbox sb,
-			[RantDescription("The digit format to use.")]
-			BinaryFormat format,
-			[RantDescription("The digit count to associate with the mode.")]
-			int digits)
+			[RantDescription("The digit format to use.")] BinaryFormat format,
+			[RantDescription("The digit count to associate with the mode.")] int digits)
 		{
 			sb.Output.Do(chain =>
 			{
@@ -92,8 +83,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the current endianness for hex and binary formatted numbers.")]
 		private static void Endian(Sandbox sb,
-			[RantDescription("The endianness to use.")]
-			Endianness endianness)
+			[RantDescription("The endianness to use.")] Endianness endianness)
 		{
 			sb.Output.Do(chain => chain.Last.NumberFormatter.Endianness = endianness);
 		}
@@ -108,8 +98,7 @@ namespace Rant.Core.Framework
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb,
-			[RantDescription("The number of times to repeat the next block.")]
-			int times)
+			[RantDescription("The number of times to repeat the next block.")] int times)
 		{
 			sb.CurrentBlockAttribs.Repetitions = times;
 		}
@@ -124,8 +113,7 @@ namespace Rant.Core.Framework
 		[RantFunction("sep", "s")]
 		[RantDescription("Sets the separator pattern for the next block.")]
 		private static void Sep(Sandbox sb,
-			[RantDescription("The separator pattern to run between iterations of the next block.")]
-			RST separator)
+			[RantDescription("The separator pattern to run between iterations of the next block.")] RST separator)
 		{
 			sb.CurrentBlockAttribs.IsSeries = false;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -134,10 +122,8 @@ namespace Rant.Core.Framework
 		[RantFunction("sep", "s")]
 		[RantDescription("Flags the next block as a series and sets the separator and conjunction patterns.")]
 		private static void Sep(Sandbox sb,
-			[RantDescription("The separator pattern to run between items.")]
-			RST separator,
-			[RantDescription("The conjunction pattern to run before the last item.")]
-			RST conjunction)
+			[RantDescription("The separator pattern to run between items.")] RST separator,
+			[RantDescription("The conjunction pattern to run before the last item.")] RST conjunction)
 		{
 			sb.CurrentBlockAttribs.IsSeries = true;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -147,12 +133,9 @@ namespace Rant.Core.Framework
 		[RantFunction("sep", "s")]
 		[RantDescription("Sets the separator, Oxford comma, and conjunction patterns for the next series.")]
 		private static void Sep(Sandbox sb,
-			[RantDescription("The separator pattern to run between items.")]
-			RST separator,
-			[RantDescription("The Oxford comma pattern to run before the last item.")]
-			RST oxford,
-			[RantDescription("The conjunction pattern to run before the last item in the series.")]
-			RST conjunction)
+			[RantDescription("The separator pattern to run between items.")] RST separator,
+			[RantDescription("The Oxford comma pattern to run before the last item.")] RST oxford,
+			[RantDescription("The conjunction pattern to run before the last item in the series.")] RST conjunction)
 		{
 			sb.CurrentBlockAttribs.IsSeries = true;
 			sb.CurrentBlockAttribs.Separator = separator;
@@ -163,10 +146,8 @@ namespace Rant.Core.Framework
 		[RantFunction("rs")]
 		[RantDescription("Sets the repetitions and separator for the next block. A combination of rep and sep.")]
 		private static void RepSep(Sandbox sb,
-			[RantDescription("The number of times to repeat the next block.")]
-			int times,
-			[RantDescription("The separator pattern to run between iterations of the next block.")]
-			RST separator)
+			[RantDescription("The number of times to repeat the next block.")] int times,
+			[RantDescription("The separator pattern to run between iterations of the next block.")] RST separator)
 		{
 			sb.CurrentBlockAttribs.IsSeries = false;
 			sb.CurrentBlockAttribs.Repetitions = times;
@@ -176,8 +157,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb,
-			[RantDescription("The pattern to run before each iteration of the next block.")]
-			RST beforeAction)
+			[RantDescription("The pattern to run before each iteration of the next block.")] RST beforeAction)
 		{
 			sb.CurrentBlockAttribs.Before = beforeAction;
 		}
@@ -185,8 +165,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the postfix pattern for the next block.")]
 		private static void After(Sandbox sb,
-			[RantDescription("The pattern to run after each iteration of the next block.")]
-			RST afterAction)
+			[RantDescription("The pattern to run after each iteration of the next block.")] RST afterAction)
 		{
 			sb.CurrentBlockAttribs.After = afterAction;
 		}
@@ -194,18 +173,15 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
 		private static void Chance(Sandbox sb,
-			[RantDescription("The percent probability that the next block will execute.")]
-			double chance)
+			[RantDescription("The percent probability that the next block will execute.")] double chance)
 		{
 			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 		}
 
-
 		[RantFunction("case", "caps")]
 		[RantDescription("Changes the capitalization mode for all open channels.")]
 		private static void Case(Sandbox sb,
-			[RantDescription("The capitalization mode to use.")]
-			Capitalization mode)
+			[RantDescription("The capitalization mode to use.")] Capitalization mode)
 		{
 			sb.Output.Capitalize(mode);
 		}
@@ -213,11 +189,10 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Infers the capitalization of a given string and sets the capitalization mode to match it.")]
 		private static void CapsInfer(Sandbox sb,
-			[RantDescription("A string that is capitalized in the format to be set.")]
-			string sample)
+			[RantDescription("A string that is capitalized in the format to be set.")] string sample)
 		{
 			var output = sb.Output;
-			if (String.IsNullOrEmpty(sample))
+			if (string.IsNullOrEmpty(sample))
 			{
 				output.Capitalize(Capitalization.None);
 				return;
@@ -225,10 +200,10 @@ namespace Rant.Core.Framework
 			var words = sample.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			if (words.Length == 1)
 			{
-				var word = words[0];
+				string word = words[0];
 				if (word.Length == 1)
 				{
-					if (Char.IsUpper(word[0]))
+					if (char.IsUpper(word[0]))
 					{
 						output.Capitalize(Capitalization.First);
 					}
@@ -241,7 +216,7 @@ namespace Rant.Core.Framework
 				{
 					output.Capitalize(Capitalization.Upper);
 				}
-				else if (Char.IsUpper(word.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
+				else if (char.IsUpper(word.SkipWhile(c => !char.IsLetterOrDigit(c)).FirstOrDefault()))
 				{
 					output.Capitalize(Capitalization.First);
 				}
@@ -253,7 +228,7 @@ namespace Rant.Core.Framework
 			else
 			{
 				// No letters? Forget it.
-				if (!sample.Any(Char.IsLetter))
+				if (!sample.Any(char.IsLetter))
 				{
 					output.Capitalize(Capitalization.None);
 					return;
@@ -269,20 +244,22 @@ namespace Rant.Core.Framework
 				var sentences = sample.Split(new[] { '.', '?', '!' }, StringSplitOptions.RemoveEmptyEntries)
 					.Select(str => str.Trim())
 					.Where(str =>
-					!String.IsNullOrEmpty(str)
-					 && !Char.IsDigit(str[0])).ToArray();
+						!string.IsNullOrEmpty(str)
+						&& !char.IsDigit(str[0])).ToArray();
 
 				// All words capitalized?
-				var lwords = words.Where(w => Char.IsLetter(w[0])).ToArray();
-				if (lwords.Any() && (sentences.Length == 1 || sentences.Any(s => s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length > 1)))
+				var lwords = words.Where(w => char.IsLetter(w[0])).ToArray();
+				if (lwords.Any() &&
+				    (sentences.Length == 1 ||
+				     sentences.Any(s => s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length > 1)))
 				{
-					if (lwords.All(lw => Char.IsUpper(lw[0])))
+					if (lwords.All(lw => char.IsUpper(lw[0])))
 					{
 						output.Capitalize(Capitalization.Word);
 						return;
 					}
 
-					if (lwords.All(lw => Char.IsLower(lw[0]) == sb.Format.Excludes(lw)))
+					if (lwords.All(lw => char.IsLower(lw[0]) == sb.Format.Excludes(lw)))
 					{
 						output.Capitalize(Capitalization.Title);
 						return;
@@ -292,9 +269,9 @@ namespace Rant.Core.Framework
 				// All sentences capitalized?
 				bool all = true;
 				bool none = true;
-				foreach (var sentence in sentences)
+				foreach (string sentence in sentences)
 				{
-					bool isCapitalized = Char.IsUpper(sentence.SkipWhile(c => !Char.IsLetter(c)).FirstOrDefault());
+					bool isCapitalized = char.IsUpper(sentence.SkipWhile(c => !char.IsLetter(c)).FirstOrDefault());
 					all = all && isCapitalized;
 					none = none && !isCapitalized;
 				}
@@ -307,7 +284,7 @@ namespace Rant.Core.Framework
 				{
 					output.Capitalize(Capitalization.Lower);
 				}
-				else if (Char.IsUpper(sample.SkipWhile(c => !Char.IsLetterOrDigit(c)).FirstOrDefault()))
+				else if (char.IsUpper(sample.SkipWhile(c => !char.IsLetterOrDigit(c)).FirstOrDefault()))
 				{
 					output.Capitalize(Capitalization.First);
 				}
@@ -321,8 +298,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the first.")]
 		private static IEnumerator<RST> First(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration == 1) yield return action;
@@ -331,8 +307,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
 		private static IEnumerator<RST> NotFirst(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration > 1) yield return action;
@@ -341,8 +316,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is the last.")]
 		private static IEnumerator<RST> Last(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -352,8 +326,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
 		private static IEnumerator<RST> NotLast(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -363,8 +336,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
 		private static IEnumerator<RST> Middle(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -374,8 +346,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
 		private static IEnumerator<RST> Ends(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
@@ -450,8 +421,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an odd number.")]
 		private static IEnumerator<RST> Odd(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 != 0) yield return action;
@@ -460,8 +430,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is an even number.")]
 		private static IEnumerator<RST> Even(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")]
-			RST action)
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
@@ -470,8 +439,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Returns the specified argument from the current subroutine.")]
 		private static IEnumerator<RST> Arg(Sandbox sb,
-			[RantDescription("The name of the argument to retrieve.")]
-			string name)
+			[RantDescription("The name of the argument to retrieve.")] string name)
 		{
 			if (!sb.SubroutineArgs.Any()) yield break;
 			var args = sb.SubroutineArgs.Peek();
@@ -490,8 +458,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Retrieves and prints the specified group value of the current match from the active replacer.")]
 		private static void Group(Sandbox sb,
-			[RantDescription("The name of the match group whose value will be retrieved.")]
-			string groupName)
+			[RantDescription("The name of the match group whose value will be retrieved.")] string groupName)
 		{
 			if (!sb.RegexMatches.Any()) return;
 			sb.Print(sb.RegexMatches.Peek().Groups[groupName].Value);
@@ -500,8 +467,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the current rhyming mode for queries.")]
 		private static void Rhyme(Sandbox sb,
-			[RantDescription("The rhyme types to use.")]
-			RhymeFlags flags)
+			[RantDescription("The rhyme types to use.")] RhymeFlags flags)
 		{
 			sb.CarrierState.Rhymer.AllowedRhymes = flags;
 		}
@@ -509,10 +475,8 @@ namespace Rant.Core.Framework
 		[RantFunction("sync", "x")]
 		[RantDescription("Creates and applies a synchronizer with the specified name and type.")]
 		private static void Sync(Sandbox sb,
-			[RantDescription("The name of the synchronizer.")]
-			string name,
-			[RantDescription("The synchronization type to use.")]
-			SyncType type)
+			[RantDescription("The name of the synchronizer.")] string name,
+			[RantDescription("The synchronization type to use.")] SyncType type)
 		{
 			sb.SyncManager.Create(name, type, true);
 		}
@@ -520,8 +484,7 @@ namespace Rant.Core.Framework
 		[RantFunction("xpin")]
 		[RantDescription("Pins a synchronizer.")]
 		private static void SyncPin(Sandbox sb,
-			[RantDescription("The name of the synchronizer to pin.")]
-			string name)
+			[RantDescription("The name of the synchronizer to pin.")] string name)
 		{
 			sb.SyncManager.SetPinned(name, true);
 		}
@@ -529,8 +492,7 @@ namespace Rant.Core.Framework
 		[RantFunction("xunpin")]
 		[RantDescription("Unpins a synchronizer.")]
 		private static void SyncUnpin(Sandbox sb,
-			[RantDescription("The name of the synchronizer to unpin.")]
-			string name)
+			[RantDescription("The name of the synchronizer to unpin.")] string name)
 		{
 			sb.SyncManager.SetPinned(name, false);
 		}
@@ -538,8 +500,7 @@ namespace Rant.Core.Framework
 		[RantFunction("xstep")]
 		[RantDescription("Iterates a synchronizer.")]
 		private static void SyncStep(Sandbox sb,
-			[RantDescription("The name of the synchronizer to iterate.")]
-			string name)
+			[RantDescription("The name of the synchronizer to iterate.")] string name)
 		{
 			sb.SyncManager.Step(name);
 		}
@@ -547,17 +508,16 @@ namespace Rant.Core.Framework
 		[RantFunction("xreset")]
 		[RantDescription("Resets a synchronizer to its initial state.")]
 		private static void SyncReset(Sandbox sb,
-			[RantDescription("The name of the synchronizer to reset.")]
-			string name)
+			[RantDescription("The name of the synchronizer to reset.")] string name)
 		{
 			sb.SyncManager.Reset(name);
 		}
 
 		[RantFunction("quote", "q")]
-		[RantDescription("Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
+		[RantDescription(
+			"Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
 		private static IEnumerator<RST> Quote(Sandbox sb,
-			[RantDescription("The pattern to run whose output will be surrounded in quotes.")]
-			RST quoteAction)
+			[RantDescription("The pattern to run whose output will be surrounded in quotes.")] RST quoteAction)
 		{
 			sb.IncreaseQuote();
 			sb.PrintOpeningQuote();
@@ -578,8 +538,7 @@ namespace Rant.Core.Framework
 		[RantFunction("target", "t")]
 		[RantDescription("Places a target with the specified name at the current write position.")]
 		private static void Target(Sandbox sb,
-			[RantDescription("The name of the target.")]
-			string targetName)
+			[RantDescription("The name of the target.")] string targetName)
 		{
 			sb.Output.InsertTarget(targetName);
 		}
@@ -587,10 +546,8 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Appends a string to the specified target's contents.")]
 		private static void Send(Sandbox sb,
-			[RantDescription("The name of the target to send to.")]
-			string targetName,
-			[RantDescription("The string to send to the target.")]
-			string value)
+			[RantDescription("The name of the target to send to.")] string targetName,
+			[RantDescription("The string to send to the target.")] string value)
 		{
 			sb.Output.PrintToTarget(targetName, value);
 		}
@@ -598,10 +555,8 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Overwrites the specified target's contents with the provided value.")]
 		private static void SendOver(Sandbox sb,
-			[RantDescription("The name of the target to send to.")]
-			string targetName,
-			[RantDescription("The string to send to the target.")]
-			string value)
+			[RantDescription("The name of the target to send to.")] string targetName,
+			[RantDescription("The string to send to the target.")] string value)
 		{
 			sb.Output.Do(chain => chain.ClearTarget(targetName));
 			sb.Output.PrintToTarget(targetName, value);
@@ -610,8 +565,7 @@ namespace Rant.Core.Framework
 		[RantFunction("targetval")]
 		[RantDescription("Prints the current value of the specified target. This function will not spawn a target.")]
 		private static void GetTargetValue(Sandbox sb,
-			[RantDescription("The name of the target whose value to print.")]
-			string targetName)
+			[RantDescription("The name of the target whose value to print.")] string targetName)
 		{
 			sb.Output.Do(chain => chain.Print(chain.GetTargetValue(targetName)));
 		}
@@ -619,8 +573,7 @@ namespace Rant.Core.Framework
 		[RantFunction("clrt")]
 		[RantDescription("Clears the contents of the specified target.")]
 		private static void ClearTarget(Sandbox sb,
-			[RantDescription("The name of the target to be cleared.")]
-			string targetName)
+			[RantDescription("The name of the target to be cleared.")] string targetName)
 		{
 			sb.Output.Do(chain => chain.ClearTarget(targetName));
 		}
@@ -628,10 +581,8 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
 		private static IEnumerator<RST> Nth(Sandbox sb,
-			[RantDescription("The interval at which the pattern should be run.")]
-			int interval,
-			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RST pattern)
+			[RantDescription("The interval at which the pattern should be run.")] int interval,
+			[RantDescription("The pattern to run when the condition is satisfied.")] RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval != 0) yield break;
@@ -639,14 +590,12 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number offset by a specific amount.")]
+		[RantDescription(
+			"Runs a pattern if the current block iteration is a multiple of the specified number offset by a specific amount.")]
 		private static IEnumerator<RST> NthO(Sandbox sb,
-			[RantDescription("The interval at which the pattern should be run.")]
-			int interval,
-			[RantDescription("The number of iterations to offset the interval by.")]
-			int offset,
-			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RST pattern)
+			[RantDescription("The interval at which the pattern should be run.")] int interval,
+			[RantDescription("The number of iterations to offset the interval by.")] int offset,
+			[RantDescription("The pattern to run when the condition is satisfied.")] RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) != 0) yield break;
@@ -656,10 +605,8 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number.")]
 		private static IEnumerator<RST> NotNth(Sandbox sb,
-			[RantDescription("The interval at which the pattern should not be run.")]
-			int interval,
-			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RST pattern)
+			[RantDescription("The interval at which the pattern should not be run.")] int interval,
+			[RantDescription("The pattern to run when the condition is satisfied.")] RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % interval == 0) yield break;
@@ -667,14 +614,13 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount.")]
+		[RantDescription(
+			"Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount."
+			)]
 		private static IEnumerator<RST> NotNthO(Sandbox sb,
-			[RantDescription("The interval at which the pattern should not be run.")]
-			int interval,
-			[RantDescription("The number of iterations to offset the interval by.")]
-			int offset,
-			[RantDescription("The pattern to run when the condition is satisfied.")]
-			RST pattern)
+			[RantDescription("The interval at which the pattern should not be run.")] int interval,
+			[RantDescription("The number of iterations to offset the interval by.")] int offset,
+			[RantDescription("The pattern to run when the condition is satisfied.")] RST pattern)
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (Util.Mod(sb.Blocks.Peek().Iteration - offset, interval) == 0) yield break;
@@ -684,8 +630,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run before the next block.")]
 		private static void Start(Sandbox sb,
-			[RantDescription("The pattern to run before the next block.")]
-			RST beforePattern)
+			[RantDescription("The pattern to run before the next block.")] RST beforePattern)
 		{
 			sb.CurrentBlockAttribs.Start = beforePattern;
 		}
@@ -693,8 +638,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run after the next block.")]
 		private static void End(Sandbox sb,
-			[RantDescription("The pattern to run after the next block.")]
-			RST endPattern)
+			[RantDescription("The pattern to run after the next block.")] RST endPattern)
 		{
 			sb.CurrentBlockAttribs.End = endPattern;
 		}
@@ -710,8 +654,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Loads and runs a pattern from cache or file.")]
 		private static IEnumerator<RST> Import(Sandbox sb,
-			[RantDescription("The name or path of the pattern to load.")]
-			string name)
+			[RantDescription("The name or path of the pattern to load.")] string name)
 		{
 			RST action;
 
@@ -736,10 +679,9 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Defines the specified flags.")]
 		private static void Define(Sandbox sb,
-			[RantDescription("The list of flags to define.")]
-			params string[] flags)
+			[RantDescription("The list of flags to define.")] params string[] flags)
 		{
-			foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
 			{
 				sb.Engine.Flags.Add(flag);
 			}
@@ -748,10 +690,9 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Undefines the specified flags.")]
 		private static void Undef(Sandbox sb,
-			[RantDescription("The list of flags to undefine.")]
-			params string[] flags)
+			[RantDescription("The list of flags to undefine.")] params string[] flags)
 		{
-			foreach (var flag in flags)
+			foreach (string flag in flags)
 			{
 				sb.Engine.Flags.Remove(flag);
 			}
@@ -761,7 +702,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Toggles the specified flags.")]
 		private static void Toggle(Sandbox sb, params string[] flags)
 		{
-			foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
 			{
 				if (sb.Engine.Flags.Contains(flag))
 				{
@@ -775,24 +716,26 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction]
-		[RantDescription("Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are set.")]
+		[RantDescription(
+			"Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are set.")]
 		private static void IfDef(Sandbox sb, params string[] flags)
 		{
 			sb.FlagConditionExpectedResult = true;
 			sb.ConditionFlags.Clear();
-			foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
 			{
 				sb.ConditionFlags.Add(flag);
 			}
 		}
 
 		[RantFunction]
-		[RantDescription("Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are unset.")]
+		[RantDescription(
+			"Sets the current flag condition for [then] ... [else] calls to be true if all the specified flags are unset.")]
 		private static void IfNDef(Sandbox sb, params string[] flags)
 		{
 			sb.FlagConditionExpectedResult = false;
 			sb.ConditionFlags.Clear();
-			foreach (var flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
+			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
 			{
 				sb.ConditionFlags.Add(flag);
 			}
@@ -851,8 +794,7 @@ namespace Rant.Core.Framework
 		[RantFunction("in")]
 		[RantDescription("Prints the value of the specified pattern argument.")]
 		private static void PatternArg(Sandbox sb,
-			[RantDescription("The name of the argument to access.")]
-			string argName)
+			[RantDescription("The name of the argument to access.")] string argName)
 		{
 			if (sb.PatternArgs == null) return;
 			sb.Output.Print(sb.PatternArgs[argName]);
@@ -889,8 +831,7 @@ namespace Rant.Core.Framework
 		[RantFunction("emoji")]
 		[RantDescription("Takes an emoji shortcode and prints the corresponding emoji.")]
 		private static void PrintEmoji(Sandbox sb,
-			[RantDescription("The emoji shortcode to use, without colons.")]
-			string shortcode)
+			[RantDescription("The emoji shortcode to use, without colons.")] string shortcode)
 		{
 			shortcode = shortcode.ToLower();
 			if (!Emoji.Shortcodes.ContainsKey(shortcode))
@@ -898,7 +839,7 @@ namespace Rant.Core.Framework
 				sb.Print("[missing emoji]");
 				return;
 			}
-			sb.Print(Char.ConvertFromUtf32(Emoji.Shortcodes[shortcode]));
+			sb.Print(char.ConvertFromUtf32(Emoji.Shortcodes[shortcode]));
 		}
 
 		[RantFunction("plural", "pl")]
@@ -940,8 +881,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Prints the current length of the specified channel, in characters.")]
 		private static void Len(Sandbox sb,
-			[RantDescription("The channel for which to retrieve the length.")]
-			string channelName)
+			[RantDescription("The channel for which to retrieve the length.")] string channelName)
 		{
 			sb.Print(sb.Output.GetChannelLength(channelName));
 		}

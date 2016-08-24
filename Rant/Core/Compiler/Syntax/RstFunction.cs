@@ -10,9 +10,9 @@ namespace Rant.Core.Compiler.Syntax
 {
 	internal class RstFunction : RST
 	{
-		private readonly RantFunctionSignature _funcInfo;
 		private readonly List<RST> _argActions;
 		private readonly int _argc;
+		private readonly RantFunctionSignature _funcInfo;
 
 		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> argActions)
 			: base(location)
@@ -22,23 +22,23 @@ namespace Rant.Core.Compiler.Syntax
 			_argc = argActions.Count;
 		}
 
-	    private RantFunctionParameter GetParameter(int index)
-	    {
-	        if (index >= _funcInfo.Parameters.Length - 1 && _funcInfo.HasParamArray)
-	            return _funcInfo.Parameters[_funcInfo.Parameters.Length - 1];
-	        return _funcInfo.Parameters[index];
-	    }
+		private RantFunctionParameter GetParameter(int index)
+		{
+			if (index >= _funcInfo.Parameters.Length - 1 && _funcInfo.HasParamArray)
+				return _funcInfo.Parameters[_funcInfo.Parameters.Length - 1];
+			return _funcInfo.Parameters[index];
+		}
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			// Convert arguments to their native types
-		    int paramc = _funcInfo.Parameters.Length;
+			int paramc = _funcInfo.Parameters.Length;
 			var args = new object[_argc];
 			double d;
-		    RantFunctionParameter p;
+			RantFunctionParameter p;
 			for (int i = 0; i < _argc; i++)
 			{
-			    p = GetParameter(i);
+				p = GetParameter(i);
 				switch (p.RantType)
 				{
 					// Patterns are passed right to the method
@@ -58,8 +58,8 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						var strNum = sb.Return().Main;
-						if (!Double.TryParse(strNum, out d))
+						string strNum = sb.Return().Main;
+						if (!double.TryParse(strNum, out d))
 						{
 							d = 0;
 							int n;
@@ -74,7 +74,7 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						sb.AddOutputWriter();
 						yield return _argActions[i];
-						var strMode = sb.Return().Main;
+						string strMode = sb.Return().Main;
 						object value;
 						if (!Util.TryParseEnum(p.NativeType, strMode, out value))
 						{
@@ -85,16 +85,16 @@ namespace Rant.Core.Compiler.Syntax
 						break;
 					}
 
-                    // Flags are parsed from strings to enum members and combined with OR.
+					// Flags are parsed from strings to enum members and combined with OR.
 					case RantFunctionParameterType.Flags:
 					{
 						var enumType = p.NativeType;
 						sb.AddOutputWriter();
 						yield return _argActions[i];
 						long flags = 0;
-						var strFlags = sb.Return().Main;
+						string strFlags = sb.Return().Main;
 						object value;
-						foreach(var flag in strFlags.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries))
+						foreach (string flag in strFlags.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 						{
 							if (!Util.TryParseEnum(enumType, flag, out value))
 								throw new RantRuntimeException(sb.Pattern, _argActions[i].Location,
@@ -107,20 +107,20 @@ namespace Rant.Core.Compiler.Syntax
 				}
 			}
 
-            // Invoke the function
-		    IEnumerator<RST> requester;
-		    if (_funcInfo.HasParamArray)
-		    {
-		        int required = paramc - 1;
-		        int parrayCount = _argc - required;
-		        var parray = Array.CreateInstance(_funcInfo.Parameters[required].NativeType, parrayCount);
-                Array.Copy(args, required, parray, 0, parrayCount);
-		        requester = _funcInfo.Invoke(sb, args.Take(required).Concat(new[] { parray }).ToArray());
-		    }
-		    else
-		    {
-                requester = _funcInfo.Invoke(sb, args);
-            }
+			// Invoke the function
+			IEnumerator<RST> requester;
+			if (_funcInfo.HasParamArray)
+			{
+				int required = paramc - 1;
+				int parrayCount = _argc - required;
+				var parray = Array.CreateInstance(_funcInfo.Parameters[required].NativeType, parrayCount);
+				Array.Copy(args, required, parray, 0, parrayCount);
+				requester = _funcInfo.Invoke(sb, args.Take(required).Concat(new[] { parray }).ToArray());
+			}
+			else
+			{
+				requester = _funcInfo.Invoke(sb, args);
+			}
 
 			while (requester.MoveNext())
 			{

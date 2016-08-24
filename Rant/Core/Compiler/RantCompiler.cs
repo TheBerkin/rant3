@@ -13,33 +13,28 @@ namespace Rant.Core.Compiler
 {
 	internal class RantCompiler
 	{
-		private readonly Stringe _source;
-		private readonly string _sourceName;
-		private readonly TokenReader _reader;
 		private readonly Stack<CompileContext> _contextStack = new Stack<CompileContext>();
-		private Action<RST> _nextActionCallback = null;
-
+		private readonly TokenReader _reader;
+		private readonly string _sourceName;
+		internal readonly RantModule Module;
 		private List<RantCompilerMessage> _errors;
+		private Action<RST> _nextActionCallback = null;
 		// private List<RantCompilerMessage> _warnings;
 		internal bool HasModule = false;
-		internal readonly RantModule Module;
-		internal CompileContext NextContext => _contextStack.Peek();
 
 		public RantCompiler(string sourceName, string source)
 		{
 			Module = new RantModule(sourceName);
 
 			_sourceName = sourceName;
-			_source = source.ToStringe();
-			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, _source, SyntaxError), this);
+			Source = source.ToStringe();
+			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, Source, SyntaxError), this);
 		}
 
-		public Stringe Source => _source;
-
+		internal CompileContext NextContext => _contextStack.Peek();
+		public Stringe Source { get; }
 		public void AddContext(CompileContext context) => _contextStack.Push(context);
-
 		public void LeaveContext() => _contextStack.Pop();
-
 		public void SetNextActionCallback(Action<RST> callback) => _nextActionCallback = callback;
 
 		public RST Compile()
@@ -74,7 +69,7 @@ namespace Rant.Core.Compiler
 				if (_errors?.Count > 0)
 					throw new RantCompilerException(_sourceName, _errors);
 
-				return new RstSequence(actionList, _source);
+				return new RstSequence(actionList, Source);
 			}
 			catch (RantCompilerException)
 			{
@@ -91,7 +86,8 @@ namespace Rant.Core.Compiler
 		public void SyntaxError(Stringe token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
 		{
 			(_errors ?? (_errors = new List<RantCompilerMessage>()))
-				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName, GetString(errorMessageType, errorMessageArgs),
+				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
+					GetString(errorMessageType, errorMessageArgs),
 					token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
 			if (fatal) throw new RantCompilerException(_sourceName, _errors);
 		}

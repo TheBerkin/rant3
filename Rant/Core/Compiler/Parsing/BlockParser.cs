@@ -8,7 +8,8 @@ namespace Rant.Core.Compiler.Parsing
 {
 	internal class BlockParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			var blockStartToken = reader.PrevLooseToken;
 			var items = new List<RST>();
@@ -17,9 +18,9 @@ namespace Rant.Core.Compiler.Parsing
 			// "why are these not lists or arrays" i yell into the void, too lazy to find out why
 			List<_<int, double>> constantWeights = null;
 			List<_<int, RST>> dynamicWeights = null;
-			var blockNumber = 0;
-			Action<RST> itemCallback = (action) => actions.Add(action);
-			
+			int blockNumber = 0;
+			Action<RST> itemCallback = action => actions.Add(action);
+
 			compiler.AddContext(CompileContext.BlockEndSequence);
 			compiler.AddContext(CompileContext.BlockSequence);
 
@@ -36,7 +37,7 @@ namespace Rant.Core.Compiler.Parsing
 					// constant weight
 					if (reader.PeekLooseToken().ID == R.Text)
 					{
-						var value = reader.ReadLooseToken().Value;
+						string value = reader.ReadLooseToken().Value;
 						double doubleValue;
 						if (!double.TryParse(value, out doubleValue))
 						{
@@ -54,7 +55,7 @@ namespace Rant.Core.Compiler.Parsing
 						var weightActions = new List<RST>();
 
 						Action<RST> weightActionCallback = rst => weightActions.Add(rst);
-						
+
 						compiler.SetNextActionCallback(weightActionCallback);
 						compiler.AddContext(CompileContext.BlockWeight);
 						yield return Get<SequenceParser>();

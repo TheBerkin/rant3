@@ -4,14 +4,15 @@ using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Stringes;
-using Rant.Vocabulary.Querying;
 using Rant.Core.Utilities;
+using Rant.Vocabulary.Querying;
 
 namespace Rant.Core.Compiler.Parsing
 {
 	internal class QueryParser : Parser
 	{
-		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback)
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
 		{
 			var tableName = reader.ReadLoose(R.Text, "acc-table-name");
 			var query = new Query();
@@ -44,16 +45,16 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 					// complement
 					case R.LeftSquare:
-						{
-							if (complementRead) compiler.SyntaxError(token, false, "err-compiler-multiple-complements");
-							var seq = new List<RST>();
-							compiler.AddContext(CompileContext.QueryComplement);
-							compiler.SetNextActionCallback(seq.Add);
-							yield return Get<SequenceParser>();
-							compiler.SetNextActionCallback(actionCallback);
-							query.Complement = new RstSequence(seq, Stringe.Between(token, reader.PrevToken));
-							complementRead = true;
-						}
+					{
+						if (complementRead) compiler.SyntaxError(token, false, "err-compiler-multiple-complements");
+						var seq = new List<RST>();
+						compiler.AddContext(CompileContext.QueryComplement);
+						compiler.SetNextActionCallback(seq.Add);
+						yield return Get<SequenceParser>();
+						compiler.SetNextActionCallback(actionCallback);
+						query.Complement = new RstSequence(seq, Stringe.Between(token, reader.PrevToken));
+						complementRead = true;
+					}
 						break;
 					// read class filter
 					case R.Hyphen:
@@ -69,20 +70,19 @@ namespace Rant.Core.Compiler.Parsing
 							var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
-						}
-						while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
+						} while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
 						break;
 
 					// read regex filter
 					case R.Without:
 					case R.Question:
-						{
-							bool blacklist = (token.ID == R.Without);
+					{
+						bool blacklist = (token.ID == R.Without);
 
-							var regexFilter = reader.Read(R.Regex, "regex filter rule");
-							var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
-							query.RegexFilters.Add(rule);
-						}
+						var regexFilter = reader.Read(R.Regex, "regex filter rule");
+						var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
+						query.RegexFilters.Add(rule);
+					}
 						break;
 
 					// read syllable range
@@ -196,11 +196,11 @@ namespace Rant.Core.Compiler.Parsing
 				{
 					// match carrier
 					case R.Equal:
-						{
-							var name = reader.Read(R.Text, "acc-carrier-name");
-							if (name != null)
-								carrier.AddComponent(CarrierComponent.Match, name.Value);
-						}
+					{
+						var name = reader.Read(R.Text, "acc-carrier-name");
+						if (name != null)
+							carrier.AddComponent(CarrierComponent.Match, name.Value);
+					}
 						break;
 
 					// associative and match associative,
@@ -208,78 +208,78 @@ namespace Rant.Core.Compiler.Parsing
 					// divergent and match-divergent
 					// relational and match-relational
 					case R.At:
+					{
+						var carrierType = CarrierComponent.Associative;
+						// disassociative
+						if (reader.PeekToken().ID == R.Exclamation)
 						{
-							var carrierType = CarrierComponent.Associative;
-							// disassociative
-							if (reader.PeekToken().ID == R.Exclamation)
-							{
-								carrierType = CarrierComponent.Dissociative;
-								reader.ReadToken();
-							}
-							// divergent
-							else if (reader.PeekToken().ID == R.Plus)
-							{
-								carrierType = CarrierComponent.Divergent;
-								reader.ReadToken();
-							}
-							else if (reader.PeekToken().ID == R.Question)
-							{
-								carrierType = CarrierComponent.Relational;
-								reader.ReadToken();
-							}
-
-							// match
-							if (reader.PeekToken().ID == R.Equal)
-							{
-								if (carrierType == CarrierComponent.Associative)
-								{
-									carrierType = CarrierComponent.MatchAssociative;
-								}
-								else if (carrierType == CarrierComponent.Dissociative)
-								{
-									carrierType = CarrierComponent.MatchDissociative;
-								}
-								else if (carrierType == CarrierComponent.Divergent)
-								{
-									carrierType = CarrierComponent.MatchDivergent;
-								}
-								else if (carrierType == CarrierComponent.Relational)
-								{
-									carrierType = CarrierComponent.MatchRelational;
-								}
-								reader.ReadToken();
-							}
-
-							var name = reader.Read(R.Text, "acc-carrier-name");
-							if (name != null)
-								carrier.AddComponent(carrierType, name.Value);
+							carrierType = CarrierComponent.Dissociative;
+							reader.ReadToken();
 						}
+						// divergent
+						else if (reader.PeekToken().ID == R.Plus)
+						{
+							carrierType = CarrierComponent.Divergent;
+							reader.ReadToken();
+						}
+						else if (reader.PeekToken().ID == R.Question)
+						{
+							carrierType = CarrierComponent.Relational;
+							reader.ReadToken();
+						}
+
+						// match
+						if (reader.PeekToken().ID == R.Equal)
+						{
+							if (carrierType == CarrierComponent.Associative)
+							{
+								carrierType = CarrierComponent.MatchAssociative;
+							}
+							else if (carrierType == CarrierComponent.Dissociative)
+							{
+								carrierType = CarrierComponent.MatchDissociative;
+							}
+							else if (carrierType == CarrierComponent.Divergent)
+							{
+								carrierType = CarrierComponent.MatchDivergent;
+							}
+							else if (carrierType == CarrierComponent.Relational)
+							{
+								carrierType = CarrierComponent.MatchRelational;
+							}
+							reader.ReadToken();
+						}
+
+						var name = reader.Read(R.Text, "acc-carrier-name");
+						if (name != null)
+							carrier.AddComponent(carrierType, name.Value);
+					}
 						break;
 
 					// unique and match unique
 					case R.Exclamation:
+					{
+						var carrierType = CarrierComponent.Unique;
+						// match unique
+						if (reader.PeekToken().ID == R.Equal)
 						{
-							var carrierType = CarrierComponent.Unique;
-							// match unique
-							if (reader.PeekToken().ID == R.Equal)
-							{
-								carrierType = CarrierComponent.MatchUnique;
-								reader.ReadToken();
-							}
-
-							var name = reader.Read(R.Text, "acc-carrier-name");
-							if (name != null)
-								carrier.AddComponent(carrierType, name.Value);
+							carrierType = CarrierComponent.MatchUnique;
+							reader.ReadToken();
 						}
+
+						var name = reader.Read(R.Text, "acc-carrier-name");
+						if (name != null)
+							carrier.AddComponent(carrierType, name.Value);
+					}
 						break;
 
 					// rhyming
 					case R.Ampersand:
-						{
-							var name = reader.Read(R.Text, "acc-carrier-name");
-							if (name != null)
-								carrier.AddComponent(CarrierComponent.Rhyme, name.Value);
-						}
+					{
+						var name = reader.Read(R.Text, "acc-carrier-name");
+						if (name != null)
+							carrier.AddComponent(CarrierComponent.Rhyme, name.Value);
+					}
 						break;
 
 					// we're done, go away

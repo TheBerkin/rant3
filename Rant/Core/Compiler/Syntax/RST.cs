@@ -40,9 +40,5 @@ namespace Rant.Core.Compiler.Syntax
 			// Type code has already been read
 			//Deserialize(input);
 		}
-
-		//protected abstract void Serialize(EasyWriter output);
-
-		//protected abstract void Deserialize(EasyReader input);
 	}
 }

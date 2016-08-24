@@ -21,13 +21,12 @@ namespace Rant.Resources
 	{
 		private const string MAGIC = "RANT";
 		private const byte PACKAGE_VERSION = 2;
-
+		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
+		private string _id = GetString("default-package-id");
 		private HashSet<RantPattern> _patterns = new HashSet<RantPattern>();
 		private HashSet<RantDictionaryTable> _tables = new HashSet<RantDictionaryTable>();
-		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
-		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
 		private string _title = GetString("untitled-package");
-		private string _id = GetString("default-package-id");
+		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
 
 		/// <summary>
 		/// The display name of the package.
@@ -174,7 +173,6 @@ namespace Rant.Resources
 		/// </summary>
 		public void ClearDependencies() => _dependencies.Clear();
 
-
 		/// <summary>
 		/// Adds the specified pattern to the package.
 		/// </summary>
@@ -237,7 +235,7 @@ namespace Rant.Resources
 			bool compress = true,
 			BsonStringTableMode stringTableMode = BsonStringTableMode.None)
 		{
-			if (String.IsNullOrEmpty(Path.GetExtension(path)))
+			if (string.IsNullOrEmpty(Path.GetExtension(path)))
 			{
 				path += ".rantpkg";
 			}
@@ -323,7 +321,7 @@ namespace Rant.Resources
 		/// <returns></returns>
 		public static RantPackage Load(string path)
 		{
-			if (String.IsNullOrEmpty(Path.GetExtension(path))) path += ".rantpkg";
+			if (string.IsNullOrEmpty(Path.GetExtension(path))) path += ".rantpkg";
 			return Load(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
 		}
 
@@ -336,15 +334,15 @@ namespace Rant.Resources
 		{
 			using (var reader = new EasyReader(source))
 			{
-				var magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
+				string magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
 				if (magic != MAGIC)
 					throw new InvalidDataException(GetString("err-file-corrupt"));
 				var package = new RantPackage();
-				var version = reader.ReadUInt32();
+				uint version = reader.ReadUInt32();
 				if (version != PACKAGE_VERSION)
 					throw new InvalidDataException(GetString("err-invalid-package-version"));
-				var compress = reader.ReadBoolean();
-				var size = reader.ReadInt32();
+				bool compress = reader.ReadBoolean();
+				int size = reader.ReadInt32();
 				var data = reader.ReadBytes(size);
 				if (compress)
 					data = EasyCompressor.Decompress(data);
@@ -369,7 +367,10 @@ namespace Rant.Resources
 						var depId = dep["id"].Value;
 						var depVersion = dep["version"].Value;
 						bool depAllowNewer = (bool)dep["allow-newer"].Value;
-						package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString()) { AllowNewer = depAllowNewer });
+						package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString())
+						{
+							AllowNewer = depAllowNewer
+						});
 					}
 				}
 
@@ -389,22 +390,22 @@ namespace Rant.Resources
 					{
 						var table = tables[name];
 						string tableName = table["name"];
-						string[] tableSubs = (string[])table["subs"];
-						string[] hiddenClasses = (string[])table["hidden"];
+						var tableSubs = (string[])table["subs"];
+						var hiddenClasses = (string[])table["hidden"];
 
 						var entries = new List<RantDictionaryEntry>();
 						var entryList = table["entries"];
-						for (var i = 0; i < entryList.Count; i++)
+						for (int i = 0; i < entryList.Count; i++)
 						{
 							var loadedEntry = entryList[i];
 							int weight = 1;
 							if (loadedEntry.HasKey("weight"))
 								weight = (int)loadedEntry["weight"].Value;
-							string[] requiredClasses = (string[])loadedEntry["classes"];
-							string[] optionalClasses = (string[])loadedEntry["optional_classes"];
+							var requiredClasses = (string[])loadedEntry["classes"];
+							var optionalClasses = (string[])loadedEntry["optional_classes"];
 							var terms = new List<RantDictionaryTerm>();
 							var termList = loadedEntry["terms"];
-							for (var j = 0; j < termList.Count; j++)
+							for (int j = 0; j < termList.Count; j++)
 							{
 								var t = new RantDictionaryTerm(termList[j]["value"], termList[j]["pron"]);
 								terms.Add(t);
@@ -413,7 +414,7 @@ namespace Rant.Resources
 								terms.ToArray(),
 								requiredClasses.Concat(optionalClasses.Select(x => x + "?")),
 								weight
-							);
+								);
 							entries.Add(entry);
 						}
 						var rantTable = new RantDictionaryTable(
@@ -421,7 +422,7 @@ namespace Rant.Resources
 							tableSubs,
 							entries,
 							hiddenClasses
-						);
+							);
 						package.AddTable(rantTable);
 					}
 				}

@@ -1,21 +1,18 @@
-using System;
+using System.IO;
 
 namespace Rant.Core.IO.Compression.RangeCoder
 {
 	internal class Encoder
 	{
 		public const uint kTopValue = (1 << 24);
-
-		System.IO.Stream Stream;
-
-		public UInt64 Low;
+		private byte _cache;
+		private uint _cacheSize;
+		public ulong Low;
 		public uint Range;
-		uint _cacheSize;
-		byte _cache;
+		private long StartPosition;
+		private Stream Stream;
 
-		long StartPosition;
-
-		public void SetStream(System.IO.Stream stream)
+		public void SetStream(Stream stream)
 		{
 			Stream = stream;
 		}
@@ -64,15 +61,14 @@ namespace Rant.Core.IO.Compression.RangeCoder
 
 		public void ShiftLow()
 		{
-			if ((uint)Low < (uint)0xFF000000 || (uint)(Low >> 32) == 1)
+			if ((uint)Low < 0xFF000000 || (uint)(Low >> 32) == 1)
 			{
 				byte temp = _cache;
 				do
 				{
 					Stream.WriteByte((byte)(temp + (Low >> 32)));
 					temp = 0xFF;
-				}
-				while (--_cacheSize != 0);
+				} while (--_cacheSize != 0);
 				_cache = (byte)(((uint)Low) >> 24);
 			}
 			_cacheSize++;
@@ -114,20 +110,20 @@ namespace Rant.Core.IO.Compression.RangeCoder
 		public long GetProcessedSizeAdd()
 		{
 			return _cacheSize +
-				Stream.Position - StartPosition + 4;
+			       Stream.Position - StartPosition + 4;
 			// (long)Stream.GetProcessedSize();
 		}
 	}
 
-	class Decoder
+	internal class Decoder
 	{
 		public const uint kTopValue = (1 << 24);
-		public uint Range;
 		public uint Code;
+		public uint Range;
 		// public Buffer.InBuffer Stream = new Buffer.InBuffer(1 << 16);
-		public System.IO.Stream Stream;
+		public Stream Stream;
 
-		public void Init(System.IO.Stream stream)
+		public void Init(Stream stream)
 		{
 			// Stream.Init(stream);
 			Stream = stream;
@@ -228,7 +224,5 @@ namespace Rant.Core.IO.Compression.RangeCoder
 			Normalize();
 			return symbol;
 		}
-
-		// ulong GetProcessedSize() {return Stream.GetProcessedSize(); }
 	}
 }

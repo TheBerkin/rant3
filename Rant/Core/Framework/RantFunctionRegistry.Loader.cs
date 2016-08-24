@@ -11,8 +11,10 @@ namespace Rant.Core.Framework
 	internal static partial class RantFunctionRegistry
 	{
 		private static bool _loaded = false;
+
 		private static readonly Dictionary<string, RantFunction> FunctionTable =
 			new Dictionary<string, RantFunction>(StringComparer.InvariantCultureIgnoreCase);
+
 		private static readonly Dictionary<string, string> AliasTable =
 			new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -29,17 +31,19 @@ namespace Rant.Core.Framework
 			foreach (var method in typeof(RantFunctionRegistry).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
 			{
 				if (!method.IsStatic) continue;
-				var attr = method.GetCustomAttributes(typeof(RantFunctionAttribute), false).FirstOrDefault() as RantFunctionAttribute;
+				var attr =
+					method.GetCustomAttributes(typeof(RantFunctionAttribute), false).FirstOrDefault() as RantFunctionAttribute;
 				if (attr == null) continue; // Discard methods without a [RantFunction] attribute
 
 				// Compile metadata into RantFunctionInfo
-				var name = String.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
-				var descAttr = method.GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute;
-				var info = new RantFunctionSignature(name, descAttr?.Description ?? String.Empty, method);
+				string name = string.IsNullOrEmpty(attr.Name) ? method.Name.ToLower() : attr.Name;
+				var descAttr =
+					method.GetCustomAttributes(typeof(RantDescriptionAttribute), false).FirstOrDefault() as RantDescriptionAttribute;
+				var info = new RantFunctionSignature(name, descAttr?.Description ?? string.Empty, method);
 
 				if (Util.ValidateName(name)) RegisterFunction(info);
 
-				foreach (var alias in attr.Aliases.Where(Util.ValidateName))
+				foreach (string alias in attr.Aliases.Where(Util.ValidateName))
 					RegisterAlias(alias, info.Name);
 			}
 			_loaded = true;
@@ -59,7 +63,7 @@ namespace Rant.Core.Framework
 		}
 
 		public static IEnumerable<string> GetAliases(string funcName) =>
-			AliasTable.Where(pair => String.Equals(funcName, pair.Value, StringComparison.InvariantCultureIgnoreCase))
+			AliasTable.Where(pair => string.Equals(funcName, pair.Value, StringComparison.InvariantCultureIgnoreCase))
 				.Select(pair => pair.Key);
 
 		private static string ResolveAlias(string alias)
@@ -71,7 +75,8 @@ namespace Rant.Core.Framework
 		public static bool FunctionExists(string name) =>
 			AliasTable.ContainsKey(name) || FunctionTable.ContainsKey(name);
 
-		public static IEnumerable<IRantFunctionGroup> GetFunctions() => FunctionTable.Select(item => item.Value as IRantFunctionGroup);
+		public static IEnumerable<IRantFunctionGroup> GetFunctions()
+			=> FunctionTable.Select(item => item.Value as IRantFunctionGroup);
 
 		public static IEnumerable<string> GetFunctionNames() =>
 			FunctionTable.Select(item => item.Key);
@@ -80,7 +85,7 @@ namespace Rant.Core.Framework
 			FunctionTable.Select(item => item.Key).Concat(AliasTable.Keys);
 
 		public static string GetFunctionDescription(string funcName, int paramc) =>
-			GetFunctionGroup(funcName)?.GetFunction(paramc)?.Description ?? String.Empty;
+			GetFunctionGroup(funcName)?.GetFunction(paramc)?.Description ?? string.Empty;
 
 		public static RantFunction GetFunctionGroup(string name)
 		{

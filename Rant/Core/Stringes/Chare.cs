@@ -7,26 +7,40 @@ namespace Rant.Core.Stringes
 	/// </summary>
 	internal sealed class Chare
 	{
-		private readonly Stringe _src;
-		private readonly char _character;
-		private readonly int _offset;
-		private int _line;
 		private int _column;
+		private int _line;
+
+		internal Chare(Stringe source, char c, int offset)
+		{
+			Source = source;
+			Character = c;
+			Offset = offset;
+			_line = _column = 0;
+		}
+
+		internal Chare(Stringe source, char c, int offset, int line, int col)
+		{
+			Source = source;
+			Character = c;
+			Offset = offset;
+			_line = line;
+			_column = col;
+		}
 
 		/// <summary>
 		/// The stringe from which the charactere was taken.
 		/// </summary>
-		public Stringe Source => _src;
+		public Stringe Source { get; }
 
 		/// <summary>
 		/// The underlying character.
 		/// </summary>
-		public char Character => _character;
+		public char Character { get; }
 
 		/// <summary>
 		/// The position of the charactere in the stringe.
 		/// </summary>
-		public int Offset => _offset;
+		public int Offset { get; }
 
 		/// <summary>
 		/// The line on which the charactere appears.
@@ -54,12 +68,12 @@ namespace Rant.Core.Stringes
 
 		private void SetLineCol()
 		{
-			_line = _src.Line;
-			_column = _src.Column;
-			if (_offset <= 0) return;
-			for (int i = 0; i < _offset; i++)
+			_line = Source.Line;
+			_column = Source.Column;
+			if (Offset <= 0) return;
+			for (int i = 0; i < Offset; i++)
 			{
-				if (_src.ParentString[_offset] == '\n')
+				if (Source.ParentString[Offset] == '\n')
 				{
 					_line++;
 					_column = 1;
@@ -71,32 +85,15 @@ namespace Rant.Core.Stringes
 			}
 		}
 
-		internal Chare(Stringe source, char c, int offset)
-		{
-			_src = source;
-			_character = c;
-			_offset = offset;
-			_line = _column = 0;
-		}
-
-		internal Chare(Stringe source, char c, int offset, int line, int col)
-		{
-			_src = source;
-			_character = c;
-			_offset = offset;
-			_line = line;
-			_column = col;
-		}
-
 		/// <summary>
 		/// Returns the string representation of the current charactere.
 		/// </summary>
 		/// <returns></returns>
-		public override string ToString() => _character.ToString(CultureInfo.InvariantCulture);
+		public override string ToString() => Character.ToString(CultureInfo.InvariantCulture);
 
 		public static bool operator ==(Chare chare, char c)
 		{
-			return chare?._character == c;
+			return chare?.Character == c;
 		}
 
 		public static bool operator !=(Chare chare, char c)

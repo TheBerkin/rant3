@@ -5,10 +5,9 @@ namespace Rant.Core.Compiler
 	internal struct TokenLocation
 	{
 		public static readonly TokenLocation Unknown = new TokenLocation(-1, -1, -1);
-
-		public int Line;
 		public int Column;
 		public int Index;
+		public int Line;
 
 		public TokenLocation(int line, int column, int index)
 		{
@@ -17,6 +16,7 @@ namespace Rant.Core.Compiler
 			Index = index;
 		}
 
-		public static TokenLocation FromStringe(Stringe stringe) => new TokenLocation(stringe.Line, stringe.Column, stringe.Offset);
+		public static TokenLocation FromStringe(Stringe stringe)
+			=> new TokenLocation(stringe.Line, stringe.Column, stringe.Offset);
 	}
 }

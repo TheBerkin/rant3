@@ -6,16 +6,6 @@
 	public sealed class ClassFilterRule
 	{
 		/// <summary>
-		/// Determines whether the filter item expects a positive or negative match for the class.
-		/// </summary>
-		public bool ShouldMatch { get; set; } = true;
-
-		/// <summary>
-		/// The name of the class to search for.
-		/// </summary>
-		public string Class { get; set; }
-
-		/// <summary>
 		/// Initializes a new ClassFilterRule that checks for a positive match to the specified class.
 		/// </summary>
 		/// <param name="className">The name of the class to search for.</param>
@@ -34,5 +24,15 @@
 			Class = className;
 			ShouldMatch = shouldMatch;
 		}
+
+		/// <summary>
+		/// Determines whether the filter item expects a positive or negative match for the class.
+		/// </summary>
+		public bool ShouldMatch { get; set; } = true;
+
+		/// <summary>
+		/// The name of the class to search for.
+		/// </summary>
+		public string Class { get; set; }
 	}
 }

@@ -6,8 +6,8 @@ namespace Rant.Vocabulary
 {
 	internal class EntryTypeDefFilter
 	{
-		private readonly Regex _filterRegex = new Regex(@"!?\w+");
 		private readonly _<string, bool>[] _filterParts;
+		private readonly Regex _filterRegex = new Regex(@"!?\w+");
 
 		public EntryTypeDefFilter(string filter)
 		{

@@ -30,36 +30,14 @@ namespace Rant.Core.IO
 		}
 
 		/// <summary>
-		/// Creates a BitField object from the specified data.
-		/// </summary>
-		/// <typeparam name="T">The type of data to pass.</typeparam>
-		/// <param name="value">The data to pass to the BitField.</param>
-		/// <returns></returns>
-		public static BitField FromValue<T>(T value) where T : struct
-		{
-			int size = Marshal.SizeOf(typeof(T));
-			byte[] data = new byte[size];
-			IntPtr ptr = Marshal.AllocHGlobal(size);
-			Marshal.StructureToPtr(value, ptr, false);
-			Marshal.Copy(ptr, data, 0, size);
-			return new BitField(data);
-		}
-
-		/// <summary>
 		/// Accesses the bit at the specified index in the bit field.
 		/// </summary>
 		/// <param name="i">The index of the bit to access.</param>
 		/// <returns></returns>
 		public bool this[int i]
 		{
-			get
-			{
-				return ((_field[i / 8] >> (i % 8)) & 1) == 1;
-			}
-			set
-			{
-				_field[i / 8] = (byte)((_field[i / 8] & ~(1 << (i % 8))) | ((value ? 1 << i % 8 : 0)));
-			}
+			get { return ((_field[i / 8] >> (i % 8)) & 1) == 1; }
+			set { _field[i / 8] = (byte)((_field[i / 8] & ~(1 << (i % 8))) | ((value ? 1 << i % 8 : 0))); }
 		}
 
 		/// <summary>
@@ -76,6 +54,22 @@ namespace Rant.Core.IO
 		public int Bytes
 		{
 			get { return _field.Length; }
+		}
+
+		/// <summary>
+		/// Creates a BitField object from the specified data.
+		/// </summary>
+		/// <typeparam name="T">The type of data to pass.</typeparam>
+		/// <param name="value">The data to pass to the BitField.</param>
+		/// <returns></returns>
+		public static BitField FromValue<T>(T value) where T : struct
+		{
+			int size = Marshal.SizeOf(typeof(T));
+			var data = new byte[size];
+			var ptr = Marshal.AllocHGlobal(size);
+			Marshal.StructureToPtr(value, ptr, false);
+			Marshal.Copy(ptr, data, 0, size);
+			return new BitField(data);
 		}
 
 		/// <summary>
@@ -117,7 +111,7 @@ namespace Rant.Core.IO
 		/// <returns>The number of unset bits.</returns>
 		public int GetUnsetCount()
 		{
-			return this.Bits - GetSetCount();
+			return Bits - GetSetCount();
 		}
 
 		/// <summary>

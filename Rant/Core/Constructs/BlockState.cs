@@ -5,25 +5,19 @@
 	/// </summary>
 	internal class BlockState
 	{
-		private readonly int _count;
-		private int _iterNum;
-		private int _index;
-
-		public int Count => _count;
-
-		public int Iteration => _iterNum;
-
-		public int Index => _index;
-
 		public BlockState(int count)
 		{
-			_count = count;
+			Count = count;
 		}
+
+		public int Count { get; }
+		public int Iteration { get; private set; }
+		public int Index { get; private set; }
 
 		public void Next(int index)
 		{
-			_index = index;
-			_iterNum++;
+			Index = index;
+			Iteration++;
 		}
 	}
 }

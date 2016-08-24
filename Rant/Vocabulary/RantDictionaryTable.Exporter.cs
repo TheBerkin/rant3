@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -21,7 +20,7 @@ namespace Rant.Vocabulary
 			{
 				writer.WriteLine("#name {0}", Name);
 				writer.WriteLine("#subs {0}", Subtypes.Aggregate((c, n) => c + " " + n));
-				foreach (var hiddenClass in _hidden)
+				foreach (string hiddenClass in _hidden)
 					writer.WriteLine($"#hidden {hiddenClass}");
 				// TODO: Export types for tables
 				writer.WriteLine();
@@ -101,17 +100,24 @@ namespace Rant.Vocabulary
 
 		private class RantDictionaryTableClassDirective
 		{
-			public string Name;
-			public Dictionary<string, RantDictionaryTableClassDirective> Children;
+			public readonly Dictionary<string, RantDictionaryTableClassDirective> Children;
+			public readonly List<RantDictionaryEntry> Entries;
+			public readonly string Name;
 			public RantDictionaryTableClassDirective Parent;
-			public List<RantDictionaryEntry> Entries;
+
+			public RantDictionaryTableClassDirective(string name)
+			{
+				Name = name;
+				Entries = new List<RantDictionaryEntry>();
+				Children = new Dictionary<string, RantDictionaryTableClassDirective>();
+			}
 
 			public string[] Classes
 			{
 				get
 				{
 					if (Parent == null) return new string[0];
-					var classes = new List<string>() { this.Name };
+					var classes = new List<string> { Name };
 					classes.AddRange(Parent.Classes);
 					return classes.ToArray();
 				}
@@ -119,19 +125,12 @@ namespace Rant.Vocabulary
 
 			public bool ShouldPrune
 			{
-				get { return this.Parent != null && this.Entries.Count <= 3 && !this.Children.Any(); }
-			}
-
-			public RantDictionaryTableClassDirective(string name)
-			{
-				this.Name = name;
-				this.Entries = new List<RantDictionaryEntry>();
-				this.Children = new Dictionary<string, RantDictionaryTableClassDirective>();
+				get { return Parent != null && Entries.Count <= 3 && !Children.Any(); }
 			}
 
 			public RantDictionaryTableClassDirective FindDirectiveForClasses(string[] classes)
 			{
-				foreach (var c in classes.Where(c => Children.ContainsKey(c)))
+				foreach (string c in classes.Where(c => Children.ContainsKey(c)))
 				{
 					if (classes.Length == 1) return Children[c];
 					var tree = Children[c].FindDirectiveForClasses(classes.Where(x => x != c).ToArray());
@@ -145,11 +144,11 @@ namespace Rant.Vocabulary
 
 			public void Prune()
 			{
-				if (this.ShouldPrune)
+				if (ShouldPrune)
 				{
 					if (Parent == null) return;
-					Parent.Entries.AddRange(this.Entries);
-					Parent.Children.Remove(this.Name);
+					Parent.Entries.AddRange(Entries);
+					Parent.Children.Remove(Name);
 				}
 				var children = Children.Values.ToList();
 				foreach (var child in children)
@@ -160,33 +159,38 @@ namespace Rant.Vocabulary
 			{
 				string leadingWhitespace = "";
 				string leadingWhitespacer = (Parent != null ? "  " : "");
-				for (var i = 0; i < level; i++)
+				for (int i = 0; i < level; i++)
 				{
 					leadingWhitespacer += "  ";
 					leadingWhitespace += "  ";
 				}
 
 				if (Parent != null)
-					writer.WriteLine(leadingWhitespace + "#class add " + this.Name);
+					writer.WriteLine(leadingWhitespace + "#class add " + Name);
 
-				foreach (string key in this.Children.Keys.OrderBy(x => x))
-					this.Children[key].Render(writer, level + 1, diffmark);
+				foreach (string key in Children.Keys.OrderBy(x => x))
+					Children[key].Render(writer, level + 1, diffmark);
 
-				foreach (RantDictionaryEntry entry in Entries.OrderBy(x => x[0].Value))
+				foreach (var entry in Entries.OrderBy(x => x[0].Value))
 				{
 					if (entry.TermCount > 1 && diffmark)
 					{
-						writer.WriteLine(leadingWhitespacer + ">> {0}", entry.GetTerms().Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry[0].Value, t.Value)).Aggregate((c, n) => c + "/" + n));
+						writer.WriteLine(leadingWhitespacer + ">> {0}",
+							entry.GetTerms()
+								.Select((t, i) => i == 0 ? t.Value : Diff.Derive(entry[0].Value, t.Value))
+								.Aggregate((c, n) => c + "/" + n));
 					}
 					else
 					{
-						writer.WriteLine(leadingWhitespacer + "> {0}", entry.GetTerms().Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
+						writer.WriteLine(leadingWhitespacer + "> {0}",
+							entry.GetTerms().Select(t => t.Value).Aggregate((c, n) => c + "/" + n));
 					}
 
 					if (!Util.IsNullOrWhiteSpace(entry[0].Pronunciation))
-						writer.WriteLine(leadingWhitespacer + "  | pron {0}", entry.GetTerms().Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
+						writer.WriteLine(leadingWhitespacer + "  | pron {0}",
+							entry.GetTerms().Select(t => t.Pronunciation).Aggregate((c, n) => c + "/" + n));
 
-					string[] uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).OrderBy(x => x).ToArray();
+					var uniqueClasses = GetClassesForExport(entry).Where(x => !Classes.Contains(x)).OrderBy(x => x).ToArray();
 					if (uniqueClasses.Length > 0)
 						writer.WriteLine(leadingWhitespacer + "  | class {0}", uniqueClasses.Aggregate((c, n) => c + " " + n));
 
@@ -195,7 +199,7 @@ namespace Rant.Vocabulary
 				}
 
 				if (Parent != null)
-					writer.WriteLine(leadingWhitespace + "#class remove " + this.Name + "\n");
+					writer.WriteLine(leadingWhitespace + "#class remove " + Name + "\n");
 			}
 		}
 	}

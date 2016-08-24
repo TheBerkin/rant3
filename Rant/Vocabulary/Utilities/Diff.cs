@@ -10,13 +10,7 @@ namespace Rant.Vocabulary.Utilities
 	/// </summary>
 	internal sealed class Diff
 	{
-		private readonly string _patternString;
 		private readonly Rule[] _rules;
-
-		/// <summary>
-		/// The pattern string for the diff.
-		/// </summary>
-		public string Pattern => _patternString;
 
 		/// <summary>
 		/// Creates a new Diffmark pattern for you to enjoy.
@@ -27,9 +21,14 @@ namespace Rant.Vocabulary.Utilities
 			if (patternString == null)
 				throw new ArgumentException("Pattern string cannot be null.");
 
-			_patternString = patternString;
+			Pattern = patternString;
 			_rules = Lexer.Lex(patternString).Select(tokens => Rule.Parse(tokens.ToArray())).ToArray();
 		}
+
+		/// <summary>
+		/// The pattern string for the diff.
+		/// </summary>
+		public string Pattern { get; }
 
 		/// <summary>
 		/// Applies the pattern to a string.
@@ -74,7 +73,7 @@ namespace Rant.Vocabulary.Utilities
 
 		internal static string Cut(string baseString, int factor, bool prepend)
 		{
-			if (factor > baseString.Length) return String.Empty;
+			if (factor > baseString.Length) return string.Empty;
 			return prepend ? baseString.Substring(factor) : baseString.Substring(0, baseString.Length - factor);
 		}
 
@@ -88,7 +87,7 @@ namespace Rant.Vocabulary.Utilities
 				while (currentWordIndex < factor)
 				{
 					a = b;
-					while (a < baseString.Length && !Char.IsLetterOrDigit(baseString[a]))
+					while (a < baseString.Length && !char.IsLetterOrDigit(baseString[a]))
 					{
 						a++;
 					}
@@ -96,7 +95,7 @@ namespace Rant.Vocabulary.Utilities
 					if (a >= baseString.Length) return baseString;
 
 					b = a;
-					while (b < baseString.Length && Char.IsLetterOrDigit(baseString[b]))
+					while (b < baseString.Length && char.IsLetterOrDigit(baseString[b]))
 					{
 						b++;
 					}
@@ -110,7 +109,7 @@ namespace Rant.Vocabulary.Utilities
 				while (currentWordIndex < factor)
 				{
 					b = a;
-					while (b > 0 && !Char.IsLetterOrDigit(baseString[b - 1]))
+					while (b > 0 && !char.IsLetterOrDigit(baseString[b - 1]))
 					{
 						b--;
 					}
@@ -118,7 +117,7 @@ namespace Rant.Vocabulary.Utilities
 					if (b <= 0) return baseString;
 
 					a = b;
-					while (a > 0 && Char.IsLetterOrDigit(baseString[a - 1]))
+					while (a > 0 && char.IsLetterOrDigit(baseString[a - 1]))
 					{
 						a--;
 					}
@@ -126,7 +125,7 @@ namespace Rant.Vocabulary.Utilities
 					currentWordIndex++;
 				}
 			}
-			return String.Concat(baseString.Substring(0, a), replacement, baseString.Substring(b));
+			return string.Concat(baseString.Substring(0, a), replacement, baseString.Substring(b));
 		}
 
 		/// <summary>
@@ -170,18 +169,19 @@ namespace Rant.Vocabulary.Utilities
 				{
 					if (LongestCommonSubstring(before, after, out lcsStartBefore, out lcsStartAfter, out lcsLength))
 					{
-						var beforeLeft = before.Substring(0, lcsStartBefore);
-						var afterLeft = after.Substring(0, lcsStartAfter);
+						string beforeLeft = before.Substring(0, lcsStartBefore);
+						string afterLeft = after.Substring(0, lcsStartAfter);
 						lm = LongestLeftMatch(beforeLeft, afterLeft);
 
 						sb.Append(afterLeft.Substring(0, afterLeft.Length - lm))
 							.Append(lm < beforeLeft.Length
-								? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") + new string('-', beforeLeft.Length - lm)
+								? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") +
+								  new string('-', beforeLeft.Length - lm)
 								: "+")
 							.Append(';');
 
-						var beforeRight = before.Substring(lcsStartBefore + lcsLength);
-						var afterRight = after.Substring(lcsStartAfter + lcsLength);
+						string beforeRight = before.Substring(lcsStartBefore + lcsLength);
+						string afterRight = after.Substring(lcsStartAfter + lcsLength);
 						rm = LongestRightMatch(beforeRight, afterRight);
 
 						sb.Append(new string('-', beforeRight.Length - rm))
@@ -216,17 +216,20 @@ namespace Rant.Vocabulary.Utilities
 				{
 					if (LongestCommonSubstring(before, after, out lcsStartBefore, out lcsStartAfter, out lcsLength))
 					{
-						var beforeLeft = before.Substring(0, lcsStartBefore);
-						var afterLeft = after.Substring(0, lcsStartAfter);
+						string beforeLeft = before.Substring(0, lcsStartBefore);
+						string afterLeft = after.Substring(0, lcsStartAfter);
 						lm = LongestLeftMatch(beforeLeft, afterLeft);
 						sb.Append(afterLeft.Substring(0, afterLeft.Length - lm))
 							.Append(lm < beforeLeft.Length
-								? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") + new string('-', beforeLeft.Length - lm)
+								? (afterLeft.Length - lm == 0 && beforeLeft.Length - lm > 0 ? "|" : "") +
+								  new string('-', beforeLeft.Length - lm)
 								: "+")
 							.Append(';');
 
-						var beforeRight = lcsStartBefore + lcsLength >= before.Length ? "" : before.Substring(lcsStartBefore + lcsLength);
-						var afterRight = lcsStartAfter + lcsLength >= after.Length ? "" : after.Substring(lcsStartAfter + lcsLength);
+						string beforeRight = lcsStartBefore + lcsLength >= before.Length
+							? ""
+							: before.Substring(lcsStartBefore + lcsLength);
+						string afterRight = lcsStartAfter + lcsLength >= after.Length ? "" : after.Substring(lcsStartAfter + lcsLength);
 						rm = LongestRightMatch(beforeRight, afterRight);
 
 						sb.Append(new string('-', beforeRight.Length - rm))
@@ -248,7 +251,7 @@ namespace Rant.Vocabulary.Utilities
 		}
 
 		internal static bool LongestCommonSubstring(string a, string b,
-		out int start_a, out int start_b, out int length)
+			out int start_a, out int start_b, out int length)
 		{
 			start_a = start_b = length = 0;
 
@@ -275,7 +278,7 @@ namespace Rant.Vocabulary.Utilities
 				for (int j = i + 1; j <= minor.Length; j++)
 				{
 					if (j - i > length
-					&& (matchIndex = major.IndexOf(minor.Substring(i, j - i), StringComparison.InvariantCulture)) > -1)
+					    && (matchIndex = major.IndexOf(minor.Substring(i, j - i), StringComparison.InvariantCulture)) > -1)
 					{
 						majorStart = matchIndex;
 						minorStart = i;
@@ -323,17 +326,17 @@ namespace Rant.Vocabulary.Utilities
 
 		private class Rule
 		{
-			private static readonly Dictionary<DM, DiffRuleType> RuleMap = new Dictionary<DM, DiffRuleType>()
+			private static readonly Dictionary<DM, DiffRuleType> RuleMap = new Dictionary<DM, DiffRuleType>
 			{
-				{DM.ReplaceWord, DiffRuleType.ReplaceWord},
-				{DM.Subtract, DiffRuleType.Subtract},
-				{DM.Add, DiffRuleType.Add}
+				{ DM.ReplaceWord, DiffRuleType.ReplaceWord },
+				{ DM.Subtract, DiffRuleType.Subtract },
+				{ DM.Add, DiffRuleType.Add }
 			};
 
 			public readonly string ConcatString;
+			public readonly int Factor;
 			public readonly bool Prepend;
 			public readonly DiffRuleType Type;
-			public readonly int Factor;
 
 			private Rule(string concatString, bool prepend, DiffRuleType type, int factor)
 			{

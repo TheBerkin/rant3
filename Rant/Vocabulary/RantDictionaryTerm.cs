@@ -9,12 +9,10 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantDictionaryTerm
 	{
-		private string _value;
-		private string _pronunciation = String.Empty;
-		private string[] _syllables;
+		private string _pronunciation = string.Empty;
 		private int _syllableCount;
-		private int _valueSplitIndex = -1;
-		private int _pronSplitIndex = -1;
+		private string[] _syllables;
+		private string _value;
 
 		/// <summary>
 		/// Creates a new dictionary term with the specified value.
@@ -35,7 +33,7 @@ namespace Rant.Vocabulary
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
 			_value = value;
-			_pronunciation = pronunciation ?? String.Empty;
+			_pronunciation = pronunciation ?? string.Empty;
 		}
 
 		/// <summary>
@@ -44,18 +42,23 @@ namespace Rant.Vocabulary
 		/// <param name="value">The value of the term.</param>
 		/// <param name="pronunciation">The pronunciation of the term value.</param>
 		/// <param name="valueSplitIndex">The split index of the term value. Specify -1 for no split.</param>
-		/// <param name="pronSplitIndex">The split index of the term pronunciation string. Specify -1 for no split. Must be positive if the value is split and pronunciation data is present.</param>
+		/// <param name="pronSplitIndex">
+		/// The split index of the term pronunciation string. Specify -1 for no split. Must be
+		/// positive if the value is split and pronunciation data is present.
+		/// </param>
 		public RantDictionaryTerm(string value, string pronunciation, int valueSplitIndex, int pronSplitIndex)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
 			if (valueSplitIndex < 0 != pronSplitIndex < 0) throw new ArgumentException(GetString("err-incomplete-term-split"));
-			if (valueSplitIndex > _value.Length) throw new ArgumentException(GetString("err-invalid-term-split"), nameof(valueSplitIndex));
-			if (pronSplitIndex > pronunciation?.Length) throw new ArgumentException(GetString("err-invalid-term-split"), nameof(pronSplitIndex));
+			if (valueSplitIndex > _value.Length)
+				throw new ArgumentException(GetString("err-invalid-term-split"), nameof(valueSplitIndex));
+			if (pronSplitIndex > pronunciation?.Length)
+				throw new ArgumentException(GetString("err-invalid-term-split"), nameof(pronSplitIndex));
 
 			_value = value;
-			_pronunciation = pronunciation ?? String.Empty;
-			_valueSplitIndex = valueSplitIndex;
-			_pronSplitIndex = pronSplitIndex;
+			_pronunciation = pronunciation ?? string.Empty;
+			ValueSplitIndex = valueSplitIndex;
+			PronunciationSplitIndex = pronSplitIndex;
 		}
 
 		/// <summary>
@@ -74,25 +77,17 @@ namespace Rant.Vocabulary
 		/// <summary>
 		/// Determines whether the term is a split word.
 		/// </summary>
-		public bool IsSplit => _valueSplitIndex > -1;
+		public bool IsSplit => ValueSplitIndex > -1;
 
 		/// <summary>
 		/// Gets the split index of the term value.
 		/// </summary>
-		public int ValueSplitIndex
-		{
-			get { return _valueSplitIndex; }
-			set { _valueSplitIndex = value; }
-		}
+		public int ValueSplitIndex { get; set; } = -1;
 
 		/// <summary>
 		/// Gets the split index of the term pronunciation string.
 		/// </summary>
-		public int PronunciationSplitIndex
-		{
-			get { return _pronSplitIndex; }
-			set { _pronSplitIndex = value; }
-		}
+		public int PronunciationSplitIndex { get; set; } = -1;
 
 		/// <summary>
 		/// The pronunciation of the term.

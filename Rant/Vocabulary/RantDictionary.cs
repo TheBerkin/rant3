@@ -6,8 +6,6 @@ using System.Linq;
 using Rant.Core.Utilities;
 using Rant.Vocabulary.Querying;
 
-using static Rant.Localization.Txtres;
-
 namespace Rant.Vocabulary
 {
 	/// <summary>
@@ -15,8 +13,8 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantDictionary
 	{
-		private readonly Dictionary<string, RantDictionaryTable> _tables = new Dictionary<string, RantDictionaryTable>();
 		private readonly HashSet<string> _exposedClasses = new HashSet<string>();
+		private readonly Dictionary<string, RantDictionaryTable> _tables = new Dictionary<string, RantDictionaryTable>();
 
 		/// <summary>
 		/// Creates a new RantDictionary object that contains no tables.
@@ -50,6 +48,11 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
+		/// Gets all currently exposed hidden classes.
+		/// </summary>
+		public IEnumerable<string> IncludedHiddenClasses => _exposedClasses.AsEnumerable();
+
+		/// <summary>
 		/// Exposes a hidden class to query results.
 		/// </summary>
 		/// <param name="hiddenClassName">The name of the hidden class to expose.</param>
@@ -70,11 +73,6 @@ namespace Rant.Vocabulary
 			if (hiddenClassName == null) throw new ArgumentNullException(nameof(hiddenClassName));
 			_exposedClasses.Remove(hiddenClassName);
 		}
-
-		/// <summary>
-		/// Gets all currently exposed hidden classes.
-		/// </summary>
-		public IEnumerable<string> IncludedHiddenClasses => _exposedClasses.AsEnumerable();
 
 		/// <summary>
 		/// Adds a new RantDictionaryTable object to the collection.
@@ -103,23 +101,30 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Loads all dictionary (.dic) files from the specified directory and returns a RantDictionary object that contains the loaded data.
+		/// Loads all dictionary (.dic) files from the specified directory and returns a RantDictionary object that contains the
+		/// loaded data.
 		/// </summary>
 		/// <param name="directory">The directory from which to load dictionaries.</param>
 		/// <returns></returns>
 		public static RantDictionary FromDirectory(string directory)
 		{
-			return new RantDictionary(Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList());
+			return
+				new RantDictionary(
+					Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList());
 		}
 
 		/// <summary>
-		/// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the loaded data.
+		/// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the
+		/// loaded data.
 		/// </summary>
 		/// <param name="directories">The directories from which to load dictionaries.</param>
 		/// <returns></returns>
 		public static RantDictionary FromMultiDirectory(params string[] directories)
 		{
-			return new RantDictionary(directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories)).Select(RantDictionaryTable.FromFile));
+			return
+				new RantDictionary(
+					directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
+						.Select(RantDictionaryTable.FromFile));
 		}
 
 		/// <summary>

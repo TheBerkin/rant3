@@ -10,19 +10,23 @@ namespace Rant.Core.Output
 			new HashSet<char>(new[] { 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'é', 'É' });
 
 		private static readonly string[] ignorePrefixes =
-			{ "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" };
+		{ "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" };
+
 		private static readonly string[] allowPrefixes =
-			{ "honest", "honor", "hour", "8" };
+		{ "honest", "honor", "hour", "8" };
+
 		private static readonly string[] ignoreWords = { "u" };
+
 		private static readonly string[] allowWords =
-			{ "f", "fbi", "fcc", "fda", "x", "l", "m", "n", "s", "h" };
+		{ "f", "fbi", "fcc", "fda", "x", "l", "m", "n", "s", "h" };
 
 		public OutputChainArticleBuffer(Sandbox sb, OutputChainBuffer prev) : base(sb, prev)
 		{
 			Initialize();
 		}
 
-		public OutputChainArticleBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin) : base(sb, prev, targetOrigin)
+		public OutputChainArticleBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin)
+			: base(sb, prev, targetOrigin)
 		{
 			Initialize();
 		}
@@ -44,15 +48,15 @@ namespace Rant.Core.Output
 				c = sb[i];
 				if (start == -1)
 				{
-					if (Char.IsWhiteSpace(c) || Char.IsSeparator(c)) continue; // Must be padding, skip it
-					if (!Char.IsLetterOrDigit(c)) continue;
+					if (char.IsWhiteSpace(c) || char.IsSeparator(c)) continue; // Must be padding, skip it
+					if (!char.IsLetterOrDigit(c)) continue;
 					start = i;
 					if (i == sb.Length - 1) end = start + 1; // Word is one character long
 				}
 				else
 				{
 					end = i;
-					if (!Char.IsLetterOrDigit(c)) break;
+					if (!char.IsLetterOrDigit(c)) break;
 					if (i == sb.Length - 1) end++; // Consume character if it's the last one in the buffer
 				}
 			}
@@ -67,13 +71,13 @@ namespace Rant.Core.Output
 
 		private static bool CheckRules(string value)
 		{
-			if (String.IsNullOrEmpty(value)) return false;
+			if (string.IsNullOrEmpty(value)) return false;
 			return
-				(allowWords.Any(word => String.Equals(word, value, StringComparison.InvariantCultureIgnoreCase))
-					|| allowPrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase)))
+				(allowWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase))
+				 || allowPrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase)))
 				|| (vowels.Contains(value[0])
-					&& !ignorePrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase))
-					&& !ignoreWords.Any(word => String.Equals(word, value, StringComparison.InvariantCultureIgnoreCase)));
+				    && !ignorePrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase))
+				    && !ignoreWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase)));
 		}
 	}
 }

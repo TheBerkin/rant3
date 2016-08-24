@@ -5,6 +5,7 @@ namespace Rant.Core.IO.Compression
 	internal class CRC
 	{
 		public static readonly uint[] Table;
+		private uint _value = 0xFFFFFFFF;
 
 		static CRC()
 		{
@@ -22,9 +23,10 @@ namespace Rant.Core.IO.Compression
 			}
 		}
 
-		uint _value = 0xFFFFFFFF;
-
-		public void Init() { _value = 0xFFFFFFFF; }
+		public void Init()
+		{
+			_value = 0xFFFFFFFF;
+		}
 
 		public void UpdateByte(byte b)
 		{
@@ -37,17 +39,20 @@ namespace Rant.Core.IO.Compression
 				_value = Table[(((byte)(_value)) ^ data[offset + i])] ^ (_value >> 8);
 		}
 
-		public uint GetDigest() { return _value ^ 0xFFFFFFFF; }
-
-		static uint CalculateDigest(byte[] data, uint offset, uint size)
+		public uint GetDigest()
 		{
-			CRC crc = new CRC();
+			return _value ^ 0xFFFFFFFF;
+		}
+
+		private static uint CalculateDigest(byte[] data, uint offset, uint size)
+		{
+			var crc = new CRC();
 			// crc.Init();
 			crc.Update(data, offset, size);
 			return crc.GetDigest();
 		}
 
-		static bool VerifyDigest(uint digest, byte[] data, uint offset, uint size)
+		private static bool VerifyDigest(uint digest, byte[] data, uint offset, uint size)
 		{
 			return (CalculateDigest(data, offset, size) == digest);
 		}

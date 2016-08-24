@@ -61,11 +61,10 @@ namespace Rant.Core.Compiler.Syntax
 						yield return _query.Complement;
 						sb.Print(' ');
 						sb.Print(result.Value.Substring(result.ValueSplitIndex));
-					}	
+					}
 				}
 				else
 				{
-
 					sb.Print(result.Value);
 					if (_query.Complement != null)
 					{

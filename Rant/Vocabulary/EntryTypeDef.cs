@@ -7,20 +7,17 @@ namespace Rant.Vocabulary
 	{
 		private readonly HashSet<string> _classes;
 
-		public string Name { get; }
-
-		public EntryTypeDefFilter Filter { get; }
-
-		public IEnumerator<string> GetTypeClasses() => _classes.AsEnumerable().GetEnumerator();
-
 		public EntryTypeDef(string name, IEnumerable<string> classes, EntryTypeDefFilter filter)
 		{
 			Name = name;
 			_classes = new HashSet<string>();
-			foreach (var c in classes) _classes.Add(c);
+			foreach (string c in classes) _classes.Add(c);
 			Filter = filter;
 		}
 
+		public string Name { get; }
+		public EntryTypeDefFilter Filter { get; }
+		public IEnumerator<string> GetTypeClasses() => _classes.AsEnumerable().GetEnumerator();
 		public bool IsValidValue(string value) => _classes.Contains(value);
 
 		public bool Test(RantDictionaryEntry entry)

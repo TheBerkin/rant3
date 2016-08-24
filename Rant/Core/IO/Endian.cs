@@ -9,6 +9,7 @@
 		/// Big endian.
 		/// </summary>
 		Big,
+
 		/// <summary>
 		/// Little endian.
 		/// </summary>

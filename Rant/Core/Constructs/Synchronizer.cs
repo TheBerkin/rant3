@@ -6,43 +6,27 @@ namespace Rant.Core.Constructs
 {
 	internal class Synchronizer
 	{
-		private SyncType _type;
-		private int _index;
-		private int[] _state;
-		private bool _pinned, _bounce;
 		private readonly RNG _rng;
+		private bool _bounce;
+		private int[] _state;
 
 		public Synchronizer(SyncType type, long seed)
 		{
-			_type = type;
+			Type = type;
 			_rng = new RNG(seed);
-			_index = 0;
+			Index = 0;
 			_state = null;
-			_pinned = false;
+			Pinned = false;
 		}
 
-		public bool Pinned
-		{
-			get { return _pinned; }
-			set { _pinned = value; }
-		}
-
-		public SyncType Type
-		{
-			get { return _type; }
-			set { _type = value; }
-		}
-
-		public int Index
-		{
-			get { return _index; }
-			set { _index = value; }
-		}
+		public bool Pinned { get; set; }
+		public SyncType Type { get; set; }
+		public int Index { get; set; }
 
 		public void Reset()
 		{
 			_rng.Reset();
-			_index = 0;
+			Index = 0;
 			if (_state == null) return;
 			FillSlots();
 		}
@@ -50,7 +34,7 @@ namespace Rant.Core.Constructs
 		public void Reseed(string id)
 		{
 			_rng.Reset(id.Hash());
-			_index = 0;
+			Index = 0;
 			if (_state == null) return;
 			FillSlots();
 		}
@@ -73,10 +57,10 @@ namespace Rant.Core.Constructs
 
 		public int Step(bool force)
 		{
-			if (_type == SyncType.Locked) return _state[0];
-			if (_index >= _state.Length)
+			if (Type == SyncType.Locked) return _state[0];
+			if (Index >= _state.Length)
 			{
-				switch (_type)
+				switch (Type)
 				{
 					case SyncType.Deck:
 						ScrambleSlots();
@@ -84,41 +68,47 @@ namespace Rant.Core.Constructs
 					case SyncType.Ping:
 					case SyncType.Pong:
 						_bounce = !_bounce;
-						_index = 1;
+						Index = 1;
 						break;
 					default:
-						_index = 0;
+						Index = 0;
 						break;
 				}
 			}
-			if (_pinned && !force) return _state[_index];
+			if (Pinned && !force) return _state[Index];
 
-			switch (_type)
+			switch (Type)
 			{
 				case SyncType.Ping:
 				case SyncType.Pong:
-					return _bounce ? _state[(_state.Length - 1) - _index++] : _state[_index++];
+					return _bounce ? _state[(_state.Length - 1) - Index++] : _state[Index++];
 				default:
-					return _state[_index++];
+					return _state[Index++];
 			}
 		}
 
 		private void FillSlots()
 		{
-			switch (_type)
+			switch (Type)
 			{
 				case SyncType.Forward:
 				case SyncType.Ping:
-					for (int i = 0; i < _state.Length; _state[i] = i++) { }
+					for (int i = 0; i < _state.Length; _state[i] = i++)
+					{
+					}
 					break;
 				case SyncType.Reverse:
 				case SyncType.Pong:
-					for (int i = 0; i < _state.Length; _state[(_state.Length - 1) - i] = i++) { }
+					for (int i = 0; i < _state.Length; _state[(_state.Length - 1) - i] = i++)
+					{
+					}
 					break;
 				case SyncType.Locked:
 				case SyncType.Deck:
 				case SyncType.Cdeck:
-					for (int i = 0; i < _state.Length; _state[i] = i++) { }
+					for (int i = 0; i < _state.Length; _state[i] = i++)
+					{
+					}
 					ScrambleSlots();
 					break;
 			}

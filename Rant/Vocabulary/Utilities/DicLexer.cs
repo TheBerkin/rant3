@@ -23,17 +23,18 @@ namespace Rant.Vocabulary.Utilities
 						reader.ReadUntilAny('\n', '\r');
 						break;
 					case '>':
-						{
-							bool diffmark = reader.Eat('>');
-							yield return new Token<DicTokenType>(diffmark ? DicTokenType.DiffEntry : DicTokenType.Entry,
-								ReadRestOfLine(reader, diffmark).Trim());
-							break;
-						}
+					{
+						bool diffmark = reader.Eat('>');
+						yield return new Token<DicTokenType>(diffmark ? DicTokenType.DiffEntry : DicTokenType.Entry,
+							ReadRestOfLine(reader, diffmark).Trim());
+						break;
+					}
 					case '|':
 						yield return new Token<DicTokenType>(DicTokenType.Property, ReadRestOfLine(reader).Trim());
 						break;
 					default:
-						throw new InvalidDataException($"{source}: (Line {currentChar.Line}, Col {currentChar.Column}) Unexpected token: '{currentChar}'.");
+						throw new InvalidDataException(
+							$"{source}: (Line {currentChar.Line}, Col {currentChar.Column}) Unexpected token: '{currentChar}'.");
 				}
 			}
 			yield return new Token<DicTokenType>(DicTokenType.EOF, "");

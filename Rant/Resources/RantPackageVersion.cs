@@ -17,6 +17,29 @@ namespace Rant.Resources
 		private int _revision;
 
 		/// <summary>
+		/// Initializes a new RantPackageVersion instance with the specified values.
+		/// </summary>
+		/// <param name="major">The major version.</param>
+		/// <param name="minor">The minor version.</param>
+		/// <param name="revision">The revision number.</param>
+		public RantPackageVersion(int major, int minor, int revision)
+		{
+			if (major < 0) throw new ArgumentException("Major version must be non-negative.", nameof(major));
+			if (minor < 0) throw new ArgumentException("Minor version must be non-negative.", nameof(minor));
+			if (revision < 0) throw new ArgumentException("Revision number must be non-negative.", nameof(revision));
+			_major = major;
+			_minor = minor;
+			_revision = revision;
+		}
+
+		/// <summary>
+		/// Initializes a new RantPackageVersion instance with all values set to zero.
+		/// </summary>
+		public RantPackageVersion()
+		{
+		}
+
+		/// <summary>
 		/// The major version.
 		/// </summary>
 		public int Major
@@ -41,30 +64,6 @@ namespace Rant.Resources
 		{
 			get { return _revision; }
 			set { _revision = value < 0 ? 0 : value; }
-		}
-
-		/// <summary>
-		/// Initializes a new RantPackageVersion instance with the specified values.
-		/// </summary>
-		/// <param name="major">The major version.</param>
-		/// <param name="minor">The minor version.</param>
-		/// <param name="revision">The revision number.</param>
-		public RantPackageVersion(int major, int minor, int revision)
-		{
-			if (major < 0) throw new ArgumentException("Major version must be non-negative.", nameof(major));
-			if (minor < 0) throw new ArgumentException("Minor version must be non-negative.", nameof(minor));
-			if (revision < 0) throw new ArgumentException("Revision number must be non-negative.", nameof(revision));
-			_major = major;
-			_minor = minor;
-			_revision = revision;
-		}
-
-		/// <summary>
-		/// Initializes a new RantPackageVersion instance with all values set to zero.
-		/// </summary>
-		public RantPackageVersion()
-		{
-
 		}
 
 		public static bool operator <(RantPackageVersion a, RantPackageVersion b)

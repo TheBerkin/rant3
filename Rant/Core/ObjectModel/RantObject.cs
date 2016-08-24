@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -12,49 +13,16 @@ namespace Rant.Core.ObjectModel
 	public class RantObject
 	{
 		/// <summary>
-		/// No
+		/// Null
 		/// </summary>
-		public static readonly RantObject No = new RantObject();
+		public static readonly RantObject Null = new RantObject();
 
-		private double _number = 0;
-		private string _string = null;
-		private List<RantObject> _list = null;
 		private bool _boolean = false;
+		private List<RantObject> _list = null;
+		private double _number = 0;
 		private RantPattern _pattern = null;
-		private RST _action = null;
-
-		/// <summary>
-		/// The type of the object.
-		/// </summary>
-		public RantObjectType Type { get; internal set; } = RantObjectType.No;
-
-		/// <summary>
-		/// The value of the object.
-		/// </summary>
-		public object Value
-		{
-			get
-			{
-				switch (Type)
-				{
-					case RantObjectType.No:
-						return null;
-					case RantObjectType.Boolean:
-						return _boolean;
-					case RantObjectType.Number:
-						return _number;
-					case RantObjectType.Pattern:
-						return _pattern;
-					case RantObjectType.String:
-						return _string;
-					case RantObjectType.List:
-						return _list;
-					case RantObjectType.Action:
-						return _action;
-				}
-				return null;
-			}
-		}
+		private RST _rst = null;
+		private string _string = null;
 
 		/// <summary>
 		/// Creates a No object.
@@ -105,10 +73,10 @@ namespace Rant.Core.ObjectModel
 			_number = num;
 		}
 
-		internal RantObject(RST action)
+		internal RantObject(RST rst)
 		{
 			Type = RantObjectType.Action;
-			_action = action;
+			_rst = rst;
 		}
 
 		/// <summary>
@@ -150,7 +118,7 @@ namespace Rant.Core.ObjectModel
 			}
 			else if (obj is RST)
 			{
-				_action = (RST)obj;
+				_rst = (RST)obj;
 				Type = RantObjectType.Action;
 			}
 		}
@@ -165,6 +133,39 @@ namespace Rant.Core.ObjectModel
 		}
 
 		/// <summary>
+		/// The type of the object.
+		/// </summary>
+		public RantObjectType Type { get; internal set; } = RantObjectType.Null;
+
+		/// <summary>
+		/// The value of the object.
+		/// </summary>
+		public object Value
+		{
+			get
+			{
+				switch (Type)
+				{
+					case RantObjectType.Null:
+						return null;
+					case RantObjectType.Boolean:
+						return _boolean;
+					case RantObjectType.Number:
+						return _number;
+					case RantObjectType.Pattern:
+						return _pattern;
+					case RantObjectType.String:
+						return _string;
+					case RantObjectType.List:
+						return _list;
+					case RantObjectType.Action:
+						return _rst;
+				}
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Converts the current object to a RantObject of the specified type and returns it.
 		/// </summary>
 		/// <param name="type">The object type to convert to.</param>
@@ -176,78 +177,78 @@ namespace Rant.Core.ObjectModel
 			switch (type)
 			{
 				case RantObjectType.String:
+				{
+					switch (Type)
 					{
-						switch (Type)
+						case RantObjectType.Boolean:
+							return new RantObject(_boolean.ToString());
+						case RantObjectType.Number:
+							return new RantObject(_number.ToString(CultureInfo.InvariantCulture));
+						case RantObjectType.Pattern:
+							return new RantObject(_pattern.Code);
+						case RantObjectType.List:
 						{
-							case RantObjectType.Boolean:
-								return new RantObject(_boolean.ToString());
-							case RantObjectType.Number:
-								return new RantObject(_number.ToString());
-							case RantObjectType.Pattern:
-								return new RantObject(_pattern.Code);
-							case RantObjectType.List:
+							var sb = new StringBuilder();
+							bool first = true;
+							sb.Append("(");
+							foreach (var rantObject in _list)
+							{
+								if (first)
 								{
-									var sb = new StringBuilder();
-									bool first = true;
-									sb.Append("(");
-									foreach (var rantObject in _list)
-									{
-										if (first)
-										{
-											first = false;
-											sb.Append(", ");
-										}
+									first = false;
+									sb.Append(", ");
+								}
 
-										sb.Append(rantObject);
-									}
-									sb.Append(")");
-									return new RantObject(sb.ToString());
-								}
+								sb.Append(rantObject);
+							}
+							sb.Append(")");
+							return new RantObject(sb.ToString());
 						}
-						break;
 					}
+					break;
+				}
 				case RantObjectType.Number:
+				{
+					switch (Type)
 					{
-						switch (Type)
+						case RantObjectType.Boolean:
+							return new RantObject(_boolean ? 1 : 0);
+						case RantObjectType.String:
 						{
-							case RantObjectType.Boolean:
-								return new RantObject(_boolean ? 1 : 0);
-							case RantObjectType.String:
-								{
-									double num;
-									return double.TryParse(_string, out num) ? new RantObject(num) : No;
-								}
+							double num;
+							return double.TryParse(_string, out num) ? new RantObject(num) : Null;
 						}
-						break;
 					}
+					break;
+				}
 				case RantObjectType.Boolean:
+				{
+					switch (Type)
 					{
-						switch (Type)
+						case RantObjectType.Number:
+							return new RantObject(_number != 0);
+						case RantObjectType.String:
 						{
-							case RantObjectType.Number:
-								return new RantObject(_number != 0);
-							case RantObjectType.String:
-								{
-									var bstr = _string.ToLower().Trim();
-									switch (bstr)
-									{
-										case "true":
-											return new RantObject(true);
-										case "false":
-											return new RantObject(false);
-									}
-									break;
-								}
+							string bstr = _string.ToLower().Trim();
+							switch (bstr)
+							{
+								case "true":
+									return new RantObject(true);
+								case "false":
+									return new RantObject(false);
+							}
+							break;
 						}
-						break;
 					}
+					break;
+				}
 				case RantObjectType.List:
-					{
-						return new RantObject(new List<RantObject> { this });
-					}
+				{
+					return new RantObject(new List<RantObject> { this });
+				}
 			}
 
-			return No;
+			return Null;
 		}
 
 		/// <summary>
@@ -263,7 +264,7 @@ namespace Rant.Core.ObjectModel
 				_number = _number,
 				_pattern = _pattern,
 				_string = _string,
-				_action = _action,
+				_rst = _rst,
 				Type = Type
 			};
 		}
@@ -279,28 +280,28 @@ namespace Rant.Core.ObjectModel
 			switch (a.Type) // TODO: Cover all cases
 			{
 				case RantObjectType.Number:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
-						{
-							case RantObjectType.Number:
-								return new RantObject(a._number + b._number);
-						}
-						break;
+						case RantObjectType.Number:
+							return new RantObject(a._number + b._number);
 					}
+					break;
+				}
 				case RantObjectType.String:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
-						{
-							case RantObjectType.Number:
-								return new RantObject(a._string + b._number);
-							case RantObjectType.String:
-								return new RantObject(a._string + b._string);
-						}
-						break;
+						case RantObjectType.Number:
+							return new RantObject(a._string + b._number);
+						case RantObjectType.String:
+							return new RantObject(a._string + b._string);
 					}
+					break;
+				}
 			}
 
-			return No;
+			return Null;
 		}
 
 		/// <summary>
@@ -314,17 +315,17 @@ namespace Rant.Core.ObjectModel
 			switch (a.Type)
 			{
 				case RantObjectType.Number:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
-						{
-							case RantObjectType.Number:
-								return new RantObject(a._number - b._number);
-						}
-						break;
+						case RantObjectType.Number:
+							return new RantObject(a._number - b._number);
 					}
+					break;
+				}
 			}
 
-			return No;
+			return Null;
 		}
 
 		/// <summary>
@@ -338,34 +339,34 @@ namespace Rant.Core.ObjectModel
 			switch (a.Type)
 			{
 				case RantObjectType.Number:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
-						{
-							case RantObjectType.Number:
-								return new RantObject(a._number * b._number);
-						}
-						break;
+						case RantObjectType.Number:
+							return new RantObject(a._number * b._number);
 					}
+					break;
+				}
 				case RantObjectType.String:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
+						case RantObjectType.Number:
 						{
-							case RantObjectType.Number:
-								{
-									var sb = new StringBuilder();
-									int c = (int)b._number;
-									for (int i = 0; i < c; i++)
-									{
-										sb.Append(a._string);
-									}
-									return new RantObject(sb.ToString());
-								}
+							var sb = new StringBuilder();
+							int c = (int)b._number;
+							for (int i = 0; i < c; i++)
+							{
+								sb.Append(a._string);
+							}
+							return new RantObject(sb.ToString());
 						}
-						break;
 					}
+					break;
+				}
 			}
 
-			return No;
+			return Null;
 		}
 
 		/// <summary>
@@ -379,17 +380,17 @@ namespace Rant.Core.ObjectModel
 			switch (a.Type)
 			{
 				case RantObjectType.Number:
+				{
+					switch (b.Type)
 					{
-						switch (b.Type)
-						{
-							case RantObjectType.Number:
-								return new RantObject(a._number / b._number);
-						}
-						break;
+						case RantObjectType.Number:
+							return new RantObject(a._number / b._number);
 					}
+					break;
+				}
 			}
 
-			return No;
+			return Null;
 		}
 
 		/// <summary>
@@ -404,28 +405,28 @@ namespace Rant.Core.ObjectModel
 					return _boolean ? "true" : "false";
 				case RantObjectType.String:
 					return _string;
-				case RantObjectType.No:
+				case RantObjectType.Null:
 					return "no";
 				case RantObjectType.Undefined:
 					return "???";
 				case RantObjectType.Number:
-					return _number.ToString();
+					return _number.ToString(CultureInfo.InvariantCulture);
 				case RantObjectType.Pattern:
 					return $"$\"{_pattern.Code}\"";
 				case RantObjectType.List:
+				{
+					var sb = new StringBuilder();
+					bool first = true;
+					sb.Append("(");
+					foreach (var rantObject in _list)
 					{
-						var sb = new StringBuilder();
-						bool first = true;
-						sb.Append("(");
-						foreach (var rantObject in _list)
-						{
-							if (!first) sb.Append(", ");
-							first = false;
-							sb.Append(rantObject);
-						}
-						sb.Append(")");
-						return sb.ToString();
+						if (!first) sb.Append(", ");
+						first = false;
+						sb.Append(rantObject);
 					}
+					sb.Append(")");
+					return sb.ToString();
+				}
 			}
 			return Value.ToString();
 		}
@@ -433,16 +434,16 @@ namespace Rant.Core.ObjectModel
 		private static bool IsNumber(object value)
 		{
 			return value is sbyte
-					|| value is byte
-					|| value is short
-					|| value is ushort
-					|| value is int
-					|| value is uint
-					|| value is long
-					|| value is ulong
-					|| value is float
-					|| value is double
-					|| value is decimal;
+			       || value is byte
+			       || value is short
+			       || value is ushort
+			       || value is int
+			       || value is uint
+			       || value is long
+			       || value is ulong
+			       || value is float
+			       || value is double
+			       || value is decimal;
 		}
 	}
 }

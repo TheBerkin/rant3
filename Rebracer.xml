@@ -19,12 +19,12 @@
         <PropertyValue name="EnableHighlightRelatedKeywords">1</PropertyValue>
         <PropertyValue name="ExtractMethod_AllowMovingDeclaration">0</PropertyValue>
         <PropertyValue name="ExtractMethod_DoNotPutOutOrRefOnStruct">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnBlockCompletion">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnPaste">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnStatementCompletion">1</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnBlockCompletion">0</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnPaste">0</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnStatementCompletion">0</PropertyValue>
         <PropertyValue name="Indent_BlockContents">1</PropertyValue>
         <PropertyValue name="Indent_Braces">0</PropertyValue>
-        <PropertyValue name="Indent_CaseContents">1</PropertyValue>
+        <PropertyValue name="Indent_CaseContents">0</PropertyValue>
         <PropertyValue name="Indent_CaseLabels">1</PropertyValue>
         <PropertyValue name="Indent_FlushLabelsLeft">0</PropertyValue>
         <PropertyValue name="Indent_UnindentLabels">2</PropertyValue>

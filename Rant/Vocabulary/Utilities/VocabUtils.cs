@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -26,7 +25,7 @@ namespace Rant.Vocabulary.Utilities
 			var sb = new StringBuilder();
 			do
 			{
-				if (i >= length || (Char.IsWhiteSpace(argString[i]) && !scope))
+				if (i >= length || (char.IsWhiteSpace(argString[i]) && !scope))
 				{
 					if (sb.Length == 0 && !scopeUsed) continue;
 					yield return sb.ToString();

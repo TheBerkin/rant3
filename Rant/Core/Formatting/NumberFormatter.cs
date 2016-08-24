@@ -6,14 +6,14 @@ namespace Rant.Core.Formatting
 {
 	internal class NumberFormatter
 	{
-		private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo()
+		private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo
 		{
 			NumberGroupSizes = new[] { 3 },
 			NumberGroupSeparator = ",",
 			NumberDecimalSeparator = "."
 		};
 
-		private static readonly NumberFormatInfo DotGroupFormat = new NumberFormatInfo()
+		private static readonly NumberFormatInfo DotGroupFormat = new NumberFormatInfo
 		{
 			NumberGroupSizes = new[] { 3 },
 			NumberGroupSeparator = ".",
@@ -22,9 +22,7 @@ namespace Rant.Core.Formatting
 
 		public Endianness Endianness { get; set; } = Endianness.Default;
 		public BinaryFormat BinaryFormat { get; set; } = BinaryFormat.Normal;
-
 		public NumberFormat NumberFormat { get; set; } = NumberFormat.Normal;
-
 		public int BinaryFormatDigits { get; set; } = 8;
 
 		public string FormatNumber(double number)
@@ -60,9 +58,11 @@ namespace Rant.Core.Formatting
 		private string GetHex(long number, bool uppercase)
 		{
 			string hexString = Convert.ToString(number, 16);
-			int targetLength = (BinaryFormat == BinaryFormat.Pad && hexString.Length < BinaryFormatDigits ? BinaryFormatDigits : hexString.Length);
+			int targetLength = (BinaryFormat == BinaryFormat.Pad && hexString.Length < BinaryFormatDigits
+				? BinaryFormatDigits
+				: hexString.Length);
 			int numBytes = targetLength % 2 != 0 ? (int)Math.Ceiling((double)targetLength / 2) : targetLength / 2;
-			string[] bytes = new string[numBytes];
+			var bytes = new string[numBytes];
 			if (BinaryFormat == BinaryFormat.Pad && hexString.Length < BinaryFormatDigits)
 			{
 				for (int i = hexString.Length; i < BinaryFormatDigits; i++)
@@ -84,17 +84,18 @@ namespace Rant.Core.Formatting
 
 		private string GetBinary(long number)
 		{
-			bool needsReverse = Endianness != Endianness.Default && (BitConverter.IsLittleEndian != (Endianness == Endianness.Little));
-			var hexString = Convert.ToString((long)number, 2);
+			bool needsReverse = Endianness != Endianness.Default &&
+			                    (BitConverter.IsLittleEndian != (Endianness == Endianness.Little));
+			string hexString = Convert.ToString(number, 2);
 			if (needsReverse && hexString.Length % 8 != 0) hexString = new string('0', hexString.Length % 8) + hexString;
 
 			int origLength = hexString.Length;
 			int finalLength =
 				BinaryFormat == BinaryFormat.Pad
-				? (origLength < BinaryFormatDigits * 4 ? BinaryFormatDigits * 4 : origLength)
-				: BinaryFormat == BinaryFormat.Truncate
-					? (origLength < BinaryFormatDigits * 4 ? origLength : BinaryFormatDigits * 4)
-					: origLength;
+					? (origLength < BinaryFormatDigits * 4 ? BinaryFormatDigits * 4 : origLength)
+					: BinaryFormat == BinaryFormat.Truncate
+						? (origLength < BinaryFormatDigits * 4 ? origLength : BinaryFormatDigits * 4)
+						: origLength;
 
 			var chars = new char[finalLength];
 			for (int i = 0; i < finalLength; i++) chars[i] = '0';

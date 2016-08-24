@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -8,15 +7,15 @@ namespace Rant.Core.Formatting
 {
 	internal static class Numerals
 	{
+		public const int MaxRomanValue = 3999;
+
 		private static readonly string[][] RomanNumerals =
 		{
-			new [] {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"},
-			new [] {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"},
-			new [] {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"},
-			new [] {"", "M", "MM", "MMM"}
+			new[] { "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" },
+			new[] { "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC" },
+			new[] { "", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM" },
+			new[] { "", "M", "MM", "MMM" }
 		};
-
-		public const int MaxRomanValue = 3999;
 
 		private static readonly List<_<long, string>> Powers;
 		private static readonly List<_<long, string>> Hundreds;
@@ -46,7 +45,7 @@ namespace Rant.Core.Formatting
 				_.Create(600L, "six hundred"),
 				_.Create(700L, "seven hundred"),
 				_.Create(800L, "eight hundred"),
-				_.Create(900L, "nine hundred"),
+				_.Create(900L, "nine hundred")
 			}.OrderByDescending(tuple => tuple.Item1).ToList();
 
 			TenUnits = new List<_<int, string>>
@@ -88,7 +87,11 @@ namespace Rant.Core.Formatting
 		public static string ToRoman(double number, bool lowerCase = false)
 		{
 			if (number <= 0 || number > MaxRomanValue || number % 1 > 0) return "?";
-			var intArr = number.ToString(CultureInfo.InvariantCulture).Reverse().Select(c => Int32.Parse(c.ToString(CultureInfo.InvariantCulture))).ToArray();
+			var intArr =
+				number.ToString(CultureInfo.InvariantCulture)
+					.Reverse()
+					.Select(c => int.Parse(c.ToString(CultureInfo.InvariantCulture)))
+					.ToArray();
 			var sb = new StringBuilder();
 			for (int i = intArr.Length; i-- > 0;)
 			{
@@ -150,21 +153,22 @@ namespace Rant.Core.Formatting
 				{
 					if (value < hundred.Item1) continue;
 					value -= hundred.Item1;
-					buffer.AppendFormat("{0}{1}{2}", buffer.Length > 0 ? " " : String.Empty, hundred.Item2, value > 0 ? " and" : String.Empty);
+					buffer.AppendFormat("{0}{1}{2}", buffer.Length > 0 ? " " : string.Empty, hundred.Item2,
+						value > 0 ? " and" : string.Empty);
 				}
 
 				foreach (var tenunit in TenUnits)
 				{
 					if (value < tenunit.Item1) continue;
 					value -= tenunit.Item1;
-					buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : String.Empty, tenunit.Item2);
+					buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : string.Empty, tenunit.Item2);
 					break;
 				}
 
 				foreach (var ten in Tens)
 				{
 					if (value != ten.Item1) continue;
-					buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : String.Empty, ten.Item2);
+					buffer.AppendFormat("{0}{1}", buffer.Length > 0 ? " " : string.Empty, ten.Item2);
 					break;
 				}
 

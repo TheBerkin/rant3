@@ -10,36 +10,29 @@ namespace Rant.Core.Compiler
 {
 	internal class TokenReader
 	{
-		private readonly string _sourceName;
-		private readonly Token<R>[] _tokens;
 		private readonly RantCompiler _compiler;
-		private int _pos;
+		private readonly Token<R>[] _tokens;
 
 		public TokenReader(string sourceName, IEnumerable<Token<R>> tokens, RantCompiler compiler)
 		{
-			_sourceName = sourceName;
+			SourceName = sourceName;
 			_compiler = compiler;
 			_tokens = tokens.ToArray();
-			_pos = 0;
+			Position = 0;
 		}
 
-		public string SourceName => _sourceName;
-
-		public int Position
-		{
-			get { return _pos; }
-			set { _pos = value; }
-		}
+		public string SourceName { get; }
+		public int Position { get; set; }
 
 		/// <summary>
 		/// Determines whether the reader has reached the end of the token stream.
 		/// </summary>
-		public bool End => _pos >= _tokens.Length;
+		public bool End => Position >= _tokens.Length;
 
 		/// <summary>
 		/// The last token that was read.
 		/// </summary>
-		public Token<R> PrevToken => _pos == 0 ? null : _tokens[_pos - 1];
+		public Token<R> PrevToken => Position == 0 ? null : _tokens[Position - 1];
 
 		/// <summary>
 		/// The last non-whitespace token before the current reader position.
@@ -48,13 +41,32 @@ namespace Rant.Core.Compiler
 		{
 			get
 			{
-				if (_pos == 0) return null;
-				int tempPos = _pos - 1;
+				if (Position == 0) return null;
+				int tempPos = Position - 1;
 				while (tempPos > 0 && _tokens[tempPos].ID == R.Whitespace)
 					tempPos--;
 				return _tokens[tempPos].ID != R.Whitespace ? _tokens[tempPos] : null;
 			}
 		}
+
+		/// <summary>
+		/// The last non-whitespace token type.
+		/// </summary>
+		public R LastNonSpaceType
+		{
+			get
+			{
+				if (Position == 0) return R.EOF;
+				R id;
+				for (int i = Position; i >= 0; i--)
+				{
+					if ((id = _tokens[i].ID) != R.Whitespace) return id;
+				}
+				return R.EOF;
+			}
+		}
+
+		public Token<R> this[int pos] => _tokens[pos];
 
 		/// <summary>
 		/// Reads the next available token.
@@ -67,7 +79,7 @@ namespace Rant.Core.Compiler
 				_compiler.SyntaxError(null, true, GetString("err-compiler-eof"));
 				return null;
 			}
-			return _tokens[_pos++];
+			return _tokens[Position++];
 		}
 
 		/// <summary>
@@ -76,7 +88,7 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public Token<R> PeekToken()
 		{
-			return End ? null : _tokens[_pos];
+			return End ? null : _tokens[Position];
 		}
 
 		/// <summary>
@@ -90,10 +102,10 @@ namespace Rant.Core.Compiler
 				_compiler.SyntaxError(null, true, "err-compiler-eof");
 				return null;
 			}
-			int pos = _pos;
+			int pos = Position;
 			SkipSpace();
-			var token = _tokens[_pos];
-			_pos = pos;
+			var token = _tokens[Position];
+			Position = pos;
 			return token;
 		}
 
@@ -101,7 +113,7 @@ namespace Rant.Core.Compiler
 		/// Returns the type of the next available token.
 		/// </summary>
 		/// <returns></returns>
-		public R PeekType() => End ? R.EOF : _tokens[_pos].ID;
+		public R PeekType() => End ? R.EOF : _tokens[Position].ID;
 
 		/// <summary>
 		/// Determines whether the next token is of the specified type.
@@ -110,24 +122,7 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public bool IsNext(R type)
 		{
-			return !End && _tokens[_pos].ID == type;
-		}
-
-		/// <summary>
-		/// The last non-whitespace token type.
-		/// </summary>
-		public R LastNonSpaceType
-		{
-			get
-			{
-				if (_pos == 0) return R.EOF;
-				R id;
-				for (int i = _pos; i >= 0; i--)
-				{
-					if ((id = _tokens[i].ID) != R.Whitespace) return id;
-				}
-				return R.EOF;
-			}
+			return !End && _tokens[Position].ID == type;
 		}
 
 		/// <summary>
@@ -147,8 +142,8 @@ namespace Rant.Core.Compiler
 				}
 				return false;
 			}
-			if (_tokens[_pos].ID != type) return false;
-			_pos++;
+			if (_tokens[Position].ID != type) return false;
+			Position++;
 			return true;
 		}
 
@@ -170,8 +165,8 @@ namespace Rant.Core.Compiler
 				return false;
 			}
 			SkipSpace();
-			if (_tokens[_pos].ID != type) return false;
-			_pos++;
+			if (_tokens[Position].ID != type) return false;
+			Position++;
 			SkipSpace();
 			return true;
 		}
@@ -186,15 +181,16 @@ namespace Rant.Core.Compiler
 			if (End) return false;
 			foreach (var type in types)
 			{
-				if (_tokens[_pos].ID != type) continue;
-				_pos++;
+				if (_tokens[Position].ID != type) continue;
+				Position++;
 				return true;
 			}
 			return false;
 		}
 
 		/// <summary>
-		/// Consumes the next token if its type matches any of the specified types, and outputs the matching type. Returns true if a match was found.
+		/// Consumes the next token if its type matches any of the specified types, and outputs the matching type. Returns true if
+		/// a match was found.
 		/// </summary>
 		/// <param name="result">The matched type.</param>
 		/// <param name="types">The types to consume.</param>
@@ -205,16 +201,17 @@ namespace Rant.Core.Compiler
 			if (End) return false;
 			foreach (var type in types)
 			{
-				if (_tokens[_pos].ID != type) continue;
+				if (_tokens[Position].ID != type) continue;
 				result = type;
-				_pos++;
+				Position++;
 				return true;
 			}
 			return false;
 		}
 
 		/// <summary>
-		/// Consumes the next non-whitespace token if its type matches any of the specified types. Returns true if a match was found.
+		/// Consumes the next non-whitespace token if its type matches any of the specified types. Returns true if a match was
+		/// found.
 		/// </summary>
 		/// <param name="types">The types to consume.</param>
 		/// <returns></returns>
@@ -224,8 +221,8 @@ namespace Rant.Core.Compiler
 			SkipSpace();
 			foreach (var type in types)
 			{
-				if (_tokens[_pos].ID != type) continue;
-				_pos++;
+				if (_tokens[Position].ID != type) continue;
+				Position++;
 				SkipSpace();
 				return true;
 			}
@@ -233,7 +230,8 @@ namespace Rant.Core.Compiler
 		}
 
 		/// <summary>
-		/// Consumes the next non-whitespace token if its type matches any of the specified types, and outputs the matching type. Returns true if a match was found.
+		/// Consumes the next non-whitespace token if its type matches any of the specified types, and outputs the matching type.
+		/// Returns true if a match was found.
 		/// </summary>
 		/// <param name="result">The matched type.</param>
 		/// <param name="types">The types to consume.</param>
@@ -245,9 +243,9 @@ namespace Rant.Core.Compiler
 			SkipSpace();
 			foreach (var type in types)
 			{
-				if (_tokens[_pos].ID != type) continue;
+				if (_tokens[Position].ID != type) continue;
 				result = type;
-				_pos++;
+				Position++;
 				SkipSpace();
 				return true;
 			}
@@ -271,16 +269,17 @@ namespace Rant.Core.Compiler
 				}
 				return false;
 			}
-			if (_tokens[_pos].ID != type) return false;
+			if (_tokens[Position].ID != type) return false;
 			do
 			{
-				_pos++;
-			} while (!End && _tokens[_pos].ID == type);
+				Position++;
+			} while (!End && _tokens[Position].ID == type);
 			return true;
 		}
 
 		/// <summary>
-		/// Consumes as many non-whitespace tokens as possible, as long as they match the specified type. Returns true if at least one was found.
+		/// Consumes as many non-whitespace tokens as possible, as long as they match the specified type. Returns true if at least
+		/// one was found.
 		/// </summary>
 		/// <param name="type">The type to consume.</param>
 		/// <param name="allowEof">Allow end-of-file tokens. Specifying False will throw an exception instead.</param>
@@ -297,12 +296,12 @@ namespace Rant.Core.Compiler
 				return false;
 			}
 			SkipSpace();
-			if (_tokens[_pos].ID != type) return false;
+			if (_tokens[Position].ID != type) return false;
 			do
 			{
 				SkipSpace();
-				_pos++;
-			} while (!End && _tokens[_pos].ID == type);
+				Position++;
+			} while (!End && _tokens[Position].ID == type);
 			return true;
 		}
 
@@ -317,15 +316,17 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
+				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof",
+					expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
-			if (_tokens[_pos].ID != type)
+			if (_tokens[Position].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
+				_compiler.SyntaxError(_tokens[Position], false, "err-compiler-missing-token",
+					expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
-			return _tokens[_pos++];
+			return _tokens[Position++];
 		}
 
 		/// <summary>
@@ -339,17 +340,19 @@ namespace Rant.Core.Compiler
 			if (End)
 			{
 				_compiler.SyntaxError(null, true,
-					"err-compiler-missing-token-any-eof", String.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
+					"err-compiler-missing-token-any-eof",
+					string.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
 				return null;
 			}
 
-			if (!types.Contains(_tokens[_pos].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
+			if (!types.Contains(_tokens[Position].ID)) // NOTE: .Contains isn't too fast but does it matter in this case?
 			{
-				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token-any", String.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
+				_compiler.SyntaxError(_tokens[Position], false, "err-compiler-missing-token-any",
+					string.Join(" ", types.Select(t => RantLexer.Rules.GetSymbolForId(t)).ToArray()));
 				return null;
 			}
 
-			return _tokens[_pos++];
+			return _tokens[Position++];
 		}
 
 		/// <summary>
@@ -363,22 +366,25 @@ namespace Rant.Core.Compiler
 		{
 			if (End)
 			{
-				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
+				_compiler.SyntaxError(null, true, "err-compiler-missing-token-eof",
+					expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
 			SkipSpace();
-			if (_tokens[_pos].ID != type)
+			if (_tokens[Position].ID != type)
 			{
-				_compiler.SyntaxError(_tokens[_pos], false, "err-compiler-missing-token", expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
+				_compiler.SyntaxError(_tokens[Position], false, "err-compiler-missing-token",
+					expectedTokenName != null ? GetString(expectedTokenName) : RantLexer.Rules.GetSymbolForId(type));
 				return null;
 			}
-			var t = _tokens[_pos++];
+			var t = _tokens[Position++];
 			SkipSpace();
 			return t;
 		}
 
 		/// <summary>
-		/// Reads a series of tokens into a buffer as long as they match the types specified in an array, in the order they appear. Returns True if reading was successful.
+		/// Reads a series of tokens into a buffer as long as they match the types specified in an array, in the order they appear.
+		/// Returns True if reading was successful.
 		/// </summary>
 		/// <param name="buffer">The buffer to read into.</param>
 		/// <param name="offset">The offset at which to begin writing tokens into the buffer.</param>
@@ -386,20 +392,21 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public bool TakeSeries(Token<R>[] buffer, int offset, params R[] types)
 		{
-			if (_pos >= _tokens.Length) return types.Length == 0;
-			if (_tokens.Length - _pos < types.Length || buffer.Length - offset < types.Length)
+			if (Position >= _tokens.Length) return types.Length == 0;
+			if (_tokens.Length - Position < types.Length || buffer.Length - offset < types.Length)
 				return false;
 			for (int i = 0; i < types.Length; i++)
 			{
-				if (_tokens[_pos + i].ID != types[i]) return false;
-				buffer[i + offset] = _tokens[_pos + i];
+				if (_tokens[Position + i].ID != types[i]) return false;
+				buffer[i + offset] = _tokens[Position + i];
 			}
-			_pos += types.Length;
+			Position += types.Length;
 			return true;
 		}
 
 		/// <summary>
-		/// Reads a series of non-whitespace tokens into a buffer as long as they match the types specified in an array, in the order they appear. Returns True if reading was successful.
+		/// Reads a series of non-whitespace tokens into a buffer as long as they match the types specified in an array, in the
+		/// order they appear. Returns True if reading was successful.
 		/// </summary>
 		/// <param name="buffer">The buffer to read into.</param>
 		/// <param name="offset">The offset at which to begin writing tokens into the buffer.</param>
@@ -407,23 +414,23 @@ namespace Rant.Core.Compiler
 		/// <returns></returns>
 		public bool TakeSeriesLoose(Token<R>[] buffer, int offset, params R[] types)
 		{
-			if (_pos >= _tokens.Length) return types.Length == 0;
-			if (_tokens.Length - _pos < types.Length || buffer.Length - offset < types.Length)
+			if (Position >= _tokens.Length) return types.Length == 0;
+			if (_tokens.Length - Position < types.Length || buffer.Length - offset < types.Length)
 				return false;
 			int i = 0;
 			int j = 0;
 			while (i < types.Length)
 			{
-				if (_pos + j >= _tokens.Length) return false;
-				while (_tokens[_pos + j].ID == R.Whitespace) j++;
-				if (_pos + j >= _tokens.Length) return false;
+				if (Position + j >= _tokens.Length) return false;
+				while (_tokens[Position + j].ID == R.Whitespace) j++;
+				if (Position + j >= _tokens.Length) return false;
 
-				if (_tokens[_pos + j].ID != types[i]) return false;
-				buffer[i + offset] = _tokens[_pos + i];
+				if (_tokens[Position + j].ID != types[i]) return false;
+				buffer[i + offset] = _tokens[Position + i];
 				j++;
 				i++;
 			}
-			_pos += j;
+			Position += j;
 			return true;
 		}
 
@@ -439,7 +446,7 @@ namespace Rant.Core.Compiler
 				return null;
 			}
 			SkipSpace();
-			var token = _tokens[_pos++];
+			var token = _tokens[Position++];
 			SkipSpace();
 			return token;
 		}
@@ -462,22 +469,20 @@ namespace Rant.Core.Compiler
 				return false;
 			}
 
-			int i = _pos;
+			int i = Position;
 			Token<R> t;
-			while (_pos < _tokens.Length)
+			while (Position < _tokens.Length)
 			{
-				t = _tokens[_pos];
+				t = _tokens[Position];
 				if (!predicate(t))
 				{
-					return _pos > i;
+					return Position > i;
 				}
-				_pos++;
+				Position++;
 			}
 			return true;
 		}
 
 		public bool SkipSpace() => TakeAll(R.Whitespace);
-
-		public Token<R> this[int pos] => _tokens[pos];
 	}
 }

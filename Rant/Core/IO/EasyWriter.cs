@@ -13,10 +13,7 @@ namespace Rant.Core.IO
 	{
 		private const byte TrueByte = 1;
 		private const byte FalseByte = 0;
-
-		private readonly Stream _stream;
 		private readonly bool _leaveOpen;
-		private Endian _endian;
 
 		/// <summary>
 		/// Creates a new instance of the Rant.IO.EasyWriter class from the specified stream.
@@ -24,8 +21,8 @@ namespace Rant.Core.IO
 		/// <param name="stream">The stream to write to.</param>
 		public EasyWriter(Stream stream)
 		{
-			_stream = stream;
-			_endian = Endian.Little;
+			BaseStream = stream;
+			Endianness = Endian.Little;
 			_leaveOpen = false;
 		}
 
@@ -37,8 +34,8 @@ namespace Rant.Core.IO
 		/// <param name="leaveOpen">Specifies whether or not to leave the stream open after the writer is disposed.</param>
 		public EasyWriter(Stream stream, Endian endianness = Endian.Little, bool leaveOpen = false)
 		{
-			_stream = stream;
-			_endian = endianness;
+			BaseStream = stream;
+			Endianness = endianness;
 			_leaveOpen = leaveOpen;
 		}
 
@@ -50,32 +47,28 @@ namespace Rant.Core.IO
 		/// <param name="mode">Specifies how the operating system should open the file.</param>
 		public EasyWriter(string path, FileMode mode = FileMode.Create, Endian endianness = Endian.Little)
 		{
-			_stream = File.Open(path, mode);
-			_endian = endianness;
+			BaseStream = File.Open(path, mode);
+			Endianness = endianness;
 			_leaveOpen = false;
 		}
 
 		/// <summary>
 		/// The underlying stream for this instance.
 		/// </summary>
-		public Stream BaseStream => _stream;
+		public Stream BaseStream { get; }
 
 		/// <summary>
 		/// Gets or sets the endianness in which data is written.
 		/// </summary>
-		public Endian Endianness
-		{
-			get { return _endian; }
-			set { _endian = value; }
-		}
+		public Endian Endianness { get; set; }
 
 		/// <summary>
 		/// The current writing position of the stream.
 		/// </summary>
 		public long Position
 		{
-			get { return _stream.Position; }
-			set { _stream.Position = value; }
+			get { return BaseStream.Position; }
+			set { BaseStream.Position = value; }
 		}
 
 		/// <summary>
@@ -83,8 +76,19 @@ namespace Rant.Core.IO
 		/// </summary>
 		public long Length
 		{
-			get { return _stream.Length; }
-			set { _stream.SetLength(value); }
+			get { return BaseStream.Length; }
+			set { BaseStream.SetLength(value); }
+		}
+
+		/// <summary>
+		/// Releases all resources used by the current instance of the Rant.IO.EasyWriter class.
+		/// </summary>
+		public void Dispose()
+		{
+			if (!_leaveOpen)
+			{
+				BaseStream.Dispose();
+			}
 		}
 
 		/// <summary>
@@ -93,7 +97,7 @@ namespace Rant.Core.IO
 		/// <param name="value">The byte to write.</param>
 		public EasyWriter Write(byte value)
 		{
-			_stream.WriteByte(value);
+			BaseStream.WriteByte(value);
 			return this;
 		}
 
@@ -104,13 +108,13 @@ namespace Rant.Core.IO
 		/// <returns></returns>
 		public EasyWriter WriteBytes(byte[] value)
 		{
-			_stream.Write(value, 0, value.Length);
+			BaseStream.Write(value, 0, value.Length);
 			return this;
 		}
 
 		public EasyWriter Write(bool value)
 		{
-			_stream.Write(new[] { value ? TrueByte : FalseByte }, 0, 1);
+			BaseStream.Write(new[] { value ? TrueByte : FalseByte }, 0, 1);
 			return this;
 		}
 
@@ -120,7 +124,7 @@ namespace Rant.Core.IO
 		/// <param name="value">The signed byte to write.</param>
 		public EasyWriter Write(sbyte value)
 		{
-			_stream.Write(BitConverter.GetBytes(value), 0, 1);
+			BaseStream.Write(BitConverter.GetBytes(value), 0, 1);
 			return this;
 		}
 
@@ -130,9 +134,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 16-bit unsigned integer to write.</param>
 		public EasyWriter Write(ushort value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 2);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 2);
 			return this;
 		}
 
@@ -142,9 +146,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 16-bit signed integer to write.</param>
 		public EasyWriter Write(short value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 2);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 2);
 			return this;
 		}
 
@@ -154,9 +158,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 32-bit unsigned integer to write.</param>
 		public EasyWriter Write(uint value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 4);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 4);
 			return this;
 		}
 
@@ -166,9 +170,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 32-bit signed integer to write.</param>
 		public EasyWriter Write(int value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 4);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 4);
 			return this;
 		}
 
@@ -178,9 +182,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 64-bit unsigned integer to write.</param>
 		public EasyWriter Write(ulong value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 8);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 8);
 			return this;
 		}
 
@@ -190,9 +194,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The 64-bit signed integer to write.</param>
 		public EasyWriter Write(long value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 8);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 8);
 			return this;
 		}
 
@@ -202,9 +206,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The single-precision floating-point number to write.</param>
 		public EasyWriter Write(float value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 4);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 4);
 			return this;
 		}
 
@@ -214,9 +218,9 @@ namespace Rant.Core.IO
 		/// <param name="value">The double-precision floating-point number to write.</param>
 		public EasyWriter Write(double value)
 		{
-			byte[] data = BitConverter.GetBytes(value);
-			IOUtil.ConvertEndian(data, _endian);
-			_stream.Write(data, 0, 8);
+			var data = BitConverter.GetBytes(value);
+			IOUtil.ConvertEndian(data, Endianness);
+			BaseStream.Write(data, 0, 8);
 			return this;
 		}
 
@@ -240,9 +244,9 @@ namespace Rant.Core.IO
 			var bytes = Encoding.Unicode.GetBytes(value);
 			if (!nullTerminated)
 				Write(bytes.Length);
-			_stream.Write(bytes, 0, bytes.Length);
+			BaseStream.Write(bytes, 0, bytes.Length);
 			if (nullTerminated)
-				_stream.WriteByte(0);
+				BaseStream.WriteByte(0);
 			return this;
 		}
 
@@ -256,9 +260,9 @@ namespace Rant.Core.IO
 			var bytes = encoding.GetBytes(value);
 			if (!nullTerminated)
 				Write(bytes.Length);
-			_stream.Write(bytes, 0, bytes.Length);
+			BaseStream.Write(bytes, 0, bytes.Length);
 			if (nullTerminated)
-				_stream.WriteByte(0);
+				BaseStream.WriteByte(0);
 			return this;
 		}
 
@@ -270,7 +274,7 @@ namespace Rant.Core.IO
 		{
 			int count = value.Length;
 			Write(count);
-			foreach (var str in value)
+			foreach (string str in value)
 			{
 				Write(str);
 			}
@@ -315,9 +319,9 @@ namespace Rant.Core.IO
 				}
 			}
 
-			foreach (T item in array)
+			foreach (var item in array)
 			{
-				Write<T>(item, isNumeric);
+				Write(item, isNumeric);
 			}
 			return this;
 		}
@@ -328,7 +332,7 @@ namespace Rant.Core.IO
 		/// <param name="value">The byte array to write.</param>
 		public EasyWriter Write(byte[] value)
 		{
-			_stream.Write(value, 0, value.Length);
+			BaseStream.Write(value, 0, value.Length);
 			return this;
 		}
 
@@ -341,15 +345,15 @@ namespace Rant.Core.IO
 		public EasyWriter Write<TKey, TValue>(Dictionary<TKey, TValue> value)
 		{
 			var ktype = typeof(TKey);
-			bool kIsString = ktype == typeof(String);
+			bool kIsString = ktype == typeof(string);
 			var vtype = typeof(TValue);
-			bool vIsString = vtype == typeof(String);
+			bool vIsString = vtype == typeof(string);
 
 			if (!ktype.IsValueType && !kIsString)
 			{
 				throw new ArgumentException("TKey must be either a value type or System.String.");
 			}
-			else if (!vtype.IsValueType && !vIsString)
+			if (!vtype.IsValueType && !vIsString)
 			{
 				throw new ArgumentException("TValue must be either a value type or System.String.");
 			}
@@ -359,7 +363,7 @@ namespace Rant.Core.IO
 			bool isKNumeric = IOUtil.IsNumericType(typeof(TKey));
 			bool isVNumeric = IOUtil.IsNumericType(typeof(TValue));
 
-			foreach (KeyValuePair<TKey, TValue> pair in value)
+			foreach (var pair in value)
 			{
 				if (kIsString)
 				{
@@ -367,7 +371,7 @@ namespace Rant.Core.IO
 				}
 				else
 				{
-					Write<TKey>(pair.Key, isKNumeric);
+					Write(pair.Key, isKNumeric);
 				}
 
 				if (vIsString)
@@ -376,7 +380,7 @@ namespace Rant.Core.IO
 				}
 				else
 				{
-					Write<TValue>(pair.Value, isVNumeric);
+					Write(pair.Value, isVNumeric);
 				}
 			}
 			return this;
@@ -397,18 +401,18 @@ namespace Rant.Core.IO
 
 			var type = typeof(TStruct);
 			int size = type.IsEnum ? Marshal.SizeOf(Enum.GetUnderlyingType(type)) : Marshal.SizeOf(value);
-			byte[] data = new byte[size];
-			IntPtr ptr = Marshal.AllocHGlobal(size);
+			var data = new byte[size];
+			var ptr = Marshal.AllocHGlobal(size);
 
 			if (type.IsEnum)
 			{
-				object i = Convert.ChangeType(value, Enum.GetUnderlyingType(type));
+				var i = Convert.ChangeType(value, Enum.GetUnderlyingType(type));
 				Marshal.StructureToPtr(i, ptr, false);
 			}
 			else if (convertEndian)
 			{
-				TStruct i = value;
-				IOUtil.ConvertStructEndians<TStruct>(ref i);
+				var i = value;
+				IOUtil.ConvertStructEndians(ref i);
 				Marshal.StructureToPtr(i, ptr, false);
 			}
 
@@ -416,11 +420,11 @@ namespace Rant.Core.IO
 
 			if (convertEndian && (IOUtil.IsNumericType(type) || type.IsEnum))
 			{
-				IOUtil.ConvertEndian(data, _endian);
+				IOUtil.ConvertEndian(data, Endianness);
 			}
 
 			Marshal.FreeHGlobal(ptr);
-			_stream.Write(data, 0, size);
+			BaseStream.Write(data, 0, size);
 			return this;
 		}
 
@@ -431,7 +435,7 @@ namespace Rant.Core.IO
 		/// <returns></returns>
 		public EasyWriter Write(BitField value)
 		{
-			_stream.Write(value._field, 0, value._field.Length);
+			BaseStream.Write(value._field, 0, value._field.Length);
 			return this;
 		}
 
@@ -457,18 +461,7 @@ namespace Rant.Core.IO
 		/// </summary>
 		public void Close()
 		{
-			_stream.Close();
-		}
-
-		/// <summary>
-		/// Releases all resources used by the current instance of the Rant.IO.EasyWriter class.
-		/// </summary>
-		public void Dispose()
-		{
-			if (!_leaveOpen)
-			{
-				_stream.Dispose();
-			}
+			BaseStream.Close();
 		}
 	}
 }

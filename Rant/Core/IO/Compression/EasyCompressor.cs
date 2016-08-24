@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 
+using Rant.Core.IO.Compression.LZMA;
+
 namespace Rant.Core.IO.Compression
 {
 	internal static class EasyCompressor
 	{
-		internal delegate void ProgressUpdateEvent(object sender, CompressionProgressEventArgs e);
 		internal static event ProgressUpdateEvent ProgressUpdate;
 
 		public static byte[] Compress(byte[] data)
@@ -13,7 +14,7 @@ namespace Rant.Core.IO.Compression
 			var inStream = new MemoryStream(data);
 			var stream = new MemoryStream();
 
-			var enc = new LZMA.Encoder();
+			var enc = new Encoder();
 
 			enc.WriteCoderProperties(stream);
 			EasyCompressorProgress progress = null;
@@ -33,11 +34,11 @@ namespace Rant.Core.IO.Compression
 			var inStream = new MemoryStream(data);
 			var outStream = new MemoryStream();
 
-			var dec = new LZMA.Decoder();
+			var dec = new Decoder();
 			EasyCompressorProgress progress = null;
 			if (ProgressUpdate != null)
 				progress = new EasyCompressorProgress(ProgressUpdate);
-			byte[] props = new byte[5];
+			var props = new byte[5];
 			inStream.Read(props, 0, 5);
 			dec.SetDecoderProperties(props);
 			long outSize = 0;
@@ -49,11 +50,13 @@ namespace Rant.Core.IO.Compression
 			outStream.Close();
 			return outStream.ToArray();
 		}
+
+		internal delegate void ProgressUpdateEvent(object sender, CompressionProgressEventArgs e);
 	}
 
 	internal class EasyCompressorProgress : ICodeProgress
 	{
-		private EasyCompressor.ProgressUpdateEvent _handler;
+		private readonly EasyCompressor.ProgressUpdateEvent _handler;
 
 		internal EasyCompressorProgress(EasyCompressor.ProgressUpdateEvent handler)
 		{
@@ -62,7 +65,7 @@ namespace Rant.Core.IO.Compression
 
 		public void SetProgress(long inSize, long outSize)
 		{
-			_handler.Invoke(null, new CompressionProgressEventArgs() { Progress = inSize / outSize });
+			_handler.Invoke(null, new CompressionProgressEventArgs { Progress = inSize / outSize });
 		}
 	}
 

@@ -10,9 +10,9 @@ namespace Rant.Core.Compiler.Syntax
 	/// </summary>
 	internal class RstReplacer : RST
 	{
-		private readonly RST _sourceAction;
 		private readonly RST _matchEvalAction;
 		private readonly Regex _regex;
+		private readonly RST _sourceAction;
 
 		public RstReplacer(Stringe location, Regex regex, RST sourceAction, RST matchEvalAction) : base(location)
 		{
@@ -25,7 +25,7 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			sb.AddOutputWriter();
 			yield return _sourceAction;
-			var input = sb.Return().Main;
+			string input = sb.Return().Main;
 			var matches = _regex.Matches(input);
 			int start = 0;
 			foreach (Match match in matches)
@@ -33,10 +33,10 @@ namespace Rant.Core.Compiler.Syntax
 				sb.RegexMatches.Push(match);
 				sb.AddOutputWriter();
 				yield return _matchEvalAction;
-				var result = sb.Return().Main;
-                sb.Print(input.Substring(start, match.Index - start));
+				string result = sb.Return().Main;
+				sb.Print(input.Substring(start, match.Index - start));
 				sb.Print(result);
-                sb.RegexMatches.Pop();
+				sb.RegexMatches.Pop();
 				start = match.Index + match.Length;
 			}
 			sb.Print(input.Substring(start, input.Length - start));

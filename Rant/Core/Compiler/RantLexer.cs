@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Rant.Core.Stringes;
 
@@ -9,48 +8,45 @@ namespace Rant.Core.Compiler
 	{
 		internal static readonly Lexer<R> Rules;
 
-		private static Stringe TruncatePadding(Stringe input)
-		{
-			var ls = input.LeftPadded ? input.TrimStart() : input;
-			return ls.RightPadded ? ls.TrimEnd() : ls;
-		}
-
 		static RantLexer()
 		{
 			Rules = new Lexer<R>
 			{
-				{reader => reader.EatWhile(Char.IsWhiteSpace), R.Whitespace},
-                // Comments
-                {
+				{ reader => reader.EatWhile(char.IsWhiteSpace), R.Whitespace },
+				// Comments
+				{
 					reader =>
 					{
 						reader.SkipWhiteSpace();
 						if (!reader.Eat('#')) return false;
 						reader.ReadUntilAny('\r', '\n');
 						return true;
-					}, R.Ignore, 3
+					},
+					R.Ignore, 3
 				},
-                // Blackspace (^\s*)
-                {
+				// Blackspace (^\s*)
+				{
 					reader =>
 					{
-						if (reader.Position == 0) return reader.EatWhile(Char.IsWhiteSpace);
-						return reader.IsNext('\r', '\n') && reader.EatWhile(Char.IsWhiteSpace);
-					}, R.Ignore, 2
+						if (reader.Position == 0) return reader.EatWhile(char.IsWhiteSpace);
+						return reader.IsNext('\r', '\n') && reader.EatWhile(char.IsWhiteSpace);
+					},
+					R.Ignore, 2
 				},
-                // Blackspace (\s*[\r\n]+\s*)
-                {
+				// Blackspace (\s*[\r\n]+\s*)
+				{
 					reader =>
 					{
 						reader.EatWhile(
-							c => Char.IsWhiteSpace(c.Character) && c.Character != '\r' && c.Character != '\n');
+							c => char.IsWhiteSpace(c.Character) && c.Character != '\r' && c.Character != '\n');
 						if (!reader.EatAll('\r', '\n')) return false;
-						reader.EatWhile(Char.IsWhiteSpace);
+						reader.EatWhile(char.IsWhiteSpace);
 						return true;
-					}, R.Ignore, 2
+					},
+					R.Ignore, 2
 				},
-                // Blackspace (\s*$)
-                {
+				// Blackspace (\s*$)
+				{
 					reader =>
 					{
 						while (!reader.EndOfStringe)
@@ -59,10 +55,11 @@ namespace Rant.Core.Compiler
 							if (!reader.SkipWhiteSpace()) return false;
 						}
 						return true;
-					}, R.Ignore, 2
+					},
+					R.Ignore, 2
 				},
-                // Escape sequence
-                {
+				// Escape sequence
+				{
 					reader =>
 					{
 						if (!reader.Eat('\\')) return false;
@@ -71,9 +68,9 @@ namespace Rant.Core.Compiler
 							reader.Error(reader.Stringe.Substringe(reader.Position - 1, 1), true, "err-compiler-incomplete-escape");
 							return false;
 						}
-						if (reader.EatWhile(Char.IsDigit))
+						if (reader.EatWhile(char.IsDigit))
 						{
-							if (reader.Eat('.')) reader.EatWhile(Char.IsDigit);
+							if (reader.Eat('.')) reader.EatWhile(char.IsDigit);
 							reader.EatAny('k', 'M', 'B');
 							if (!reader.Eat(','))
 							{
@@ -85,7 +82,7 @@ namespace Rant.Core.Compiler
 						{
 							for (int i = 0; i < 4; i++)
 							{
-								var c = reader.ReadChare().Character;
+								char c = reader.ReadChare().Character;
 								if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
 									return false;
 							}
@@ -95,10 +92,11 @@ namespace Rant.Core.Compiler
 							reader.ReadChare();
 						}
 						return true;
-					}, R.EscapeSequence
+					},
+					R.EscapeSequence
 				},
-                // Regex
-                {
+				// Regex
+				{
 					reader =>
 					{
 						if (!reader.Eat('`')) return false;
@@ -115,10 +113,11 @@ namespace Rant.Core.Compiler
 						}
 						reader.Eat('i');
 						return true;
-					}, R.Regex
+					},
+					R.Regex
 				},
-                // Verbatim string
-                {
+				// Verbatim string
+				{
 					reader =>
 					{
 						if (!reader.Eat('"')) return false;
@@ -130,37 +129,48 @@ namespace Rant.Core.Compiler
 						}
 						reader.Error(token, true, "err-compiler-incomplete-verbatim");
 						return false;
-					}, R.VerbatimString
+					},
+					R.VerbatimString
 				},
-				{"[", R.LeftSquare}, {"]", R.RightSquare},
-				{"{", R.LeftCurly}, {"}", R.RightCurly},
-				{"<", R.LeftAngle}, {">", R.RightAngle},
-				{"(", R.LeftParen}, {")", R.RightParen},
-				{"|", R.Pipe},
-				{";", R.Semicolon},
-				{":", R.Colon},
-				{"@", R.At},
-				{"?", R.Question},
-				{"::", R.DoubleColon},
-				{"?!", R.Without},
-				{"-", R.Hyphen},
-				{"!", R.Exclamation},
-				{"$", R.Dollar},
-				{"=", R.Equal},
-				{"&", R.Ampersand},
-				{"%", R.Percent},
-				{"+", R.Plus},
-				{"^", R.Caret},
-				{"`", R.Backtick},
-				{"*", R.Asterisk},
-				{"/", R.ForwardSlash},
-				{",", R.Comma},
-				{"~", R.Tilde},
-				{".", R.Subtype}
+				{ "[", R.LeftSquare },
+				{ "]", R.RightSquare },
+				{ "{", R.LeftCurly },
+				{ "}", R.RightCurly },
+				{ "<", R.LeftAngle },
+				{ ">", R.RightAngle },
+				{ "(", R.LeftParen },
+				{ ")", R.RightParen },
+				{ "|", R.Pipe },
+				{ ";", R.Semicolon },
+				{ ":", R.Colon },
+				{ "@", R.At },
+				{ "?", R.Question },
+				{ "::", R.DoubleColon },
+				{ "?!", R.Without },
+				{ "-", R.Hyphen },
+				{ "!", R.Exclamation },
+				{ "$", R.Dollar },
+				{ "=", R.Equal },
+				{ "&", R.Ampersand },
+				{ "%", R.Percent },
+				{ "+", R.Plus },
+				{ "^", R.Caret },
+				{ "`", R.Backtick },
+				{ "*", R.Asterisk },
+				{ "/", R.ForwardSlash },
+				{ ",", R.Comma },
+				{ "~", R.Tilde },
+				{ ".", R.Subtype }
 			};
 			Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
 			Rules.AddEndToken(R.EOF);
 			Rules.Ignore(R.Ignore);
+		}
+
+		private static Stringe TruncatePadding(Stringe input)
+		{
+			var ls = input.LeftPadded ? input.TrimStart() : input;
+			return ls.RightPadded ? ls.TrimEnd() : ls;
 		}
 
 		public static IEnumerable<Token<R>> GenerateTokens(string name, Stringe input, StringeErrorDelegate errorCallback)

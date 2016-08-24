@@ -7,13 +7,12 @@ namespace Rant.Core.Output
 {
 	internal class OutputWriter
 	{
-		private readonly Sandbox sandbox;
-		private readonly OutputChain mainChain;
+		private const string MainChannelName = "main";
+		private readonly HashSet<OutputChain> activeChains = new HashSet<OutputChain>();
 		private readonly Dictionary<string, OutputChain> chains = new Dictionary<string, OutputChain>();
 		private readonly Stack<OutputChain> chainStack = new Stack<OutputChain>();
-		private readonly HashSet<OutputChain> activeChains = new HashSet<OutputChain>();
-
-		private const string MainChannelName = "main";
+		private readonly OutputChain mainChain;
+		private readonly Sandbox sandbox;
 
 		public OutputWriter(Sandbox sb)
 		{
@@ -85,15 +84,10 @@ namespace Rant.Core.Output
 		}
 
 		public void Capitalize(Capitalization caps) => Do(chain => chain.Last.Caps = caps);
-
 		public void Print(string value) => Do(chain => chain.Print(value));
-
 		public void Print(object obj) => Do(chain => chain.Print(obj));
-
 		public void InsertTarget(string targetName) => Do(chain => chain.InsertTarget(targetName));
-
 		public void PrintToTarget(string targetName, string value) => Do(chain => chain.PrintToTarget(targetName, value));
-
 		public RantOutput ToRantOutput() => new RantOutput(sandbox.RNG.Seed, sandbox.StartingGen, chains.Values);
 	}
 }

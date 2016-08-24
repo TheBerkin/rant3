@@ -11,7 +11,8 @@ namespace Rant.Core.Compiler.Syntax
 
 		public RstDefineSubroutine(Stringe name)
 			: base(name)
-		{ }
+		{
+		}
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{

@@ -10,9 +10,29 @@ namespace Rant.Core.IO.Bson
 	internal class BsonItem
 	{
 		private Dictionary<string, BsonItem> _objectValues;
-		private object _value;
-		private bool _typeSet = false;
 		private byte _type = 0;
+		private bool _typeSet = false;
+		private object _value;
+
+		/// <summary>
+		/// Creates a new BsonItem with the specified value.
+		/// </summary>
+		/// <param name="value">The value of this BSON item.</param>
+		public BsonItem(object value)
+		{
+			_value = value;
+			_objectValues = new Dictionary<string, BsonItem>();
+			PossiblyCreateArray();
+		}
+
+		/// <summary>
+		/// Creates a new empty BsonItem.
+		/// </summary>
+		public BsonItem()
+		{
+			_value = null;
+			_objectValues = new Dictionary<string, BsonItem>();
+		}
 
 		public bool IsArray => _type == 0x04;
 
@@ -58,14 +78,40 @@ namespace Rant.Core.IO.Bson
 		}
 
 		/// <summary>
-		/// Creates a new BsonItem with the specified value.
+		/// The number of items in this BsonItem, if it's a collection.
 		/// </summary>
-		/// <param name="value">The value of this BSON item.</param>
-		public BsonItem(object value)
+		public int Count => _objectValues.Keys.Count;
+
+		/// <summary>
+		/// An array of the keys in this BsonItem.
+		/// </summary>
+		public string[] Keys => _objectValues.Keys.ToArray();
+
+		/// <summary>
+		/// Accesses the value of the specified key.
+		/// </summary>
+		/// <param name="key">The key whose value will be accessed.</param>
+		/// <returns>The value of the specified key.</returns>
+		public BsonItem this[string key]
 		{
-			_value = value;
-			_objectValues = new Dictionary<string, BsonItem>();
-			PossiblyCreateArray();
+			get
+			{
+				if (!HasKey(key))
+					return null;
+				return _objectValues[key];
+			}
+			set { _objectValues[key] = value; }
+		}
+
+		/// <summary>
+		/// Accesses the value of the specified key.
+		/// </summary>
+		/// <param name="key">The key whose value will be accessed.</param>
+		/// <returns>The value of the specified key.</returns>
+		public BsonItem this[int key]
+		{
+			get { return _objectValues[key.ToString()]; }
+			set { _objectValues[key.ToString()] = value; }
 		}
 
 		/// <summary>
@@ -88,7 +134,7 @@ namespace Rant.Core.IO.Bson
 			return (string)a.Value;
 		}
 
-		public static explicit operator string[] (BsonItem a)
+		public static explicit operator string[](BsonItem a)
 		{
 			if (a == null)
 				return new string[] { };
@@ -141,15 +187,6 @@ namespace Rant.Core.IO.Bson
 		}
 
 		/// <summary>
-		/// Creates a new empty BsonItem.
-		/// </summary>
-		public BsonItem()
-		{
-			_value = null;
-			_objectValues = new Dictionary<string, BsonItem>();
-		}
-
-		/// <summary>
 		/// Checks whether or not this item has the specified key.
 		/// </summary>
 		/// <param name="key">The key to check for.</param>
@@ -159,49 +196,12 @@ namespace Rant.Core.IO.Bson
 			return _objectValues.ContainsKey(key);
 		}
 
-		/// <summary>
-		/// The number of items in this BsonItem, if it's a collection.
-		/// </summary>
-		public int Count => _objectValues.Keys.Count;
-
-		/// <summary>
-		/// An array of the keys in this BsonItem.
-		/// </summary>
-		public string[] Keys => _objectValues.Keys.ToArray();
-
-		/// <summary>
-		/// Accesses the value of the specified key.
-		/// </summary>
-		/// <param name="key">The key whose value will be accessed.</param>
-		/// <returns>The value of the specified key.</returns>
-		public BsonItem this[string key]
-		{
-			get
-			{
-				if (!HasKey(key))
-					return null;
-				return _objectValues[key];
-			}
-			set { _objectValues[key] = value; }
-		}
-
-		/// <summary>
-		/// Accesses the value of the specified key.
-		/// </summary>
-		/// <param name="key">The key whose value will be accessed.</param>
-		/// <returns>The value of the specified key.</returns>
-		public BsonItem this[int key]
-		{
-			get { return _objectValues[key.ToString()]; }
-			set { _objectValues[key.ToString()] = value; }
-		}
-
 		public object[] ToValueArray()
 		{
 			if (!IsArray)
 				throw new Exception("Can't convert a non-array to an array.");
 			var list = new List<object>();
-			for (var i = 0; i < Count; i++)
+			for (int i = 0; i < Count; i++)
 				list.Add(this[i].Value);
 			return list.ToArray();
 		}
@@ -216,12 +216,12 @@ namespace Rant.Core.IO.Bson
 			_typeSet = true;
 			_objectValues = new Dictionary<string, BsonItem>();
 			_value = null;
-			for (var i = 0; i < arr.Length; i++)
+			for (int i = 0; i < arr.Length; i++)
 			{
 				_objectValues[i.ToString()] = (
-					arr[i] is BsonItem ?
-						(BsonItem)arr[i] :
-						new BsonItem(arr[i])
+					arr[i] is BsonItem
+						? (BsonItem)arr[i]
+						: new BsonItem(arr[i])
 					);
 			}
 		}

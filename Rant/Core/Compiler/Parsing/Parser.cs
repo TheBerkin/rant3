@@ -19,6 +19,7 @@ namespace Rant.Core.Compiler.Parsing
 			return parser as T;
 		}
 
-		public abstract IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader, Action<RST> actionCallback);
+		public abstract IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback);
 	}
 }

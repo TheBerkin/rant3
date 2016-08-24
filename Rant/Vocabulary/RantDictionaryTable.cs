@@ -13,13 +13,9 @@ namespace Rant.Vocabulary
 	public sealed partial class RantDictionaryTable
 	{
 		internal const string MissingTerm = "[?]";
-
-		private readonly string _name;
-		private readonly string _language = "en_US";
-		private readonly string[] _subtypes;
-		private readonly HashSet<string> _hidden = new HashSet<string>();
 		private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
 		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>();
+		private readonly HashSet<string> _hidden = new HashSet<string>();
 
 		/// <summary>
 		/// Creates a new RantDictionaryTable with the specified entries.
@@ -37,11 +33,11 @@ namespace Rant.Vocabulary
 
 			if (!subtypes.All(Util.ValidateName))
 				throw new FormatException("Invalid subtype name(s): " +
-										  String.Join(", ",
-											  subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
+				                          string.Join(", ",
+					                          subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
 
-			_subtypes = subtypes;
-			_name = name;
+			Subtypes = subtypes;
+			Name = name;
 			_entriesHash.AddRange(entries);
 			_entriesList.AddRange(entries);
 		}
@@ -53,7 +49,8 @@ namespace Rant.Vocabulary
 		/// <param name="subtypes">The subtype names.</param>
 		/// <param name="entries">The entries to add to the table.</param>
 		/// <param name="hiddenClasses">The classes to hide.</param>
-		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries, IEnumerable<string> hiddenClasses)
+		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries,
+			IEnumerable<string> hiddenClasses)
 		{
 			if (entries == null) throw new ArgumentNullException(nameof(entries));
 			if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));
@@ -62,15 +59,40 @@ namespace Rant.Vocabulary
 
 			if (!subtypes.All(Util.ValidateName))
 				throw new FormatException("Invalid subtype name(s): " +
-										  String.Join(", ",
-											  subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
+				                          string.Join(", ",
+					                          subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
 
-			_subtypes = subtypes;
-			_name = name;
+			Subtypes = subtypes;
+			Name = name;
 			_entriesHash.AddRange(entries);
 			_entriesList.AddRange(entries);
-			foreach (var hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
+			foreach (string hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
 		}
+
+		/// <summary>
+		/// The subtypes used by the table entries.
+		/// </summary>
+		public string[] Subtypes { get; }
+
+		/// <summary>
+		/// The name of the table.
+		/// </summary>
+		public string Name { get; }
+
+		/// <summary>
+		/// The language of the table (not yet used).
+		/// </summary>
+		public string Language { get; } = "en_US";
+
+		/// <summary>
+		/// Gets the hidden classes of the table.
+		/// </summary>
+		public IEnumerable<string> HiddenClasses => _hidden;
+
+		/// <summary>
+		/// The number of entries stored in the table.
+		/// </summary>
+		public int EntryCount => _entriesHash.Count;
 
 		/// <summary>
 		/// Gets the entries stored in the table.
@@ -126,43 +148,18 @@ namespace Rant.Vocabulary
 		{
 			var lstClasses = new HashSet<string>();
 
-			foreach (var c in _entriesHash.SelectMany(e => e.GetClasses()))
+			foreach (string c in _entriesHash.SelectMany(e => e.GetClasses()))
 			{
 				if (lstClasses.Add(c)) yield return c;
 			}
 		}
 
-		/// <summary>
-		/// The subtypes used by the table entries.
-		/// </summary>
-		public string[] Subtypes => _subtypes;
-
-		/// <summary>
-		/// The name of the table.
-		/// </summary>
-		public string Name => _name;
-
-		/// <summary>
-		/// The language of the table (not yet used).
-		/// </summary>
-		public string Language => _language;
-
-		/// <summary>
-		/// Gets the hidden classes of the table.
-		/// </summary>
-		public IEnumerable<string> HiddenClasses => _hidden;
-
-		/// <summary>
-		/// The number of entries stored in the table.
-		/// </summary>
-		public int EntryCount => _entriesHash.Count;
-
 		private int GetSubtypeIndex(string subtype)
 		{
-			if (String.IsNullOrEmpty(subtype)) return 0;
-			for (int i = 0; i < _subtypes.Length; i++)
+			if (string.IsNullOrEmpty(subtype)) return 0;
+			for (int i = 0; i < Subtypes.Length; i++)
 			{
-				if (String.Equals(subtype, _subtypes[i], StringComparison.OrdinalIgnoreCase)) return i;
+				if (string.Equals(subtype, Subtypes[i], StringComparison.OrdinalIgnoreCase)) return i;
 			}
 			return -1;
 		}
@@ -174,8 +171,8 @@ namespace Rant.Vocabulary
 		/// <returns>True if merge succeeded; otherwise, False.</returns>
 		public bool Merge(RantDictionaryTable other)
 		{
-			if (other._name != _name || other == this) return false;
-			if (!other._subtypes.SequenceEqual(_subtypes)) return false;
+			if (other.Name != Name || other == this) return false;
+			if (!other.Subtypes.SequenceEqual(Subtypes)) return false;
 			_entriesHash.AddRange(other._entriesHash);
 			_entriesList.AddRange(other._entriesHash);
 			return true;
@@ -183,7 +180,7 @@ namespace Rant.Vocabulary
 
 		internal RantDictionaryTerm Query(RantDictionary dictionary, RNG rng, Query query, CarrierState syncState)
 		{
-			var index = String.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
+			int index = string.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
 			if (index == -1) return null;
 
 			// Apply class filter
@@ -201,7 +198,8 @@ namespace Rant.Vocabulary
 
 			// Apply regex filters
 			if (query.RegexFilters.Any())
-				pool = query.RegexFilters.Aggregate(pool, (current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
+				pool = query.RegexFilters.Aggregate(pool,
+					(current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
 
 			if (query.SyllablePredicate != null)
 				pool = pool.Where(e => query.SyllablePredicate.Test(e[index].SyllableCount));

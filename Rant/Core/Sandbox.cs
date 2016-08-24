@@ -24,39 +24,61 @@ namespace Rant.Core
 	internal class Sandbox
 	{
 		private static readonly object fallbackArgsLockObj = new object();
-
-		private readonly RantEngine _engine;
-		private readonly OutputWriter _baseOutput;
-		private readonly Stack<OutputWriter> _outputs;
-		private readonly RNG _rng;
-		private readonly long _startingGen;
-		private readonly RantFormat _format;
-		private readonly RantPattern _pattern;
-		private readonly ObjectStack _objects;
-		private readonly Limit _sizeLimit;
-		private readonly Stack<BlockState> _blocks;
-		private readonly Stack<Match> _matches;
-		private readonly CarrierState _carrierState;
-		private readonly Stack<Dictionary<string, RST>> _subroutineArgs;
-		private readonly SyncManager _syncManager;
-		private readonly Stack<object> _scriptObjectStack;
-		private readonly Stopwatch _stopwatch;
 		private readonly BlockManager _blockManager;
-		private readonly RantPatternArgs _patternArgs;
-
-		private BlockAttribs _newAttribs = new BlockAttribs();
+		private readonly Stack<OutputWriter> _outputs;
+		private readonly Stopwatch _stopwatch;
 		private int _quoteLevel = 0;
+
+		/// <summary>
+		/// Gets the currently loaded modules.
+		/// </summary>
+		public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
+
+		/// <summary>
+		/// Modules that were loaded from packages.
+		/// </summary>
+		public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+
 		private bool shouldYield = false;
+
+		/// <summary>
+		/// Modules that were not loaded from code, but were provided to RantEngine by the user.
+		/// </summary>
+		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
+
+		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
+			RantPatternArgs args = null)
+		{
+			Engine = engine;
+			Format = engine.Format;
+			SizeLimit = new Limit(sizeLimit);
+			BaseOutput = new OutputWriter(this);
+			_outputs = new Stack<OutputWriter>();
+			_outputs.Push(BaseOutput);
+			RNG = rng;
+			StartingGen = rng.Generation;
+			Pattern = pattern;
+			Objects = new ObjectStack(engine.Objects);
+			Blocks = new Stack<BlockState>();
+			RegexMatches = new Stack<Match>();
+			CarrierState = carrierState ?? new CarrierState();
+			SubroutineArgs = new Stack<Dictionary<string, RST>>();
+			SyncManager = new SyncManager(this);
+			_blockManager = new BlockManager();
+			ScriptObjectStack = new Stack<object>();
+			PatternArgs = args;
+			_stopwatch = new Stopwatch();
+		}
 
 		/// <summary>
 		/// Gets the engine instance to which the sandbox is bound.
 		/// </summary>
-		public RantEngine Engine => _engine;
+		public RantEngine Engine { get; }
 
 		/// <summary>
 		/// Gets the main output channel stack.
 		/// </summary>
-		public OutputWriter BaseOutput => _baseOutput;
+		public OutputWriter BaseOutput { get; }
 
 		/// <summary>
 		/// Gets the current output channel stack.
@@ -66,59 +88,59 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the random number generator in use by the interpreter.
 		/// </summary>
-		public RNG RNG => _rng;
+		public RNG RNG { get; }
 
 		/// <summary>
 		/// The starting generation of the RNG.
 		/// </summary>
-		public long StartingGen => _startingGen;
+		public long StartingGen { get; }
 
 		/// <summary>
-		/// Gets the currently set block attributes. 
+		/// Gets the currently set block attributes.
 		/// </summary>
-		public BlockAttribs CurrentBlockAttribs => _newAttribs;
+		public BlockAttribs CurrentBlockAttribs { get; private set; } = new BlockAttribs();
 
 		/// <summary>
 		/// Gets the format used by the interpreter.
 		/// </summary>
-		public RantFormat Format => _format;
+		public RantFormat Format { get; }
 
 		/// <summary>
 		/// Gest the object stack used by the interpreter.
 		/// </summary>
-		public ObjectStack Objects => _objects;
+		public ObjectStack Objects { get; }
 
 		/// <summary>
 		/// Gets the block state stack.
 		/// </summary>
-		public Stack<BlockState> Blocks => _blocks;
+		public Stack<BlockState> Blocks { get; }
 
 		/// <summary>
 		/// Gets the replacer match stack. The topmost item is the current match for the current replacer.
 		/// </summary>
-		public Stack<Match> RegexMatches => _matches;
+		public Stack<Match> RegexMatches { get; }
 
 		/// <summary>
 		/// Gets the current query state.
 		/// </summary>
-		public CarrierState CarrierState => _carrierState;
+		public CarrierState CarrierState { get; }
 
 		/// <summary>
 		/// Gets the current RantPattern.
 		/// </summary>
-		public RantPattern Pattern => _pattern;
+		public RantPattern Pattern { get; }
 
-		public Stack<Dictionary<string, RST>> SubroutineArgs => _subroutineArgs;
+		public Stack<Dictionary<string, RST>> SubroutineArgs { get; }
 
 		/// <summary>
 		/// Gets the synchronizer manager instance for the current Sandbox.
 		/// </summary>
-		public SyncManager SyncManager => _syncManager;
+		public SyncManager SyncManager { get; }
 
 		/// <summary>
 		/// Gets the size limit for the pattern.
 		/// </summary>
-		public Limit SizeLimit => _sizeLimit;
+		public Limit SizeLimit { get; }
 
 		/// <summary>
 		/// Gets the current RantAction being executed.
@@ -133,7 +155,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the current object stack of the Richard engine.
 		/// </summary>
-		public Stack<object> ScriptObjectStack => _scriptObjectStack;
+		public Stack<object> ScriptObjectStack { get; }
 
 		/// <summary>
 		/// Gets or sets the expected result for the current flag condition.
@@ -148,45 +170,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the arguments passed to the pattern.
 		/// </summary>
-		public RantPatternArgs PatternArgs => _patternArgs;
-
-		/// <summary>
-		/// Gets the currently loaded modules.
-		/// </summary>
-		public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
-
-		/// <summary>
-		/// Modules that were not loaded from code, but were provided to RantEngine by the user.
-		/// </summary>
-		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
-
-		/// <summary>
-		/// Modules that were loaded from packages.
-		/// </summary>
-		public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
-
-		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null, RantPatternArgs args = null)
-		{
-			_engine = engine;
-			_format = engine.Format;
-			_sizeLimit = new Limit(sizeLimit);
-			_baseOutput = new OutputWriter(this);
-			_outputs = new Stack<OutputWriter>();
-			_outputs.Push(_baseOutput);
-			_rng = rng;
-			_startingGen = rng.Generation;
-			_pattern = pattern;
-			_objects = new ObjectStack(engine.Objects);
-			_blocks = new Stack<BlockState>();
-			_matches = new Stack<Match>();
-			_carrierState = carrierState ?? new CarrierState();
-			_subroutineArgs = new Stack<Dictionary<string, RST>>();
-			_syncManager = new SyncManager(this);
-			_blockManager = new BlockManager();
-			_scriptObjectStack = new Stack<object>();
-			_patternArgs = args;
-			_stopwatch = new Stopwatch();
-		}
+		public RantPatternArgs PatternArgs { get; }
 
 		/// <summary>
 		/// Prints the specified value to the output channel stack.
@@ -219,18 +203,15 @@ namespace Rant.Core
 		}
 
 		public void AddOutputWriter() => _outputs.Push(new OutputWriter(this));
-
 		public RantOutput Return() => _outputs.Pop().ToRantOutput();
-
 		public void IncreaseQuote() => _quoteLevel++;
-
 		public void DecreaseQuote() => _quoteLevel--;
 
 		public void PrintOpeningQuote()
-			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? _format.OpeningPrimaryQuote : _format.OpeningSecondaryQuote));
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.OpeningPrimaryQuote : Format.OpeningSecondaryQuote));
 
 		public void PrintClosingQuote()
-			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? _format.ClosingPrimaryQuote : _format.ClosingSecondaryQuote));
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.ClosingPrimaryQuote : Format.ClosingSecondaryQuote));
 
 		/// <summary>
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
@@ -238,7 +219,7 @@ namespace Rant.Core
 		/// <returns></returns>
 		public BlockAttribs NextAttribs(RstBlock block)
 		{
-			BlockAttribs attribs = _newAttribs;
+			var attribs = CurrentBlockAttribs;
 
 			_blockManager.Add(attribs, block);
 			_blockManager.SetPrevAttribs(attribs);
@@ -246,15 +227,15 @@ namespace Rant.Core
 			switch (attribs.Persistence)
 			{
 				case AttribPersistence.Off:
-					_newAttribs = new BlockAttribs();
+					CurrentBlockAttribs = new BlockAttribs();
 					break;
 
 				case AttribPersistence.On:
-					_newAttribs = new BlockAttribs();
+					CurrentBlockAttribs = new BlockAttribs();
 					break;
 
 				case AttribPersistence.Once:
-					_newAttribs = _blockManager.GetPrevious(1);
+					CurrentBlockAttribs = _blockManager.GetPrevious(1);
 					break;
 			}
 
@@ -265,9 +246,9 @@ namespace Rant.Core
 
 		public RantOutput Run(double timeout, RantPattern pattern = null)
 		{
-			lock (_patternArgs ?? fallbackArgsLockObj)
+			lock (PatternArgs ?? fallbackArgsLockObj)
 			{
-				if (pattern == null) pattern = _pattern;
+				if (pattern == null) pattern = Pattern;
 				LastTimeout = timeout;
 				long timeoutMS = (long)(timeout * 1000);
 				bool timed = timeoutMS > 0;
@@ -278,7 +259,7 @@ namespace Rant.Core
 					_stopwatch.Start();
 				}
 
-				_scriptObjectStack.Clear();
+				ScriptObjectStack.Clear();
 				var callStack = new Stack<IEnumerator<RST>>();
 				IEnumerator<RST> action;
 
@@ -323,9 +304,9 @@ namespace Rant.Core
 
 		public IEnumerable<RantOutput> RunSerial(double timeout, RantPattern pattern = null)
 		{
-			lock (_patternArgs ?? fallbackArgsLockObj)
+			lock (PatternArgs ?? fallbackArgsLockObj)
 			{
-				if (pattern == null) pattern = _pattern;
+				if (pattern == null) pattern = Pattern;
 				LastTimeout = timeout;
 				long timeoutMS = (long)(timeout * 1000);
 				bool timed = timeoutMS > 0;
@@ -336,7 +317,7 @@ namespace Rant.Core
 					_stopwatch.Start();
 				}
 
-				_scriptObjectStack.Clear();
+				ScriptObjectStack.Clear();
 				var callStack = new Stack<IEnumerator<RST>>();
 				IEnumerator<RST> action;
 

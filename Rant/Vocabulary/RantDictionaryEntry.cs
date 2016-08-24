@@ -11,10 +11,9 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantDictionaryEntry
 	{
-		private RantDictionaryTerm[] _terms;
 		private readonly HashSet<string> _classes;
 		private readonly HashSet<string> _optionalClasses;
-		private readonly int _numTerms;
+		private readonly RantDictionaryTerm[] _terms;
 
 		/// <summary>
 		/// Creates a new RantDictionaryEntry object from the specified data.
@@ -37,14 +36,14 @@ namespace Rant.Vocabulary
 		{
 			if (terms == null) throw new ArgumentNullException(nameof(terms));
 			_terms = terms.ToArray();
-			_numTerms = _terms.Length;
+			TermCount = _terms.Length;
 			_classes = new HashSet<string>();
 			_optionalClasses = new HashSet<string>();
-			foreach (var c in classes)
+			foreach (string c in classes)
 			{
 				if (c.EndsWith("?"))
 				{
-					var trimmed = VocabUtils.GetString(c.Substring(0, c.Length - 1));
+					string trimmed = VocabUtils.GetString(c.Substring(0, c.Length - 1));
 					_optionalClasses.Add(trimmed);
 					_classes.Add(trimmed);
 				}
@@ -57,15 +56,9 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Enumerates the terms stored in the current entry.
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<RantDictionaryTerm> GetTerms() => _terms.AsEnumerable(); 
-
-		/// <summary>
 		/// Gets the number of terms stored in the current entry.
 		/// </summary>
-		public int TermCount => _numTerms;
+		public int TermCount { get; }
 
 		/// <summary>
 		/// Gets or sets the term at the specified index.
@@ -85,12 +78,23 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
+		/// Gets the weight value of the entry.
+		/// </summary>
+		public int Weight { get; set; }
+
+		/// <summary>
+		/// Enumerates the terms stored in the current entry.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<RantDictionaryTerm> GetTerms() => _terms.AsEnumerable();
+
+		/// <summary>
 		/// Returns a collection of classes assigned to the current entry.
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<string> GetClasses()
 		{
-			foreach (var className in _classes) yield return className;
+			foreach (string className in _classes) yield return className;
 		}
 
 		/// <summary>
@@ -99,7 +103,7 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<string> GetOptionalClasses()
 		{
-			foreach (var className in _optionalClasses) yield return className;
+			foreach (string className in _optionalClasses) yield return className;
 		}
 
 		/// <summary>
@@ -135,11 +139,6 @@ namespace Rant.Vocabulary
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<string> GetRequiredClasses() => _classes.Except(_optionalClasses);
-
-		/// <summary>
-		/// Gets the weight value of the entry.
-		/// </summary>
-		public int Weight { get; set; }
 
 		/// <summary>
 		/// Returns a string representation of the current RantDictionaryEntry instance.

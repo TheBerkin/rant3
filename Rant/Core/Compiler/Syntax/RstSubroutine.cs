@@ -7,8 +7,6 @@ namespace Rant.Core.Compiler.Syntax
 	internal abstract class RstSubroutine : RST
 	{
 		protected readonly Stringe _name;
-
-		public string Name => _name.Value;
 		public List<RST> Arguments;
 		public RST Body;
 		public RantPattern Source;
@@ -18,5 +16,7 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			_name = name;
 		}
+
+		public string Name => _name.Value;
 	}
 }

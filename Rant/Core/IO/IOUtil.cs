@@ -15,7 +15,8 @@ namespace Rant.Core.IO
 
 		public static bool EndianConvertNeeded(Endian endianness)
 		{
-			return (BitConverter.IsLittleEndian && endianness == Endian.Big) || (!BitConverter.IsLittleEndian && endianness == Endian.Little);
+			return (BitConverter.IsLittleEndian && endianness == Endian.Big) ||
+			       (!BitConverter.IsLittleEndian && endianness == Endian.Little);
 		}
 
 		public static bool IsNumericType(Type t)
@@ -40,7 +41,8 @@ namespace Rant.Core.IO
 		}
 
 		/// <summary>
-		/// Converts the endianness of a series of bytes according to the endianness of the data. This process works both for system-side and data-side conversions.
+		/// Converts the endianness of a series of bytes according to the endianness of the data. This process works both for
+		/// system-side and data-side conversions.
 		/// </summary>
 		/// <param name="data">The data to convert.</param>
 		/// <param name="dataEndianness">The endianness to convert to or from.</param>
@@ -59,10 +61,11 @@ namespace Rant.Core.IO
 				throw new ArgumentException("TStruct must be a value type.");
 			}
 			object boxed = o;
-			foreach (var field in typeof(TStruct).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			foreach (var field in typeof(TStruct).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+				)
 			{
-				Type ftype = field.FieldType;
-				if (!IOUtil.IsNumericType(ftype))
+				var ftype = field.FieldType;
+				if (!IsNumericType(ftype))
 				{
 					continue;
 				}
@@ -77,11 +80,11 @@ namespace Rant.Core.IO
 						{
 							// Get the field size, allocate a pointer and a buffer for flipping bytes.
 							int length = Marshal.SizeOf(ftype);
-							IntPtr vptr = Marshal.AllocHGlobal(length);
-							byte[] vData = new byte[length];
+							var vptr = Marshal.AllocHGlobal(length);
+							var vData = new byte[length];
 
 							// Fetch the field value and store it.
-							object value = field.GetValue(boxed);
+							var value = field.GetValue(boxed);
 
 							// Transfer the field value to the pointer and copy it to the array.
 							Marshal.StructureToPtr(value, vptr, false);

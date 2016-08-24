@@ -9,11 +9,6 @@ namespace Rant
 	public sealed class RantArgAttribute : Attribute
 	{
 		/// <summary>
-		/// The new name to assign to the argument.
-		/// </summary>
-		public string Name { get; }
-
-		/// <summary>
 		/// Creates a new RantArgAttribute with the specified name.
 		/// </summary>
 		/// <param name="name">The new name to assign to the argument.</param>
@@ -22,5 +17,10 @@ namespace Rant
 			if (name == null) throw new ArgumentNullException(nameof(name));
 			Name = name;
 		}
+
+		/// <summary>
+		/// The new name to assign to the argument.
+		/// </summary>
+		public string Name { get; }
 	}
 }

@@ -10,7 +10,8 @@ namespace Rant.Resources
 	/// </summary>
 	public class RantDependencyResolver
 	{
-		private static readonly Regex FallbackRegex = new Regex(@"[\s\-_.]*[vV]?(?<version>\d+(\.\d+){0,2})$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex FallbackRegex = new Regex(@"[\s\-_.]*[vV]?(?<version>\d+(\.\d+){0,2})$",
+			RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 
 		/// <summary>
 		/// Attempts to resolve a depdendency to the appropriate package.
@@ -21,7 +22,7 @@ namespace Rant.Resources
 		public virtual bool TryResolvePackage(RantPackageDependency depdendency, out RantPackage package)
 		{
 			package = null;
-			var path = Path.Combine(Environment.CurrentDirectory, $"{depdendency.ID}.rantpkg");
+			string path = Path.Combine(Environment.CurrentDirectory, $"{depdendency.ID}.rantpkg");
 			if (!File.Exists(path))
 			{
 				RantPackageVersion version;
@@ -29,15 +30,17 @@ namespace Rant.Resources
 #if UNITY
 				path = Directory.GetFiles(Environment.CurrentDirectory, $"{depdendency.ID}*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
 #else
-				path = Directory.EnumerateFiles(Environment.CurrentDirectory, "*.rantpkg", SearchOption.AllDirectories).FirstOrDefault(p =>
+				path =
+					Directory.EnumerateFiles(Environment.CurrentDirectory, "*.rantpkg", SearchOption.AllDirectories)
+						.FirstOrDefault(p =>
 #endif
 
-				{
-					var match = FallbackRegex.Match(Path.GetFileNameWithoutExtension(p));
-					if (!match.Success) return false;
-					version = RantPackageVersion.Parse(match.Groups["version"].Value);
-					return (depdendency.AllowNewer && version >= depdendency.Version) || depdendency.Version == version;
-				});
+						{
+							var match = FallbackRegex.Match(Path.GetFileNameWithoutExtension(p));
+							if (!match.Success) return false;
+							version = RantPackageVersion.Parse(match.Groups["version"].Value);
+							return (depdendency.AllowNewer && version >= depdendency.Version) || depdendency.Version == version;
+						});
 				if (path == null) return false;
 			}
 			try

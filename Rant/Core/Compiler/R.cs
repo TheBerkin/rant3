@@ -9,11 +9,13 @@
 		/// Regular text with no special function.
 		/// </summary>
 		Text,
+
 		/// <summary>
 		/// A format string used to output a reserved or random character.
 		/// Used by: Plaintext, arguments
 		/// </summary>
 		EscapeSequence,
+
 		/// <summary>
 		/// [
 		/// <para>
@@ -21,6 +23,7 @@
 		/// </para>
 		/// </summary>
 		LeftSquare,
+
 		/// <summary>
 		/// ]
 		/// <para>
@@ -28,6 +31,7 @@
 		/// </para>
 		/// </summary>
 		RightSquare,
+
 		/// <summary>
 		/// {
 		/// <para>
@@ -35,6 +39,7 @@
 		/// </para>
 		/// </summary>
 		LeftCurly,
+
 		/// <summary>
 		/// }
 		/// <para>
@@ -42,6 +47,7 @@
 		/// </para>
 		/// </summary>
 		RightCurly,
+
 		/// <summary>
 		/// &lt;
 		/// <para>
@@ -49,6 +55,7 @@
 		/// </para>
 		/// </summary>
 		LeftAngle,
+
 		/// <summary>
 		/// &gt;
 		/// <para>
@@ -56,6 +63,7 @@
 		/// </para>
 		/// </summary>
 		RightAngle,
+
 		/// <summary>
 		/// (
 		/// <para>
@@ -63,6 +71,7 @@
 		/// </para>
 		/// </summary>
 		LeftParen,
+
 		/// <summary>
 		/// )
 		/// <para>
@@ -70,6 +79,7 @@
 		/// </para>
 		/// </summary>
 		RightParen,
+
 		/// <summary>
 		/// |
 		/// <para>
@@ -77,6 +87,7 @@
 		/// </para>
 		/// </summary>
 		Pipe,
+
 		/// <summary>
 		/// :
 		/// <para>
@@ -84,6 +95,7 @@
 		/// </para>
 		/// </summary>
 		Colon,
+
 		/// <summary>
 		/// ;
 		/// <para>
@@ -91,6 +103,7 @@
 		/// </para>
 		/// </summary>
 		Semicolon,
+
 		/// <summary>
 		/// ::
 		/// <para>
@@ -98,6 +111,7 @@
 		/// </para>
 		/// </summary>
 		DoubleColon,
+
 		/// <summary>
 		/// @
 		/// <para>
@@ -105,6 +119,7 @@
 		/// </para>
 		/// </summary>
 		At,
+
 		/// <summary>
 		/// ?
 		/// <para>
@@ -112,6 +127,7 @@
 		/// </para>
 		/// </summary>
 		Question,
+
 		/// <summary>
 		/// /
 		/// <para>
@@ -119,6 +135,7 @@
 		/// </para>
 		/// </summary>
 		ForwardSlash,
+
 		/// <summary>
 		/// !
 		/// <para>
@@ -126,6 +143,7 @@
 		/// </para>
 		/// </summary>
 		Exclamation,
+
 		/// <summary>
 		/// $
 		/// <para>
@@ -133,6 +151,7 @@
 		/// </para>
 		/// </summary>
 		Dollar,
+
 		/// <summary>
 		/// -
 		/// <para>
@@ -140,6 +159,7 @@
 		/// </para>
 		/// </summary>
 		Hyphen,
+
 		/// <summary>
 		/// ,
 		/// <para>
@@ -147,6 +167,7 @@
 		/// </para>
 		/// </summary>
 		Comma,
+
 		/// <summary>
 		/// ?!
 		/// <para>
@@ -154,6 +175,7 @@
 		/// </para>
 		/// </summary>
 		Without,
+
 		/// <summary>
 		/// Javascript-style regular expression.
 		/// <para>
@@ -161,26 +183,31 @@
 		/// </para>
 		/// </summary>
 		Regex,
+
 		/// <summary>
 		/// Comments, whitespace, etc.
 		/// </summary>
 		Ignore,
+
 		/// <summary>
 		/// " ... "
 		/// Used by: Tags
 		/// </summary>
 		VerbatimString,
+
 		/// <summary>
 		/// Used by: Tags
 		/// </summary>
 		Whitespace,
+
 		/// <summary>
 		/// =
 		/// <para>
 		/// Used by: Carriers
-		/// </para> 
+		/// </para>
 		/// </summary>
 		Equal,
+
 		/// <summary>
 		/// &amp;
 		/// <para>
@@ -188,6 +215,7 @@
 		/// </para>
 		/// </summary>
 		Ampersand,
+
 		/// <summary>
 		/// %
 		/// <para>
@@ -195,6 +223,7 @@
 		/// </para>
 		/// </summary>
 		Percent,
+
 		/// <summary>
 		/// ^
 		/// <para>
@@ -202,6 +231,7 @@
 		/// </para>
 		/// </summary>
 		Caret,
+
 		/// <summary>
 		/// +
 		/// <para>
@@ -209,10 +239,12 @@
 		/// </para>
 		/// </summary>
 		Plus,
+
 		/// <summary>
 		/// *
 		/// </summary>
 		Asterisk,
+
 		/// <summary>
 		/// *123:
 		/// <para>
@@ -220,22 +252,27 @@
 		/// </para>
 		/// </summary>
 		Weight,
+
 		/// <summary>
 		/// `
 		/// </summary>
 		Backtick,
+
 		/// <summary>
 		/// (a - b)
 		/// </summary>
 		RangeLiteral,
+
 		/// <summary>
 		/// Any decimal number.
 		/// </summary>
 		Number,
+
 		/// <summary>
 		/// var keyword
 		/// </summary>
 		Var,
+
 		/// <summary>
 		/// .
 		/// <para>
@@ -243,14 +280,17 @@
 		/// </para>
 		/// </summary>
 		Subtype,
+
 		/// <summary>
 		/// End of file.
 		/// </summary>
 		EOF,
+
 		/// <summary>
 		/// Tilde (~)
 		/// </summary>
 		Tilde,
+
 		/// <summary>
 		/// Undefined (???)
 		/// </summary>

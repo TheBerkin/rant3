@@ -17,10 +17,27 @@ namespace Rant.Core.IO.Bson
 		/// </summary>
 		public const int STRING_TABLE_VERSION = 1;
 
+		private readonly Dictionary<string, int> _stringTable;
+		private int _stringTableIndex = 0;
+
 		/// <summary>
 		/// The top item of this BSON document.
 		/// </summary>
 		public BsonItem Top;
+
+		/// <summary>
+		/// Creates an empty BSON document.
+		/// <param>Whether or not to generate and use a string table.</param>
+		/// </summary>
+		public BsonDocument(
+			BsonStringTableMode mode = BsonStringTableMode.None,
+			Dictionary<int, string> reverseStringTable = null)
+		{
+			StringTableMode = mode;
+			_stringTable = new Dictionary<string, int>();
+			ReverseStringTable = reverseStringTable;
+			Top = new BsonItem();
+		}
 
 		/// <summary>
 		/// Retreives the value of the given key if it exists.
@@ -35,34 +52,11 @@ namespace Rant.Core.IO.Bson
 					return Top[key];
 				return null;
 			}
-			set
-			{
-				Top[key] = value;
-			}
+			set { Top[key] = value; }
 		}
 
-		public BsonStringTableMode StringTableMode => _stringTableMode;
-
-		public Dictionary<int, string> ReverseStringTable => _reverseStringTable;
-
-		private readonly Dictionary<string, int> _stringTable;
-		private readonly Dictionary<int, string> _reverseStringTable; // for reading
-		private int _stringTableIndex = 0;
-		private readonly BsonStringTableMode _stringTableMode = BsonStringTableMode.None;
-
-		/// <summary>
-		/// Creates an empty BSON document.
-		/// <param>Whether or not to generate and use a string table.</param>
-		/// </summary>
-		public BsonDocument(
-			BsonStringTableMode mode = BsonStringTableMode.None,
-			Dictionary<int, string> reverseStringTable = null)
-		{
-			_stringTableMode = mode;
-			_stringTable = new Dictionary<string, int>();
-			_reverseStringTable = reverseStringTable;
-			Top = new BsonItem();
-		}
+		public BsonStringTableMode StringTableMode { get; } = BsonStringTableMode.None;
+		public Dictionary<int, string> ReverseStringTable { get; }
 
 		/// <summary>
 		/// Returns this document encoded in BSON as a byte array.
@@ -139,7 +133,7 @@ namespace Rant.Core.IO.Bson
 		{
 			writer.Write(include);
 			if (!include) return;
-			writer.Write((byte)_stringTableMode);
+			writer.Write((byte)StringTableMode);
 			writer.Write((byte)STRING_TABLE_VERSION);
 			var stringTableBytes = GenerateStringTable();
 			writer.Write(stringTableBytes.Length);
@@ -213,8 +207,8 @@ namespace Rant.Core.IO.Bson
 		/// <returns>The correct name for the provided key.</returns>
 		private string GetKeyName(string name, bool value = false)
 		{
-			if (_stringTableMode == BsonStringTableMode.None ||
-				value && _stringTableMode == BsonStringTableMode.Keys)
+			if (StringTableMode == BsonStringTableMode.None ||
+			    value && StringTableMode == BsonStringTableMode.Keys)
 				return name;
 			if (_stringTable.ContainsKey(name))
 				return _stringTable[name].ToString();
@@ -253,20 +247,20 @@ namespace Rant.Core.IO.Bson
 			Dictionary<int, string> stringTable = null;
 			if (parent == null)
 			{
-				var includesStringTable = reader.ReadBoolean();
+				bool includesStringTable = reader.ReadBoolean();
 				if (includesStringTable)
 				{
 					stringTable = new Dictionary<int, string>();
 					stringTableMode = (BsonStringTableMode)reader.ReadByte();
-					var version = reader.ReadByte();
+					byte version = reader.ReadByte();
 					if (version != STRING_TABLE_VERSION)
 						throw new InvalidDataException("Unsupported string table version: " + version);
-					var tableLength = reader.ReadInt32();
-					var tableEntries = reader.ReadInt32();
-					for (var i = 0; i < tableEntries; i++)
+					int tableLength = reader.ReadInt32();
+					int tableEntries = reader.ReadInt32();
+					for (int i = 0; i < tableEntries; i++)
 					{
-						var num = reader.ReadInt32();
-						var val = reader.ReadString(Encoding.UTF8);
+						int num = reader.ReadInt32();
+						string val = reader.ReadString(Encoding.UTF8);
 						stringTable[num] = val;
 					}
 				}
@@ -278,13 +272,13 @@ namespace Rant.Core.IO.Bson
 			}
 			var document = new BsonDocument(stringTableMode, stringTable);
 
-			var length = reader.ReadInt32();
+			int length = reader.ReadInt32();
 			while (!reader.EndOfStream)
 			{
-				var code = reader.ReadByte();
+				byte code = reader.ReadByte();
 				if (code == 0x00) // end of document
 					break;
-				var name = reader.ReadCString();
+				string name = reader.ReadCString();
 				if (!inArray && document.StringTableMode != BsonStringTableMode.None)
 					name = document.ReverseStringTable[int.Parse(name)];
 				var data = ReadItem(code, document, reader);
@@ -313,8 +307,8 @@ namespace Rant.Core.IO.Bson
 					val = Read(reader, document, true).Top;
 					break;
 				case 0x05: // binary
-					var length = reader.ReadInt32();
-					var subtype = reader.ReadByte();
+					int length = reader.ReadInt32();
+					byte subtype = reader.ReadByte();
 					if (subtype != 0x00)
 						throw new NotSupportedException("BSON subtypes other than 'generic binary data' are not supported.");
 					val = reader.ReadBytes(length);
@@ -322,8 +316,8 @@ namespace Rant.Core.IO.Bson
 				case 0x06: // undefined
 					break;
 				case 0x07: // ObjectId
-						   // why does this parser support ObjectIds and not other binary data?
-						   // shhhhh
+					// why does this parser support ObjectIds and not other binary data?
+					// shhhhh
 					val = Encoding.ASCII.GetString(reader.ReadBytes(12));
 					break;
 				case 0x08: // boolean
@@ -335,7 +329,7 @@ namespace Rant.Core.IO.Bson
 				case 0x0A: // null
 					break;
 				case 0x0B: // regex
-						   // why are you using regex in a Rant package?
+					// why are you using regex in a Rant package?
 					throw new NotSupportedException("Regular expressions are not supported.");
 				case 0x0C: // db pointer
 					throw new NotSupportedException("DB pointers are not supported.");
@@ -354,7 +348,7 @@ namespace Rant.Core.IO.Bson
 					break;
 				case 0xFF: // min key
 				case 0x7F: // max key
-						   // we don't care about these so let's just skip em
+					// we don't care about these so let's just skip em
 					break;
 			}
 			if (!(val is BsonItem))

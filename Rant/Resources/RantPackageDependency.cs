@@ -13,6 +13,32 @@ namespace Rant.Resources
 		private RantPackageVersion _version;
 
 		/// <summary>
+		/// Initializes a new RantPackageDependency object.
+		/// </summary>
+		/// <param name="id">The ID of the package.</param>
+		/// <param name="version">The targeted version of the package.</param>
+		public RantPackageDependency(string id, string version)
+		{
+			if (id == null) throw new ArgumentNullException(nameof(id));
+			if (version == null) throw new ArgumentNullException(nameof(version));
+			ID = id;
+			Version = RantPackageVersion.Parse(version);
+		}
+
+		/// <summary>
+		/// Initializes a new RantPackageDependency object.
+		/// </summary>
+		/// <param name="id">The ID of the package.</param>
+		/// <param name="version">The targeted version of the package.</param>
+		public RantPackageDependency(string id, RantPackageVersion version)
+		{
+			if (id == null) throw new ArgumentNullException(nameof(id));
+			if (version == null) throw new ArgumentNullException(nameof(version));
+			ID = id;
+			Version = version;
+		}
+
+		/// <summary>
 		/// The ID of the package.
 		/// </summary>
 		public string ID
@@ -42,32 +68,6 @@ namespace Rant.Resources
 		/// Specifies whether the dependency will accept a package newer than the one given.
 		/// </summary>
 		public bool AllowNewer { get; set; }
-
-		/// <summary>
-		/// Initializes a new RantPackageDependency object.
-		/// </summary>
-		/// <param name="id">The ID of the package.</param>
-		/// <param name="version">The targeted version of the package.</param>
-		public RantPackageDependency(string id, string version)
-		{
-			if (id == null) throw new ArgumentNullException(nameof(id));
-			if (version == null) throw new ArgumentNullException(nameof(version));
-			ID = id;
-			Version = RantPackageVersion.Parse(version);
-		}
-
-		/// <summary>
-		/// Initializes a new RantPackageDependency object.
-		/// </summary>
-		/// <param name="id">The ID of the package.</param>
-		/// <param name="version">The targeted version of the package.</param>
-		public RantPackageDependency(string id, RantPackageVersion version)
-		{
-			if (id == null) throw new ArgumentNullException(nameof(id));
-			if (version == null) throw new ArgumentNullException(nameof(version));
-			ID = id;
-			Version = version;
-		}
 
 		/// <summary>
 		/// Checks if the specified version is compatible with the current dependency.
@@ -112,7 +112,7 @@ namespace Rant.Resources
 		public override bool Equals(object obj)
 		{
 			var d = obj as RantPackageDependency;
-			return d != null && String.Equals(ID, d.ID, StringComparison.InvariantCulture);
+			return d != null && string.Equals(ID, d.ID, StringComparison.InvariantCulture);
 		}
 	}
 }

@@ -9,27 +9,40 @@ namespace Rant.Core.Compiler.Syntax
 {
 	internal class RstEscape : RST
 	{
-		private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = new Dictionary<char, Action<Sandbox, int>>
+		private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = new Dictionary
+			<char, Action<Sandbox, int>>
 		{
-			{'n', (sb, c) => sb.Print(new string('\n', c))},
-			{'N', (sb, c) =>
+			{ 'n', (sb, c) => sb.Print(new string('\n', c)) },
 			{
-				var b = new StringBuilder();
-				for (int i = 0; i < c; i++) b.Append(Environment.NewLine);
-				sb.Print(b);
-			}},
-			{'r', (sb, c) => sb.Print(new string('\r', c))},
-			{'t', (sb, c) => sb.Print(new string('\t', c))},
-			{'b', (sb, c) => sb.Print(new string('\b', c))},
-			{'f', (sb, c) => sb.Print(new string('\f', c))},
-			{'v', (sb, c) => sb.Print(new string('\v', c))},
-			{'s', (sb, c) => sb.Print(new string(' ', c))},
-			{'d', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(48, 58)), c)},
-			{'D', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(49, 58)), c)},
-			{'c', (sb, c) => sb.PrintMany(() => Char.ToLowerInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)},
-			{'C', (sb, c) => sb.PrintMany(() => Char.ToUpperInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)},
-			{'x', (sb, c) => sb.PrintMany(() => "0123456789abcdef"[sb.RNG.Next(16)], c)},
-			{'X', (sb, c) => sb.PrintMany(() => "0123456789ABCDEF"[sb.RNG.Next(16)], c)},
+				'N', (sb, c) =>
+				{
+					var b = new StringBuilder();
+					for (int i = 0; i < c; i++) b.Append(Environment.NewLine);
+					sb.Print(b);
+				}
+			},
+			{ 'r', (sb, c) => sb.Print(new string('\r', c)) },
+			{ 't', (sb, c) => sb.Print(new string('\t', c)) },
+			{ 'b', (sb, c) => sb.Print(new string('\b', c)) },
+			{ 'f', (sb, c) => sb.Print(new string('\f', c)) },
+			{ 'v', (sb, c) => sb.Print(new string('\v', c)) },
+			{ 's', (sb, c) => sb.Print(new string(' ', c)) },
+			{ 'd', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(48, 58)), c) },
+			{ 'D', (sb, c) => sb.PrintMany(() => Convert.ToChar(sb.RNG.Next(49, 58)), c) },
+			{
+				'c',
+				(sb, c) =>
+					sb.PrintMany(
+						() => char.ToLowerInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)
+			},
+			{
+				'C',
+				(sb, c) =>
+					sb.PrintMany(
+						() => char.ToUpperInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)
+			},
+			{ 'x', (sb, c) => sb.PrintMany(() => "0123456789abcdef"[sb.RNG.Next(16)], c) },
+			{ 'X', (sb, c) => sb.PrintMany(() => "0123456789ABCDEF"[sb.RNG.Next(16)], c) },
 			{
 				'w', (sb, c) =>
 				{
@@ -37,9 +50,9 @@ namespace Rant.Core.Compiler.Syntax
 					sb.PrintMany(() =>
 					{
 						i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
-						return i >= 10 
-						? Char.ToLowerInvariant(sb.Format.LettersInternal[i - 10]) 
-						: Convert.ToChar(i + 48);
+						return i >= 10
+							? char.ToLowerInvariant(sb.Format.LettersInternal[i - 10])
+							: Convert.ToChar(i + 48);
 					}, c);
 				}
 			},
@@ -51,8 +64,8 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
 						return i >= 10
-						? Char.ToUpperInvariant(sb.Format.LettersInternal[i - 10])
-						: Convert.ToChar(i + 48);
+							? char.ToUpperInvariant(sb.Format.LettersInternal[i - 10])
+							: Convert.ToChar(i + 48);
 					}, c);
 				}
 			},
@@ -67,13 +80,13 @@ namespace Rant.Core.Compiler.Syntax
 
 		public RstEscape(Stringe escapeSequence) : base(escapeSequence)
 		{
-			var escape = escapeSequence.Value;
+			string escape = escapeSequence.Value;
 
 			// The lexer already assures that the string isn't empty.
 			int codeIndex = 1; // skip past the backslash
 
 			// parse the quantifier
-			if (Char.IsDigit(escape[codeIndex]) && escape[codeIndex] != '0')
+			if (char.IsDigit(escape[codeIndex]) && escape[codeIndex] != '0')
 			{
 				int commaIndex = escape.IndexOf(',', codeIndex + 1);
 				if (commaIndex != -1)

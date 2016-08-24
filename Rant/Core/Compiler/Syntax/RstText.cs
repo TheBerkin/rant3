@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Rant.Core.Stringes;
 
@@ -10,23 +9,21 @@ namespace Rant.Core.Compiler.Syntax
 	/// </summary>
 	internal class RstText : RST
 	{
-		private readonly string _text;
-
-		public string Text => _text;
-
 		public RstText(Stringe token) : base(token)
 		{
-			_text = token.Value ?? String.Empty;
+			Text = token.Value ?? string.Empty;
 		}
 
 		public RstText(Stringe token, string text) : base(token)
 		{
-			_text = text ?? String.Empty;
+			Text = text ?? string.Empty;
 		}
+
+		public string Text { get; }
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
-			sb.Print(_text);
+			sb.Print(Text);
 			yield break;
 		}
 	}

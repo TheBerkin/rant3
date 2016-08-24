@@ -8,25 +8,22 @@ namespace Rant.Metadata
 	[AttributeUsage(AttributeTargets.Method)]
 	internal sealed class RantFunctionAttribute : Attribute
 	{
-		private readonly string[] _aliases;
-
 		public RantFunctionAttribute(params string[] aliases)
 		{
-			_aliases = aliases;
+			Aliases = aliases;
 		}
 
 		public RantFunctionAttribute(string name)
 		{
-			_aliases = new[] { name };
+			Aliases = new[] { name };
 		}
 
 		public RantFunctionAttribute()
 		{
-			_aliases = new[] { String.Empty };
+			Aliases = new[] { string.Empty };
 		}
 
 		public string Name => Aliases[0];
-
-		public string[] Aliases => _aliases;
+		public string[] Aliases { get; }
 	}
 }
