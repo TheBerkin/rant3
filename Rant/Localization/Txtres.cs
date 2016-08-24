@@ -55,7 +55,7 @@ namespace Rant.Localization
 
 		private static void LoadStringTableData(string lang, Stream stream, Dictionary<string, string> table)
 		{
-			using (var reader = new StreamReader(stream, Encoding.Default, true, 256, true))
+			using (var reader = new StreamReader(stream))
 			{
 				loop:
 				while (!reader.EndOfStream)
