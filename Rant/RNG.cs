@@ -14,7 +14,9 @@ namespace Rant
 		private const int Mask32 = 0x7FFFFFFF;
 		private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
 		private const double MaxDouble = long.MaxValue;
-		[ThreadStatic] private static RNGHashState _hashState = new RNGHashState();
+
+		[ThreadStatic]
+		private static RNGHashState _hashState = new RNGHashState();
 
 		#region Table
 
@@ -371,14 +373,23 @@ namespace Rant
 		[StructLayout(LayoutKind.Explicit)]
 		private struct RNGHashState
 		{
-			[FieldOffset(0)] public long HashSigned;
-			[FieldOffset(0)] public ulong HashUnsigned;
+			[FieldOffset(0)]
+			public long HashSigned;
 
-			[FieldOffset(8)] public readonly ulong Seed;
-			[FieldOffset(8)] private long _Seed;
+			[FieldOffset(0)]
+			public ulong HashUnsigned;
 
-			[FieldOffset(16)] public readonly ulong Generation;
-			[FieldOffset(16)] private long _Generation;
+			[FieldOffset(8)]
+			public readonly ulong Seed;
+
+			[FieldOffset(8)]
+			private long _Seed;
+
+			[FieldOffset(16)]
+			public readonly ulong Generation;
+
+			[FieldOffset(16)]
+			private long _Generation;
 
 			public RNGHashState(long s, long g)
 			{

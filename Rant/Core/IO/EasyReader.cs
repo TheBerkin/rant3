@@ -843,8 +843,11 @@ namespace Rant.Core.IO
 		[StructLayout(LayoutKind.Explicit)]
 		private struct IntermediateByte
 		{
-			[FieldOffset(0)] public byte U;
-			[FieldOffset(0)] public readonly sbyte S;
+			[FieldOffset(0)]
+			public byte U;
+
+			[FieldOffset(0)]
+			public readonly sbyte S;
 		}
 	}
 }
