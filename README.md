@@ -102,6 +102,8 @@ Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/
 ## Improve Rant
 If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. I will try to get back to you within a day.
 
+If you speak a language besides English and want to translate Rant into your native language, please feel free to write a .lang file for it and send a pull request.
+
 ## Learn Rant
 See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
 
