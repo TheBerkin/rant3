@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.IO;
 using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RstCallSubroutine : RstSubroutine
+	[RST("csub")]
+	internal class RstCallSubroutine : RstSubroutineBase
 	{
-		private readonly bool _inModule = false;
-		private readonly string _moduleFunctionName = null;
+		public List<RST> Arguments;
+		private bool _inModule = false;
+		private string _moduleFunctionName = null;
 
 		public RstCallSubroutine(Stringe name, string moduleFunctionName = null)
 			: base(name)
@@ -50,7 +53,7 @@ namespace Rant.Core.Compiler.Syntax
 					sb.AddOutputWriter();
 					yield return Arguments[i];
 					var output = sb.Return();
-					args[parameters[i]] = new RstText(_name, output.Main);
+					args[parameters[i]] = new RstText(Location, output.Main);
 				}
 				else
 					args[parameters[i]] = Arguments[i];
@@ -58,6 +61,22 @@ namespace Rant.Core.Compiler.Syntax
 			sb.SubroutineArgs.Push(args);
 			yield return action;
 			sb.SubroutineArgs.Pop();
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			var iterMain = base.Serialize(output);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			output.Write(_inModule);
+			output.Write(_moduleFunctionName);
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			var iterMain = base.Deserialize(input);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			input.ReadBoolean(out _inModule);
+			input.ReadString(out _moduleFunctionName);
 		}
 	}
 }

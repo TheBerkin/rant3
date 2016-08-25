@@ -1,5 +1,6 @@
 ﻿untitled-package = "Unbenanntes Paket"
 default-package-id = "Paket"
+pattern = "Vorlage"
 
 src-line-col = "({0}: Zeile {1}, Spalte {2})"
 

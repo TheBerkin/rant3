@@ -57,11 +57,11 @@ namespace Rant.Vocabulary.Querying
 			RantDictionaryEntry result = null;
 
 			// Handle match carriers
-			foreach (string match in carrier.GetCarriers(CarrierComponent.Match))
+			foreach (string match in carrier.GetComponentsOfType(CarrierComponentType.Match))
 				if (_matchTable.TryGetValue(match, out result)) return result;
 
 			// Handle associative carriers
-			foreach (string assoc in carrier.GetCarriers(CarrierComponent.Associative))
+			foreach (string assoc in carrier.GetComponentsOfType(CarrierComponentType.Associative))
 			{
 				if (_assocTable.TryGetValue(assoc, out result))
 					pool = pool.Where(e => e.AssociatesWith(result));
@@ -69,7 +69,7 @@ namespace Rant.Vocabulary.Querying
 			}
 
 			// Handle match-associative carriers
-			foreach (string massoc in carrier.GetCarriers(CarrierComponent.MatchAssociative))
+			foreach (string massoc in carrier.GetComponentsOfType(CarrierComponentType.MatchAssociative))
 			{
 				if (_matchTable.TryGetValue(massoc, out result))
 					pool = pool.Where(e => e.AssociatesWith(result));
@@ -77,7 +77,7 @@ namespace Rant.Vocabulary.Querying
 			}
 
 			// Handle unique carriers
-			foreach (string unique in carrier.GetCarriers(CarrierComponent.Unique))
+			foreach (string unique in carrier.GetComponentsOfType(CarrierComponentType.Unique))
 			{
 				HashSet<RantDictionaryEntry> usedSet;
 				if (!_uniqueTable.TryGetValue(unique, out usedSet))
@@ -89,49 +89,49 @@ namespace Rant.Vocabulary.Querying
 			}
 
 			// Handle match-unique carriers
-			foreach (string munique in carrier.GetCarriers(CarrierComponent.Unique))
+			foreach (string munique in carrier.GetComponentsOfType(CarrierComponentType.Unique))
 			{
 				if (_matchTable.TryGetValue(munique, out result))
 					pool = pool.Where(e => e != result);
 			}
 
 			// Handle relational carriers
-			foreach (string relate in carrier.GetCarriers(CarrierComponent.Relational))
+			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.Relational))
 			{
 				if (_assocTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => e.RelatesWith(result));
 			}
 
 			// Handle match-relational carriers
-			foreach (string relate in carrier.GetCarriers(CarrierComponent.MatchRelational))
+			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.MatchRelational))
 			{
 				if (_matchTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => e.RelatesWith(result));
 			}
 
 			// Handle dissociative carriers
-			foreach (string relate in carrier.GetCarriers(CarrierComponent.Dissociative))
+			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.Dissociative))
 			{
 				if (_assocTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => !e.RelatesWith(result));
 			}
 
 			// Handle match-dissociative carriers
-			foreach (string relate in carrier.GetCarriers(CarrierComponent.MatchDissociative))
+			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.MatchDissociative))
 			{
 				if (_matchTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => !e.RelatesWith(result));
 			}
 
 			// Handle divergent carriers
-			foreach (string diverge in carrier.GetCarriers(CarrierComponent.Divergent))
+			foreach (string diverge in carrier.GetComponentsOfType(CarrierComponentType.Divergent))
 			{
 				if (_assocTable.TryGetValue(diverge, out result))
 					pool = pool.Where(e => e.DivergesFrom(result));
 			}
 
 			// Handle match-divergent carriers
-			foreach (string diverge in carrier.GetCarriers(CarrierComponent.MatchDivergent))
+			foreach (string diverge in carrier.GetComponentsOfType(CarrierComponentType.MatchDivergent))
 			{
 				if (_matchTable.TryGetValue(diverge, out result))
 					pool = pool.Where(e => e.DivergesFrom(result));
@@ -140,7 +140,7 @@ namespace Rant.Vocabulary.Querying
 			result = pool.PickEntry(rng);
 
 			// Handle rhyme carrier
-			foreach (string rhyme in carrier.GetCarriers(CarrierComponent.Rhyme))
+			foreach (string rhyme in carrier.GetComponentsOfType(CarrierComponentType.Rhyme))
 			{
 				_<RantDictionaryTerm, HashSet<RantDictionaryEntry>> rhymeState;
 				if (!_rhymeTable.TryGetValue(rhyme, out rhymeState))
@@ -165,22 +165,22 @@ namespace Rant.Vocabulary.Querying
 
 			if (result == null) return null;
 
-			foreach (string a in carrier.GetCarriers(CarrierComponent.Associative))
+			foreach (string a in carrier.GetComponentsOfType(CarrierComponentType.Associative))
 				if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-			foreach (string a in carrier.GetCarriers(CarrierComponent.Dissociative))
+			foreach (string a in carrier.GetComponentsOfType(CarrierComponentType.Dissociative))
 				if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-			foreach (string a in carrier.GetCarriers(CarrierComponent.Divergent))
+			foreach (string a in carrier.GetComponentsOfType(CarrierComponentType.Divergent))
 				if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-			foreach (string a in carrier.GetCarriers(CarrierComponent.Relational))
+			foreach (string a in carrier.GetComponentsOfType(CarrierComponentType.Relational))
 				if (!_assocTable.ContainsKey(a)) _assocTable[a] = result;
 
-			foreach (string unique in carrier.GetCarriers(CarrierComponent.Unique))
+			foreach (string unique in carrier.GetComponentsOfType(CarrierComponentType.Unique))
 				_uniqueTable[unique].Add(result);
 
-			foreach (string match in carrier.GetCarriers(CarrierComponent.Match))
+			foreach (string match in carrier.GetComponentsOfType(CarrierComponentType.Match))
 			{
 				_matchTable[match] = result;
 				break;
@@ -189,17 +189,17 @@ namespace Rant.Vocabulary.Querying
 			return result;
 		}
 
-		public void RemoveType(CarrierComponent type, string name)
+		public void RemoveType(CarrierComponentType type, string name)
 		{
-			if (type == CarrierComponent.Rhyme)
+			if (type == CarrierComponentType.Rhyme)
 				DeleteRhyme(name);
-			else if (type == CarrierComponent.Unique)
+			else if (type == CarrierComponentType.Unique)
 				DeleteUnique(name);
 			else if (
-				type == CarrierComponent.Associative ||
-				type == CarrierComponent.Relational ||
-				type == CarrierComponent.Dissociative ||
-				type == CarrierComponent.Divergent)
+				type == CarrierComponentType.Associative ||
+				type == CarrierComponentType.Relational ||
+				type == CarrierComponentType.Dissociative ||
+				type == CarrierComponentType.Divergent)
 				DeleteAssociation(name);
 			else
 				DeleteMatch(name);

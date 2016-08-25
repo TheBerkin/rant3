@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Framework;
+using Rant.Core.IO;
 using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
 {
+	[RST("nfnc")]
 	internal class RstFunction : RST
 	{
-		private readonly List<RST> _argActions;
-		private readonly int _argc;
-		private readonly RantFunctionSignature _funcInfo;
+		private List<RST> _args;
+		private int _argc;
+		private RantFunctionSignature _funcInfo;
 
-		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> argActions)
+		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> args)
 			: base(location)
 		{
 			_funcInfo = funcInfo;
-			_argActions = argActions;
-			_argc = argActions.Count;
+			_args = args;
+			_argc = args.Count;
 		}
 
 		private RantFunctionParameter GetParameter(int index)
@@ -43,13 +45,13 @@ namespace Rant.Core.Compiler.Syntax
 				{
 					// Patterns are passed right to the method
 					case RantFunctionParameterType.Pattern:
-						args[i] = _argActions[i];
+						args[i] = _args[i];
 						break;
 
 					// Strings are evaluated
 					case RantFunctionParameterType.String:
 						sb.AddOutputWriter();
-						yield return _argActions[i];
+						yield return _args[i];
 						args[i] = sb.Return().Main;
 						break;
 
@@ -57,7 +59,7 @@ namespace Rant.Core.Compiler.Syntax
 					case RantFunctionParameterType.Number:
 					{
 						sb.AddOutputWriter();
-						yield return _argActions[i];
+						yield return _args[i];
 						string strNum = sb.Return().Main;
 						if (!double.TryParse(strNum, out d))
 						{
@@ -73,12 +75,12 @@ namespace Rant.Core.Compiler.Syntax
 					case RantFunctionParameterType.Mode:
 					{
 						sb.AddOutputWriter();
-						yield return _argActions[i];
+						yield return _args[i];
 						string strMode = sb.Return().Main;
 						object value;
 						if (!Util.TryParseEnum(p.NativeType, strMode, out value))
 						{
-							throw new RantRuntimeException(sb.Pattern, _argActions[i].Location,
+							throw new RantRuntimeException(sb.Pattern, _args[i].Location,
 								$"Unknown mode value '{strMode}'.");
 						}
 						args[i] = value;
@@ -90,14 +92,14 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						var enumType = p.NativeType;
 						sb.AddOutputWriter();
-						yield return _argActions[i];
+						yield return _args[i];
 						long flags = 0;
 						string strFlags = sb.Return().Main;
 						object value;
 						foreach (string flag in strFlags.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
 						{
 							if (!Util.TryParseEnum(enumType, flag, out value))
-								throw new RantRuntimeException(sb.Pattern, _argActions[i].Location,
+								throw new RantRuntimeException(sb.Pattern, _args[i].Location,
 									$"Unknown flag value '{flag}'.");
 							flags |= Convert.ToInt64(value);
 						}
@@ -125,6 +127,27 @@ namespace Rant.Core.Compiler.Syntax
 			while (requester.MoveNext())
 			{
 				yield return requester.Current;
+			}
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			output.Write(_argc);
+			output.Write(_funcInfo.Name);
+			foreach (var arg in _args) yield return arg;
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			input.ReadInt32(out _argc);
+			var funcName = input.ReadString();
+			_funcInfo = RantFunctionRegistry.GetFunction(funcName, _argc);
+			if (_args == null) _args = new List<RST>(_argc);
+			for (int i = 0; i < _argc; i++)
+			{
+				var request = new DeserializeRequest(input.ReadUInt32());
+				yield return request;
+				_args.Add(request.Result);
 			}
 		}
 	}

@@ -22,7 +22,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				case R.Regex:
 				{
-					var regex = reader.Read(R.Regex, "replacer regex");
+					var regex = reader.Read(R.Regex, "acc-replacer-regex");
 					reader.Read(R.Colon);
 
 					var arguments = new List<RST>();
@@ -167,7 +167,7 @@ namespace Rant.Core.Compiler.Parsing
 			else
 			{
 				// subroutine call
-				var subroutineName = reader.Read(R.Text, "subroutine name");
+				var subroutineName = reader.Read(R.Text, "acc-subroutine-name");
 				string moduleFunctionName = null;
 
 				if (reader.TakeLoose(R.Subtype, false))
@@ -191,11 +191,10 @@ namespace Rant.Core.Compiler.Parsing
 				}
 				else
 				{
-					reader.Read(R.RightSquare, "function tag end");
+					reader.Read(R.RightSquare);
 				}
 
-				var subroutine = new RstCallSubroutine(subroutineName, moduleFunctionName);
-				subroutine.Arguments = arguments;
+				var subroutine = new RstCallSubroutine(subroutineName, moduleFunctionName) { Arguments = arguments };
 
 				actionCallback(subroutine);
 			}

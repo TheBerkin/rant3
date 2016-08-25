@@ -169,6 +169,8 @@
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\Parsing\TagParser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
+    <Compile Include="Core\Compiler\Syntax\DeserializeRequest.cs" />
+    <Compile Include="Core\Compiler\Syntax\RSTAttribute.cs" />
     <Compile Include="Core\Compiler\TokenLocation.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
@@ -203,7 +205,7 @@
     <Compile Include="Core\Compiler\Syntax\RstReplacer.cs" />
     <Compile Include="Core\Compiler\Syntax\RstSequence.cs" />
     <Compile Include="Core\Compiler\Syntax\RstCallSubroutine.cs" />
-    <Compile Include="Core\Compiler\Syntax\RstSubroutine.cs" />
+    <Compile Include="Core\Compiler\Syntax\RstSubroutineBase.cs" />
     <Compile Include="Core\Compiler\Syntax\RstText.cs" />
     <Compile Include="Core\Formatting\Endianness.cs" />
     <Compile Include="Core\Formatting\HexFormat.cs" />

@@ -8,6 +8,8 @@ using Rant.Core.Compiler.Syntax;
 using Rant.Core.Utilities;
 using Rant.Resources;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant
 {
 	/// <summary>
@@ -17,7 +19,7 @@ namespace Rant
 	public sealed class RantPattern
 	{
 		private static readonly HashSet<char> _invalidNameChars =
-			new HashSet<char>(new[] { '$', '@', ':', '~', '%', '?', '>', '<', '[', ']', '|', '{', '}' });
+			new HashSet<char>(new[] { '$', '@', ':', '~', '%', '?', '>', '<', '[', ']', '|', '{', '}', '?' });
 
 		private string _name;
 
@@ -65,7 +67,7 @@ namespace Rant
 		/// <param name="code">The code to compile.</param>
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <returns></returns>
-		public static RantPattern FromString(string code) => new RantPattern("Pattern", RantPatternOrigin.String, code);
+		public static RantPattern CompileFromString(string code) => new RantPattern(GetString("pattern"), RantPatternOrigin.String, code);
 
 		/// <summary>
 		/// Compiles a pattern from a string with the specified name.
@@ -74,7 +76,7 @@ namespace Rant
 		/// <param name="code">The code to compile.</param>
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <returns></returns>
-		public static RantPattern FromString(string name, string code)
+		public static RantPattern CompileFromString(string name, string code)
 			=> new RantPattern(name, RantPatternOrigin.String, code);
 
 		/// <summary>
@@ -84,8 +86,13 @@ namespace Rant
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown if the file cannot be found.</exception>
 		/// <returns></returns>
-		public static RantPattern FromFile(string path)
+		public static RantPattern CompileFromFile(string path)
 			=> new RantPattern(Path.GetFileName(path), RantPatternOrigin.File, File.ReadAllText(path));
+
+		public void Save(string path)
+		{
+			
+		}
 
 		/// <summary>
 		/// Returns a string describing the pattern.
@@ -93,14 +100,6 @@ namespace Rant
 		/// <returns></returns>
 		public override string ToString() => $"{Name} [{Type}]";
 
-		private static bool IsValidPatternName(string name)
-		{
-			if (Util.IsNullOrWhiteSpace(name)) return false;
-			foreach (char c in name)
-			{
-				if (_invalidNameChars.Contains(c)) return false;
-			}
-			return true;
-		}
+		private static bool IsValidPatternName(string name) => !Util.IsNullOrWhiteSpace(name) && name.All(c => !_invalidNameChars.Contains(c));
 	}
 }

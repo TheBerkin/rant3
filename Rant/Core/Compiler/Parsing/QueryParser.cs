@@ -199,7 +199,7 @@ namespace Rant.Core.Compiler.Parsing
 					{
 						var name = reader.Read(R.Text, "acc-carrier-name");
 						if (name != null)
-							carrier.AddComponent(CarrierComponent.Match, name.Value);
+							carrier.AddComponent(CarrierComponentType.Match, name.Value);
 					}
 						break;
 
@@ -209,43 +209,43 @@ namespace Rant.Core.Compiler.Parsing
 					// relational and match-relational
 					case R.At:
 					{
-						var carrierType = CarrierComponent.Associative;
+						var carrierType = CarrierComponentType.Associative;
 						// disassociative
 						if (reader.PeekToken().ID == R.Exclamation)
 						{
-							carrierType = CarrierComponent.Dissociative;
+							carrierType = CarrierComponentType.Dissociative;
 							reader.ReadToken();
 						}
 						// divergent
 						else if (reader.PeekToken().ID == R.Plus)
 						{
-							carrierType = CarrierComponent.Divergent;
+							carrierType = CarrierComponentType.Divergent;
 							reader.ReadToken();
 						}
 						else if (reader.PeekToken().ID == R.Question)
 						{
-							carrierType = CarrierComponent.Relational;
+							carrierType = CarrierComponentType.Relational;
 							reader.ReadToken();
 						}
 
 						// match
 						if (reader.PeekToken().ID == R.Equal)
 						{
-							if (carrierType == CarrierComponent.Associative)
+							if (carrierType == CarrierComponentType.Associative)
 							{
-								carrierType = CarrierComponent.MatchAssociative;
+								carrierType = CarrierComponentType.MatchAssociative;
 							}
-							else if (carrierType == CarrierComponent.Dissociative)
+							else if (carrierType == CarrierComponentType.Dissociative)
 							{
-								carrierType = CarrierComponent.MatchDissociative;
+								carrierType = CarrierComponentType.MatchDissociative;
 							}
-							else if (carrierType == CarrierComponent.Divergent)
+							else if (carrierType == CarrierComponentType.Divergent)
 							{
-								carrierType = CarrierComponent.MatchDivergent;
+								carrierType = CarrierComponentType.MatchDivergent;
 							}
-							else if (carrierType == CarrierComponent.Relational)
+							else if (carrierType == CarrierComponentType.Relational)
 							{
-								carrierType = CarrierComponent.MatchRelational;
+								carrierType = CarrierComponentType.MatchRelational;
 							}
 							reader.ReadToken();
 						}
@@ -259,11 +259,11 @@ namespace Rant.Core.Compiler.Parsing
 					// unique and match unique
 					case R.Exclamation:
 					{
-						var carrierType = CarrierComponent.Unique;
+						var carrierType = CarrierComponentType.Unique;
 						// match unique
 						if (reader.PeekToken().ID == R.Equal)
 						{
-							carrierType = CarrierComponent.MatchUnique;
+							carrierType = CarrierComponentType.MatchUnique;
 							reader.ReadToken();
 						}
 
@@ -278,7 +278,7 @@ namespace Rant.Core.Compiler.Parsing
 					{
 						var name = reader.Read(R.Text, "acc-carrier-name");
 						if (name != null)
-							carrier.AddComponent(CarrierComponent.Rhyme, name.Value);
+							carrier.AddComponent(CarrierComponentType.Rhyme, name.Value);
 					}
 						break;
 

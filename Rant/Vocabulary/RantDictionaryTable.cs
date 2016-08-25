@@ -184,7 +184,7 @@ namespace Rant.Vocabulary
 			if (index == -1) return null;
 
 			// Apply class filter
-			var pool = query.ClassFilter.IsEmpty
+			var pool = query.ClassFilter == null || query.ClassFilter.IsEmpty
 				? _entriesHash
 				: _entriesHash.Where(e => query.ClassFilter.Test(e, query.Exclusive));
 
@@ -197,7 +197,7 @@ namespace Rant.Vocabulary
 			}
 
 			// Apply regex filters
-			if (query.RegexFilters.Any())
+			if (query.RegexFilters != null && query.RegexFilters.Any())
 				pool = query.RegexFilters.Aggregate(pool,
 					(current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
 

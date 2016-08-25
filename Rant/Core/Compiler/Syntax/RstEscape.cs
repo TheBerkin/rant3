@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Rant.Core.IO;
 using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
 {
+	[RST("eseq")]
 	internal class RstEscape : RST
 	{
 		private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = new Dictionary
@@ -74,9 +76,9 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		};
 
-		private readonly char _code;
-		private readonly int _times;
-		private readonly bool _unicode;
+		private char _code;
+		private int _times;
+		private bool _unicode;
 
 		public RstEscape(Stringe escapeSequence) : base(escapeSequence)
 		{
@@ -133,6 +135,22 @@ namespace Rant.Core.Compiler.Syntax
 					func(sb, _times);
 				}
 			}
+			yield break;
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			output.Write(_code);
+			output.Write(_times);
+			output.Write(_unicode);
+			yield break;
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			input.ReadChar(out _code);
+			input.ReadInt32(out _times);
+			input.ReadBoolean(out _unicode);
 			yield break;
 		}
 	}

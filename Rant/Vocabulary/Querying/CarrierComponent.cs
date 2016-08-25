@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Defines carrier types for queries.
 	/// </summary>
-	public enum CarrierComponent
+	public enum CarrierComponentType : byte
 	{
 		/// <summary>
 		/// Select the same entry every time.

@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Rant.Core.Constructs;
+using Rant.Core.IO;
 using Rant.Core.Stringes;
 
 using static Rant.Localization.Txtres;
@@ -12,30 +13,31 @@ namespace Rant.Core.Compiler.Syntax
 	/// Represents a block construct, which provides multiple options to the interpreter for the next sequence, one of which is
 	/// chosen.
 	/// </summary>
+	[RST("bloc")]
 	internal class RstBlock : RST
 	{
-		private readonly double _constantWeightSum;
-		private readonly int _count;
-		private readonly List<_<int, RST>> _dynamicWeights = null;
-		private readonly List<RST> _items = new List<RST>();
-		private readonly bool _weighted = false;
+		private double _constantWeightSum;
+		private int _count;
+		private List<_<int, RST>> _dynamicWeights = null;
+		private List<RST> _elements = new List<RST>();
+		private bool _weighted = false;
 		// Item weights.
 		// Dynamic weights are patterns that must be run to get the weight value.
 		// Constant weights can be used directly. This is used for optimization.
 		// TODO: Move _weights to local scope for thread safety
-		private readonly double[] _weights = null;
+		private double[] _weights = null;
 
 		public RstBlock(Stringe location, params RST[] items)
 			: base(location)
 		{
-			_items.AddRange(items);
+			_elements.AddRange(items);
 			_count = items.Length;
 		}
 
 		public RstBlock(Stringe location, List<RST> items)
 			: base(location)
 		{
-			_items.AddRange(items);
+			_elements.AddRange(items);
 			_count = items.Count;
 		}
 
@@ -43,7 +45,7 @@ namespace Rant.Core.Compiler.Syntax
 			List<_<int, RST>> dynamicWeights, List<_<int, double>> constantWeights)
 			: base(location)
 		{
-			_items.AddRange(items);
+			_elements.AddRange(items);
 			_count = items.Count;
 			if (dynamicWeights != null && constantWeights != null)
 			{
@@ -70,7 +72,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 
 			int next = -1;
-			int reps = attribs.RepEach ? _items.Count : attribs.Repetitions;
+			int reps = attribs.RepEach ? _elements.Count : attribs.Repetitions;
 			var block = new BlockState(attribs.Repetitions);
 			double weightSum = _constantWeightSum;
 
@@ -167,7 +169,7 @@ namespace Rant.Core.Compiler.Syntax
 
 				// Content
 				sb.Objects.EnterScope();
-				yield return _items[next];
+				yield return _elements[next];
 				sb.Objects.ExitScope();
 
 				// Affix
@@ -176,6 +178,89 @@ namespace Rant.Core.Compiler.Syntax
 			sb.Blocks.Pop();
 
 			if (attribs.End != null) yield return attribs.End;
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			output.Write(_count);
+			output.Write(_weighted);
+			if (_weighted)
+			{
+				// Write constant weights
+				if (_weights != null)
+				{
+					output.Write(true);
+					output.Write(_constantWeightSum);
+					for (int i = 0; i < _count; i++)
+					{
+						output.Write(_weights[i]);
+					}
+				}
+				else
+				{
+					output.Write(false);
+				}
+
+				// Write dynamic weights
+				if (_dynamicWeights != null)
+				{
+					output.Write(_dynamicWeights.Count);
+					foreach (var dw in _dynamicWeights)
+					{
+						output.Write(dw.Item1);
+						yield return dw.Item2;
+					}
+				}
+				else
+				{
+					output.Write(0);
+				}
+			}
+
+			// Block elements
+			foreach (var e in _elements) yield return e;
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			input.ReadInt32(out _count);
+			input.ReadBoolean(out _weighted);
+			if (_weighted)
+			{
+				// Read constant weights
+				if (input.ReadBoolean())
+				{
+					input.ReadDouble(out _constantWeightSum);
+					_weights = new double[_count];
+					for (int i = 0; i < _count; i++)
+					{
+						input.ReadDouble(out _weights[i]);
+					}
+				}
+
+				// Read dynamic weights
+				int numDW = input.ReadInt32();
+				if (numDW > 0)
+				{
+					_dynamicWeights = new List<_<int, RST>>(numDW);
+					for (int i = 0; i < numDW; i++)
+					{
+						int index = input.ReadInt32();
+						var request = new DeserializeRequest(input.ReadUInt32());
+						yield return request;
+						_dynamicWeights.Add(new _<int, RST>(index, request.Result));
+					}
+				}
+			}
+
+			// Read elements
+			_elements = new List<RST>(_count);
+			for (int i = 0; i < _count; i++)
+			{
+				var request = new DeserializeRequest(input.ReadUInt32());
+				yield return request;
+				_elements.Add(request.Result);
+			}
 		}
 	}
 }

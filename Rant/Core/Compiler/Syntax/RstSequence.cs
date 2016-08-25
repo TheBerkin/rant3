@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.IO;
 using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
@@ -8,6 +9,7 @@ namespace Rant.Core.Compiler.Syntax
 	/// <summary>
 	/// Performs a sequence of actions.
 	/// </summary>
+	[RST("patt")]
 	internal class RstSequence : RST
 	{
 		public RstSequence(List<RST> actions, Stringe defaultRange)
@@ -29,6 +31,23 @@ namespace Rant.Core.Compiler.Syntax
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			return Actions.GetEnumerator();
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			output.Write(Actions.Count);
+			foreach (var action in Actions) yield return action;
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			int count = input.ReadInt32();
+			for (int i = 0; i < count; i++)
+			{
+				var request = new DeserializeRequest(input.ReadUInt32());
+				yield return request;
+				Actions.Add(request.Result);
+			}
 		}
 	}
 }

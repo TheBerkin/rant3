@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Rant.Core.IO;
+
 namespace Rant.Vocabulary.Querying
 {
 	/// <summary>
@@ -8,14 +10,14 @@ namespace Rant.Vocabulary.Querying
 	/// </summary>
 	public sealed class Carrier
 	{
-		private readonly Dictionary<CarrierComponent, HashSet<string>> _components;
+		private readonly Dictionary<CarrierComponentType, HashSet<string>> _components;
 
 		/// <summary>
 		/// Creates an empty carrier.
 		/// </summary>
 		public Carrier()
 		{
-			_components = new Dictionary<CarrierComponent, HashSet<string>>();
+			_components = new Dictionary<CarrierComponentType, HashSet<string>>();
 		}
 
 		/// <summary>
@@ -23,7 +25,7 @@ namespace Rant.Vocabulary.Querying
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public int GetTypeCount(CarrierComponent type)
+		public int GetTypeCount(CarrierComponentType type)
 		{
 			HashSet<string> set;
 			if (!_components.TryGetValue(type, out set)) return 0;
@@ -35,7 +37,7 @@ namespace Rant.Vocabulary.Querying
 		/// </summary>
 		/// <param name="type">The type of carrier to add.</param>
 		/// <param name="values">The names to assign to the component type.</param>
-		public void AddComponent(CarrierComponent type, params string[] values)
+		public void AddComponent(CarrierComponentType type, params string[] values)
 		{
 			HashSet<string> set;
 			if (!_components.TryGetValue(type, out set))
@@ -47,11 +49,11 @@ namespace Rant.Vocabulary.Querying
 		}
 
 		/// <summary>
-		/// Iterates through the current instances's carriers of the specified type.
+		/// Iterates through the current instances's components of the specified type.
 		/// </summary>
 		/// <param name="type">The type of component to iterate through.</param>
 		/// <returns></returns>
-		public IEnumerable<string> GetCarriers(CarrierComponent type)
+		public IEnumerable<string> GetComponentsOfType(CarrierComponentType type)
 		{
 			HashSet<string> set;
 			if (!_components.TryGetValue(type, out set)) yield break;
@@ -68,9 +70,37 @@ namespace Rant.Vocabulary.Querying
 		public int GetTotalCount()
 		{
 			int count = 0;
-			foreach (CarrierComponent component in Enum.GetValues(typeof(CarrierComponent)))
+			foreach (CarrierComponentType component in Enum.GetValues(typeof(CarrierComponentType)))
 				count += GetTypeCount(component);
 			return count;
+		}
+
+		internal void Serialize(EasyWriter output)
+		{
+			output.Write(_components.Count);
+			foreach (var kv in _components)
+			{
+				output.Write((byte)kv.Key);
+				output.Write(kv.Value.Count);
+				foreach (var compName in kv.Value)
+				{
+					output.Write(compName);
+				}
+			}
+		}
+
+		internal void Deserialize(EasyReader input)
+		{
+			int typeCount = input.ReadInt32();
+			for (int i = 0; i < typeCount; i++)
+			{
+				var type = input.ReadEnum<CarrierComponentType>();
+				int num = input.ReadInt32();
+				for (int j = 0; j < num; j++)
+				{
+					AddComponent(type, input.ReadString());
+				}
+			}
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace Rant.Core.Compiler
 				stack.Push(parser.Parse(this, NextContext, _reader, _nextActionCallback));
 
 				top:
-				while (stack.Any())
+				while (stack.Count > 0)
 				{
 					var p = stack.Peek();
 

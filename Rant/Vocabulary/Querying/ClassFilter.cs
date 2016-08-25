@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.IO;
+
 namespace Rant.Vocabulary.Querying
 {
 	/// <summary>
@@ -54,5 +56,36 @@ namespace Rant.Vocabulary.Querying
 		/// <returns></returns>
 		public bool AllowsClass(string className) =>
 			_items.Any(item => item.Any(rule => (rule.Class == className) && rule.ShouldMatch));
+
+		internal void Serialize(EasyWriter output)
+		{
+			output.Write(_items.Count);
+			foreach (var filter in _items)
+			{
+				output.Write(filter.Length);
+				foreach (ClassFilterRule rule in filter)
+				{
+					output.Write(rule.ShouldMatch);
+					output.Write(rule.Class);
+				}
+			}
+		}
+
+		internal void Deserialize(EasyReader input)
+		{
+			int count = input.ReadInt32();
+			for (int i = 0; i < count; i++)
+			{
+				int swLength = input.ReadInt32();
+				var sw = new ClassFilterRule[swLength];
+				for (int j = 0; j < swLength; j++)
+				{
+					bool shouldMatch = input.ReadBoolean();
+					var clName = input.ReadString();
+					sw[i] = new ClassFilterRule(clName, shouldMatch);
+				}
+				_items.Add(sw);
+			}
+		}
 	}
 }

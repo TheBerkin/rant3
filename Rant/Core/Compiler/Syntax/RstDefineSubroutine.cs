@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 
+using Rant.Core.IO;
 using Rant.Core.ObjectModel;
 using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
-	internal class RstDefineSubroutine : RstSubroutine
+	[RST("dsub")]
+	internal class RstDefineSubroutine : RstSubroutineBase
 	{
 		public Dictionary<string, SubroutineParameterType> Parameters;
 
@@ -18,6 +20,16 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			sb.Objects[Name] = new RantObject(this);
 			yield break;
+		}
+
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 
