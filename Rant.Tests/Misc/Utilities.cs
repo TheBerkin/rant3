@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using Rant.Core.Utilities;
 
-namespace Rant.Tests
+namespace Rant.Tests.Misc
 {
 	[TestFixture]
 	public class Utilities

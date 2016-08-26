@@ -16,6 +16,11 @@ namespace Rant.Core.Compiler.Syntax
 			Name = name.Value;
 		}
 
+		public RstSubroutineBase(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		protected override IEnumerator<RST> Serialize(EasyWriter output)
 		{
 			output.Write(Name);
@@ -25,7 +30,7 @@ namespace Rant.Core.Compiler.Syntax
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
 		{
 			input.ReadString(out Name);
-			var bodyRequest = new DeserializeRequest(input.ReadUInt32());
+			var bodyRequest = new DeserializeRequest();
 			yield return bodyRequest;
 			Body = bodyRequest.Result;
 		}

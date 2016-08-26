@@ -16,7 +16,8 @@ namespace Rant.Core.Compiler.Syntax
 	{
 		private const uint NullRST = 0x4e554c4c;
 		private static readonly Dictionary<uint, Type> _rstTypeMap = new Dictionary<uint, Type>();
-		private static readonly Dictionary<Type, uint> _rstIDMap = new Dictionary<Type, uint>(); 
+		private static readonly Dictionary<Type, uint> _rstIDMap = new Dictionary<Type, uint>();
+		internal TokenLocation Location;
 
 		static RST()
 		{
@@ -28,6 +29,17 @@ namespace Rant.Core.Compiler.Syntax
 				_rstTypeMap[attr.TypeCode] = type;
 				_rstIDMap[type] = attr.TypeCode;
 			}
+		}
+
+		protected RST(Stringe location)
+		{
+			if (location == null) throw new ArgumentNullException(nameof(location));
+			Location = TokenLocation.FromStringe(location);
+		}
+
+		public RST(TokenLocation location)
+		{
+			Location = location;
 		}
 
 		public static void SerializeRST(RST rst, EasyWriter output)
@@ -42,12 +54,12 @@ namespace Rant.Core.Compiler.Syntax
 				while (serializer.MoveNext())
 				{
 					if (serializer.Current == null)
-					{
+					{	
 						output.Write(NullRST);
 					}
 					else
 					{
-						stack.Push(serializer.Current.Serialize(output));
+						stack.Push(serializer.Current.SerializeObject(output));
 						goto top;
 					}
 				}
@@ -69,7 +81,8 @@ namespace Rant.Core.Compiler.Syntax
 			if (rootRST == null) throw new InvalidDataException("Failed to create top-level RST.");
 
 			var stack = new Stack<IEnumerator<DeserializeRequest>>(10);
-			stack.Push(rootRST.Deserialize(input));
+			stack.Push(rootRST.DeserializeObject(input));
+
 			top:
 			while (stack.Count > 0)
 			{
@@ -77,22 +90,25 @@ namespace Rant.Core.Compiler.Syntax
 
 				while (deserializer.MoveNext())
 				{
-					if (deserializer.Current.TypeCode == NullRST)
+					uint code = input.ReadUInt32();
+
+					if (code == NullRST)
 					{
 						deserializer.Current.SetResult(null);
 						continue;
 					}
-
+					
 					Type type;
-					if (!_rstTypeMap.TryGetValue(deserializer.Current.TypeCode, out type))
-						throw new InvalidDataException($"Invalid RST type code: {deserializer.Current.TypeCode:X8}");
-
+					if (!_rstTypeMap.TryGetValue(code, out type))
+						throw new InvalidDataException($"Invalid RST type code: {code:X8}");
+					
 					int line = input.ReadInt32();
 					int col = input.ReadInt32();
 					int index = input.ReadInt32();
 					var rst = Activator.CreateInstance(type, new TokenLocation(line, col, index)) as RST;
 					if (rst == null) throw new InvalidDataException($"Failed to create RST of type '{type.Name}'.");
 					deserializer.Current.SetResult(rst);
+					stack.Push(rst.DeserializeObject(input));
 					goto top;
 				}
 
@@ -100,19 +116,6 @@ namespace Rant.Core.Compiler.Syntax
 			}
 
 			return rootRST;
-		}
-
-		internal TokenLocation Location;
-
-		protected RST(Stringe location)
-		{
-			if (location == null) throw new ArgumentNullException(nameof(location));
-			Location = TokenLocation.FromStringe(location);
-		}
-
-		protected RST(TokenLocation location)
-		{
-			Location = location;
 		}
 
 		/// <summary>
@@ -138,7 +141,6 @@ namespace Rant.Core.Compiler.Syntax
 		}
 
 		protected abstract IEnumerator<RST> Serialize(EasyWriter output);
-
 		protected abstract IEnumerator<DeserializeRequest> Deserialize(EasyReader input);
 	}
 }

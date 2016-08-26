@@ -20,6 +20,11 @@ namespace Rant.Core.Compiler.Syntax
 			_query = query;
 		}
 
+		public RstQuery(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			if (sb.Engine.Dictionary == null)
@@ -178,7 +183,7 @@ namespace Rant.Core.Compiler.Syntax
 				_query.Carrier.Deserialize(input);
 			}
 
-			var complementRequest = new DeserializeRequest(input.ReadUInt32());
+			var complementRequest = new DeserializeRequest();
 			yield return complementRequest;
 			_query.Complement = complementRequest.Result;
 		}

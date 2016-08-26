@@ -40,7 +40,7 @@ namespace Rant.Core.Compiler.Parsing
 							reader.Read(R.Text, "query subtype name");
 							break;
 						}
-						query.Subtype = reader.Read(R.Text, "query subtype").Value;
+						query.Subtype = reader.Read(R.Text, "query subtype")?.Value;
 						subtypeRead = true;
 						break;
 					// complement
@@ -68,6 +68,7 @@ namespace Rant.Core.Compiler.Parsing
 								reader.ReadToken();
 							}
 							var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
+							if (classFilterName == null) continue;
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
 						} while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
@@ -80,6 +81,7 @@ namespace Rant.Core.Compiler.Parsing
 						bool blacklist = (token.ID == R.Without);
 
 						var regexFilter = reader.Read(R.Regex, "regex filter rule");
+						if (regexFilter == null) break;
 						var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
 						query.RegexFilters.Add(rule);
 					}

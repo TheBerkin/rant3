@@ -261,8 +261,16 @@ namespace Rant.Resources
 
 				var patterns = doc.Top["patterns"] = new BsonItem();
 				if (_patterns != null)
+				{
 					foreach (var pattern in _patterns)
-						patterns[pattern.Name] = new BsonItem(pattern.Code);
+					{
+						using (var ms = new MemoryStream())
+						{
+							pattern.SaveToStream(ms);
+							patterns[pattern.Name] = new BsonItem(ms.ToArray());
+						}
+					}
+				}
 
 				var tables = doc.Top["tables"] = new BsonItem();
 				if (_tables != null)
@@ -379,7 +387,12 @@ namespace Rant.Resources
 				{
 					var names = patterns.Keys;
 					foreach (string name in names)
-						package.AddPattern(new RantPattern(name, RantPatternOrigin.File, patterns[name]));
+					{
+						using (var ms = new MemoryStream((byte[])patterns[name].Value))
+						{
+							package.AddPattern(RantPattern.LoadStream(name, ms));
+						}
+					}
 				}
 
 				var tables = doc["tables"];

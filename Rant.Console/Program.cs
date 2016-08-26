@@ -122,8 +122,8 @@ namespace RantConsole
 
                 sw.Start();
                 var pattern = isFile
-                    ? RantPattern.CompileFromFile(source)
-                    : RantPattern.CompileFromString(source);
+                    ? RantPattern.CompileFile(source)
+                    : RantPattern.CompileString(source);
                 sw.Stop();
                 var compileTime = sw.Elapsed;
 

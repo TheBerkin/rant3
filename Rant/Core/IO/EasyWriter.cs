@@ -102,7 +102,7 @@ namespace Rant.Core.IO
 		}
 
 		/// <summary>
-		/// Writes an series of bytes to the stream.
+		/// Writes a series of bytes to the stream.
 		/// </summary>
 		/// <param name="value">The byte array to write.</param>
 		/// <returns></returns>
@@ -225,6 +225,18 @@ namespace Rant.Core.IO
 		}
 
 		/// <summary>
+		/// Writes a character to the stream.
+		/// </summary>
+		/// <param name="value">The character to write.</param>
+		/// <returns></returns>
+		public EasyWriter Write(char value)
+		{
+			var data = BitConverter.GetBytes(value);
+			BaseStream.Write(data, 0, 2);
+			return this;
+		}
+
+		/// <summary>
 		/// Writes a 128-bit decimal number to the stream.
 		/// </summary>
 		/// <param name="value">The 128-bit decimal number to write.</param>
@@ -241,6 +253,11 @@ namespace Rant.Core.IO
 		/// <param name="nullTerminated">Whether or not the string should be written as a C-string.</param>
 		public EasyWriter Write(string value, bool nullTerminated = false)
 		{
+			if (value == null)
+			{
+				Write(-1);
+				return this;
+			}
 			var bytes = Encoding.Unicode.GetBytes(value);
 			if (!nullTerminated)
 				Write(bytes.Length);
@@ -258,6 +275,11 @@ namespace Rant.Core.IO
 		/// <param name="nullTerminated">Specifies whether the string should be null-terminated.</param>
 		public EasyWriter Write(string value, Encoding encoding, bool nullTerminated = false)
 		{
+			if (value == null)
+			{
+				Write(-1);
+				return this;
+			}
 			var bytes = encoding.GetBytes(value);
 			if (!nullTerminated)
 				Write(bytes.Length);

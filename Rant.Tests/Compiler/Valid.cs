@@ -10,7 +10,7 @@ namespace Rant.Tests.Compiler
 		[Test]
 		public void Plaintext()
 		{
-			RantPattern.FromString(@"just some text");
+			RantPattern.CompileString(@"just some text");
 		}
 
 		[TestCase(@"{}")]
@@ -21,13 +21,13 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"{Item 1|Item 2|Item 3}")]
 		public void Blocks(string pattern)
 		{
-			RantPattern.FromString(pattern);
+			RantPattern.CompileString(pattern);
 		}
 
 		[Test]
 		public void SubroutineNoParams()
 		{
-			RantPattern.FromString(@"[$[test]:{A|B|C|D}]");
+			RantPattern.CompileString(@"[$[test]:{A|B|C|D}]");
 		}
 
 		[TestCase("arg1")]
@@ -38,7 +38,7 @@ namespace Rant.Tests.Compiler
 		[TestCase("@arg1;@arg2;@arg3")]
 		public void SubroutineParams(string args)
 		{
-			RantPattern.FromString($"[$[test:{args}]:{{A|B|C|D}}]");
+			RantPattern.CompileString($"[$[test:{args}]:{{A|B|C|D}}]");
 		}
 
 		[TestCase(@"<noun>")]
@@ -71,7 +71,7 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"<verb[the <noun> <verb.ing[the <noun>] -transitive>] -transitive>")]
 		public void Queries(string query)
 		{
-			RantPattern.FromString(query);
+			RantPattern.CompileString(query);
 		}
 	}
 }

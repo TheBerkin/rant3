@@ -63,6 +63,7 @@
     <Compile Include="Capitalization.cs" />
     <Compile Include="Channels.cs" />
     <Compile Include="Compiler\Invalid.cs" />
+    <Compile Include="Compiler\Serialization.cs" />
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="Misc\Bson.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="StringLocalization.cs" />
     <Compile Include="Subroutines.cs" />
     <Compile Include="Targets.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="Misc\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexTestFile.bson">

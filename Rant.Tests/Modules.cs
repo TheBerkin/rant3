@@ -22,7 +22,7 @@ namespace Rant.Tests
 		public void UserModules()
 		{
 			var module = new RantModule("user_module");
-			module.AddSubroutineFunction("test", RantPattern.FromString("[$[.test]:A Good Test]"));
+			module.AddSubroutineFunction("test", RantPattern.CompileString("[$[.test]:A Good Test]"));
 			rant.Modules["user_module"] = module;
 			Assert.AreEqual("A Good Test", rant.Do("[use:user_module][$user_module.test]").Main);
 		}
@@ -31,7 +31,7 @@ namespace Rant.Tests
 		public void PackageModules()
 		{
 			var package = new RantPackage();
-			var pattern = RantPattern.FromString("[$[.hello_world]:Hello World]");
+			var pattern = RantPattern.CompileString("[$[.hello_world]:Hello World]");
 			pattern.Name = "pkg_test";
 			package.AddPattern(pattern);
 			rant.LoadPackage(package);

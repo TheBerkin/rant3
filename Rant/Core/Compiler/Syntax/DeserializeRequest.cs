@@ -2,12 +2,9 @@
 {
 	internal sealed class DeserializeRequest
 	{
-		public DeserializeRequest(uint typeCode)
+		public DeserializeRequest()
 		{
-			TypeCode = typeCode;
 		}
-
-		public uint TypeCode { get; }
 
 		public RST Result { get; private set; }
 

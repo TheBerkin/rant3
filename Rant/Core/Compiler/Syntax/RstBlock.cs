@@ -41,6 +41,11 @@ namespace Rant.Core.Compiler.Syntax
 			_count = items.Count;
 		}
 
+		public RstBlock(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public RstBlock(Stringe location, List<RST> items,
 			List<_<int, RST>> dynamicWeights, List<_<int, double>> constantWeights)
 			: base(location)
@@ -246,7 +251,7 @@ namespace Rant.Core.Compiler.Syntax
 					for (int i = 0; i < numDW; i++)
 					{
 						int index = input.ReadInt32();
-						var request = new DeserializeRequest(input.ReadUInt32());
+						var request = new DeserializeRequest();
 						yield return request;
 						_dynamicWeights.Add(new _<int, RST>(index, request.Result));
 					}
@@ -257,7 +262,7 @@ namespace Rant.Core.Compiler.Syntax
 			_elements = new List<RST>(_count);
 			for (int i = 0; i < _count; i++)
 			{
-				var request = new DeserializeRequest(input.ReadUInt32());
+				var request = new DeserializeRequest();
 				yield return request;
 				_elements.Add(request.Result);
 			}

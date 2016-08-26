@@ -117,6 +117,11 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		}
 
+		public RstEscape(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			if (_unicode)

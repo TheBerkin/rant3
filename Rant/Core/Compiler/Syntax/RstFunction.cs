@@ -24,6 +24,11 @@ namespace Rant.Core.Compiler.Syntax
 			_argc = args.Count;
 		}
 
+		public RstFunction(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		private RantFunctionParameter GetParameter(int index)
 		{
 			if (index >= _funcInfo.Parameters.Length - 1 && _funcInfo.HasParamArray)
@@ -145,7 +150,7 @@ namespace Rant.Core.Compiler.Syntax
 			if (_args == null) _args = new List<RST>(_argc);
 			for (int i = 0; i < _argc; i++)
 			{
-				var request = new DeserializeRequest(input.ReadUInt32());
+				var request = new DeserializeRequest();
 				yield return request;
 				_args.Add(request.Result);
 			}

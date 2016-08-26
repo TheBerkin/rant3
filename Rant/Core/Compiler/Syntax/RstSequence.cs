@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.IO;
@@ -26,6 +27,11 @@ namespace Rant.Core.Compiler.Syntax
 			Actions.AddRange(actions);
 		}
 
+		public RstSequence(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public List<RST> Actions { get; } = new List<RST>();
 
 		public override IEnumerator<RST> Run(Sandbox sb)
@@ -44,7 +50,7 @@ namespace Rant.Core.Compiler.Syntax
 			int count = input.ReadInt32();
 			for (int i = 0; i < count; i++)
 			{
-				var request = new DeserializeRequest(input.ReadUInt32());
+				var request = new DeserializeRequest();
 				yield return request;
 				Actions.Add(request.Result);
 			}

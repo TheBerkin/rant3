@@ -23,6 +23,11 @@ namespace Rant.Core.Compiler.Syntax
 			_rstMatchEval = rstMatchEval;
 		}
 
+		public RstReplacer(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			sb.AddOutputWriter();
@@ -57,10 +62,10 @@ namespace Rant.Core.Compiler.Syntax
 			var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 			if (input.ReadBoolean()) options |= RegexOptions.IgnoreCase;
 			_regex = new Regex(input.ReadString(), options);
-			var request = new DeserializeRequest(input.ReadUInt32());
+			var request = new DeserializeRequest();
 			yield return request;
 			_rstSource = request.Result;
-			request = new DeserializeRequest(input.ReadUInt32());
+			request = new DeserializeRequest();
 			yield return request;
 			_rstMatchEval = request.Result;
 		}

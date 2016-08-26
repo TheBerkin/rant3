@@ -421,6 +421,7 @@ namespace Rant.Core.IO
 		public string ReadString()
 		{
 			int bytes = ReadInt32();
+			if (bytes < 0) return null;
 			return Encoding.Unicode.GetString(ReadBytes(bytes));
 		}
 
@@ -432,6 +433,11 @@ namespace Rant.Core.IO
 		public EasyReader ReadString(out string value)
 		{
 			int bytes = ReadInt32();
+			if (bytes < 0)
+			{
+				value = null;
+				return this;
+			}
 			value = Encoding.Unicode.GetString(ReadBytes(bytes));
 			return this;
 		}
@@ -444,6 +450,7 @@ namespace Rant.Core.IO
 		public string ReadString(Encoding encoding)
 		{
 			int bytes = ReadInt32();
+			if (bytes < 0) return null;
 			return encoding.GetString(ReadBytes(bytes));
 		}
 
@@ -456,6 +463,11 @@ namespace Rant.Core.IO
 		public EasyReader ReadString(Encoding encoding, out string value)
 		{
 			int bytes = ReadInt32();
+			if (bytes < 0)
+			{
+				value = null;
+				return this;
+			}
 			value = encoding.GetString(ReadBytes(bytes));
 			return this;
 		}

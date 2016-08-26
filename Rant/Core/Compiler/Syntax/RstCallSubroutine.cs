@@ -21,6 +21,11 @@ namespace Rant.Core.Compiler.Syntax
 			_moduleFunctionName = moduleFunctionName;
 		}
 
+		public RstCallSubroutine(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			if (_inModule)
@@ -69,6 +74,8 @@ namespace Rant.Core.Compiler.Syntax
 			while (iterMain.MoveNext()) yield return iterMain.Current;
 			output.Write(_inModule);
 			output.Write(_moduleFunctionName);
+			output.Write(Arguments.Count);
+			foreach (var arg in Arguments) yield return arg;
 		}
 
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
@@ -77,6 +84,14 @@ namespace Rant.Core.Compiler.Syntax
 			while (iterMain.MoveNext()) yield return iterMain.Current;
 			input.ReadBoolean(out _inModule);
 			input.ReadString(out _moduleFunctionName);
+			int argc = input.ReadInt32();
+			if (Arguments == null) Arguments = new List<RST>(argc);
+			for (int i = 0; i < argc; i++)
+			{
+				var request = new DeserializeRequest();
+				yield return request;
+				Arguments.Add(request.Result);
+			}
 		}
 	}
 }

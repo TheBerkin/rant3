@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
@@ -16,6 +17,11 @@ namespace Rant.Core.Compiler.Syntax
 		{
 		}
 
+		public RstDefineSubroutine(TokenLocation location) : base(location)
+		{
+			// Used by serializer
+		}
+
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
 			sb.Objects[Name] = new RantObject(this);
@@ -24,16 +30,31 @@ namespace Rant.Core.Compiler.Syntax
 
 		protected override IEnumerator<RST> Serialize(EasyWriter output)
 		{
-			throw new System.NotImplementedException();
+			var iterMain = base.Serialize(output);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			output.Write(Parameters.Count);
+			foreach (var kv in Parameters)
+			{
+				output.Write(kv.Key);
+				output.Write((byte)kv.Value);
+			}
 		}
 
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
 		{
-			throw new System.NotImplementedException();
+			var iterMain = base.Deserialize(input);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			int pCount = input.ReadInt32();
+			if (Parameters == null) Parameters = new Dictionary<string, SubroutineParameterType>(pCount);
+			for (int i = 0; i < pCount; i++)
+			{
+				var key = input.ReadString();
+				Parameters[key] = (SubroutineParameterType)input.ReadByte();
+			}
 		}
 	}
 
-	internal enum SubroutineParameterType
+	internal enum SubroutineParameterType : byte
 	{
 		Loose,
 		Greedy
