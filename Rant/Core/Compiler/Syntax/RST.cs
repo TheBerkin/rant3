@@ -7,6 +7,8 @@ using System.Reflection;
 using Rant.Core.IO;
 using Rant.Core.Stringes;
 
+using static Rant.Localization.Txtres;
+
 namespace Rant.Core.Compiler.Syntax
 {
 	/// <summary>
@@ -72,13 +74,13 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			Type rootType;
 			if (!_rstTypeMap.TryGetValue(input.ReadUInt32(), out rootType) || rootType != typeof(RstSequence))
-				throw new InvalidDataException("Top-level RST must be a sequence.");
+				throw new InvalidDataException(GetString("err-pgmload-invalid-rst-root"));
 
 			int rootLine = input.ReadInt32();
 			int rootCol = input.ReadInt32();
 			int rootIndex = input.ReadInt32();
 			var rootRST = Activator.CreateInstance(rootType, new TokenLocation(rootLine, rootCol, rootIndex)) as RstSequence;
-			if (rootRST == null) throw new InvalidDataException("Failed to create top-level RST.");
+			if (rootRST == null) throw new InvalidDataException(GetString("err-pgmload-root-instance-fail"));
 
 			var stack = new Stack<IEnumerator<DeserializeRequest>>(10);
 			stack.Push(rootRST.DeserializeObject(input));
@@ -100,13 +102,13 @@ namespace Rant.Core.Compiler.Syntax
 					
 					Type type;
 					if (!_rstTypeMap.TryGetValue(code, out type))
-						throw new InvalidDataException($"Invalid RST type code: {code:X8}");
+						throw new InvalidDataException(GetString("err-pgmload-bad-type", code));
 					
 					int line = input.ReadInt32();
 					int col = input.ReadInt32();
 					int index = input.ReadInt32();
 					var rst = Activator.CreateInstance(type, new TokenLocation(line, col, index)) as RST;
-					if (rst == null) throw new InvalidDataException($"Failed to create RST of type '{type.Name}'.");
+					if (rst == null) throw new InvalidDataException(GetString("err-pgmload-rst-creation-fail", type.Name));
 					deserializer.Current.SetResult(rst);
 					stack.Push(rst.DeserializeObject(input));
 					goto top;

@@ -4,6 +4,12 @@ pattern = "Pattern"
 
 src-line-col = "({0}: Ln {1}, Col {2})"
 
+err-pgmload-bad-magic = "Invalid magic number in header."
+err-pgmload-invalid-rst-root = "Root RST is invalid."
+err-pgmload-root-instance-fail = "Failed to create root RST."
+err-pgmload-bad-type = "Invalid RST type code: {0:X8}"
+err-pgmload-rst-creation-fail = "Failed to create RST of type '{0}'."
+
 err-zero-or-negative = "Value must be greater than zero."
 err-empty-path = "File path cannot be null or empty."
 err-unresolvable-package = "Package '{0}' was unable to resolve dependency '{1}'"

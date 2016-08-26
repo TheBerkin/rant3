@@ -4,6 +4,12 @@ pattern = "Vorlage"
 
 src-line-col = "({0}: Zeile {1}, Spalte {2})"
 
+err-pgmload-bad-magic = "Unbekannte magische Zahl im Header gefunden."
+err-pgmload-invalid-rst-root = "Stamm-RST ist ungültig."
+err-pgmload-root-instance-fail = "Fehler beim Erstellen des Stamm-RSTs."
+err-pgmload-bad-type = "Unbekannten RST-Bezeichner gefunden: {0:X8}"
+err-pgmload-rst-creation-fail = "Fehler beim Erstellen des RSTs des Typs '{0}'."
+
 err-zero-or-negative = "Wert muss größer als Null sein."
 err-empty-path = "Der Dateipfad darf nicht leer oder NULL sein."
 err-unresolvable-package = "Der Verweis '{1}' im Paket '{0}' konnte nicht aufgelöst werden."
