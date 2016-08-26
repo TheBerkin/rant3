@@ -26,7 +26,7 @@ namespace Rant.Core.Compiler.Syntax
 			foreach (var type in Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(RST))))
 			{
-				var attr = type.GetCustomAttribute<RSTAttribute>();
+				var attr = type.GetCustomAttributes(typeof(RSTAttribute), false).FirstOrDefault() as RSTAttribute;
 				if (attr == null) continue;
 				_rstTypeMap[attr.TypeCode] = type;
 				_rstIDMap[type] = attr.TypeCode;
