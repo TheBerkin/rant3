@@ -14,10 +14,6 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <AssemblyName>RantEngine-Unity</AssemblyName>
-  </PropertyGroup>  
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
@@ -123,6 +119,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>  
+  <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>RantEngine-Unity</AssemblyName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|AnyCPU'">
     <OutputPath>..\bin\UnityBuild\</OutputPath>
     <DefineConstants>TRACE;UNITY</DefineConstants>

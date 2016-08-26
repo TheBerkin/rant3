@@ -10,6 +10,7 @@ namespace Rant.Tests.Compiler
 	{
 		private readonly RantEngine rant = new RantEngine();
 
+		[TestCase(@"")]
 		[TestCase(@"Test")]
 		[TestCase(@"\100,c")]
 		[TestCase(@"\100,c \100,d")]
@@ -21,9 +22,10 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"[$[test]:[xpin:_][x:_;forward][after:[xstep:_]]{Hello|World}][$test] [$test]")]
 		[TestCase(@"[r:10]{(2)A|([n:2;3])B}")]
 		[TestCase(@"[q:This is a quote [q:with a quote] in it.]")]
-		[TestCase(@"")]
 		[TestCase(@"{A{B|C}|D{E|F}}")]
 		[TestCase(@"[`[aeiou]+[wy]?`:The quick brown fox jumps over the lazy dog.;ur]")]
+		[TestCase(@"[$[concat:a;b]:[arg:a][arg:b]][$concat:Hello\s;World!]")]
+		[TestCase(@"[$[runx2:@a]:[arg:a] [arg:a]][$runx2:[x:_;forward][xpin:_][after:[xstep:_]]{Hello|World!}]")]
 		public void SerializeAndExecute(string pattern)
 		{
 			var ms = new MemoryStream();
