@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rave.DicDoc
+namespace Rant.Tools.DicDoc
 {
     public class Util
     {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant", "Rant\Rant.csproj", "{A4B6FD1A-44A6-42D2-B4AA-57BC85D2CDD7}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{91992F
 		CmdLine.cs = CmdLine.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rave", "Rave\Rave.csproj", "{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Tools", "Rave\Rant.Tools.csproj", "{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using static System.Console;
-
-namespace Rave
+namespace Rant.Tools
 {
 	public static class Help
 	{
@@ -19,13 +17,17 @@ namespace Rave
 
 		public static void Print()
 		{
-			WriteLine("Rave - Command-line utilities for Rant");
-			WriteLine("Usage: rave <command> [args] [options]");
-			WriteLine("Type \"rave help <command-name>\" to see help text for a specific command.\n");
-			WriteLine("Available Commands:\n");
+			Console.WriteLine();
+			Console.WriteLine("Rant Procedural Text Generation Engine");
+			Console.WriteLine($"\n  Version: {typeof(RantEngine).Assembly.GetName().Version}");
+			Console.WriteLine();
+			Console.WriteLine("Usage: rant <command> [args] [options]");
+			Console.WriteLine();
+			Console.WriteLine("Type \"rant help <command-name>\" to see help text for a specific command.\n");
+			Console.WriteLine("Available commands:");
 			foreach (var item in Items.Values)
 			{
-				WriteLine(item);
+				Console.WriteLine($"  {item.Name}\t\t\t{item.Description}");
 			}
 		}
 
@@ -45,7 +47,7 @@ namespace Rave
 				Description = desc;
 			}
 
-			public override string ToString() => $"{Name}: {Description}\n";
+			public override string ToString() => $"{Name}: {Description}";
 		}
 	}
 }

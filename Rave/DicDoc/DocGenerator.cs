@@ -6,17 +6,17 @@ using System.Web.UI;
 
 using Rant.Vocabulary;
 
-namespace Rave.DicDoc
+namespace Rant.Tools.DicDoc
 {
 	public static class DocGenerator
 	{
 		public static void GetHelp()
 		{
-			Console.WriteLine("USAGE\n");
+			Console.WriteLine("Usage:");
 
-			Console.WriteLine("  rave docs");
+			Console.WriteLine("  rant docs");
 			Console.WriteLine("    - Generates documentation for the current directory.");
-			Console.WriteLine("  rave docs your-dictionary-dir");
+			Console.WriteLine("  rant docs your-dictionary-dir");
 			Console.WriteLine("    - Generates documentation for the specified directory.");
 		}
 

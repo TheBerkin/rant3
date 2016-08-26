@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("Rant")]
-[assembly: AssemblyDescription("Rant text generation library")]
+[assembly: AssemblyDescription("Rant procedural text generation engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Rant")]

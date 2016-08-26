@@ -6,7 +6,7 @@ using System.Web.UI;
 
 using Rant.Vocabulary;
 
-namespace Rave.DicDoc
+namespace Rant.Tools.DicDoc
 {
 	public static class PageGenerator
 	{

@@ -7,8 +7,8 @@
     <ProjectGuid>{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rave</RootNamespace>
-    <AssemblyName>Rave</AssemblyName>
+    <RootNamespace>Rant.Tools</RootNamespace>
+    <AssemblyName>Rant</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

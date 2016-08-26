@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rave
+namespace Rant.Tools
 {
     internal static class CmdLine
     {

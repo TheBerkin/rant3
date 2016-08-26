@@ -5,25 +5,22 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-using Rant;
 using Rant.Core.IO.Bson;
 using Rant.Resources;
 using Rant.Vocabulary;
 
-using static Rave.CmdLine;
-
-namespace Rave.Packer
+namespace Rant.Tools.Packer
 {
 	public static class PackGenerator
 	{
 		public static void GetHelp()
 		{
-			Console.WriteLine("USAGE\n");
+			Console.WriteLine("Usage:");
 
-			Console.WriteLine("  rave pack <-out package-path>");
+			Console.WriteLine("  rant pack <-out package-path>");
 			Console.WriteLine("    - Creates a package from the current directory.");
 			Console.WriteLine("      -out: Specifies the output path for the package. Optional if rantpkg.json specifies an output path.");
-			Console.WriteLine("  rave pack [content-dir] <-out package-path>");
+			Console.WriteLine("  rant pack [content-dir] <-out package-path>");
 			Console.WriteLine("    - Creates a package from the specified directories.");
 			Console.WriteLine("      -out: Specifies the output path for the package. Optional if rantpkg.json specifies an output path.");
             Console.WriteLine("  Options:");
@@ -36,9 +33,9 @@ namespace Rave.Packer
 		public static void Run()
 		{
 			var pkg = new RantPackage();
-			var paths = GetPaths();
-            var compress = Property("compression", "true") == "true";
-            var stringTableMode = int.Parse(Property("string-table", "1"));
+			var paths = CmdLine.GetPaths();
+            var compress = CmdLine.Property("compression", "true") == "true";
+            var stringTableMode = int.Parse(CmdLine.Property("string-table", "1"));
 
             if (stringTableMode < 0 || stringTableMode > 2)
             {
@@ -64,7 +61,7 @@ namespace Rave.Packer
 			var info = JsonConvert.DeserializeObject<PackInfo>(File.ReadAllText(infoPath));
 			pkg.Title = info.Title;
 			pkg.Authors = info.Authors;
-			pkg.Version = RantPackageVersion.Parse(!String.IsNullOrWhiteSpace(Property("version")) ? Property("version") : info.Version);
+			pkg.Version = RantPackageVersion.Parse(!String.IsNullOrWhiteSpace(CmdLine.Property("version")) ? CmdLine.Property("version") : info.Version);
 			pkg.Description = info.Description;
 			pkg.ID = info.ID;
 			pkg.Tags = info.Tags;

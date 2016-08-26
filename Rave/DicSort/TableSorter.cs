@@ -3,24 +3,22 @@ using System.IO;
 
 using Rant.Vocabulary;
 
-using static Rave.CmdLine;
-
-namespace Rave.DicSort
+namespace Rant.Tools.DicSort
 {
 	public static class TableSorter
 	{
 		public static void GetHelp()
 		{
-			Console.WriteLine("USAGE\n");
+			Console.WriteLine("Usage:");
 
-			Console.WriteLine("  rave sort [paths...] [--diff]");
+			Console.WriteLine("  rant sort [paths...] [--diff]");
 			Console.WriteLine("    - Sorts tables in the current directory.");
 			Console.WriteLine("      --diff: Specifies that entries should be diffmarked.");
 		}
 
 		public static void Run()
 		{
-			var paths = GetPaths();
+			var paths = CmdLine.GetPaths();
 
 			if (paths.Length == 0)
 			{
@@ -55,7 +53,7 @@ namespace Rave.DicSort
 		private static void ProcessDicFile(string path)
 		{
 			var table = RantDictionaryTable.FromFile(path);
-			table.Save(path, Flag("diff"));
+			table.Save(path, CmdLine.Flag("diff"));
 		}
 	}
 }

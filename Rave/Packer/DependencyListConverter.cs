@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Rant;
 using Rant.Resources;
 
-namespace Rave.Packer
+namespace Rant.Tools.Packer
 {
 	public class DependencyListConverter : JsonConverter
 	{

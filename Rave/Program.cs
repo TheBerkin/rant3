@@ -1,17 +1,18 @@
 ﻿using System;
-using static System.Console;
-using static Rave.CmdLine;
-using Rave.DicSort;
-using Rave.Packer;
-using Rave.DicDoc;
 
-namespace Rave
+using Rant.Tools.DicDoc;
+using Rant.Tools.DicSort;
+using Rant.Tools.Packer;
+
+using static System.Console;
+
+namespace Rant.Tools
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
-			if (String.IsNullOrEmpty(Command))
+			if (String.IsNullOrEmpty(CmdLine.Command))
 			{
 				Help.Print();
 				return;
@@ -20,7 +21,7 @@ namespace Rave
             try
 			{
 #endif
-                switch (Command)
+                switch (CmdLine.Command)
 				{
 					case "docs":
 						{
@@ -45,9 +46,9 @@ namespace Rave
 						}
 					case "help":
 						{
-							foreach (var name in GetPaths())
+							foreach (var name in CmdLine.GetPaths())
 							{
-								WriteLine($"'{name}'");
+								WriteLine($"'{name}'\n");
 
 								switch (name.ToLower())
 								{
@@ -72,7 +73,7 @@ namespace Rave
 							break;
 						}
 					default:
-						WriteLine($"Unknown command: '{Command}'");
+						WriteLine($"Unknown command: '{CmdLine.Command}'");
 						break;
 				}
 #if !DEBUG
