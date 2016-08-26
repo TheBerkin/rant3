@@ -23,13 +23,14 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"[q:This is a quote [q:with a quote] in it.]")]
 		[TestCase(@"")]
 		[TestCase(@"{A{B|C}|D{E|F}}")]
+		[TestCase(@"[`[aeiou]+[wy]?`:The quick brown fox jumps over the lazy dog.;ur]")]
 		public void SerializeAndExecute(string pattern)
 		{
 			var ms = new MemoryStream();
-			var pgmSer = RantPattern.CompileString(pattern);
+			var pgmSer = RantProgram.CompileString(pattern);
 			pgmSer.SaveToStream(ms);
 			ms.Seek(0, SeekOrigin.Begin);
-			var pgmDeser = RantPattern.LoadStream("Test", ms);
+			var pgmDeser = RantProgram.LoadStream("Test", ms);
 			var resultSer = rant.Do(pgmSer, seed: 0).Main;
 			var resultDeser = rant.Do(pgmDeser, seed: 0).Main;
 			Console.WriteLine($"Original: '{resultSer}'");

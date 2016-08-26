@@ -23,7 +23,7 @@ namespace Rant.Resources
 		private const byte PACKAGE_VERSION = 2;
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
 		private string _id = GetString("default-package-id");
-		private HashSet<RantPattern> _patterns = new HashSet<RantPattern>();
+		private HashSet<RantProgram> _patterns = new HashSet<RantProgram>();
 		private HashSet<RantDictionaryTable> _tables = new HashSet<RantDictionaryTable>();
 		private string _title = GetString("untitled-package");
 		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
@@ -177,8 +177,8 @@ namespace Rant.Resources
 		/// Adds the specified pattern to the package.
 		/// </summary>
 		/// <param name="pattern">The pattern to add.</param>
-		public void AddPattern(RantPattern pattern)
-			=> (_patterns ?? (_patterns = new HashSet<RantPattern>())).Add(pattern);
+		public void AddPattern(RantProgram pattern)
+			=> (_patterns ?? (_patterns = new HashSet<RantProgram>())).Add(pattern);
 
 		/// <summary>
 		/// Adds the specified table to the package.
@@ -206,7 +206,7 @@ namespace Rant.Resources
 		/// Enumerates the patterns contained in the package.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<RantPattern> GetPatterns()
+		public IEnumerable<RantProgram> GetPatterns()
 		{
 			if (_patterns == null) yield break;
 			foreach (var pattern in _patterns)
@@ -390,7 +390,7 @@ namespace Rant.Resources
 					{
 						using (var ms = new MemoryStream((byte[])patterns[name].Value))
 						{
-							package.AddPattern(RantPattern.LoadStream(name, ms));
+							package.AddPattern(RantProgram.LoadStream(name, ms));
 						}
 					}
 				}

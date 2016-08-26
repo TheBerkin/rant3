@@ -46,8 +46,8 @@ namespace Rant.Core
 		/// </summary>
 		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
 
-		public Sandbox(RantEngine engine, RantPattern pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
-			RantPatternArgs args = null)
+		public Sandbox(RantEngine engine, RantProgram pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
+			RantProgramArgs args = null)
 		{
 			Engine = engine;
 			Format = engine.Format;
@@ -128,7 +128,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the current RantPattern.
 		/// </summary>
-		public RantPattern Pattern { get; }
+		public RantProgram Pattern { get; }
 
 		public Stack<Dictionary<string, RST>> SubroutineArgs { get; }
 
@@ -170,7 +170,7 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the arguments passed to the pattern.
 		/// </summary>
-		public RantPatternArgs PatternArgs { get; }
+		public RantProgramArgs PatternArgs { get; }
 
 		/// <summary>
 		/// Prints the specified value to the output channel stack.
@@ -244,7 +244,7 @@ namespace Rant.Core
 
 		public void SetYield() => shouldYield = true;
 
-		public RantOutput Run(double timeout, RantPattern pattern = null)
+		public RantOutput Run(double timeout, RantProgram pattern = null)
 		{
 			lock (PatternArgs ?? fallbackArgsLockObj)
 			{
@@ -302,7 +302,7 @@ namespace Rant.Core
 			}
 		}
 
-		public IEnumerable<RantOutput> RunSerial(double timeout, RantPattern pattern = null)
+		public IEnumerable<RantOutput> RunSerial(double timeout, RantProgram pattern = null)
 		{
 			lock (PatternArgs ?? fallbackArgsLockObj)
 			{

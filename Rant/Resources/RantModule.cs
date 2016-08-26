@@ -32,7 +32,7 @@ namespace Rant.Resources
 		/// </summary>
 		/// <param name="name">The name of the function to add.</param>
 		/// <param name="pattern">The pattern that will make up the body of the function.</param>
-		public void AddSubroutineFunction(string name, RantPattern pattern)
+		public void AddSubroutineFunction(string name, RantProgram pattern)
 		{
 			var action = (pattern.SyntaxTree.GetType() == typeof(RstSequence)
 				? ((RstSequence)pattern.SyntaxTree).Actions[0]

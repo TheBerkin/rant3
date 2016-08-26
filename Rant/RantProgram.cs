@@ -18,7 +18,7 @@ namespace Rant
 	/// Represents a compiled pattern that can be executed by the engine. It is recommended to use this class when running the
 	/// same pattern multiple times.
 	/// </summary>
-	public sealed class RantPattern
+	public sealed class RantProgram
 	{
 		private const string Magic = "RPGM";
 		private const string Extension = ".rpgm";
@@ -28,7 +28,7 @@ namespace Rant
 
 		private string _name;
 
-		internal RantPattern(string name, RantPatternOrigin type, string code)
+		internal RantProgram(string name, RantProgramOrigin type, string code)
 		{
 			Name = name;
 			Type = type;
@@ -38,7 +38,7 @@ namespace Rant
 			Module = compiler.HasModule ? compiler.Module : null;
 		}
 
-		internal RantPattern(string name, RantPatternOrigin type, RST rst)
+		internal RantProgram(string name, RantProgramOrigin type, RST rst)
 		{
 			Name = name;
 			Type = type;
@@ -63,12 +63,12 @@ namespace Rant
 		}
 
 		/// <summary>
-		/// Describes the origin of the pattern.
+		/// Describes the origin of the program.
 		/// </summary>
-		public RantPatternOrigin Type { get; }
+		public RantProgramOrigin Type { get; }
 
 		/// <summary>
-		/// The code contained in the pattern.
+		/// The pattern from which the program was compiled.
 		/// </summary>
 		public string Code { get; }
 
@@ -76,32 +76,32 @@ namespace Rant
 		internal RantModule Module { get; }
 
 		/// <summary>
-		/// Compiles a pattern from the specified string.
+		/// Compiles a program from the specified pattern.
 		/// </summary>
-		/// <param name="code">The code to compile.</param>
+		/// <param name="code">The pattern to compile.</param>
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <returns></returns>
-		public static RantPattern CompileString(string code) => new RantPattern(GetString("pattern"), RantPatternOrigin.String, code);
+		public static RantProgram CompileString(string code) => new RantProgram(GetString("pattern"), RantProgramOrigin.String, code);
 
 		/// <summary>
-		/// Compiles a pattern from a string with the specified name.
+		/// Compiles a program from a pattern with the specified name.
 		/// </summary>
 		/// <param name="name">The name to give the source.</param>
-		/// <param name="code">The code to compile.</param>
+		/// <param name="code">The pattern to compile.</param>
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <returns></returns>
-		public static RantPattern CompileString(string name, string code)
-			=> new RantPattern(name, RantPatternOrigin.String, code);
+		public static RantProgram CompileString(string name, string code)
+			=> new RantProgram(name, RantProgramOrigin.String, code);
 
 		/// <summary>
-		/// Loads the file located at the specified path and compiles a pattern from its contents.
+		/// Loads the file located at the specified path and compiles a program from its contents.
 		/// </summary>
 		/// <param name="path">The path to the file to load.</param>
 		/// <exception cref="Rant.RantCompilerException">Thrown if a syntax error is encountered.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown if the file cannot be found.</exception>
 		/// <returns></returns>
-		public static RantPattern CompileFile(string path)
-			=> new RantPattern(Path.GetFileName(path), RantPatternOrigin.File, File.ReadAllText(path));
+		public static RantProgram CompileFile(string path)
+			=> new RantProgram(Path.GetFileName(path), RantProgramOrigin.File, File.ReadAllText(path));
 
 		/// <summary>
 		/// Saves the compiled program to the file at the specified path.
@@ -134,7 +134,7 @@ namespace Rant
 		/// </summary>
 		/// <param name="path">The path to load the program from.</param>
 		/// <returns></returns>
-		public static RantPattern LoadFile(string path)
+		public static RantProgram LoadFile(string path)
 		{
 			if (path == null) throw new ArgumentNullException(nameof(path));
 			return LoadStream(Path.GetFileNameWithoutExtension(path), File.Open(path, FileMode.Open));
@@ -146,7 +146,7 @@ namespace Rant
 		/// <param name="programName">The name to give to the program.</param>
 		/// <param name="stream">The stream to load the program from.</param>
 		/// <returns></returns>
-		public static RantPattern LoadStream(string programName, Stream stream)
+		public static RantProgram LoadStream(string programName, Stream stream)
 		{
 			if (programName == null) throw new ArgumentNullException(nameof(programName));
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -159,7 +159,7 @@ namespace Rant
 
 				// TODO: Use string table
 
-				return new RantPattern(programName, RantPatternOrigin.File, rst);
+				return new RantProgram(programName, RantProgramOrigin.File, rst);
 			}
 		}
 

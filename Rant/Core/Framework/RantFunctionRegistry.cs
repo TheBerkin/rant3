@@ -872,7 +872,7 @@ namespace Rant.Core.Framework
 				file = name;
 			else
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"Could not find module '{name}'.");
-			var pattern = RantPattern.CompileFile(file);
+			var pattern = RantProgram.CompileFile(file);
 			if (pattern.Module == null)
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"No module is defined in {file}.");
 			sb.Modules[Path.GetFileNameWithoutExtension(name)] = pattern.Module;

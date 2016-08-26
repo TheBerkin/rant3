@@ -242,7 +242,7 @@
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="Resources\RantPackageDependency.cs" />
     <Compile Include="Resources\RantPackageVersion.cs" />
-    <Compile Include="RantPatternArgs.cs" />
+    <Compile Include="RantProgramArgs.cs" />
     <Compile Include="RantUtils.cs" />
     <Compile Include="Core\Stringes\Lexer.cs" />
     <Compile Include="Core\Stringes\StringeUtils.cs" />
@@ -290,8 +290,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vocabulary\RantDictionaryEntry.cs" />
     <Compile Include="Core\Compiler\R.cs" />
-    <Compile Include="RantPattern.cs" />
-    <Compile Include="RantPatternOrigin.cs" />
+    <Compile Include="RantProgram.cs" />
+    <Compile Include="RantProgramOrigin.cs" />
     <Compile Include="Core\Compiler\TokenReader.cs" />
     <Compile Include="Core\Stringes\Chare.cs" />
     <Compile Include="Core\Stringes\Extensions.cs" />

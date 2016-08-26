@@ -122,8 +122,8 @@ namespace RantConsole
 
                 sw.Start();
                 var pattern = isFile
-                    ? RantPattern.CompileFile(source)
-                    : RantPattern.CompileString(source);
+                    ? RantProgram.CompileFile(source)
+                    : RantProgram.CompileString(source);
                 sw.Stop();
                 var compileTime = sw.Elapsed;
 
@@ -151,7 +151,7 @@ namespace RantConsole
                     ForegroundColor = ConsoleColor.Green;
                     if (chan.Value.Length > 0)
                     {
-                        if (pattern.Type == RantPatternOrigin.File && writeToFile)
+                        if (pattern.Type == RantProgramOrigin.File && writeToFile)
                         {
                             var path = Property("out");
                             File.WriteAllText(
@@ -174,13 +174,13 @@ namespace RantConsole
                     else if (!writeToFile)
                     {
                         ForegroundColor = ConsoleColor.DarkGray;
-                        if (pattern.Type != RantPatternOrigin.File) WriteLine("[Empty]");
+                        if (pattern.Type != RantProgramOrigin.File) WriteLine("[Empty]");
                     }
                     ResetColor();
                     WriteLine();
                 }
 
-                if ((pattern.Type != RantPatternOrigin.File || Flag("wait")) && !Flag("nostats"))
+                if ((pattern.Type != RantProgramOrigin.File || Flag("wait")) && !Flag("nostats"))
                 {
                     PrintStats(
                         new Stat("Seed",

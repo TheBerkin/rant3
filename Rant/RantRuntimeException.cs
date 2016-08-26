@@ -13,7 +13,7 @@ namespace Rant
 	/// </summary>
 	public sealed class RantRuntimeException : Exception
 	{
-		internal RantRuntimeException(RantPattern source, TokenLocation token, string errorMessageType = "err-generic-runtime",
+		internal RantRuntimeException(RantProgram source, TokenLocation token, string errorMessageType = "err-generic-runtime",
 			params object[] errorArgs)
 			: base((token.Index != -1
 				? ($"{GetString("src-line-col", source.Name, token.Line, token.Column)} ")
@@ -25,7 +25,7 @@ namespace Rant
 			Index = token.Index;
 		}
 
-		internal RantRuntimeException(RantPattern source, RST rst, string errorMessageType = "err-generic-runtime",
+		internal RantRuntimeException(RantProgram source, RST rst, string errorMessageType = "err-generic-runtime",
 			params object[] errorArgs)
 			: base(rst == null
 				? $"({source.Name}) {GetString(errorMessageType, errorArgs)}"

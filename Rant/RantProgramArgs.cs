@@ -11,7 +11,7 @@ namespace Rant
 	/// <summary>
 	/// Represents a set of arguments that can be passed to a pattern.
 	/// </summary>
-	public sealed class RantPatternArgs
+	public sealed class RantProgramArgs
 	{
 		private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> objPropMap =
 			new Dictionary<Type, Dictionary<string, PropertyInfo>>();
@@ -21,11 +21,11 @@ namespace Rant
 		/// <summary>
 		/// Create a new, empty RantPatternArgs instance.
 		/// </summary>
-		public RantPatternArgs()
+		public RantProgramArgs()
 		{
 		}
 
-		internal RantPatternArgs(object value)
+		internal RantProgramArgs(object value)
 		{
 			if (value == null) return;
 			var type = value.GetType();
@@ -90,10 +90,10 @@ namespace Rant
 		/// </summary>
 		/// <param name="value">The object to create an argument set from.</param>
 		/// <returns></returns>
-		public static RantPatternArgs CreateFrom(object value)
+		public static RantProgramArgs CreateFrom(object value)
 		{
-			if (value is RantPatternArgs) return value as RantPatternArgs;
-			return new RantPatternArgs(value);
+			if (value is RantProgramArgs) return value as RantProgramArgs;
+			return new RantProgramArgs(value);
 		}
 
 		/// <summary>

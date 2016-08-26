@@ -10,49 +10,49 @@ namespace Rant.Tests.Compiler
 		[ExpectedException(typeof(RantCompilerException))]
 		public void IncompleteEscape()
 		{
-			RantPattern.CompileString(@"\");
+			RantProgram.CompileString(@"\");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnterminatedBlock()
 		{
-			RantPattern.CompileString(@"{");
+			RantProgram.CompileString(@"{");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnexpectedBlockTerminator()
 		{
-			RantPattern.CompileString(@"}");
+			RantProgram.CompileString(@"}");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void EmptyTag()
 		{
-			RantPattern.CompileString(@"[]");
+			RantProgram.CompileString(@"[]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnexpectedTagTerminator()
 		{
-			RantPattern.CompileString(@"]");
+			RantProgram.CompileString(@"]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnexpectedQueryTerminator()
 		{
-			RantPattern.CompileString(@">");
+			RantProgram.CompileString(@">");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnterminatedQuery()
 		{
-			RantPattern.CompileString(@"<noun");
+			RantProgram.CompileString(@"<noun");
 		}
 
 		[TestCase("\"")]
@@ -62,56 +62,56 @@ namespace Rant.Tests.Compiler
 		[ExpectedException(typeof(RantCompilerException))]
 		public void InvalidQueryTableName(string name)
 		{
-			RantPattern.CompileString($"<{name}>");
+			RantProgram.CompileString($"<{name}>");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void InvalidQuerySubtype()
 		{
-			RantPattern.CompileString(@"<noun.???>");
+			RantProgram.CompileString(@"<noun.???>");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void MissingQuerySubtype()
 		{
-			RantPattern.CompileString(@"<noun.>");
+			RantProgram.CompileString(@"<noun.>");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void MissingQueryClassFilter()
 		{
-			RantPattern.CompileString(@"<noun->");
+			RantProgram.CompileString(@"<noun->");
 		}
 
 	    [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void TooManyCarrierOperators()
 	    {
-	        RantPattern.CompileString(@"<noun::!A::@B>");
+	        RantProgram.CompileString(@"<noun::!A::@B>");
 	    }
 
 	    [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void MissingQuantifierComma()
 	    {
-	        RantPattern.CompileString(@"\123a");
+	        RantProgram.CompileString(@"\123a");
 	    }
 
 	    [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void UnterminatedConstantLiteral()
 	    {
-	        RantPattern.CompileString("\"");
+	        RantProgram.CompileString("\"");
 	    }
 
 	    [Test]
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void UnterminatedRegex()
 	    {
-	        RantPattern.CompileString("`");
+	        RantProgram.CompileString("`");
 	    }
 
 	    [TestCase(".")]
@@ -122,21 +122,21 @@ namespace Rant.Tests.Compiler
 	    [ExpectedException(typeof(RantCompilerException))]
 	    public void InvalidCarrierComponent(string carrier)
 	    {
-	        RantPattern.CompileString($"<noun::{carrier}>");
+	        RantProgram.CompileString($"<noun::{carrier}>");
 	    }
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void InvalidCarrierDelete()
 		{
-			RantPattern.CompileString(@"<::>");
+			RantProgram.CompileString(@"<::>");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void NonexistentFunction()
 		{
-			RantPattern.CompileString(@"[berkin_rules]");
+			RantProgram.CompileString(@"[berkin_rules]");
 		}
 
 		[TestCase(@"[rep:way;too;many;arguments]")]		// too many
@@ -144,49 +144,49 @@ namespace Rant.Tests.Compiler
 		[ExpectedException(typeof(RantCompilerException))]
 		public void ParameterMismatch(string pattern)
 		{
-			RantPattern.CompileString(pattern);
+			RantProgram.CompileString(pattern);
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnterminatedFunctionCall()
 		{
-			RantPattern.CompileString(@"[rep:10");
+			RantProgram.CompileString(@"[rep:10");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void BadParameterNames()
 		{
-			RantPattern.CompileString(@"[$[epic_fail:good_param;bad=param]:NO]");
+			RantProgram.CompileString(@"[$[epic_fail:good_param;bad=param]:NO]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void BadNameArgsSeparator()
 		{
-			RantPattern.CompileString(@"[numfmt;verbal-en]");
+			RantProgram.CompileString(@"[numfmt;verbal-en]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void ExtraOpeningBracket()
 		{
-			RantPattern.CompileString(@"[[rep:10]");
+			RantProgram.CompileString(@"[[rep:10]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void MissingReplacerArgument()
 		{
-			RantPattern.CompileString(@"[`\s*`:this is a test]");
+			RantProgram.CompileString(@"[`\s*`:this is a test]");
 		}
 
 		[Test]
 		[ExpectedException(typeof(RantCompilerException))]
 		public void UnterminatedQueryComplement()
 		{
-			RantPattern.CompileString(@"<verb.ing [the <noun>>");
+			RantProgram.CompileString(@"<verb.ing [the <noun>>");
 		}
 	}
 }

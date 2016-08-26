@@ -19,7 +19,7 @@ namespace Rant.Tests
 		[Test]
 		public void OneArg()
 		{
-			var args = new RantPatternArgs
+			var args = new RantProgramArgs
 			{
 				["foo"] = "Bar"
 			};
@@ -34,7 +34,7 @@ namespace Rant.Tests
 				msg = "Hello World"
 			};
 
-			Assert.AreEqual("Hello World", rant.Do(@"[in:msg]", 0, 0, RantPatternArgs.CreateFrom(args)).Main);
+			Assert.AreEqual("Hello World", rant.Do(@"[in:msg]", 0, 0, RantProgramArgs.CreateFrom(args)).Main);
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace Rant.Tests
 				B = "World"
 			};
 
-			Assert.AreEqual("Hello World!", rant.Do(@"[in:word-a] [in:word-b]!", 0, 0, RantPatternArgs.CreateFrom(args)).Main);
+			Assert.AreEqual("Hello World!", rant.Do(@"[in:word-a] [in:word-b]!", 0, 0, RantProgramArgs.CreateFrom(args)).Main);
 		}
 	}
 }

@@ -99,7 +99,7 @@ namespace Rave.Packer
 			foreach (var path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
 				.Where(p => p.EndsWith(".rant") || p.EndsWith(".rants")))
 			{
-				var pattern = RantPattern.CompileFile(path);
+				var pattern = RantProgram.CompileFile(path);
 				string relativePath;
 				TryGetRelativePath(contentPath, path, out relativePath, true);
 				pattern.Name = relativePath;

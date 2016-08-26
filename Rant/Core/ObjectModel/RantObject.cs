@@ -20,7 +20,7 @@ namespace Rant.Core.ObjectModel
 		private bool _boolean = false;
 		private List<RantObject> _list = null;
 		private double _number = 0;
-		private RantPattern _pattern = null;
+		private RantProgram _pattern = null;
 		private RST _rst = null;
 		private string _string = null;
 
@@ -112,9 +112,9 @@ namespace Rant.Core.ObjectModel
 				_list = ((object[])obj).Select(o => new RantObject(o)).ToList();
 				Type = RantObjectType.List;
 			}
-			else if (obj is RantPattern)
+			else if (obj is RantProgram)
 			{
-				_pattern = (RantPattern)obj;
+				_pattern = (RantProgram)obj;
 			}
 			else if (obj is RST)
 			{
