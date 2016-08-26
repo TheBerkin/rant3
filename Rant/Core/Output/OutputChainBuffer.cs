@@ -5,6 +5,7 @@ using System.Text;
 using Rant.Core.Formatting;
 using Rant.Core.IO;
 using Rant.Core.Utilities;
+using Rant.Formats;
 
 namespace Rant.Core.Output
 {
@@ -141,11 +142,11 @@ namespace Rant.Core.Output
 			switch (_caps)
 			{
 				case Capitalization.Upper:
-					value = value.ToUpperInvariant();
-					break;
+				value = value.ToUpperInvariant();
+				break;
 				case Capitalization.Lower:
-					value = value.ToLowerInvariant();
-					break;
+				value = value.ToLowerInvariant();
+				break;
 				case Capitalization.Word:
 				{
 					char lastChar = _buffer.Length > 0
@@ -156,7 +157,7 @@ namespace Rant.Core.Output
 						CapitalizeFirstLetter(ref value);
 					}
 				}
-					break;
+				break;
 				case Capitalization.Sentence:
 				{
 					var b = _buffer;
@@ -196,31 +197,22 @@ namespace Rant.Core.Output
 						break;
 					}
 				}
-					break;
+				break;
 				case Capitalization.Title:
 				{
 					char lastChar = _buffer.Length > 0
 						? _buffer[_buffer.Length - 1]
 						: Prev?.LastChar ?? '\0';
 					bool boundary = char.IsWhiteSpace(lastChar)
-					                || char.IsSeparator(lastChar)
-					                || lastChar == '\0';
+									|| char.IsSeparator(lastChar)
+									|| lastChar == '\0';
 
-					// This ensures that the first title word is always capitalized
-					if (!PrintedSinceCapsChange)
-					{
-						CapitalizeFirstLetter(ref value);
-						return;
-					}
-					// If it's not capitalizable in a title, skip it.
-					if (sandbox.Format.Excludes(value) && boundary) return;
-
-					CapitalizeFirstLetter(ref value);
+					CapitalizeTitleString(ref value, sandbox.Format, !PrintedSinceCapsChange);
 				}
-					break;
+				break;
 				case Capitalization.First:
-					if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
-					break;
+				if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
+				break;
 			}
 		}
 
@@ -257,6 +249,45 @@ namespace Rant.Core.Output
 				return true;
 			}
 			return false;
+		}
+
+		protected static bool CapitalizeTitleString(ref string value, RantFormat format, bool capitalizeFirstLetter)
+		{
+			if (Util.IsNullOrWhiteSpace(value)) return false;
+			var wordBuffer = new StringBuilder(32);
+			var titleBuffer = new StringBuilder(value.Length);
+			bool first = true;
+			foreach (char c in value)
+			{
+				if (char.IsWhiteSpace(c))
+				{
+					if (wordBuffer.Length > 0)
+					{
+						if ((first && capitalizeFirstLetter) || !format.Excludes(wordBuffer.ToString()))
+						{
+							wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
+						}
+						first = false;
+						titleBuffer.Append(wordBuffer);
+						wordBuffer.Length = 0;
+					}
+					titleBuffer.Append(c);
+				}
+				else
+				{
+					wordBuffer.Append(c);
+				}
+			}
+			if (wordBuffer.Length > 0)
+			{
+				if ((first && capitalizeFirstLetter) || !format.Excludes(wordBuffer.ToString()))
+				{
+					wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
+				}
+				titleBuffer.Append(wordBuffer);
+			}
+			value = titleBuffer.ToString();
+			return true;
 		}
 	}
 }

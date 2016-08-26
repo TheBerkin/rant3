@@ -23,6 +23,8 @@ namespace Rant.Tests
         public void TitleCase()
         {
             Assert.AreEqual("This Is a Title", rant.Do(@"[caps:title]this is a title").Main);
+			Assert.AreEqual("This Is a Test of the Automatic Capitalization", 
+				rant.Do(@"[`.+`:this is a test of the automatic capitalization;[caps:title][match]]").Main);
         }
 
         [Test]
