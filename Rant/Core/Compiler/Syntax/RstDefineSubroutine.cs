@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
@@ -48,7 +47,7 @@ namespace Rant.Core.Compiler.Syntax
 			if (Parameters == null) Parameters = new Dictionary<string, SubroutineParameterType>(pCount);
 			for (int i = 0; i < pCount; i++)
 			{
-				var key = input.ReadString();
+				string key = input.ReadString();
 				Parameters[key] = (SubroutineParameterType)input.ReadByte();
 			}
 		}

@@ -12,8 +12,8 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("nfnc")]
 	internal class RstFunction : RST
 	{
-		private List<RST> _args;
 		private int _argc;
+		private List<RST> _args;
 		private RantFunctionSignature _funcInfo;
 
 		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> args)
@@ -145,7 +145,7 @@ namespace Rant.Core.Compiler.Syntax
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
 		{
 			input.ReadInt32(out _argc);
-			var funcName = input.ReadString();
+			string funcName = input.ReadString();
 			_funcInfo = RantFunctionRegistry.GetFunction(funcName, _argc);
 			if (_args == null) _args = new List<RST>(_argc);
 			for (int i = 0; i < _argc; i++)

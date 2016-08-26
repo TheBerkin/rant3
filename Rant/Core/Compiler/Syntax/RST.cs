@@ -56,7 +56,7 @@ namespace Rant.Core.Compiler.Syntax
 				while (serializer.MoveNext())
 				{
 					if (serializer.Current == null)
-					{	
+					{
 						output.Write(NullRST);
 					}
 					else
@@ -99,11 +99,11 @@ namespace Rant.Core.Compiler.Syntax
 						deserializer.Current.SetResult(null);
 						continue;
 					}
-					
+
 					Type type;
 					if (!_rstTypeMap.TryGetValue(code, out type))
 						throw new InvalidDataException(GetString("err-pgmload-bad-type", code));
-					
+
 					int line = input.ReadInt32();
 					int col = input.ReadInt32();
 					int index = input.ReadInt32();

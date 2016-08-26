@@ -9,9 +9,9 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("csub")]
 	internal class RstCallSubroutine : RstSubroutineBase
 	{
-		public List<RST> Arguments;
 		private bool _inModule = false;
 		private string _moduleFunctionName = null;
+		public List<RST> Arguments;
 
 		public RstCallSubroutine(Stringe name, string moduleFunctionName = null)
 			: base(name)

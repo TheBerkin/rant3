@@ -63,7 +63,7 @@ namespace Rant.Vocabulary.Querying
 			foreach (var filter in _items)
 			{
 				output.Write(filter.Length);
-				foreach (ClassFilterRule rule in filter)
+				foreach (var rule in filter)
 				{
 					output.Write(rule.ShouldMatch);
 					output.Write(rule.Class);
@@ -81,7 +81,7 @@ namespace Rant.Vocabulary.Querying
 				for (int j = 0; j < swLength; j++)
 				{
 					bool shouldMatch = input.ReadBoolean();
-					var clName = input.ReadString();
+					string clName = input.ReadString();
 					sw[i] = new ClassFilterRule(clName, shouldMatch);
 				}
 				_items.Add(sw);

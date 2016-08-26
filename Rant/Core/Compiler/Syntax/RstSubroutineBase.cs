@@ -7,8 +7,8 @@ namespace Rant.Core.Compiler.Syntax
 {
 	internal abstract class RstSubroutineBase : RST
 	{
-		public string Name;
 		public RST Body;
+		public string Name;
 
 		public RstSubroutineBase(Stringe name)
 			: base(name)

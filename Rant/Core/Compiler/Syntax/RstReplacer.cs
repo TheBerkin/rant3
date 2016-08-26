@@ -12,8 +12,8 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("repl")]
 	internal class RstReplacer : RST
 	{
-		private RST _rstMatchEval;
 		private Regex _regex;
+		private RST _rstMatchEval;
 		private RST _rstSource;
 
 		public RstReplacer(Stringe location, Regex regex, RST rstSource, RST rstMatchEval) : base(location)

@@ -82,7 +82,7 @@ namespace Rant.Vocabulary.Querying
 			{
 				output.Write((byte)kv.Key);
 				output.Write(kv.Value.Count);
-				foreach (var compName in kv.Value)
+				foreach (string compName in kv.Value)
 				{
 					output.Write(compName);
 				}

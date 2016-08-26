@@ -101,7 +101,8 @@ namespace Rant.Formats
 		}
 
 		/// <summary>
-		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, and title case exclusion list.
+		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, and title case
+		/// exclusion list.
 		/// </summary>
 		/// <param name="culture">The culture to associate with the format.</param>
 		/// <param name="stdSpace">The standard space character to use.</param>
@@ -126,7 +127,8 @@ namespace Rant.Formats
 		}
 
 		/// <summary>
-		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, title case exclusion list, and pluralizer.
+		/// Creates a new RantFormat instance with the specified culture, standard space, alphabet, quotation marks, title case
+		/// exclusion list, and pluralizer.
 		/// </summary>
 		/// <param name="culture">The culture to associate with the format.</param>
 		/// <param name="stdSpace">The standard space character to use.</param>
