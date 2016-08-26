@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{91992F
 		CmdLine.cs = CmdLine.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Tools", "Rave\Rant.Tools.csproj", "{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rant.Tools", "Rant.Tools\Rant.Tools.csproj", "{409C7DD6-8DEB-4DF9-9D1E-91861B782A35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
