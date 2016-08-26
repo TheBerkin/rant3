@@ -23,10 +23,10 @@ namespace Rant.Tools.Packer
 			Console.WriteLine("  rant pack [content-dir] <-out package-path>");
 			Console.WriteLine("    - Creates a package from the specified directories.");
 			Console.WriteLine("      -out: Specifies the output path for the package. Optional if rantpkg.json specifies an output path.");
-            Console.WriteLine("  Options:");
-            Console.WriteLine("    --compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
-            Console.WriteLine("    -string-table [mode]: Set the string table mode. 0 = none, 1 = keys, 2 = keys and values.");
-            Console.WriteLine("                          Defaults to keys.");
+			Console.WriteLine("  Options:");
+			Console.WriteLine("    --compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
+			Console.WriteLine("    -string-table [mode]: Set the string table mode. 0 = none, 1 = keys, 2 = keys and values.");
+			Console.WriteLine("                          Defaults to keys.");
 			Console.WriteLine("    -version [version]: Overrides the version in rantpkg.json.");
 		}
 
@@ -34,34 +34,34 @@ namespace Rant.Tools.Packer
 		{
 			var pkg = new RantPackage();
 			var paths = CmdLine.GetPaths();
-            var compress = CmdLine.Property("compression", "true") == "true";
-            var stringTableMode = int.Parse(CmdLine.Property("string-table", "1"));
+			bool compress = CmdLine.Property("compression", "true") == "true";
+			int stringTableMode = int.Parse(CmdLine.Property("string-table", "1"));
 
-            if (stringTableMode < 0 || stringTableMode > 2)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid string table mode.");
-                Console.ResetColor();
-                return;
-            }
+			if (stringTableMode < 0 || stringTableMode > 2)
+			{
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine("Invalid string table mode.");
+				Console.ResetColor();
+				return;
+			}
 
-            var modeEnum = (BsonStringTableMode)stringTableMode;
-			
+			var modeEnum = (BsonStringTableMode)stringTableMode;
+
 			Console.WriteLine("Packing...");
 
-			var contentDir = Path.GetFullPath(paths.Length == 0 ? Environment.CurrentDirectory : paths[0]);
-			
+			string contentDir = Path.GetFullPath(paths.Length == 0 ? Environment.CurrentDirectory : paths[0]);
+
 			Pack(pkg, contentDir);
-			
+
 			string outputPath;
-			var infoPath = Path.Combine(contentDir, "rantpkg.json");
+			string infoPath = Path.Combine(contentDir, "rantpkg.json");
 			if (!File.Exists(infoPath))
 				throw new FileNotFoundException("rantpkg.json missing from root directory.");
 
 			var info = JsonConvert.DeserializeObject<PackInfo>(File.ReadAllText(infoPath));
 			pkg.Title = info.Title;
 			pkg.Authors = info.Authors;
-			pkg.Version = RantPackageVersion.Parse(!String.IsNullOrWhiteSpace(CmdLine.Property("version")) ? CmdLine.Property("version") : info.Version);
+			pkg.Version = RantPackageVersion.Parse(!string.IsNullOrWhiteSpace(CmdLine.Property("version")) ? CmdLine.Property("version") : info.Version);
 			pkg.Description = info.Description;
 			pkg.ID = info.ID;
 			pkg.Tags = info.Tags;
@@ -70,7 +70,7 @@ namespace Rant.Tools.Packer
 				pkg.AddDependency(dep);
 			}
 
-			if (!String.IsNullOrWhiteSpace(info.OutputPath))
+			if (!string.IsNullOrWhiteSpace(info.OutputPath))
 			{
 				outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}-{pkg.Version}.rantpkg");
 				Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
@@ -93,18 +93,18 @@ namespace Rant.Tools.Packer
 
 		private static void Pack(RantPackage package, string contentPath)
 		{
-			foreach (var path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
+			foreach (string path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
 				.Where(p => p.EndsWith(".rant") || p.EndsWith(".rants")))
 			{
 				var pattern = RantProgram.CompileFile(path);
 				string relativePath;
 				TryGetRelativePath(contentPath, path, out relativePath, true);
 				pattern.Name = relativePath;
-                package.AddPattern(pattern);
+				package.AddPattern(pattern);
 				Console.WriteLine("+ " + pattern.Name);
 			}
 
-			foreach (var path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
+			foreach (string path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
 			{
 				Console.WriteLine("+ " + path);
 				var table = RantDictionaryTable.FromFile(path);
@@ -115,8 +115,8 @@ namespace Rant.Tools.Packer
 		private static bool TryGetRelativePath(string rootDir, string fullPath, out string relativePath, bool removeExtension = false)
 		{
 			relativePath = null;
-			if (String.IsNullOrWhiteSpace(rootDir)) return false;
-			if (String.IsNullOrWhiteSpace(fullPath)) return false;
+			if (string.IsNullOrWhiteSpace(rootDir)) return false;
+			if (string.IsNullOrWhiteSpace(fullPath)) return false;
 			var rootParts = Path.GetFullPath(rootDir).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 			var fullParts = Path.GetFullPath(fullPath).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 			if (rootParts.Length == 0 || fullParts.Length <= rootParts.Length)

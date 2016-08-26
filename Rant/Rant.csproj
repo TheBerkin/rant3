@@ -16,7 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <AssemblyName>Rant-Unity</AssemblyName>
+    <AssemblyName>RantEngine-Unity</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -309,9 +309,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Rant.h" Condition="'$(Platform)' != 'Any CPU' And '$(Configuration)' != 'Unity'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

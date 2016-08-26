@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.UI;
@@ -10,282 +9,282 @@ namespace Rant.Tools.DicDoc
 {
 	public static class PageGenerator
 	{
-	    private delegate void HtmlGenFunc(HtmlTextWriter writer);
+		public static string GenerateTablePage(RantDictionaryTable table, string filename)
+		{
+			int entryCount = table.GetEntries().Count();
 
-        public static string GenerateTablePage(RantDictionaryTable table, string filename)
-        {
-            int entryCount = table.GetEntries().Count();
+			// Get all the classes
+			var tableClasses = new HashSet<string>();
+			foreach (string entryClass in table.GetEntries().SelectMany(entry => entry.GetClasses()))
+			{
+				tableClasses.Add(entryClass);
+			}
 
-            // Get all the classes
-            var tableClasses = new HashSet<string>();
-            foreach (var entryClass in table.GetEntries().SelectMany(entry => entry.GetClasses()))
-            {
-                tableClasses.Add(entryClass);
-            }
+			var text = new StringWriter();
 
-            var text = new StringWriter();
+			using (var writer = new HtmlTextWriter(text))
+			{
+				writer.WriteLine("<!DOCTYPE html>");
 
-            using (var writer = new HtmlTextWriter(text))
-            {
-                writer.WriteLine("<!DOCTYPE html>");
+				writer.RenderBeginTag(HtmlTextWriterTag.Html);
 
-                writer.RenderBeginTag(HtmlTextWriterTag.Html);
+				// Header
+				writer.RenderBeginTag(HtmlTextWriterTag.Head);
 
-                // Header
-                writer.RenderBeginTag(HtmlTextWriterTag.Head);
+				// Title
+				writer.RenderBeginTag(HtmlTextWriterTag.Title);
+				writer.WriteEncodedText(table.Name);
+				writer.RenderEndTag();
 
-                // Title
-                writer.RenderBeginTag(HtmlTextWriterTag.Title);
-                writer.WriteEncodedText(table.Name);
-                writer.RenderEndTag();
+				// Stylesheet
+				writer.AddAttribute(HtmlTextWriterAttribute.Rel, "stylesheet");
+				writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
+				writer.AddAttribute(HtmlTextWriterAttribute.Href, "dicdoc.css");
+				writer.RenderBeginTag(HtmlTextWriterTag.Link);
+				writer.RenderEndTag();
 
-                // Stylesheet
-                writer.AddAttribute(HtmlTextWriterAttribute.Rel, "stylesheet");
-                writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
-                writer.AddAttribute(HtmlTextWriterAttribute.Href, "dicdoc.css");
-                writer.RenderBeginTag(HtmlTextWriterTag.Link);
-                writer.RenderEndTag();
+				writer.RenderEndTag(); // </head>
 
-                writer.RenderEndTag(); // </head>
+				writer.RenderBeginTag(HtmlTextWriterTag.Body);
 
-                writer.RenderBeginTag(HtmlTextWriterTag.Body);
+				// Header
+				writer.RenderBeginTag(HtmlTextWriterTag.H1);
+				writer.WriteEncodedText("<" + table.Name + ">");
+				writer.RenderEndTag();
 
-                // Header
-                writer.RenderBeginTag(HtmlTextWriterTag.H1);
-                writer.WriteEncodedText("<" + table.Name + ">");
-                writer.RenderEndTag();
+				// Description
+				writer.RenderBeginTag(HtmlTextWriterTag.P);
+				writer.WriteEncodedText("The ");
+				writer.RenderBeginTag(HtmlTextWriterTag.B);
+				writer.WriteEncodedText(table.Name);
+				writer.RenderEndTag(); // </b>
+				writer.WriteEncodedText(
+					$" table ({Path.GetFileName(filename)}) contains {entryCount} {(entryCount == 1 ? " entry" : " entries")} and {tableClasses.Count} {(tableClasses.Count == 1 ? " class" : " classes")}.");
+				writer.RenderEndTag(); // </p>
 
-                // Description
-                writer.RenderBeginTag(HtmlTextWriterTag.P);
-                writer.WriteEncodedText("The ");
-                writer.RenderBeginTag(HtmlTextWriterTag.B);
-                writer.WriteEncodedText(table.Name);
-                writer.RenderEndTag(); // </b>
-                writer.WriteEncodedText(
-                    $" table ({Path.GetFileName(filename)}) contains {entryCount} {(entryCount == 1 ? " entry" : " entries")} and {tableClasses.Count} {(tableClasses.Count == 1 ? " class" : " classes")}.");
-                writer.RenderEndTag(); // </p>
+				// Subtypes
+				if (table.Subtypes.Length == 1)
+				{
+					writer.WriteEncodedText("It has one subtype: ");
+					writer.RenderBeginTag(HtmlTextWriterTag.B);
+					writer.WriteEncodedText(table.Subtypes[0]);
+					writer.RenderEndTag();
+					writer.WriteEncodedText(".");
+				}
+				else
+				{
+					writer.WriteEncodedText("It has " + table.Subtypes.Length + (table.Subtypes.Length == 1 ? " subtype" : " subtypes")
+					                        + ": ");
+					for (int i = 0; i < table.Subtypes.Length; i++)
+					{
+						if (i == table.Subtypes.Length - 1)
+							writer.WriteEncodedText(table.Subtypes.Length == 2 ? " and " : "and ");
 
-                // Subtypes
-                if (table.Subtypes.Length == 1)
-                {
-                    writer.WriteEncodedText("It has one subtype: ");
-                    writer.RenderBeginTag(HtmlTextWriterTag.B);
-                    writer.WriteEncodedText(table.Subtypes[0]);
-                    writer.RenderEndTag();
-                    writer.WriteEncodedText(".");
-                }
-                else
-                {
-                    writer.WriteEncodedText("It has " + table.Subtypes.Length + (table.Subtypes.Length == 1 ? " subtype" : " subtypes")
-                        + ": ");
-                    for(int i = 0; i < table.Subtypes.Length; i++)
-                    {
-                        if (i == table.Subtypes.Length - 1)
-                            writer.WriteEncodedText(table.Subtypes.Length == 2 ? " and " :  "and ");
+						writer.RenderBeginTag(HtmlTextWriterTag.B);
+						writer.WriteEncodedText(table.Subtypes[i]);
+						writer.RenderEndTag();
 
-                        writer.RenderBeginTag(HtmlTextWriterTag.B);
-                        writer.WriteEncodedText(table.Subtypes[i]);
-                        writer.RenderEndTag();
+						if (i < table.Subtypes.Length - 1 && table.Subtypes.Length > 2)
+							writer.WriteEncodedText(", ");
+					}
+					writer.WriteEncodedText(".");
+				}
 
-                        if (i < table.Subtypes.Length - 1 && table.Subtypes.Length > 2)
-                            writer.WriteEncodedText(", ");
-                    }
-                    writer.WriteEncodedText(".");
-                }
+				// Separator
+				writer.RenderBeginTag(HtmlTextWriterTag.Hr);
+				writer.RenderEndTag();
 
-                // Separator
-                writer.RenderBeginTag(HtmlTextWriterTag.Hr);
-                writer.RenderEndTag();
+				// "View All" link
+				writer.AddAttribute(HtmlTextWriterAttribute.Href, "entries/" + table.Name + ".html");
+				writer.RenderBeginTag(HtmlTextWriterTag.A);
 
-                // "View All" link
-                writer.AddAttribute(HtmlTextWriterAttribute.Href, "entries/" + table.Name + ".html");
-                writer.RenderBeginTag(HtmlTextWriterTag.A);
+				writer.WriteEncodedText("Browse All Entries");
 
-                writer.WriteEncodedText("Browse All Entries");
+				writer.RenderEndTag(); // </a>
 
-                writer.RenderEndTag(); // </a>
+				// Class list
+				writer.RenderBeginTag(HtmlTextWriterTag.H2);
+				writer.WriteEncodedText("Classes");
+				writer.RenderEndTag(); // </h2>
 
-                // Class list
-                writer.RenderBeginTag(HtmlTextWriterTag.H2);
-                writer.WriteEncodedText("Classes");
-                writer.RenderEndTag(); // </h2>
+				writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
-                writer.RenderBeginTag(HtmlTextWriterTag.Ul);
+				foreach (string tableClass in tableClasses)
+				{
+					writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
-                foreach (var tableClass in tableClasses)
-                {
-                    writer.RenderBeginTag(HtmlTextWriterTag.Li);
-                    
-                    writer.AddAttribute(HtmlTextWriterAttribute.Href, "entries/" + table.Name + "-" + tableClass + ".html");
-                    writer.RenderBeginTag(HtmlTextWriterTag.A);
-                    writer.WriteEncodedText(tableClass);
-                    writer.RenderEndTag(); // </a>
+					writer.AddAttribute(HtmlTextWriterAttribute.Href, "entries/" + table.Name + "-" + tableClass + ".html");
+					writer.RenderBeginTag(HtmlTextWriterTag.A);
+					writer.WriteEncodedText(tableClass);
+					writer.RenderEndTag(); // </a>
 
-                    writer.RenderEndTag(); // </li>
-                }
+					writer.RenderEndTag(); // </li>
+				}
 
-                writer.RenderEndTag(); // </ul>
+				writer.RenderEndTag(); // </ul>
 
-                writer.RenderEndTag(); // </body>
+				writer.RenderEndTag(); // </body>
 
-                writer.RenderEndTag(); // </html>
-            }
+				writer.RenderEndTag(); // </html>
+			}
 
-            return text.ToString();
-        }
+			return text.ToString();
+		}
 
-        public static string GenerateTableClassPage(RantDictionaryTable table, string tableClass)
-        {
-            bool all = String.IsNullOrEmpty(tableClass);
+		public static string GenerateTableClassPage(RantDictionaryTable table, string tableClass)
+		{
+			bool all = string.IsNullOrEmpty(tableClass);
 
-            var entries = all ? table.GetEntries() : table.GetEntries().Where(e => e.ContainsClass(tableClass));
+			var entries = all ? table.GetEntries() : table.GetEntries().Where(e => e.ContainsClass(tableClass));
 
-            var text = new StringWriter();
+			var text = new StringWriter();
 
-            using (var writer = new HtmlTextWriter(text))
-            {
-                writer.WriteLine("<!DOCTYPE html>");
+			using (var writer = new HtmlTextWriter(text))
+			{
+				writer.WriteLine("<!DOCTYPE html>");
 
-                writer.RenderBeginTag(HtmlTextWriterTag.Html);
+				writer.RenderBeginTag(HtmlTextWriterTag.Html);
 
-                // Header
-                writer.RenderBeginTag(HtmlTextWriterTag.Head);
+				// Header
+				writer.RenderBeginTag(HtmlTextWriterTag.Head);
 
-                // Title
-                writer.RenderBeginTag(HtmlTextWriterTag.Title);
-                writer.WriteEncodedText((all ? table.Name : table.Name + ": " + tableClass) + " entries");
-                writer.RenderEndTag();
+				// Title
+				writer.RenderBeginTag(HtmlTextWriterTag.Title);
+				writer.WriteEncodedText((all ? table.Name : table.Name + ": " + tableClass) + " entries");
+				writer.RenderEndTag();
 
-                // Stylesheet
-                writer.AddAttribute(HtmlTextWriterAttribute.Rel, "stylesheet");
-                writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
-                writer.AddAttribute(HtmlTextWriterAttribute.Href, "../dicdoc.css");
-                writer.RenderBeginTag(HtmlTextWriterTag.Link);
-                writer.RenderEndTag();
+				// Stylesheet
+				writer.AddAttribute(HtmlTextWriterAttribute.Rel, "stylesheet");
+				writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
+				writer.AddAttribute(HtmlTextWriterAttribute.Href, "../dicdoc.css");
+				writer.RenderBeginTag(HtmlTextWriterTag.Link);
+				writer.RenderEndTag();
 
-                writer.RenderEndTag(); // </head>
+				writer.RenderEndTag(); // </head>
 
-                // Body
-                writer.RenderBeginTag(HtmlTextWriterTag.Body);
+				// Body
+				writer.RenderBeginTag(HtmlTextWriterTag.Body);
 
-                // Heading
-                writer.RenderBeginTag(HtmlTextWriterTag.H1);
-                writer.WriteEncodedText("<" + table.Name + (all ? "" : "-" + tableClass) + ">");
-                writer.RenderEndTag();
+				// Heading
+				writer.RenderBeginTag(HtmlTextWriterTag.H1);
+				writer.WriteEncodedText("<" + table.Name + (all ? "" : "-" + tableClass) + ">");
+				writer.RenderEndTag();
 
-                // Entry list
-                foreach (var e in entries)
-                {
-                    writer.AddAttribute(HtmlTextWriterAttribute.Class, "entry");
-                    writer.RenderBeginTag(HtmlTextWriterTag.Div);
+				// Entry list
+				foreach (var e in entries)
+				{
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "entry");
+					writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                    // Terms
-                    writer.AddAttribute(HtmlTextWriterAttribute.Class, "termset");
-                    writer.RenderBeginTag(HtmlTextWriterTag.Div);
+					// Terms
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "termset");
+					writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                    for (int i = 0; i < e.TermCount; i++)
-                    {
-                        writer.AddAttribute(HtmlTextWriterAttribute.Class, "term");
-                        writer.RenderBeginTag(HtmlTextWriterTag.Span);
-                        writer.WriteEncodedText(e[i].Value);
+					for (int i = 0; i < e.TermCount; i++)
+					{
+						writer.AddAttribute(HtmlTextWriterAttribute.Class, "term");
+						writer.RenderBeginTag(HtmlTextWriterTag.Span);
+						writer.WriteEncodedText(e[i].Value);
 
-                        if (e[i].SyllableCount > 0)
-                        {
-                            writer.AddAttribute(HtmlTextWriterAttribute.Class, "terminfo");
-                            writer.RenderBeginTag(HtmlTextWriterTag.Span);
-                            writer.RenderBeginTag(HtmlTextWriterTag.I);
-                            writer.WriteEncodedText(" [" + e[i].Pronunciation + "]");
-                            writer.RenderEndTag(); // </i>
-                            writer.RenderEndTag(); // </span>
-                        }
+						if (e[i].SyllableCount > 0)
+						{
+							writer.AddAttribute(HtmlTextWriterAttribute.Class, "terminfo");
+							writer.RenderBeginTag(HtmlTextWriterTag.Span);
+							writer.RenderBeginTag(HtmlTextWriterTag.I);
+							writer.WriteEncodedText(" [" + e[i].Pronunciation + "]");
+							writer.RenderEndTag(); // </i>
+							writer.RenderEndTag(); // </span>
+						}
 
-                        // Subtype
-                        writer.AddAttribute(HtmlTextWriterAttribute.Class, "subtype");
-                        writer.RenderBeginTag(HtmlTextWriterTag.Span);
-                        writer.WriteEncodedText(i < table.Subtypes.Length ? table.Subtypes[i] : "???");
-                        writer.RenderEndTag();
+						// Subtype
+						writer.AddAttribute(HtmlTextWriterAttribute.Class, "subtype");
+						writer.RenderBeginTag(HtmlTextWriterTag.Span);
+						writer.WriteEncodedText(i < table.Subtypes.Length ? table.Subtypes[i] : "???");
+						writer.RenderEndTag();
 
-                        writer.RenderEndTag();
-                    }
+						writer.RenderEndTag();
+					}
 
-                    writer.RenderEndTag();
+					writer.RenderEndTag();
 
-                    // Notes
-                    var notes = new List<HtmlGenFunc>();
-                    var otherClasses = e.GetClasses().Where(cl => cl != tableClass);
+					// Notes
+					var notes = new List<HtmlGenFunc>();
+					var otherClasses = e.GetClasses().Where(cl => cl != tableClass);
 
-                    if (e.GetTerms().All(t => t.SyllableCount > 0))
-                        notes.Add(html => html.WriteEncodedText("Full pronunciation"));
-                    else if (e.GetTerms().Any(t => t.SyllableCount > 0))
-                        notes.Add(html => html.WriteEncodedText("Partial pronunciation"));
+					if (e.GetTerms().All(t => t.SyllableCount > 0))
+						notes.Add(html => html.WriteEncodedText("Full pronunciation"));
+					else if (e.GetTerms().Any(t => t.SyllableCount > 0))
+						notes.Add(html => html.WriteEncodedText("Partial pronunciation"));
 
-                    if (e.Weight != 1) notes.Add(html => html.WriteEncodedText("Weight: " + e.Weight));
+					if (e.Weight != 1) notes.Add(html => html.WriteEncodedText("Weight: " + e.Weight));
 
-                    if (all && e.GetClasses().Any())
-                    {
-                        notes.Add(html =>
-                        {
-                            html.WriteEncodedText("Classes: ");
-                            var classes = e.GetClasses().ToArray();
-                            for (int i = 0; i < classes.Length; i++)
-                            {
-                                if (i > 0) html.WriteEncodedText(", ");
+					if (all && e.GetClasses().Any())
+					{
+						notes.Add(html =>
+						{
+							html.WriteEncodedText("Classes: ");
+							var classes = e.GetClasses().ToArray();
+							for (int i = 0; i < classes.Length; i++)
+							{
+								if (i > 0) html.WriteEncodedText(", ");
 
-                                html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
-                                html.RenderBeginTag(HtmlTextWriterTag.A);
-                                html.WriteEncodedText(classes[i]);
-                                html.RenderEndTag();
-                            }
-                        });
-                    }
-                    else if (otherClasses.Any())
-                    {
-                        notes.Add(html =>
-                        {
-                            html.WriteEncodedText("Classes: ");
-                            var classes = otherClasses.ToArray();
-                            for (int i = 0; i < classes.Length; i++)
-                            {
-                                if (i > 0) html.WriteEncodedText(", ");
+								html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
+								html.RenderBeginTag(HtmlTextWriterTag.A);
+								html.WriteEncodedText(classes[i]);
+								html.RenderEndTag();
+							}
+						});
+					}
+					else if (otherClasses.Any())
+					{
+						notes.Add(html =>
+						{
+							html.WriteEncodedText("Classes: ");
+							var classes = otherClasses.ToArray();
+							for (int i = 0; i < classes.Length; i++)
+							{
+								if (i > 0) html.WriteEncodedText(", ");
 
-                                html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
-                                html.RenderBeginTag(HtmlTextWriterTag.A);
-                                html.WriteEncodedText(classes[i]);
-                                html.RenderEndTag();
-                            }
-                        });
-                    }
-                    
+								html.AddAttribute(HtmlTextWriterAttribute.Href, $"{table.Name}-{classes[i]}.html");
+								html.RenderBeginTag(HtmlTextWriterTag.A);
+								html.WriteEncodedText(classes[i]);
+								html.RenderEndTag();
+							}
+						});
+					}
 
-                    if (e.ContainsClass("nsfw")) notes.Add(html => html.WriteEncodedText("NSFW"));
 
-                    GenerateUL(writer, notes);
+					if (e.ContainsClass("nsfw")) notes.Add(html => html.WriteEncodedText("NSFW"));
 
-                    writer.RenderEndTag();
-                }
+					GenerateUL(writer, notes);
 
-                writer.RenderEndTag(); // </body>
+					writer.RenderEndTag();
+				}
 
-                writer.RenderEndTag(); // </html>
-            }
+				writer.RenderEndTag(); // </body>
 
-            return text.ToString();
-        }
+				writer.RenderEndTag(); // </html>
+			}
 
-        private static void GenerateUL(HtmlTextWriter writer, IEnumerable<HtmlGenFunc> items)
-        {
-            if (items == null || !items.Any()) return;
+			return text.ToString();
+		}
 
-            writer.RenderBeginTag(HtmlTextWriterTag.Ul);
+		private static void GenerateUL(HtmlTextWriter writer, IEnumerable<HtmlGenFunc> items)
+		{
+			if (items == null || !items.Any()) return;
 
-            foreach (var item in items)
-            {
-                writer.RenderBeginTag(HtmlTextWriterTag.Li);
-                item(writer);
-                writer.RenderEndTag();
-            }
+			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
-            writer.RenderEndTag();
-        }
-    }
+			foreach (var item in items)
+			{
+				writer.RenderBeginTag(HtmlTextWriterTag.Li);
+				item(writer);
+				writer.RenderEndTag();
+			}
+
+			writer.RenderEndTag();
+		}
+
+		private delegate void HtmlGenFunc(HtmlTextWriter writer);
+	}
 }

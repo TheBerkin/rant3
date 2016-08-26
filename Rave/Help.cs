@@ -38,8 +38,8 @@ namespace Rant.Tools
 
 		private class HelpItem
 		{
-			public readonly string Name;
 			public readonly string Description;
+			public readonly string Name;
 
 			public HelpItem(string name, string desc)
 			{

@@ -22,7 +22,7 @@ namespace Rant.Tools.DicSort
 
 			if (paths.Length == 0)
 			{
-				foreach (var path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
+				foreach (string path in Directory.GetFiles(Environment.CurrentDirectory, "*.dic", SearchOption.AllDirectories))
 				{
 					Console.WriteLine($"Processing {path}...");
 					ProcessDicFile(path);
@@ -30,7 +30,7 @@ namespace Rant.Tools.DicSort
 			}
 			else
 			{
-				foreach (var path in paths)
+				foreach (string path in paths)
 				{
 					if (path.EndsWith(".dic"))
 					{
@@ -39,7 +39,7 @@ namespace Rant.Tools.DicSort
 					}
 					else if (!Path.HasExtension(path))
 					{
-						foreach (var file in Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
+						foreach (string file in Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
 						{
 							Console.WriteLine($"Processing {file}...");
 							ProcessDicFile(file);

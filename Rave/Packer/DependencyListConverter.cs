@@ -10,6 +10,8 @@ namespace Rant.Tools.Packer
 {
 	public class DependencyListConverter : JsonConverter
 	{
+		public override bool CanWrite => false;
+
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
 			throw new NotImplementedException();
@@ -40,7 +42,5 @@ namespace Rant.Tools.Packer
 		{
 			return objectType == typeof(IEnumerable<RantPackageDependency>);
 		}
-
-		public override bool CanWrite => false;
 	}
 }

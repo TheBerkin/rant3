@@ -25,14 +25,14 @@ namespace Rant.Tools.DicDoc
 			Console.WriteLine("Working...");
 
 			var args = Environment.GetCommandLineArgs().Skip(2).ToArray();
-			var dicDir = args.Length == 0 ? Environment.CurrentDirectory : args[0];
+			string dicDir = args.Length == 0 ? Environment.CurrentDirectory : args[0];
 
 			GenerateDictionary(dicDir);
 
 			Console.WriteLine("Done.");
 		}
 
-		static void GenerateDictionary(string dicDir)
+		private static void GenerateDictionary(string dicDir)
 		{
 			Console.WriteLine("Loading tables...");
 			var tablePaths = Directory.GetFiles(dicDir, "*.dic");
@@ -51,11 +51,11 @@ namespace Rant.Tools.DicDoc
 			Console.WriteLine("Creating directory structure...");
 
 			// Destination directory
-			var rootDir = Path.Combine(dicDir, "dicdoc");
+			string rootDir = Path.Combine(dicDir, "dicdoc");
 			Mkdir(rootDir);
 
 			// Documentation directory
-			var entriesDir = Path.Combine(rootDir, "entries");
+			string entriesDir = Path.Combine(rootDir, "entries");
 			Mkdir(entriesDir);
 
 
@@ -96,9 +96,9 @@ namespace Rant.Tools.DicDoc
 				writer.RenderBeginTag(HtmlTextWriterTag.P);
 
 				writer.WriteEncodedText("The dictionary contains "
-					+ tables.Length + (tables.Length == 1 ? " table" : " tables")
-					+ " with a total of " + totalEntries + (totalEntries == 1 ? " entry" : " entries")
-					+ ".");
+				                        + tables.Length + (tables.Length == 1 ? " table" : " tables")
+				                        + " with a total of " + totalEntries + (totalEntries == 1 ? " entry" : " entries")
+				                        + ".");
 
 				writer.RenderEndTag(); // </p>
 
@@ -137,12 +137,12 @@ namespace Rant.Tools.DicDoc
 			}
 		}
 
-		static void GenerateTable(string tablePath, RantDictionaryTable table, string rootDir, string entriesDir)
+		private static void GenerateTable(string tablePath, RantDictionaryTable table, string rootDir, string entriesDir)
 		{
 			var tableClasses = new HashSet<string>();
 			foreach (var entry in table.GetEntries())
 			{
-				foreach (var entryClass in entry.GetClasses())
+				foreach (string entryClass in entry.GetClasses())
 				{
 					tableClasses.Add(entryClass);
 				}
@@ -150,7 +150,7 @@ namespace Rant.Tools.DicDoc
 
 			File.WriteAllText(rootDir + "/" + "table-" + table.Name + ".html", PageGenerator.GenerateTablePage(table, tablePath));
 
-			foreach (var tableClass in tableClasses)
+			foreach (string tableClass in tableClasses)
 			{
 				File.WriteAllText(entriesDir + "/" + table.Name + "-" + tableClass + ".html", PageGenerator.GenerateTableClassPage(table, tableClass));
 			}
@@ -158,7 +158,7 @@ namespace Rant.Tools.DicDoc
 			File.WriteAllText(entriesDir + "/" + table.Name + ".html", PageGenerator.GenerateTableClassPage(table, ""));
 		}
 
-		static void Mkdir(string dir)
+		private static void Mkdir(string dir)
 		{
 			if (Directory.Exists(dir)) Directory.Delete(dir, true);
 

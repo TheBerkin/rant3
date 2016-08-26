@@ -8,76 +8,76 @@ using static System.Console;
 
 namespace Rant.Tools
 {
-	class Program
+	internal class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			if (String.IsNullOrEmpty(CmdLine.Command))
+			if (string.IsNullOrEmpty(CmdLine.Command))
 			{
 				Help.Print();
 				return;
 			}
 #if !DEBUG
-            try
+			try
 			{
 #endif
-                switch (CmdLine.Command)
+				switch (CmdLine.Command)
 				{
 					case "docs":
-						{
-							DocGenerator.Run();
-							break;
-						}
+					{
+						DocGenerator.Run();
+						break;
+					}
 					case "sort":
-						{
-							TableSorter.Run();
-							break;
-						}
+					{
+						TableSorter.Run();
+						break;
+					}
 					case "pack":
-						{
-							PackGenerator.Run();
-							break;
-						}
+					{
+						PackGenerator.Run();
+						break;
+					}
 					case "build":
-						{
-							// TODO: compiler command
-							WriteLine("Sorry, this command isn't implemented yet :(");
-							break;
-						}
+					{
+						// TODO: compiler command
+						WriteLine("Sorry, this command isn't implemented yet :(");
+						break;
+					}
 					case "help":
+					{
+						foreach (string name in CmdLine.GetPaths())
 						{
-							foreach (var name in CmdLine.GetPaths())
-							{
-								WriteLine($"'{name}'\n");
+							WriteLine($"'{name}'\n");
 
-								switch (name.ToLower())
-								{
-									case "docs":
-										DocGenerator.GetHelp();
-										break;
-									case "sort":
-										TableSorter.GetHelp();
-										break;
-									case "pack":
-										PackGenerator.GetHelp();
-										break;
-									case "help":
-										WriteLine("Are you serious?");
-										break;
-									default:
-										WriteLine($"No help info found for '{name}'");
-										break;
-								}
-								WriteLine();
+							switch (name.ToLower())
+							{
+								case "docs":
+									DocGenerator.GetHelp();
+									break;
+								case "sort":
+									TableSorter.GetHelp();
+									break;
+								case "pack":
+									PackGenerator.GetHelp();
+									break;
+								case "help":
+									WriteLine("Are you serious?");
+									break;
+								default:
+									WriteLine($"No help info found for '{name}'");
+									break;
 							}
-							break;
+							WriteLine();
 						}
+						break;
+					}
 					default:
 						WriteLine($"Unknown command: '{CmdLine.Command}'");
 						break;
 				}
 #if !DEBUG
-            }
+			}
 			catch (Exception ex)
 			{
 				ForegroundColor = ConsoleColor.Red;
@@ -86,6 +86,6 @@ namespace Rant.Tools
 				Environment.Exit(1);
 			}
 #endif
-        }
+		}
 	}
 }
