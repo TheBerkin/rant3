@@ -1,0 +1,8 @@
+only_commits:
+    - files:
+        - Rant/
+        - Rant.Console/
+        - Rant.Tests/
+        - Rant.Tools/
+        - *.cs
+        - *.sln
