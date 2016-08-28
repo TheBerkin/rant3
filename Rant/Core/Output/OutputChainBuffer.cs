@@ -13,14 +13,14 @@ namespace Rant.Core.Output
 	{
 		private const int InitialCapacity = 256;
 
-		private static readonly HashSet<char> wordSepChars
+		private static readonly HashSet<char> _wordSepChars
 			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '\"', '/', '-' });
 
-		private static readonly HashSet<char> sentenceTerminators
+		private static readonly HashSet<char> _sentenceTerminators
 			= new HashSet<char>(new[] { '.', '?', '!' });
 
 		protected readonly StringBuilder _buffer;
-		private readonly Sandbox sandbox;
+		private readonly Sandbox _sandbox;
 		private Capitalization _caps = Capitalization.None;
 		// Determines if a print took place after capitalization was changed
 		// Size of the buffer before the last print
@@ -42,7 +42,7 @@ namespace Rant.Core.Output
 
 			IsTarget = true;
 			_buffer = new StringBuilder(InitialCapacity);
-			sandbox = sb;
+			_sandbox = sb;
 		}
 
 		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin)
@@ -56,7 +56,7 @@ namespace Rant.Core.Output
 			}
 
 			_buffer = targetOrigin._buffer;
-			sandbox = sb;
+			_sandbox = sb;
 		}
 
 		public StringBuilder Buffer => _buffer;
@@ -117,8 +117,8 @@ namespace Rant.Core.Output
 
 		private void UpdateSize()
 		{
-			if (sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
-				throw new InvalidOperationException($"Exceeded character limit ({sandbox.SizeLimit.Maximum})");
+			if (_sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
+				throw new InvalidOperationException($"Exceeded character limit ({_sandbox.SizeLimit.Maximum})");
 			oldSize = _buffer.Length;
 		}
 
@@ -129,7 +129,7 @@ namespace Rant.Core.Output
 #else
 			_buffer.Clear();
 #endif
-			sandbox.SizeLimit.Accumulate(-oldSize);
+			_sandbox.SizeLimit.Accumulate(-oldSize);
 			oldSize = 0;
 		}
 
@@ -142,22 +142,22 @@ namespace Rant.Core.Output
 			switch (_caps)
 			{
 				case Capitalization.Upper:
-				value = value.ToUpperInvariant();
-				break;
+					value = value.ToUpperInvariant();
+					break;
 				case Capitalization.Lower:
-				value = value.ToLowerInvariant();
-				break;
+					value = value.ToLowerInvariant();
+					break;
 				case Capitalization.Word:
 				{
 					char lastChar = _buffer.Length > 0
 						? _buffer[_buffer.Length - 1]
 						: Prev?.LastChar ?? '\0';
-					if (char.IsWhiteSpace(lastChar) || wordSepChars.Contains(lastChar) || lastChar == '\0')
+					if (char.IsWhiteSpace(lastChar) || _wordSepChars.Contains(lastChar) || lastChar == '\0')
 					{
 						CapitalizeFirstLetter(ref value);
 					}
 				}
-				break;
+					break;
 				case Capitalization.Sentence:
 				{
 					var b = _buffer;
@@ -182,7 +182,7 @@ namespace Rant.Core.Output
 						for (int i = b.Length - 1; i >= 0; i--)
 						{
 							if (char.IsLetterOrDigit(b[i])) break;
-							if (sentenceTerminators.Contains(b[i])) break;
+							if (_sentenceTerminators.Contains(b[i])) break;
 							if (i == 0)
 								CapitalizeFirstLetter(ref value);
 						}
@@ -192,27 +192,20 @@ namespace Rant.Core.Output
 					for (int i = b.Length - 1; i >= 0; i--)
 					{
 						if (char.IsLetterOrDigit(b[i])) break;
-						if (!sentenceTerminators.Contains(b[i])) continue;
+						if (!_sentenceTerminators.Contains(b[i])) continue;
 						CapitalizeFirstLetter(ref value);
 						break;
 					}
 				}
-				break;
+					break;
 				case Capitalization.Title:
 				{
-					char lastChar = _buffer.Length > 0
-						? _buffer[_buffer.Length - 1]
-						: Prev?.LastChar ?? '\0';
-					bool boundary = char.IsWhiteSpace(lastChar)
-									|| char.IsSeparator(lastChar)
-									|| lastChar == '\0';
-
-					CapitalizeTitleString(ref value, sandbox.Format, !PrintedSinceCapsChange);
+					CapitalizeTitleString(ref value, _sandbox.Format, !PrintedSinceCapsChange);
 				}
-				break;
+					break;
 				case Capitalization.First:
-				if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
-				break;
+					if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
+					break;
 			}
 		}
 
@@ -229,7 +222,7 @@ namespace Rant.Core.Output
 				}
 				else
 				{
-					if (sentenceTerminators.Contains(c)) capitalize = true;
+					if (_sentenceTerminators.Contains(c)) capitalize = true;
 					sb.Append(c);
 				}
 			}
