@@ -6,8 +6,6 @@ branches:
 image: Visual Studio 2015
 configuration: Release
 shallow_clone: true
-init:
-- ps: nuget restore
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -16,6 +14,8 @@ assembly_info:
   assembly_informational_version: '{version}'
 build_script:
 - ps: >-
+    nuget restore
+
     $env:Path = "C:\Program Files (x86)\MSBuild\14.0\Bin;" + $env:Path
 
 
