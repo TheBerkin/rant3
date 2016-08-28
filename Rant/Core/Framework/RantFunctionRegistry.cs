@@ -770,16 +770,22 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG according to a seed.")]
-		private static void Branch(Sandbox sb, string id)
+		private static void Branch(Sandbox sb, 
+			[RantDescription("The seed for the branch.")]
+			string seed)
 		{
-			sb.RNG.Branch(id.Hash());
+			sb.RNG.Branch(seed.Hash());
 		}
 
 		[RantFunction]
-		[RantDescription("Branches the internal RNG, executes the specified action, and then merges the branch.")]
-		private static IEnumerator<RST> Branch(Sandbox sb, string id, RST branchAction)
+		[RantDescription("Branches the internal RNG, executes the specified pattern, and then merges the branch.")]
+		private static IEnumerator<RST> Branch(Sandbox sb, 
+			[RantDescription("The seed for the branch.")]
+			string seed, 
+			[RantDescription("The pattern to run on the branch.")]
+			RST branchAction)
 		{
-			sb.RNG.Branch(id.Hash());
+			sb.RNG.Branch(seed.Hash());
 			yield return branchAction;
 			sb.RNG.Merge();
 		}
