@@ -12,6 +12,11 @@ namespace Rant.Tools
 	{
 		private static void Main(string[] args)
 		{
+			if (CmdLine.Flag("version"))
+			{
+				WriteLine($"Rant {typeof(RantEngine).Assembly.GetName().Version}");
+			}
+
 			if (string.IsNullOrEmpty(CmdLine.Command))
 			{
 				Help.Print();

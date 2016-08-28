@@ -17,11 +17,10 @@ namespace Rant.Tools
 			int argc = args.Length;
 			if (argc == 0) return;
 
-			Command = args[0].ToLower().Trim();
-
+			bool readCommand = false;
 			bool isProperty = false;
 
-			for (int i = 1; i < args.Length; i++)
+			for (int i = 0; i < args.Length; i++)
 			{
 				if (isProperty)
 				{
@@ -35,6 +34,11 @@ namespace Rant.Tools
 				else if (args[i].StartsWith("-"))
 				{
 					isProperty = true;
+				}
+				else if (!readCommand)
+				{
+					Command = args[i];
+					readCommand = true;
 				}
 				else
 				{
