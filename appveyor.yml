@@ -4,5 +4,5 @@ only_commits:
 		- Rant.Console/
 		- Rant.Tests/
 		- Rant.Tools/
-		- *.cs
-		- *.sln
+		- '*.cs'
+		- '*.sln'
