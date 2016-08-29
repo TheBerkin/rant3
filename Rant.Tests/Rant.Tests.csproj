@@ -78,6 +78,7 @@
     <Compile Include="Replacers.cs" />
     <Compile Include="Serial.cs" />
     <Compile Include="StringLocalization.cs" />
+    <Compile Include="StringOps.cs" />
     <Compile Include="Subroutines.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="Misc\Utilities.cs" />

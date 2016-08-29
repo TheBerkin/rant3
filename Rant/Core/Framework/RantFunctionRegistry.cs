@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Constructs;
@@ -890,6 +892,43 @@ namespace Rant.Core.Framework
 			[RantDescription("The channel for which to retrieve the length.")] string channelName)
 		{
 			sb.Print(sb.Output.GetChannelLength(channelName));
+		}
+
+		[RantFunction("rev")]
+		[RantDescription("Reverses the specified string and prints it to the output.")]
+		private static void Reverse(Sandbox sb, 
+			[RantDescription("The string to reverse.")]
+			string input)
+		{
+			var buffer = new char[input.Length];
+			int numCombiners = 0;
+			int lastIndex = input.Length - 1;
+			for (int i = lastIndex; i >= 0; i--)
+			{
+				if (CharUnicodeInfo.GetUnicodeCategory(input[i]) == UnicodeCategory.NonSpacingMark)
+				{
+					// It's combining, so increase the combiner count until we hit a regular char
+					numCombiners++;
+				}
+				else if (numCombiners > 0)
+				{
+					// We've hit a non-combining character with combiners added.
+					// First thing to do is add the character to the buffer.
+					buffer[(lastIndex - i) - numCombiners] = input[i];
+
+					// Then we insert all the comining characters that come after it.
+					for (int j = 1; j <= numCombiners; j++)
+					{
+						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
+					}
+					numCombiners = 0;
+				}
+				else
+				{
+					buffer[lastIndex - i] = input[i];
+				}
+			}
+			sb.Print(new string(buffer));
 		}
 	}
 }

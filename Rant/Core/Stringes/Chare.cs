@@ -103,7 +103,8 @@ namespace Rant.Core.Stringes
 				if (Source.ParentString[Offset] == '\n')
 				{
 					Source[i]._line = _line++;
-					Source[i]._column = _column = 1;
+					Source[i]._column = _column;
+					_column = 1;
 				}
 				else
 				{
