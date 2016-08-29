@@ -916,7 +916,7 @@ namespace Rant.Core.Framework
 					// First thing to do is add the character to the buffer.
 					buffer[(lastIndex - i) - numCombiners] = input[i];
 
-					// Then we insert all the comining characters that come after it.
+					// Then we insert all the combining characters that come after it.
 					for (int j = 1; j <= numCombiners; j++)
 					{
 						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
