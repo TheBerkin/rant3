@@ -751,7 +751,6 @@ namespace Rant.Core.Stringes
 		/// </summary>
 		private class Stref
 		{
-			public readonly bool[] Bases;
 			public readonly Chare[] Chares;
 			public readonly string String;
 
@@ -759,26 +758,28 @@ namespace Rant.Core.Stringes
 			{
 				String = str;
 				Chares = new Chare[str.Length];
-				Bases = new bool[str.Length];
 				if (str.Length == 0) return;
-
-				var elems = StringInfo.GetTextElementEnumerator(str);
-				while (elems.MoveNext()) Bases[elems.ElementIndex] = true;
+				
 				int length = str.Length;
 				int line = 1;
 				int col = 1;
+				Chare prev = null;
 				for (int i = 0; i < length; i++)
 				{
 					if (str[i] == '\n')
 					{
 						line++;
 						col = 1;
-						Chares[i] = new Chare(stringe, str[i], i, line, col);
+						prev = Chares[i] = new Chare(stringe, str[i], i, line, col);
 					}
-					else if (Bases[i]) // Advance column only for non-combining characters
+					else if (CharUnicodeInfo.GetUnicodeCategory(str[i]) != UnicodeCategory.NonSpacingMark) // Advance column only for non-combining characters
 					{
-						Chares[i] = new Chare(stringe, str[i], i, line, col);
+						prev = Chares[i] = new Chare(stringe, str[i], i, line, col);
 						col++;
+					}
+					else // Apply last non-comnining character position to combining characters
+					{
+						Chares[i] = prev;
 					}
 				}
 			}
