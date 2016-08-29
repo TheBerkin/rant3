@@ -900,6 +900,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The string to reverse.")]
 			string input)
 		{
+			if (String.IsNullOrEmpty(input)) return;
 			var buffer = new char[input.Length];
 			int numCombiners = 0;
 			int lastIndex = input.Length - 1;
