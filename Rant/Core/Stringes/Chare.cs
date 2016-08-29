@@ -38,7 +38,7 @@ namespace Rant.Core.Stringes
 		public char Character { get; }
 
 		/// <summary>
-		/// The position of the charactere in the stringe.
+		/// The index of the character in the main string.
 		/// </summary>
 		public int Offset { get; }
 
@@ -87,17 +87,27 @@ namespace Rant.Core.Stringes
 		{
 			_line = Source.Line;
 			_column = Source.Column;
-			if (Offset <= 0) return;
-			for (int i = 0; i < Offset; i++)
+			if (Offset <= 0) return; // We are at the first character, nothing to do here
+
+			int start = Offset - 1; // We have to start at least at the previous character
+
+			// Find the last character before this one that has line/col assigned
+			for (; start >= 0; start--)
+			{
+				if (Source[start]._line > 0) break;
+			}
+
+			// Fill all lines/cols on previous chars and current one
+			for (int i = start; i < Offset; i++)
 			{
 				if (Source.ParentString[Offset] == '\n')
 				{
-					_line++;
-					_column = 1;
+					Source[i]._line = _line++;
+					Source[i]._column = _column = 1;
 				}
 				else
 				{
-					_column++;
+					Source[i]._column = _column++;
 				}
 			}
 		}
