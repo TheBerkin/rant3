@@ -931,5 +931,43 @@ namespace Rant.Core.Framework
 			}
 			sb.Print(new string(buffer));
 		}
+
+		[RantFunction("revx")]
+		[RantDescription("Reverses the specified string and inverts common brackets and quotation marks, then prints the result to the output.")]
+		private static void ReverseEx(Sandbox sb, 
+			[RantDescription("The string to reverse.")]
+			string input)
+		{
+			if (String.IsNullOrEmpty(input)) return;
+			var buffer = new char[input.Length];
+			int numCombiners = 0;
+			int lastIndex = input.Length - 1;
+			for (int i = lastIndex; i >= 0; i--)
+			{
+				if (CharUnicodeInfo.GetUnicodeCategory(input[i]) == UnicodeCategory.NonSpacingMark)
+				{
+					// It's combining, so increase the combiner count until we hit a regular char
+					numCombiners++;
+				}
+				else if (numCombiners > 0)
+				{
+					// We've hit a non-combining character with combiners added.
+					// First thing to do is add the character to the buffer.
+					buffer[(lastIndex - i) - numCombiners] = Util.ReverseChar(input[i]);
+
+					// Then we insert all the combining characters that come after it.
+					for (int j = 1; j <= numCombiners; j++)
+					{
+						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
+					}
+					numCombiners = 0;
+				}
+				else
+				{
+					buffer[lastIndex - i] = Util.ReverseChar(input[i]);
+				}
+			}
+			sb.Print(new string(buffer));
+		}
 	}
 }

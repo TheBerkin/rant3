@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -125,57 +126,6 @@ namespace Rant.Core.Utilities
 			return double.TryParse(v, out d);
 		}
 
-		public static char SelectFromRanges(string rangeString, RNG rng)
-		{
-			if (string.IsNullOrEmpty(rangeString)) return '?';
-			var list = new List<_<char, char, int>>(); // <min, max, weight>
-			var chars = rangeString.GetEnumerator();
-			char a, b;
-			bool stall = false;
-			while (stall || chars.MoveNext())
-			{
-				stall = false;
-				if (char.IsWhiteSpace(chars.Current)) continue;
-				if (!char.IsLetterOrDigit(a = chars.Current)) return '?';
-
-				if (!chars.MoveNext())
-				{
-					list.Add(_.Create(a, a, 1));
-					break;
-				}
-
-				if (chars.Current == '-')
-				{
-					if (!chars.MoveNext()) return '?';
-					if (!char.IsLetterOrDigit(b = chars.Current)) return '?';
-					if (char.IsLetter(a) != char.IsLetter(b) || char.IsUpper(a) != char.IsUpper(b)) return '?';
-					list.Add(_.Create(a < b ? a : b, a > b ? a : b, Math.Abs(b - a) + 1));
-					continue;
-				}
-
-				list.Add(_.Create(a, a, 1));
-
-				stall = true;
-			}
-
-			if (!list.Any()) return '?';
-
-			int wSelect = rng.Next(0, list.Sum(r => r.Item3)) + 1;
-			var ranges = list.GetEnumerator();
-			while (ranges.MoveNext())
-			{
-				if (wSelect > ranges.Current.Item3)
-				{
-					wSelect -= ranges.Current.Item3;
-				}
-				else
-				{
-					break;
-				}
-			}
-			return Convert.ToChar(rng.Next(ranges.Current.Item1, ranges.Current.Item2 + 1));
-		}
-
 		public static string SnakeToCamel(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return name;
@@ -243,5 +193,47 @@ namespace Rant.Core.Utilities
 		}
 
 		public static int Mod(int a, int b) => ((a % b) + b) % b;
+
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+		public static char ReverseChar(char c)
+		{
+			switch (c)
+			{
+				case '(':
+					return ')';
+				case ')':
+					return '(';
+				case '[':
+					return ']';
+				case ']':
+					return '[';
+				case '{':
+					return '}';
+				case '}':
+					return '{';
+				case '<':
+					return '>';
+				case '«':
+					return '»';
+				case '»':
+					return '«';
+				case '‹':
+					return '›';
+				case '›':
+					return '‹';
+				case '\u201c':
+					return '\u201d';
+				case '\u201d':
+					return '\u201c';
+				case '\u2018':
+					return '\u2019';
+				case '\u2019':
+					return '\u2018';
+				default:
+					return c;
+			}
+		}
 	}
 }
