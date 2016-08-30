@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -12,21 +11,14 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("patt")]
 	internal class RstSequence : RST
 	{
-		public RstSequence(List<RST> actions, Stringe defaultRange)
-			: base(actions.Any() ? actions[0].Location : TokenLocation.FromStringe(defaultRange))
-		{
-			if (actions == null) return;
-			Actions.AddRange(actions);
-		}
-
-		public RstSequence(List<RST> actions, TokenLocation loc)
+		public RstSequence(List<RST> actions, LineCol loc)
 			: base(actions.Any() ? actions[0].Location : loc)
 		{
 			if (actions == null) return;
 			Actions.AddRange(actions);
 		}
 
-		public RstSequence(TokenLocation location) : base(location)
+		public RstSequence(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

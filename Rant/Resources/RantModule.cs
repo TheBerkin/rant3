@@ -38,7 +38,7 @@ namespace Rant.Resources
 				? ((RstSequence)pattern.SyntaxTree).Actions[0]
 				: pattern.SyntaxTree);
 			if (action.GetType() != typeof(RstDefineSubroutine))
-				throw new RantRuntimeException(pattern, TokenLocation.Unknown,
+				throw new RantRuntimeException(pattern, LineCol.Unknown,
 					"Attempted to add non-subroutine pattern to a module.");
 			_objects[name] = new RantObject(action);
 		}

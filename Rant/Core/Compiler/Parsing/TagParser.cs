@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Framework;
-using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Parsing
@@ -23,6 +23,24 @@ namespace Rant.Core.Compiler.Parsing
 				case R.Regex:
 				{
 					var regex = reader.Read(R.Regex, "acc-replacer-regex");
+					var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+					if (reader.IsNext(R.RegexFlags))
+					{
+						var flagsToken = reader.ReadToken();
+						foreach (var flag in flagsToken.Value)
+						{
+							switch (flag)
+							{
+								case 'i':
+									options |= RegexOptions.IgnoreCase;
+									break;
+								case 'm':
+									options |= RegexOptions.Multiline;
+									break;
+							}
+						}
+					}
+
 					reader.Read(R.Colon);
 
 					var arguments = new List<RST>();
@@ -37,11 +55,11 @@ namespace Rant.Core.Compiler.Parsing
 
 					if (arguments.Count != 2)
 					{
-						compiler.SyntaxError(Stringe.Range(tagStart, reader.PrevToken), false, "err-compiler-replacer-argcount");
+						compiler.SyntaxError(tagStart, reader.PrevToken, false, "err-compiler-replacer-argcount");
 						yield break;
 					}
 
-					actionCallback(new RstReplacer(regex, Util.ParseRegex(regex.Value), arguments[0], arguments[1]));
+					actionCallback(new RstReplacer(regex.ToLocation(), new Regex(regex.Value, options), arguments[0], arguments[1]));
 				}
 					break;
 				case R.Dollar:
@@ -92,7 +110,7 @@ namespace Rant.Core.Compiler.Parsing
 
 			RantFunctionSignature sig = null;
 
-			if (functionName != null)
+			if (functionName.Value != null)
 			{
 				if (!RantFunctionRegistry.FunctionExists(functionName.Value))
 				{
@@ -102,11 +120,11 @@ namespace Rant.Core.Compiler.Parsing
 
 				if ((sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count)) == null)
 				{
-					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName?.Value, arguments.Count);
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName.Value, arguments.Count);
 					yield break;
 				}
 
-				actionCallback(new RstFunction(functionName, sig, arguments));
+				actionCallback(new RstFunction(functionName.ToLocation(), sig, arguments));
 			}
 		}
 
@@ -124,12 +142,13 @@ namespace Rant.Core.Compiler.Parsing
 					compiler.HasModule = true;
 				}
 				var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
-				var subroutine = new RstDefineSubroutine(subroutineName)
+				var subroutine = new RstDefineSubroutine(subroutineName.ToLocation())
 				{
-					Parameters = new Dictionary<string, SubroutineParameterType>()
+					Parameters = new Dictionary<string, SubroutineParameterType>(),
+					Name = subroutineName.Value
 				};
 
-				if (reader.PeekLooseToken().ID == R.Colon)
+				if (reader.PeekLooseToken().Type == R.Colon)
 				{
 					reader.ReadLooseToken();
 
@@ -157,7 +176,7 @@ namespace Rant.Core.Compiler.Parsing
 				yield return Get<SequenceParser>();
 				compiler.SetNextActionCallback(actionCallback);
 
-				subroutine.Body = new RstSequence(actions, bodyStart);
+				subroutine.Body = new RstSequence(actions, bodyStart.ToLocation());
 				if (inModule)
 				{
 					compiler.Module.AddActionFunction(subroutineName.Value, subroutine);
@@ -194,7 +213,7 @@ namespace Rant.Core.Compiler.Parsing
 					reader.Read(R.RightSquare);
 				}
 
-				var subroutine = new RstCallSubroutine(subroutineName, moduleFunctionName) { Arguments = arguments };
+				var subroutine = new RstCallSubroutine(subroutineName.Value, subroutineName.ToLocation(), moduleFunctionName) { Arguments = arguments };
 
 				actionCallback(subroutine);
 			}
@@ -213,7 +232,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
-				arguments.Add(new RstSequence(actions, startToken));
+				arguments.Add(new RstSequence(actions, startToken.ToLocation()));
 				actions.Clear();
 			}
 

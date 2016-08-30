@@ -169,15 +169,14 @@
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\Parsing\TagParser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
-    <Compile Include="Core\Compiler\RantSuperLexer.cs" />
+    <Compile Include="Core\Compiler\RantLexer.cs" />
     <Compile Include="Core\Compiler\Syntax\DeserializeRequest.cs" />
     <Compile Include="Core\Compiler\Syntax\RSTAttribute.cs" />
     <Compile Include="Core\Compiler\Token.cs" />
-    <Compile Include="Core\Compiler\TokenLocation.cs" />
+    <Compile Include="Core\Compiler\LineCol.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
-    <Compile Include="Core\Stringes\StringeErrorDelegate.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
     <Compile Include="Metadata\IRantFunctionGroup.cs" />
@@ -246,8 +245,6 @@
     <Compile Include="Resources\RantPackageVersion.cs" />
     <Compile Include="RantProgramArgs.cs" />
     <Compile Include="RantUtils.cs" />
-    <Compile Include="Core\Stringes\Lexer.cs" />
-    <Compile Include="Core\Stringes\StringeUtils.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Core\IO\BitField.cs" />
@@ -261,7 +258,6 @@
     <Compile Include="Resources\RantPackage.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
-    <Compile Include="Core\Compiler\RantLexer.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
     <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
@@ -271,13 +267,11 @@
     <Compile Include="Core\Formatting\Emoji.cs" />
     <Compile Include="Vocabulary\EntryTypeDef.cs" />
     <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
-    <Compile Include="Vocabulary\Utilities\DicLexer.cs" />
     <Compile Include="Vocabulary\Querying\Range.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Vocabulary\RantDictionaryTable.Loader.cs" />
     <Compile Include="RantEngine.cs" />
     <Compile Include="Core\Constructs\BlockAttribs.cs" />
     <Compile Include="Core\Utilities\Limit.cs" />
@@ -295,11 +289,6 @@
     <Compile Include="RantProgram.cs" />
     <Compile Include="RantProgramOrigin.cs" />
     <Compile Include="Core\Compiler\TokenReader.cs" />
-    <Compile Include="Core\Stringes\Chare.cs" />
-    <Compile Include="Core\Stringes\Extensions.cs" />
-    <Compile Include="Core\Stringes\Stringe.cs" />
-    <Compile Include="Core\Stringes\StringeReader.cs" />
-    <Compile Include="Core\Stringes\Token.cs" />
     <Compile Include="Core\Constructs\SyncType.cs" />
     <Compile Include="Core\Constructs\Synchronizer.cs" />
     <Compile Include="Core\Utilities\Util.cs" />

@@ -101,33 +101,6 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Loads all dictionary (.dic) files from the specified directory and returns a RantDictionary object that contains the
-		/// loaded data.
-		/// </summary>
-		/// <param name="directory">The directory from which to load dictionaries.</param>
-		/// <returns></returns>
-		public static RantDictionary FromDirectory(string directory)
-		{
-			return
-				new RantDictionary(
-					Directory.GetFiles(directory, "*.dic", SearchOption.AllDirectories).Select(RantDictionaryTable.FromFile).ToList());
-		}
-
-		/// <summary>
-		/// Loads all dictionary (.dic) files from the specified directories and returns a RantDictionary object that contains the
-		/// loaded data.
-		/// </summary>
-		/// <param name="directories">The directories from which to load dictionaries.</param>
-		/// <returns></returns>
-		public static RantDictionary FromMultiDirectory(params string[] directories)
-		{
-			return
-				new RantDictionary(
-					directories.SelectMany(path => Directory.GetFiles(path, "*.dic", SearchOption.AllDirectories))
-						.Select(RantDictionaryTable.FromFile));
-		}
-
-		/// <summary>
 		/// Queries the RantDictionary according to the specified criteria and returns a random match.
 		/// </summary>
 		/// <param name="rng">The random number generator to randomize the match with.</param>

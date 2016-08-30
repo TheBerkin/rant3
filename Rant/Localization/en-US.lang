@@ -58,6 +58,7 @@ err-compiler-empty-weight = "Empty block weight."
 err-compiler-invalid-constweight = "Invalid weight constant."
 err-compiler-incomplete-verbatim = "Incomplete verbatim string."
 err-compiler-incomplete-regex = "Incomplete regular expression literal."
+err-compiler-bad-escape-quantity = "Invalid escape quantifier. Must be an integer greater than zero."
 err-compiler-missing-quantity-comma = "Expected comma after quantity."
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"

@@ -2,7 +2,6 @@
 
 using Rant.Core.Compiler;
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Stringes;
 
 using static Rant.Localization.Txtres;
 
@@ -13,7 +12,7 @@ namespace Rant
 	/// </summary>
 	public sealed class RantRuntimeException : Exception
 	{
-		internal RantRuntimeException(RantProgram source, TokenLocation token, string errorMessageType = "err-generic-runtime",
+		internal RantRuntimeException(RantProgram source, LineCol token, string errorMessageType = "err-generic-runtime",
 			params object[] errorArgs)
 			: base((token.Index != -1
 				? ($"{GetString("src-line-col", source.Name, token.Line, token.Column)} ")
@@ -62,13 +61,5 @@ namespace Rant
 		/// The source of the error.
 		/// </summary>
 		public string Code { get; }
-
-		internal void SetToken(Stringe token)
-		{
-			Line = token.Line;
-			Column = token.Column;
-			Index = token.Offset;
-			Length = token.Length;
-		}
 	}
 }

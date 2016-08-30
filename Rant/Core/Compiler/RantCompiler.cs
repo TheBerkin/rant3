@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using Rant.Core.Compiler.Parsing;
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Stringes;
 using Rant.Resources;
 
 using static Rant.Localization.Txtres;
@@ -26,12 +25,12 @@ namespace Rant.Core.Compiler
 			Module = new RantModule(sourceName);
 
 			_sourceName = sourceName;
-			Source = source.ToStringe();
-			_reader = new TokenReader(sourceName, RantLexer.GenerateTokens(sourceName, Source, SyntaxError), this);
+			Source = source;
+			_reader = new TokenReader(sourceName, RantLexer.Lex(this, source), this);
 		}
 
 		internal CompileContext NextContext => _contextStack.Peek();
-		public Stringe Source { get; }
+		public string Source { get; }
 		public void AddContext(CompileContext context) => _contextStack.Push(context);
 		public void LeaveContext() => _contextStack.Pop();
 		public void SetNextActionCallback(Action<RST> callback) => _nextActionCallback = callback;
@@ -68,7 +67,7 @@ namespace Rant.Core.Compiler
 				if (_errors?.Count > 0)
 					throw new RantCompilerException(_sourceName, _errors);
 
-				return new RstSequence(actionList, Source);
+				return new RstSequence(actionList, _reader.BaseLocation);
 			}
 			catch (RantCompilerException)
 			{
@@ -82,21 +81,12 @@ namespace Rant.Core.Compiler
 #endif
 		}
 
-		public void SyntaxError(Stringe token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
-		{
-			(_errors ?? (_errors = new List<RantCompilerMessage>()))
-				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
-					GetString(errorMessageType, errorMessageArgs),
-					token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1, token?.Length ?? 1));
-			if (fatal) throw new RantCompilerException(_sourceName, _errors);
-		}
-
 		public void SyntaxError(Token token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
 		{
 			(_errors ?? (_errors = new List<RantCompilerMessage>()))
 				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
 					GetString(errorMessageType, errorMessageArgs),
-					token.Line, token.Column, token.Index, token.Value.Length));
+					token.Line, token.Column, token.Index, token.Value?.Length ?? 0));
 			if (fatal) throw new RantCompilerException(_sourceName, _errors);
 		}
 
@@ -106,6 +96,15 @@ namespace Rant.Core.Compiler
 				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
 					GetString(errorMessageType, errorMessageArgs),
 					line, index - lastLineStart + 1, index, length));
+			if (fatal) throw new RantCompilerException(_sourceName, _errors);
+		}
+
+		public void SyntaxError(Token start, Token end, bool fatal, string errorMessageType, params object[] errorMessageArgs)
+		{
+			(_errors ?? (_errors = new List<RantCompilerMessage>()))
+				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
+					GetString(errorMessageType, errorMessageArgs),
+					start.Line, start.Column, start.Index, end.Index - start.Index + end.Length));
 			if (fatal) throw new RantCompilerException(_sourceName, _errors);
 		}
 	}

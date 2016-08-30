@@ -1,6 +1,5 @@
 ﻿using System;
 
-using Rant.Tools.DicDoc;
 using Rant.Tools.DicSort;
 using Rant.Tools.Packer;
 
@@ -28,11 +27,6 @@ namespace Rant.Tools
 #endif
 				switch (CmdLine.Command)
 				{
-					case "docs":
-					{
-						DocGenerator.Run();
-						break;
-					}
 					case "sort":
 					{
 						TableSorter.Run();
@@ -57,9 +51,6 @@ namespace Rant.Tools
 
 							switch (name.ToLower())
 							{
-								case "docs":
-									DocGenerator.GetHelp();
-									break;
 								case "sort":
 									TableSorter.GetHelp();
 									break;

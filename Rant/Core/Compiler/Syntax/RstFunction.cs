@@ -4,7 +4,6 @@ using System.Linq;
 
 using Rant.Core.Framework;
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
@@ -16,7 +15,7 @@ namespace Rant.Core.Compiler.Syntax
 		private List<RST> _args;
 		private RantFunctionSignature _funcInfo;
 
-		public RstFunction(Stringe location, RantFunctionSignature funcInfo, List<RST> args)
+		public RstFunction(LineCol location, RantFunctionSignature funcInfo, List<RST> args)
 			: base(location)
 		{
 			_funcInfo = funcInfo;
@@ -24,7 +23,7 @@ namespace Rant.Core.Compiler.Syntax
 			_argc = args.Count;
 		}
 
-		public RstFunction(TokenLocation location) : base(location)
+		public RstFunction(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

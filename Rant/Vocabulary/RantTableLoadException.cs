@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Rant.Core.Stringes;
+using Rant.Core.Compiler;
 
 namespace Rant.Vocabulary
 {
@@ -9,12 +9,12 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantTableLoadException : Exception
 	{
-		internal RantTableLoadException(string origin, Stringe token, string message)
+		internal RantTableLoadException(string origin, Token token, string message)
 			: base($"{origin}: (Ln {token.Line}, Col {token.Column}) {message}")
 		{
 			Line = token.Line;
 			Column = token.Column;
-			Offset = token.Offset;
+			Offset = token.Index;
 			Origin = origin;
 		}
 

@@ -52,8 +52,9 @@ namespace Rant.Tools.DicSort
 
 		private static void ProcessDicFile(string path)
 		{
-			var table = RantDictionaryTable.FromFile(path);
-			table.Save(path, CmdLine.Flag("diff"));
+			throw new NotImplementedException(); // TODO
+			//var table = RantDictionaryTable.FromFile(path);
+			//table.Save(path, CmdLine.Flag("diff"));
 		}
 	}
 }

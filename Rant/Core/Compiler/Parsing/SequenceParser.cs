@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -11,13 +11,13 @@ namespace Rant.Core.Compiler.Parsing
 		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
 			Action<RST> actionCallback)
 		{
-			Token<R> token;
+			Token token;
 
 			while (!reader.End)
 			{
 				token = reader.ReadToken();
 
-				switch (token.ID)
+				switch (token.Type)
 				{
 					case R.LeftAngle:
 						yield return Get<QueryParser>();
@@ -55,7 +55,7 @@ namespace Rant.Core.Compiler.Parsing
 							yield break;
 						}
 						// this is probably just a semicolon in text
-						actionCallback(new RstText(token));
+						actionCallback(new RstText(token.Value, token.ToLocation()));
 						break;
 
 					case R.RightSquare:
@@ -83,7 +83,7 @@ namespace Rant.Core.Compiler.Parsing
 							compiler.LeaveContext();
 							yield break;
 						}
-						actionCallback(new RstText(token));
+						actionCallback(new RstText(token.Value, token.ToLocation()));
 						break;
 
 					case R.Whitespace:
@@ -98,14 +98,97 @@ namespace Rant.Core.Compiler.Parsing
 								}
 								goto default;
 							default:
-								actionCallback(new RstText(token));
+								actionCallback(new RstText(token.Value, token.ToLocation()));
 								break;
 						}
 						break;
 
 					case R.EscapeSequenceChar: // Handle escape sequences
-						actionCallback(new RstEscape(token));
+						actionCallback(new RstEscape(token.ToLocation(), 1, false, token.Value[0]));
 						break;
+					case R.EscapeSequenceUnicode:
+					{
+						short codePoint;
+						if (!short.TryParse(token.Value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+						{
+							compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-unicode", reader.PrevToken.Value);
+							break;
+						}
+						actionCallback(new RstEscape(token.ToLocation(), 1, true, Convert.ToChar(codePoint)));
+						break;
+					}
+					case R.EscapeSequenceSurrogatePair:
+					{
+						uint surrogatePairCodePoint;
+						if (!uint.TryParse(token.Value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out surrogatePairCodePoint)
+						    || surrogatePairCodePoint < 0x10000)
+						{
+							compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-surrogate", token.Value);
+							break;
+						}
+
+						surrogatePairCodePoint -= 0x10000;
+						ushort highCodePoint = (ushort)(0xD800 + ((surrogatePairCodePoint & 0xFFC00) >> 10));
+						ushort lowCodePoint = (ushort)(0xDC00 + (surrogatePairCodePoint & 0x003FF));
+						char low, high;
+						if (!char.IsSurrogatePair(high = Convert.ToChar(highCodePoint), low = Convert.ToChar(lowCodePoint)))
+						{
+							compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-surrogate", token.Value);
+							break;
+						}
+						actionCallback(new RstEscape(token.ToLocation(), 1, true, high, low));
+						break;
+					}
+					case R.EscapeSequenceQuantifier:
+					{
+						int quantity;
+						if (!int.TryParse(token.Value, out quantity) || quantity <= 0)
+						{
+							compiler.SyntaxError(token, false, "err-compiler-escape-bad-quantity");
+							break;
+						}
+						switch (reader.PeekType())
+						{
+							case R.EscapeSequenceChar:
+								actionCallback(new RstEscape(token.ToLocation(), quantity, false, reader.ReadToken().Value[0]));
+								break;
+							case R.EscapeSequenceUnicode:
+							{
+								short codePoint;
+								if (!short.TryParse(reader.ReadToken().Value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+								{
+									compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-unicode", reader.PrevToken.Value);
+									break;
+								}
+								actionCallback(new RstEscape(token.ToLocation(), quantity, true, Convert.ToChar(codePoint)));
+								break;
+							}
+							case R.EscapeSequenceSurrogatePair:
+							{
+								var pairToken = reader.ReadToken();
+								uint surrogatePairCodePoint;
+								if (!uint.TryParse(pairToken.Value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out surrogatePairCodePoint)
+								    || surrogatePairCodePoint < 0x10000)
+								{
+									compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-surrogate", pairToken.Value);
+									break;
+								}
+
+								surrogatePairCodePoint -= 0x10000;
+								ushort highCodePoint = (ushort)(0xD800 + ((surrogatePairCodePoint & 0xFFC00) >> 10));
+								ushort lowCodePoint = (ushort)(0xDC00 + (surrogatePairCodePoint & 0x3FF));
+								char low, high;
+								if (!char.IsSurrogatePair(high = Convert.ToChar(highCodePoint), low = Convert.ToChar(lowCodePoint)))
+								{
+									compiler.SyntaxError(reader.PrevToken, false, "err-compiler-invalid-escape-surrogate", pairToken.Value);
+									break;
+								}
+								actionCallback(new RstEscape(token.ToLocation(), quantity, true, high, low));
+								break;
+							}
+						}
+						break;
+					}
 
 					case R.EOF:
 						if (context != CompileContext.DefaultSequence)
@@ -115,7 +198,7 @@ namespace Rant.Core.Compiler.Parsing
 						yield break;
 
 					default: // Handle text
-						actionCallback(new RstText(token));
+						actionCallback(new RstText(token.Value, token.ToLocation()));
 						break;
 				}
 			}

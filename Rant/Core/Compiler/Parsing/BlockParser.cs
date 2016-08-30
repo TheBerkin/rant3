@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -27,21 +26,21 @@ namespace Rant.Core.Compiler.Parsing
 			while (compiler.NextContext == CompileContext.BlockSequence)
 			{
 				// block weight
-				if (reader.PeekLooseToken().ID == R.LeftParen)
+				if (reader.PeekLooseToken().Type == R.LeftParen)
 				{
 					constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
 					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RST>>());
 
-					Stringe firstToken = reader.ReadLooseToken();
+					var firstToken = reader.ReadLooseToken();
 
 					// constant weight
-					if (reader.PeekLooseToken().ID == R.Text)
+					if (reader.PeekLooseToken().Type == R.Text)
 					{
 						string value = reader.ReadLooseToken().Value;
 						double doubleValue;
 						if (!double.TryParse(value, out doubleValue))
 						{
-							compiler.SyntaxError(value, false, "err-compiler-invalid-constweight");
+							compiler.SyntaxError(reader.PrevLooseToken, false, "err-compiler-invalid-constweight");
 						}
 						else
 						{
@@ -74,7 +73,7 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SetNextActionCallback(itemCallback);
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
-				items.Add(new RstSequence(actions, startToken));
+				items.Add(new RstSequence(actions, startToken.ToLocation()));
 				actions.Clear();
 				blockNumber++;
 			}
@@ -82,7 +81,7 @@ namespace Rant.Core.Compiler.Parsing
 			compiler.LeaveContext();
 			compiler.SetNextActionCallback(actionCallback);
 
-			actionCallback(new RstBlock(blockStartToken, items, dynamicWeights, constantWeights));
+			actionCallback(new RstBlock(blockStartToken.ToLocation(), items, dynamicWeights, constantWeights));
 		}
 	}
 }

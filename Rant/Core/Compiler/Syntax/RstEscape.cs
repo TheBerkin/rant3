@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
@@ -80,48 +79,16 @@ namespace Rant.Core.Compiler.Syntax
 		private int _times;
 		private bool _unicode;
 
-		public RstEscape(Stringe escapeSequence) : base(escapeSequence)
+		public RstEscape(LineCol location, int quantity, bool unicode, char codeHighSurrogate, char codeLowSurrogate = '\0') 
+			: base(location)
 		{
-			string escape = escapeSequence.Value;
-
-			// The lexer already assures that the string isn't empty.
-			int codeIndex = 1; // skip past the backslash
-
-			// parse the quantifier
-			if (char.IsDigit(escape[codeIndex]) && escape[codeIndex] != '0')
-			{
-				int commaIndex = escape.IndexOf(',', codeIndex + 1);
-				if (commaIndex != -1)
-				{
-					Util.ParseInt(escape.Substring(1, commaIndex - 1), out _times);
-					codeIndex = commaIndex + 1;
-				}
-			}
-			else
-			{
-				_times = 1;
-			}
-
-			// parse the code
-			switch (escape[codeIndex])
-			{
-				// unicode character is the only special case
-				case 'u':
-					_codeLow = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1), 16);
-					_unicode = true;
-					break;
-				case 'U':
-					_codeHigh = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1, 4), 16);
-					_codeLow = (char)Convert.ToUInt16(escape.Substring(codeIndex + 5, 4), 16);
-					break;
-				// everything else
-				default:
-					_codeLow = escape[codeIndex];
-					break;
-			}
+			_codeLow = codeLowSurrogate;
+			_codeHigh = codeHighSurrogate;
+			_times = quantity;
+			_unicode = unicode;
 		}
 
-		public RstEscape(TokenLocation location) : base(location)
+		public RstEscape(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}
@@ -130,14 +97,25 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			if (_unicode)
 			{
-				sb.Print(new string(_codeLow, _times));
+				if (_codeLow != '\0')
+				{
+					for (int i = 0; i < _times; i++)
+					{
+						sb.Print(_codeHigh);
+						sb.Print(_codeLow);
+					}
+				}
+				else
+				{
+					sb.Print(new string(_codeHigh, _times));
+				}
 			}
 			else
 			{
 				Action<Sandbox, int> func;
-				if (!EscapeTable.TryGetValue(_codeLow, out func))
+				if (!EscapeTable.TryGetValue(_codeHigh, out func))
 				{
-					sb.Print(new string(_codeLow, _times));
+					sb.Print(new string(_codeHigh, _times));
 				}
 				else
 				{
@@ -149,6 +127,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		protected override IEnumerator<RST> Serialize(EasyWriter output)
 		{
+			output.Write(_codeHigh);
 			output.Write(_codeLow);
 			output.Write(_times);
 			output.Write(_unicode);
@@ -157,6 +136,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
 		{
+			input.ReadChar(out _codeHigh);
 			input.ReadChar(out _codeLow);
 			input.ReadInt32(out _times);
 			input.ReadBoolean(out _unicode);

@@ -106,9 +106,10 @@ namespace Rant.Tools.Packer
 
 			foreach (string path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
 			{
-				Console.WriteLine("+ " + path);
-				var table = RantDictionaryTable.FromFile(path);
-				package.AddTable(table);
+				throw new NotImplementedException(); // TODO
+				//Console.WriteLine("+ " + path);
+				//var table = RantDictionaryTable.FromFile(path);
+				//package.AddTable(table);
 			}
 		}
 

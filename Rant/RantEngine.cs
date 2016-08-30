@@ -45,18 +45,6 @@ namespace Rant
 		}
 
 		/// <summary>
-		/// Creates a new RantEngine object that loads vocabulary from the specified path.
-		/// </summary>
-		/// <param name="dictionaryPath">The path to the dictionary files to load.</param>
-		public RantEngine(string dictionaryPath)
-		{
-			if (!string.IsNullOrEmpty(dictionaryPath))
-			{
-				_dictionary = RantDictionary.FromDirectory(dictionaryPath);
-			}
-		}
-
-		/// <summary>
 		/// Creates a new RantEngine object with the specified vocabulary.
 		/// </summary>
 		/// <param name="dictionary">The vocabulary to load in this instance.</param>

@@ -39,18 +39,6 @@ namespace RantConsole
 			try
 			{
 #endif
-				if (!string.IsNullOrEmpty(DIC_PATH))
-				{
-					rant.Dictionary = RantDictionary.FromDirectory(DIC_PATH);
-				}
-				else
-				{
-					foreach (string dic in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dic", SearchOption.AllDirectories))
-					{
-						rant.Dictionary.AddTable(RantDictionaryTable.FromFile(dic));
-					}
-				}
-
 				if (!string.IsNullOrEmpty(PKG_PATH))
 				{
 #if DEBUG

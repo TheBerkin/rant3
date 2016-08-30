@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -10,13 +9,13 @@ namespace Rant.Core.Compiler.Syntax
 		public RST Body;
 		public string Name;
 
-		public RstSubroutineBase(Stringe name)
-			: base(name)
+		public RstSubroutineBase(string name, LineCol location)
+			: base(location)
 		{
-			Name = name.Value;
+			Name = name;
 		}
 
-		public RstSubroutineBase(TokenLocation location) : base(location)
+		public RstSubroutineBase(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

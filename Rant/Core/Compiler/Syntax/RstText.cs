@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -11,17 +10,17 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("text")]
 	internal class RstText : RST
 	{
-		public RstText(Stringe token) : base(token)
+		public RstText(string value, LineCol location) : base(location)
 		{
-			Text = token.Value ?? string.Empty;
+			Text = value ?? string.Empty;
 		}
 
-		public RstText(TokenLocation location, string text) : base(location)
+		public RstText(LineCol location, string text) : base(location)
 		{
 			Text = text ?? string.Empty;
 		}
 
-		public RstText(TokenLocation location) : base(location)
+		public RstText(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

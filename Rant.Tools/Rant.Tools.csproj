@@ -56,9 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CmdLine.cs" />
-    <Compile Include="DicDoc\DocGenerator.cs" />
-    <Compile Include="DicDoc\TablePageGenerator.cs" />
-    <Compile Include="DicDoc\Util.cs" />
     <Compile Include="DicSort\TableSorter.cs" />
     <Compile Include="Help.cs" />
     <Compile Include="Packer\DependencyListConverter.cs" />
@@ -76,11 +73,6 @@
       <Project>{a4b6fd1a-44a6-42d2-b4aa-57bc85d2cdd7}</Project>
       <Name>Rant</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="res\dicdoc.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

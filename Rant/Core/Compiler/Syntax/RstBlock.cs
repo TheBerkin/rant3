@@ -3,7 +3,6 @@ using System.Linq;
 
 using Rant.Core.Constructs;
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 using static Rant.Localization.Txtres;
 
@@ -27,12 +26,12 @@ namespace Rant.Core.Compiler.Syntax
 		// TODO: Move _weights to local scope for thread safety
 		private double[] _weights = null;
 		
-		public RstBlock(TokenLocation location) : base(location)
+		public RstBlock(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}
 
-		public RstBlock(Stringe location, List<RST> items,
+		public RstBlock(LineCol location, List<RST> items,
 			List<_<int, RST>> dynamicWeights, List<_<int, double>> constantWeights)
 			: base(location)
 		{

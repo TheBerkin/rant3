@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 using Rant.Localization;
 using Rant.Vocabulary.Querying;
 
@@ -14,13 +13,13 @@ namespace Rant.Core.Compiler.Syntax
 	{
 		private Query _query;
 
-		public RstQuery(Query query, Stringe location)
+		public RstQuery(Query query, LineCol location)
 			: base(location)
 		{
 			_query = query;
 		}
 
-		public RstQuery(TokenLocation location) : base(location)
+		public RstQuery(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

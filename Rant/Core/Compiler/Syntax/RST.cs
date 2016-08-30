@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 using static Rant.Localization.Txtres;
 
@@ -19,7 +18,7 @@ namespace Rant.Core.Compiler.Syntax
 		private const uint NullRST = 0x4e554c4c;
 		private static readonly Dictionary<uint, Type> _rstTypeMap = new Dictionary<uint, Type>();
 		private static readonly Dictionary<Type, uint> _rstIDMap = new Dictionary<Type, uint>();
-		internal TokenLocation Location;
+		internal LineCol Location;
 
 		static RST()
 		{
@@ -33,13 +32,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		}
 
-		protected RST(Stringe location)
-		{
-			if (location == null) throw new ArgumentNullException(nameof(location));
-			Location = TokenLocation.FromStringe(location);
-		}
-
-		public RST(TokenLocation location)
+		public RST(LineCol location)
 		{
 			Location = location;
 		}
@@ -79,7 +72,7 @@ namespace Rant.Core.Compiler.Syntax
 			int rootLine = input.ReadInt32();
 			int rootCol = input.ReadInt32();
 			int rootIndex = input.ReadInt32();
-			var rootRST = Activator.CreateInstance(rootType, new TokenLocation(rootLine, rootCol, rootIndex)) as RstSequence;
+			var rootRST = Activator.CreateInstance(rootType, new LineCol(rootLine, rootCol, rootIndex)) as RstSequence;
 			if (rootRST == null) throw new InvalidDataException(GetString("err-pgmload-root-instance-fail"));
 
 			var stack = new Stack<IEnumerator<DeserializeRequest>>(10);
@@ -107,7 +100,7 @@ namespace Rant.Core.Compiler.Syntax
 					int line = input.ReadInt32();
 					int col = input.ReadInt32();
 					int index = input.ReadInt32();
-					var rst = Activator.CreateInstance(type, new TokenLocation(line, col, index)) as RST;
+					var rst = Activator.CreateInstance(type, new LineCol(line, col, index)) as RST;
 					if (rst == null) throw new InvalidDataException(GetString("err-pgmload-rst-creation-fail", type.Name));
 					deserializer.Current.SetResult(rst);
 					stack.Push(rst.DeserializeObject(input));

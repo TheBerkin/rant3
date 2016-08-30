@@ -30,6 +30,8 @@ namespace Rant.Core.Compiler
 			Value = value.ToString(CultureInfo.InvariantCulture);
 		}
 
-		public TokenLocation ToLocation() => new TokenLocation(Line, Column, Index);
+		public LineCol ToLocation() => new LineCol(Line, Column, Index);
+
+		public static readonly Token None = new Token(R.Text, 0, -1, -1, null);
 	}
 }

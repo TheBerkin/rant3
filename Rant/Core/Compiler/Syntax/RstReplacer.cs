@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -16,14 +15,14 @@ namespace Rant.Core.Compiler.Syntax
 		private RST _rstMatchEval;
 		private RST _rstSource;
 
-		public RstReplacer(Stringe location, Regex regex, RST rstSource, RST rstMatchEval) : base(location)
+		public RstReplacer(LineCol location, Regex regex, RST rstSource, RST rstMatchEval) : base(location)
 		{
 			_regex = regex;
 			_rstSource = rstSource;
 			_rstMatchEval = rstMatchEval;
 		}
 
-		public RstReplacer(TokenLocation location) : base(location)
+		public RstReplacer(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

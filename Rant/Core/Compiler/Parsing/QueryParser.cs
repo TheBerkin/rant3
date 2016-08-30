@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
-using Rant.Core.Stringes;
 using Rant.Core.Utilities;
 using Rant.Vocabulary.Querying;
 
@@ -16,7 +15,7 @@ namespace Rant.Core.Compiler.Parsing
 		{
 			var tableName = reader.ReadLoose(R.Text, "acc-table-name");
 			var query = new Query();
-			query.Name = tableName?.Value;
+			query.Name = tableName.Value;
 			query.ClassFilter = new ClassFilter();
 			query.RegexFilters = new List<_<bool, Regex>>();
 			query.Carrier = new Carrier();
@@ -29,7 +28,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				var token = reader.ReadLooseToken();
 
-				switch (token.ID)
+				switch (token.Type)
 				{
 					// read subtype
 					case R.Period:
@@ -40,7 +39,7 @@ namespace Rant.Core.Compiler.Parsing
 							reader.Read(R.Text, "query subtype name");
 							break;
 						}
-						query.Subtype = reader.Read(R.Text, "query subtype")?.Value;
+						query.Subtype = reader.Read(R.Text, "query subtype").Value;
 						subtypeRead = true;
 						break;
 					// complement
@@ -52,7 +51,7 @@ namespace Rant.Core.Compiler.Parsing
 						compiler.SetNextActionCallback(seq.Add);
 						yield return Get<SequenceParser>();
 						compiler.SetNextActionCallback(actionCallback);
-						query.Complement = new RstSequence(seq, Stringe.Between(token, reader.PrevToken));
+						query.Complement = new RstSequence(seq, token.ToLocation());
 						complementRead = true;
 					}
 						break;
@@ -68,7 +67,7 @@ namespace Rant.Core.Compiler.Parsing
 								reader.ReadToken();
 							}
 							var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
-							if (classFilterName == null) continue;
+							if (classFilterName.Value == null) continue;
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							query.ClassFilter.AddRule(rule);
 						} while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
@@ -78,11 +77,28 @@ namespace Rant.Core.Compiler.Parsing
 					case R.Without:
 					case R.Question:
 					{
-						bool blacklist = (token.ID == R.Without);
+						bool blacklist = (token.Type == R.Without);
 
 						var regexFilter = reader.Read(R.Regex, "regex filter rule");
-						if (regexFilter == null) break;
-						var rule = new _<bool, Regex>(!blacklist, Util.ParseRegex(regexFilter.Value));
+						var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+						if (reader.IsNext(R.RegexFlags))
+						{
+							var flagsToken = reader.ReadToken();
+							foreach (char flag in flagsToken.Value)
+							{
+								switch (flag)
+								{
+									case 'i':
+										options |= RegexOptions.IgnoreCase;
+										break;
+									case 'm':
+										options |= RegexOptions.Multiline;
+										break;
+								}
+							}
+						}
+						if (regexFilter.Value == null) break;
+						var rule = new _<bool, Regex>(!blacklist, new Regex(regexFilter.Value, options));
 						query.RegexFilters.Add(rule);
 					}
 						break;
@@ -93,7 +109,7 @@ namespace Rant.Core.Compiler.Parsing
 						// (a), (a-), (-b), (a-b)
 
 						// either (a), (a-), or (a-b)
-						if (reader.PeekLooseToken().ID == R.Text)
+						if (reader.PeekLooseToken().Type == R.Text)
 						{
 							var firstNumberToken = reader.ReadLooseToken();
 							int firstNumber;
@@ -103,11 +119,11 @@ namespace Rant.Core.Compiler.Parsing
 							}
 
 							// (a-) or (a-b)
-							if (reader.PeekLooseToken().ID == R.Hyphen)
+							if (reader.PeekLooseToken().Type == R.Hyphen)
 							{
 								reader.ReadLooseToken();
 								// (a-b)
-								if (reader.PeekLooseToken().ID == R.Text)
+								if (reader.PeekLooseToken().Type == R.Text)
 								{
 									var secondNumberToken = reader.ReadLooseToken();
 									int secondNumber;
@@ -131,7 +147,7 @@ namespace Rant.Core.Compiler.Parsing
 							}
 						}
 						// (-b)
-						else if (reader.PeekLooseToken().ID == R.Hyphen)
+						else if (reader.PeekLooseToken().Type == R.Hyphen)
 						{
 							reader.ReadLooseToken();
 							var secondNumberToken = reader.ReadLoose(R.Text, "acc-syllable-range-value");
@@ -143,7 +159,7 @@ namespace Rant.Core.Compiler.Parsing
 							query.SyllablePredicate = new Range(null, secondNumber);
 						}
 						// ()
-						else if (reader.PeekLooseToken().ID == R.RightParen)
+						else if (reader.PeekLooseToken().Type == R.RightParen)
 						{
 							compiler.SyntaxError(token, false, "err-compiler-empty-sylrange");
 						}
@@ -184,8 +200,8 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
 			}
 
-			if (tableName != null)
-				actionCallback(new RstQuery(query, tableName));
+			if (tableName.Value != null)
+				actionCallback(new RstQuery(query, tableName.ToLocation()));
 		}
 
 		private void ReadCarriers(TokenReader reader, Carrier carrier, RantCompiler compiler)
@@ -194,13 +210,13 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				var token = reader.ReadLooseToken();
 
-				switch (token.ID)
+				switch (token.Type)
 				{
 					// match carrier
 					case R.Equal:
 					{
 						var name = reader.Read(R.Text, "acc-carrier-name");
-						if (name != null)
+						if (name.Value != null)
 							carrier.AddComponent(CarrierComponentType.Match, name.Value);
 					}
 						break;
@@ -213,25 +229,25 @@ namespace Rant.Core.Compiler.Parsing
 					{
 						var carrierType = CarrierComponentType.Associative;
 						// disassociative
-						if (reader.PeekToken().ID == R.Exclamation)
+						if (reader.PeekToken().Type == R.Exclamation)
 						{
 							carrierType = CarrierComponentType.Dissociative;
 							reader.ReadToken();
 						}
 						// divergent
-						else if (reader.PeekToken().ID == R.Plus)
+						else if (reader.PeekToken().Type == R.Plus)
 						{
 							carrierType = CarrierComponentType.Divergent;
 							reader.ReadToken();
 						}
-						else if (reader.PeekToken().ID == R.Question)
+						else if (reader.PeekToken().Type == R.Question)
 						{
 							carrierType = CarrierComponentType.Relational;
 							reader.ReadToken();
 						}
 
 						// match
-						if (reader.PeekToken().ID == R.Equal)
+						if (reader.PeekToken().Type == R.Equal)
 						{
 							if (carrierType == CarrierComponentType.Associative)
 							{
@@ -253,7 +269,7 @@ namespace Rant.Core.Compiler.Parsing
 						}
 
 						var name = reader.Read(R.Text, "acc-carrier-name");
-						if (name != null)
+						if (name.Value != null)
 							carrier.AddComponent(carrierType, name.Value);
 					}
 						break;
@@ -263,14 +279,14 @@ namespace Rant.Core.Compiler.Parsing
 					{
 						var carrierType = CarrierComponentType.Unique;
 						// match unique
-						if (reader.PeekToken().ID == R.Equal)
+						if (reader.PeekToken().Type == R.Equal)
 						{
 							carrierType = CarrierComponentType.MatchUnique;
 							reader.ReadToken();
 						}
 
 						var name = reader.Read(R.Text, "acc-carrier-name");
-						if (name != null)
+						if (name.Value != null)
 							carrier.AddComponent(carrierType, name.Value);
 					}
 						break;
@@ -279,7 +295,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.Ampersand:
 					{
 						var name = reader.Read(R.Text, "acc-carrier-name");
-						if (name != null)
+						if (name.Value != null)
 							carrier.AddComponent(CarrierComponentType.Rhyme, name.Value);
 					}
 						break;

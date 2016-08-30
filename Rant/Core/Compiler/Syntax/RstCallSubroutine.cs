@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Rant.Core.IO;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -13,15 +12,16 @@ namespace Rant.Core.Compiler.Syntax
 		private string _moduleFunctionName = null;
 		public List<RST> Arguments;
 
-		public RstCallSubroutine(Stringe name, string moduleFunctionName = null)
-			: base(name)
+		public RstCallSubroutine(string name, LineCol location, string moduleFunctionName = null)
+			: base(location)
 		{
 			if (moduleFunctionName != null)
 				_inModule = true;
 			_moduleFunctionName = moduleFunctionName;
+			Name = name;
 		}
 
-		public RstCallSubroutine(TokenLocation location) : base(location)
+		public RstCallSubroutine(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}

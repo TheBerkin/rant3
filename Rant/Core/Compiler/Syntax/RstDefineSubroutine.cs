@@ -2,7 +2,6 @@
 
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
-using Rant.Core.Stringes;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -10,13 +9,8 @@ namespace Rant.Core.Compiler.Syntax
 	internal class RstDefineSubroutine : RstSubroutineBase
 	{
 		public Dictionary<string, SubroutineParameterType> Parameters;
-
-		public RstDefineSubroutine(Stringe name)
-			: base(name)
-		{
-		}
-
-		public RstDefineSubroutine(TokenLocation location) : base(location)
+		
+		public RstDefineSubroutine(LineCol location) : base(location)
 		{
 			// Used by serializer
 		}
