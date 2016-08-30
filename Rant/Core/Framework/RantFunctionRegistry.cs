@@ -924,6 +924,14 @@ namespace Rant.Core.Framework
 					}
 					numCombiners = 0;
 				}
+				else if (Char.IsLowSurrogate(input[i]))
+				{
+					buffer[lastIndex - i + 1] = input[i];
+				}
+				else if (Char.IsHighSurrogate(input[i]))
+				{
+					buffer[lastIndex - i - 1] = input[i];
+				}
 				else
 				{
 					buffer[lastIndex - i] = input[i];
@@ -961,6 +969,14 @@ namespace Rant.Core.Framework
 						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
 					}
 					numCombiners = 0;
+				}
+				else if (Char.IsLowSurrogate(input[i]))
+				{
+					buffer[lastIndex - i + 1] = input[i];
+				}
+				else if (Char.IsHighSurrogate(input[i]))
+				{
+					buffer[lastIndex - i - 1] = input[i];
 				}
 				else
 				{
