@@ -87,13 +87,22 @@ namespace Rant.Core.Compiler
 									return false;
 							}
 						}
+						else if (reader.Eat('U'))
+						{
+							for (int i = 0; i < 8; i++)
+							{
+								char c = reader.ReadChare().Character;
+								if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
+									return false;
+							}
+						}
 						else
 						{
 							reader.ReadChare();
 						}
 						return true;
 					},
-					R.EscapeSequence
+					R.EscapeSequenceChar
 				},
 				// Regex
 				{
@@ -104,15 +113,14 @@ namespace Rant.Core.Compiler
 						while (!reader.EndOfStringe)
 						{
 							reader.EatAll("\\`");
-							if (reader.ReadChare() == '`') break;
+							if (reader.ReadChare() == '`')
+							{
+								reader.Eat('i');
+								return true;
+							}
 						}
-						if (reader.EndOfStringe)
-						{
-							reader.Error(token, true, "err-compiler-incomplete-regex");
-							return false;
-						}
-						reader.Eat('i');
-						return true;
+						reader.Error(token, true, "err-compiler-incomplete-regex");
+						return false;
 					},
 					R.Regex
 				},
@@ -152,15 +160,8 @@ namespace Rant.Core.Compiler
 				{ "$", R.Dollar },
 				{ "=", R.Equal },
 				{ "&", R.Ampersand },
-				{ "%", R.Percent },
 				{ "+", R.Plus },
-				{ "^", R.Caret },
-				{ "`", R.Backtick },
-				{ "*", R.Asterisk },
-				{ "/", R.ForwardSlash },
-				{ ",", R.Comma },
-				{ "~", R.Tilde },
-				{ ".", R.Subtype }
+				{ ".", R.Period }
 			};
 			Rules.AddUndefinedCaptureRule(R.Text, TruncatePadding);
 			Rules.AddEndToken(R.EOF);

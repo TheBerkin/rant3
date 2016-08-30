@@ -17,7 +17,7 @@ namespace Rant.Core.Stringes
 		private List<_<Func<StringeReader, bool>, T, int>> _functions;
 		private List<_<string, T, StringComparison>> _listHigh;
 		private List<_<string, T, StringComparison>> _listNormal;
-		private List<_<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
+		//private List<_<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
 		private bool _sorted;
 
 		/// <summary>
@@ -30,7 +30,6 @@ namespace Rant.Core.Stringes
 			_punctuation = new HashSet<char>();
 			_listNormal = new List<_<string, T, StringComparison>>(8);
 			_listHigh = new List<_<string, T, StringComparison>>(8);
-			_regexes = new List<_<Regex, RuleMatchValueGenerator<T>, int>>(8);
 			_functions = new List<_<Func<StringeReader, bool>, T, int>>(8);
 			IgnoreRules = new HashSet<T>();
 			_sorted = false;
@@ -59,15 +58,6 @@ namespace Rant.Core.Stringes
 			{
 				Sort();
 				return _listHigh;
-			}
-		}
-
-		internal List<_<Regex, RuleMatchValueGenerator<T>, int>> RegexList
-		{
-			get
-			{
-				Sort();
-				return _regexes;
 			}
 		}
 
@@ -238,40 +228,6 @@ namespace Rant.Core.Stringes
 		}
 
 		/// <summary>
-		/// Adds a regex rule to the context. This will throw an InvalidOperationException if called after the context is used to
-		/// create tokens.
-		/// </summary>
-		/// <param name="regex">The regex to test for.</param>
-		/// <param name="value">The token identifier to associate with the symbol.</param>
-		/// <param name="priority">The priority of the rule. Higher values are checked first.</param>
-		public void Add(Regex regex, T value, int priority = DefaultPriority)
-		{
-			if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-			if (regex == null) throw new ArgumentNullException(nameof(regex));
-			if (_regexes.Any(re => re.Item1 == regex))
-				throw new InvalidOperationException("A rule with this pattern already exists.");
-
-			_regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
-		}
-
-		/// <summary>
-		/// Adds a regex rule to the context. This will throw an InvalidOperationException if called after the context is used to
-		/// create tokens.
-		/// </summary>
-		/// <param name="regex">The regex to test for.</param>
-		/// <param name="generator">A function that generates a token identifier from the match.</param>
-		/// <param name="priority">The priority of the rule. Higher values are checked first.</param>
-		public void Add(Regex regex, Func<Match, T> generator, int priority = DefaultPriority)
-		{
-			if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
-			if (regex == null) throw new ArgumentNullException(nameof(regex));
-			if (generator == null) throw new ArgumentNullException(nameof(generator));
-			if (_regexes.Any(re => re.Item1 == regex))
-				throw new InvalidOperationException("A rule with this pattern already exists.");
-			_regexes.Add(_.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
-		}
-
-		/// <summary>
 		/// Adds a function rule to the context. This will throw an InvalidOperationException if called after the context is used
 		/// to create tokens.
 		/// </summary>
@@ -315,7 +271,7 @@ namespace Rant.Core.Stringes
 			if (_sorted) return;
 			_listNormal = _listNormal.OrderByDescending(t => t.Item1.Length).ToList();
 			_listHigh = _listHigh.OrderByDescending(t => t.Item1.Length).ToList();
-			_regexes = _regexes.OrderByDescending(r => r.Item3).ToList();
+			//_regexes = _regexes.OrderByDescending(r => r.Item3).ToList();
 			_functions = _functions.OrderByDescending(t => t.Item3).ToList();
 			_sorted = true;
 		}

@@ -118,7 +118,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AssemblyName>RantEngine-Unity</AssemblyName>
@@ -169,8 +169,10 @@
     <Compile Include="Core\Compiler\Parsing\Parser.cs" />
     <Compile Include="Core\Compiler\Parsing\TagParser.cs" />
     <Compile Include="Core\Compiler\RantCompiler.cs" />
+    <Compile Include="Core\Compiler\RantSuperLexer.cs" />
     <Compile Include="Core\Compiler\Syntax\DeserializeRequest.cs" />
     <Compile Include="Core\Compiler\Syntax\RSTAttribute.cs" />
+    <Compile Include="Core\Compiler\Token.cs" />
     <Compile Include="Core\Compiler\TokenLocation.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />

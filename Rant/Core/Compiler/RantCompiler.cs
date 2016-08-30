@@ -87,7 +87,25 @@ namespace Rant.Core.Compiler
 			(_errors ?? (_errors = new List<RantCompilerMessage>()))
 				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
 					GetString(errorMessageType, errorMessageArgs),
-					token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1));
+					token?.Line ?? 0, token?.Column ?? 0, token?.Offset ?? -1, token?.Length ?? 1));
+			if (fatal) throw new RantCompilerException(_sourceName, _errors);
+		}
+
+		public void SyntaxError(Token token, bool fatal, string errorMessageType, params object[] errorMessageArgs)
+		{
+			(_errors ?? (_errors = new List<RantCompilerMessage>()))
+				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
+					GetString(errorMessageType, errorMessageArgs),
+					token.Line, token.Column, token.Index, token.Value.Length));
+			if (fatal) throw new RantCompilerException(_sourceName, _errors);
+		}
+
+		public void SyntaxError(int line, int lastLineStart, int index, int length, bool fatal, string errorMessageType, params object[] errorMessageArgs)
+		{
+			(_errors ?? (_errors = new List<RantCompilerMessage>()))
+				.Add(new RantCompilerMessage(RantCompilerMessageType.Error, _sourceName,
+					GetString(errorMessageType, errorMessageArgs),
+					line, index - lastLineStart + 1, index, length));
 			if (fatal) throw new RantCompilerException(_sourceName, _errors);
 		}
 	}

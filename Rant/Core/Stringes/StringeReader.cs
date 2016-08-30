@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -10,7 +12,7 @@ namespace Rant.Core.Stringes
 	internal sealed class StringeReader
 	{
 		private readonly StringeErrorDelegate _errorCallback;
-		private int _pos;
+		private int _pos; 
 
 		/// <summary>
 		/// Creates a new StringeReader instance using the specified string as input.
@@ -266,7 +268,7 @@ namespace Rant.Core.Stringes
 		/// <returns></returns>
 		public bool Eat(Regex regex)
 		{
-			if (regex == null) throw new ArgumentNullException("regex");
+			if (regex == null) throw new ArgumentNullException(nameof(regex));
 			var match = regex.Match(Stringe.Value, _pos);
 			if (!match.Success || match.Index != _pos) return false;
 			_pos += match.Length;
@@ -390,9 +392,7 @@ namespace Rant.Core.Stringes
 			if (EndOfStringe)
 			{
 				if (rules.EndToken != null && !rules.IgnoreRules.Contains(rules.EndToken.Item2))
-				{
 					return new Token<T>(rules.EndToken.Item2, rules.EndToken.Item1);
-				}
 
 				throw new InvalidOperationException("Unexpected end of input.");
 			}
@@ -430,50 +430,6 @@ namespace Rant.Core.Stringes
 						_pos += t.Item1.Length;
 						if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
 						return new Token<T>(t.Item2, c);
-					}
-				}
-
-				const string tokenGroupName = "value";
-
-				// Check regex rules
-				if (rules.RegexList.Any())
-				{
-					Match longestMatch = null;
-					var id = default(T);
-
-					// Find the longest match, if any.
-					foreach (var re in rules.RegexList)
-					{
-						var match = re.Item1.Match(Stringe.Value, _pos);
-						if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
-						{
-							longestMatch = match;
-							id = re.Item2.GetValue(match);
-						}
-					}
-
-					// If there was a match, generate a token.
-					if (longestMatch != null)
-					{
-						// Return undefined token if present
-						if (captureUndef && u < _pos)
-						{
-							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-							return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(Stringe.Slice(u, _pos)));
-						}
-
-						// Return longest match, narrow down to <value> group if available.
-						var group = longestMatch.Groups[tokenGroupName];
-						_pos += longestMatch.Length;
-
-						if (group.Success)
-						{
-							if (rules.IgnoreRules.Contains(id)) goto readStart;
-							return new Token<T>(id, Stringe.Substringe(group.Index, group.Length));
-						}
-
-						if (rules.IgnoreRules.Contains(id)) goto readStart;
-						return new Token<T>(id, Stringe.Substringe(longestMatch.Index, longestMatch.Length));
 					}
 				}
 
@@ -537,7 +493,7 @@ namespace Rant.Core.Stringes
 				// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 			} while (captureUndef);
 
-			throw new InvalidOperationException("This should never happen.");
+			return null;
 		}
 	}
 }

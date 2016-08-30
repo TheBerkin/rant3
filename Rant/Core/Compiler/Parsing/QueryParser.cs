@@ -32,7 +32,7 @@ namespace Rant.Core.Compiler.Parsing
 				switch (token.ID)
 				{
 					// read subtype
-					case R.Subtype:
+					case R.Period:
 						// if there's already a subtype, throw an error and ignore it
 						if (subtypeRead)
 						{

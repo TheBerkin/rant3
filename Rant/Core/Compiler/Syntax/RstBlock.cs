@@ -26,21 +26,7 @@ namespace Rant.Core.Compiler.Syntax
 		// Constant weights can be used directly. This is used for optimization.
 		// TODO: Move _weights to local scope for thread safety
 		private double[] _weights = null;
-
-		public RstBlock(Stringe location, params RST[] items)
-			: base(location)
-		{
-			_elements.AddRange(items);
-			_count = items.Length;
-		}
-
-		public RstBlock(Stringe location, List<RST> items)
-			: base(location)
-		{
-			_elements.AddRange(items);
-			_count = items.Count;
-		}
-
+		
 		public RstBlock(TokenLocation location) : base(location)
 		{
 			// Used by serializer

@@ -10,11 +10,13 @@
 		/// </summary>
 		Text,
 
-		/// <summary>
-		/// A format string used to output a reserved or random character.
-		/// Used by: Plaintext, arguments
-		/// </summary>
-		EscapeSequence,
+		EscapeSequenceChar,
+
+		EscapeSequenceQuantifier,
+
+		EscapeSequenceUnicode,
+
+		EscapeSequenceSurrogatePair,
 
 		/// <summary>
 		/// [
@@ -177,12 +179,14 @@
 		Without,
 
 		/// <summary>
-		/// Javascript-style regular expression.
-		/// <para>
-		/// Used by: Queries (blacklist/whitelist)
-		/// </para>
+		/// Regular expression body
 		/// </summary>
 		Regex,
+
+		/// <summary>
+		/// Regular expression flags
+		/// </summary>
+		RegexFlags,
 
 		/// <summary>
 		/// Comments, whitespace, etc.
@@ -241,37 +245,9 @@
 		Plus,
 
 		/// <summary>
-		/// *
-		/// </summary>
-		Asterisk,
-
-		/// <summary>
-		/// *123:
-		/// <para>
-		/// Used by: Blocks
-		/// </para>
-		/// </summary>
-		Weight,
-
-		/// <summary>
-		/// `
-		/// </summary>
-		Backtick,
-
-		/// <summary>
-		/// (a - b)
-		/// </summary>
-		RangeLiteral,
-
-		/// <summary>
 		/// Any decimal number.
 		/// </summary>
 		Number,
-
-		/// <summary>
-		/// var keyword
-		/// </summary>
-		Var,
 
 		/// <summary>
 		/// .
@@ -279,21 +255,11 @@
 		/// Used by queries to denote subtypes.
 		/// </para>
 		/// </summary>
-		Subtype,
+		Period,
 
 		/// <summary>
 		/// End of file.
 		/// </summary>
-		EOF,
-
-		/// <summary>
-		/// Tilde (~)
-		/// </summary>
-		Tilde,
-
-		/// <summary>
-		/// Undefined (???)
-		/// </summary>
-		Undefined
+		EOF
 	}
 }

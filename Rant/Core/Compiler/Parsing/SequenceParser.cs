@@ -103,7 +103,7 @@ namespace Rant.Core.Compiler.Parsing
 						}
 						break;
 
-					case R.EscapeSequence: // Handle escape sequences
+					case R.EscapeSequenceChar: // Handle escape sequences
 						actionCallback(new RstEscape(token));
 						break;
 

@@ -118,7 +118,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				bool inModule = false;
 
-				if (reader.TakeLoose(R.Subtype))
+				if (reader.TakeLoose(R.Period))
 				{
 					inModule = true;
 					compiler.HasModule = true;
@@ -170,7 +170,7 @@ namespace Rant.Core.Compiler.Parsing
 				var subroutineName = reader.Read(R.Text, "acc-subroutine-name");
 				string moduleFunctionName = null;
 
-				if (reader.TakeLoose(R.Subtype, false))
+				if (reader.TakeLoose(R.Period, false))
 				{
 					moduleFunctionName = reader.Read(R.Text, "module function name").Value;
 				}

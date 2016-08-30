@@ -76,7 +76,7 @@ namespace Rant.Core.Compiler.Syntax
 			}
 		};
 
-		private char _code;
+		private char _codeLow, _codeHigh;
 		private int _times;
 		private bool _unicode;
 
@@ -107,12 +107,16 @@ namespace Rant.Core.Compiler.Syntax
 			{
 				// unicode character is the only special case
 				case 'u':
-					_code = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1), 16);
+					_codeLow = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1), 16);
 					_unicode = true;
+					break;
+				case 'U':
+					_codeHigh = (char)Convert.ToUInt16(escape.Substring(codeIndex + 1, 4), 16);
+					_codeLow = (char)Convert.ToUInt16(escape.Substring(codeIndex + 5, 4), 16);
 					break;
 				// everything else
 				default:
-					_code = escape[codeIndex];
+					_codeLow = escape[codeIndex];
 					break;
 			}
 		}
@@ -126,14 +130,14 @@ namespace Rant.Core.Compiler.Syntax
 		{
 			if (_unicode)
 			{
-				sb.Print(new string(_code, _times));
+				sb.Print(new string(_codeLow, _times));
 			}
 			else
 			{
 				Action<Sandbox, int> func;
-				if (!EscapeTable.TryGetValue(_code, out func))
+				if (!EscapeTable.TryGetValue(_codeLow, out func))
 				{
-					sb.Print(new string(_code, _times));
+					sb.Print(new string(_codeLow, _times));
 				}
 				else
 				{
@@ -145,7 +149,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		protected override IEnumerator<RST> Serialize(EasyWriter output)
 		{
-			output.Write(_code);
+			output.Write(_codeLow);
 			output.Write(_times);
 			output.Write(_unicode);
 			yield break;
@@ -153,7 +157,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
 		{
-			input.ReadChar(out _code);
+			input.ReadChar(out _codeLow);
 			input.ReadInt32(out _times);
 			input.ReadBoolean(out _unicode);
 			yield break;

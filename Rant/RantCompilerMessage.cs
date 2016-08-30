@@ -8,7 +8,7 @@ namespace Rant
 	public sealed class RantCompilerMessage
 	{
 		internal RantCompilerMessage(RantCompilerMessageType type, string source, string message, int line, int column,
-			int index)
+			int index, int length)
 		{
 			Type = type;
 			Source = source;
@@ -16,6 +16,7 @@ namespace Rant
 			Line = line;
 			Column = column;
 			Index = index;
+			Length = length;
 		}
 
 		/// <summary>
@@ -47,6 +48,11 @@ namespace Rant
 		/// The character index on which the message was generated.
 		/// </summary>
 		public int Index { get; }
+
+		/// <summary>
+		/// The length, in characters, of the code snippet to which the message pertains.
+		/// </summary>
+		public int Length { get; }
 
 		/// <summary>
 		/// Generates a string representation of the message.
