@@ -10,7 +10,7 @@ namespace Rant.Vocabulary
 	public sealed class RantTableLoadException : Exception
 	{
 		internal RantTableLoadException(string origin, int line, int col, string messageType, params object[] messageArgs)
-			: base(Txtres.GetString("src-line-col", Txtres.GetString(messageType, messageArgs), line, col))
+			: base($"{Txtres.GetString("src-line-col", origin, line, col)} {Txtres.GetString(messageType, messageArgs)}")
 		{
 			Line = line;
 			Column = col;
