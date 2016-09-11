@@ -16,8 +16,6 @@ namespace Rant.Core.Compiler.Parsing
 			var tableName = reader.ReadLoose(R.Text, "acc-table-name");
 			var query = new Query();
 			query.Name = tableName.Value;
-			query.ClassFilter = new ClassFilter();
-			query.RegexFilters = new List<_<bool, Regex>>();
 			query.Carrier = new Carrier();
 			query.Exclusive = reader.TakeLoose(R.Dollar);
 			bool subtypeRead = false;
@@ -57,6 +55,8 @@ namespace Rant.Core.Compiler.Parsing
 						break;
 					// read class filter
 					case R.Hyphen:
+					{
+						var classFilter = new ClassFilter();
 						do
 						{
 							bool blacklist = false;
@@ -69,10 +69,12 @@ namespace Rant.Core.Compiler.Parsing
 							var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
 							if (classFilterName.Value == null) continue;
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
-							query.ClassFilter.AddRule(rule);
+							classFilter.AddRule(rule);
 						} while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
+						
+						query.AddFilter(classFilter);
 						break;
-
+					}
 					// read regex filter
 					case R.Without:
 					case R.Question:
@@ -98,8 +100,7 @@ namespace Rant.Core.Compiler.Parsing
 							}
 						}
 						if (regexFilter.Value == null) break;
-						var rule = new _<bool, Regex>(!blacklist, new Regex(regexFilter.Value, options));
-						query.RegexFilters.Add(rule);
+						query.AddFilter(new RegexFilter(new Regex(regexFilter.Value, options), !blacklist));
 					}
 						break;
 
@@ -132,18 +133,18 @@ namespace Rant.Core.Compiler.Parsing
 										compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
 									}
 
-									query.SyllablePredicate = new Range(firstNumber, secondNumber);
+									query.AddFilter(new RangeFilter(firstNumber, secondNumber));
 								}
 								// (a-)
 								else
 								{
-									query.SyllablePredicate = new Range(firstNumber, null);
+									query.AddFilter(new RangeFilter(firstNumber, null));
 								}
 							}
 							// (a)
 							else
 							{
-								query.SyllablePredicate = new Range(firstNumber, firstNumber);
+								query.AddFilter(new RangeFilter(firstNumber, firstNumber));
 							}
 						}
 						// (-b)
@@ -156,7 +157,7 @@ namespace Rant.Core.Compiler.Parsing
 							{
 								compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
 							}
-							query.SyllablePredicate = new Range(null, secondNumber);
+							query.AddFilter(new RangeFilter(null, secondNumber));
 						}
 						// ()
 						else if (reader.PeekLooseToken().Type == R.RightParen)

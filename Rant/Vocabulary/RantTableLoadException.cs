@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Rant.Core.Compiler;
+using Rant.Localization;
 
 namespace Rant.Vocabulary
 {
@@ -9,12 +9,11 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantTableLoadException : Exception
 	{
-		internal RantTableLoadException(string origin, Token token, string message)
-			: base($"{origin}: (Ln {token.Line}, Col {token.Column}) {message}")
+		internal RantTableLoadException(string origin, int line, int col, string messageType, params object[] messageArgs)
+			: base(Txtres.GetString("src-line-col", Txtres.GetString(messageType, messageArgs), line, col))
 		{
-			Line = token.Line;
-			Column = token.Column;
-			Offset = token.Index;
+			Line = line;
+			Column = col;
 			Origin = origin;
 		}
 
@@ -27,11 +26,6 @@ namespace Rant.Vocabulary
 		/// Gets the column on which the error occurred.
 		/// </summary>
 		public int Column { get; }
-
-		/// <summary>
-		/// Gets the character offset on which the error occurred.
-		/// </summary>
-		public int Offset { get; }
 
 		/// <summary>
 		/// Gets a string describing where the table was loaded from. For tables loaded from disk, this will be the file path.

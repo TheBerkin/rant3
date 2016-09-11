@@ -5,7 +5,7 @@ using static Rant.Localization.Txtres;
 namespace Rant.Vocabulary
 {
 	/// <summary>
-	/// Represents a Rant dictionary term. A dictionary entry will contain one term for every subtype.
+	/// Represents a single term of a dictionary entry.
 	/// </summary>
 	public sealed class RantDictionaryTerm
 	{
@@ -15,29 +15,29 @@ namespace Rant.Vocabulary
 		private string _value;
 
 		/// <summary>
-		/// Creates a new dictionary term with the specified value.
+		/// Intializes a new instance of the <see cref="RantDictionaryTerm"/> class with the specified value string.
 		/// </summary>
 		/// <param name="value">The value of the term.</param>
 		public RantDictionaryTerm(string value)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
-			_value = value;
+			_value = String.Intern(value);
 		}
 
 		/// <summary>
-		/// Creates a new dictionary term with the specified value and pronunciation.
+		/// Intializes a new instance of the <see cref="RantDictionaryTerm"/> class with the specified value and pronunciation strings.
 		/// </summary>
 		/// <param name="value">The value of the term.</param>
 		/// <param name="pronunciation">The pronunciation of the term value.</param>
 		public RantDictionaryTerm(string value, string pronunciation)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
-			_value = value;
-			_pronunciation = pronunciation ?? string.Empty;
+			_value = String.Intern(value);
+			_pronunciation = String.Intern(pronunciation ?? string.Empty);
 		}
 
 		/// <summary>
-		/// Creates a new dictionary term with the specified value, pronunciation, and split indices.
+		/// Intializes a new instance of the <see cref="RantDictionaryTerm"/> class with the specified value, pronunciation, and split indices.
 		/// </summary>
 		/// <param name="value">The value of the term.</param>
 		/// <param name="pronunciation">The pronunciation of the term value.</param>
@@ -55,14 +55,14 @@ namespace Rant.Vocabulary
 			if (pronSplitIndex > pronunciation?.Length)
 				throw new ArgumentException(GetString("err-invalid-term-split"), nameof(pronSplitIndex));
 
-			_value = value;
-			_pronunciation = pronunciation ?? string.Empty;
+			_value = String.Intern(value);
+			_pronunciation = String.Intern(pronunciation ?? string.Empty);
 			ValueSplitIndex = valueSplitIndex;
 			PronunciationSplitIndex = pronSplitIndex;
 		}
 
 		/// <summary>
-		/// The value of the term.
+		/// The value string of the term.
 		/// </summary>
 		public string Value
 		{
@@ -70,7 +70,7 @@ namespace Rant.Vocabulary
 			set
 			{
 				if (value == null) throw new ArgumentNullException(nameof(value));
-				_value = value;
+				_value = String.Intern(value);
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace Rant.Vocabulary
 			get { return _pronunciation; }
 			set
 			{
-				_pronunciation = value ?? "";
+				_pronunciation = String.Intern(value ?? string.Empty);
 				if (_syllables != null) CreateSyllables();
 			}
 		}

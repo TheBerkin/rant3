@@ -177,6 +177,7 @@
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
+    <Compile Include="Core\Formatting\Accent.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
     <Compile Include="Metadata\IRantFunctionGroup.cs" />
@@ -262,16 +263,14 @@
     <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilterRule.cs" />
+    <Compile Include="Vocabulary\Querying\Filter.cs" />
+    <Compile Include="Vocabulary\Querying\RegexFilter.cs" />
+    <Compile Include="Vocabulary\RantDictionaryTable.Importer.cs" />
     <Compile Include="Vocabulary\Utilities\Diff.cs" />
     <Compile Include="Vocabulary\Utilities\DoubleMetaphone.cs" />
     <Compile Include="Core\Formatting\Emoji.cs" />
-    <Compile Include="Vocabulary\EntryTypeDef.cs" />
-    <Compile Include="Vocabulary\EntryTypeDefFilter.cs" />
-    <Compile Include="Vocabulary\Querying\Range.cs" />
+    <Compile Include="Vocabulary\Querying\RangeFilter.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />
-    <Compile Include="Vocabulary\RantDictionaryTable.Exporter.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="RantEngine.cs" />
     <Compile Include="Core\Constructs\BlockAttribs.cs" />
     <Compile Include="Core\Utilities\Limit.cs" />

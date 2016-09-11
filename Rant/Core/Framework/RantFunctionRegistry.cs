@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Constructs;
@@ -771,20 +772,17 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG according to a seed.")]
-		private static void Branch(Sandbox sb, 
-			[RantDescription("The seed for the branch.")]
-			string seed)
+		private static void Branch(Sandbox sb,
+			[RantDescription("The seed for the branch.")] string seed)
 		{
 			sb.RNG.Branch(seed.Hash());
 		}
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG, executes the specified pattern, and then merges the branch.")]
-		private static IEnumerator<RST> Branch(Sandbox sb, 
-			[RantDescription("The seed for the branch.")]
-			string seed, 
-			[RantDescription("The pattern to run on the branch.")]
-			RST branchAction)
+		private static IEnumerator<RST> Branch(Sandbox sb,
+			[RantDescription("The seed for the branch.")] string seed,
+			[RantDescription("The pattern to run on the branch.")] RST branchAction)
 		{
 			sb.RNG.Branch(seed.Hash());
 			yield return branchAction;
@@ -895,11 +893,10 @@ namespace Rant.Core.Framework
 
 		[RantFunction("rev")]
 		[RantDescription("Reverses the specified string and prints it to the output.")]
-		private static void Reverse(Sandbox sb, 
-			[RantDescription("The string to reverse.")]
-			string input)
+		private static void Reverse(Sandbox sb,
+			[RantDescription("The string to reverse.")] string input)
 		{
-			if (String.IsNullOrEmpty(input)) return;
+			if (string.IsNullOrEmpty(input)) return;
 			var buffer = new char[input.Length];
 			int numCombiners = 0;
 			int lastIndex = input.Length - 1;
@@ -923,11 +920,11 @@ namespace Rant.Core.Framework
 					}
 					numCombiners = 0;
 				}
-				else if (Char.IsLowSurrogate(input[i]))
+				else if (char.IsLowSurrogate(input[i]))
 				{
 					buffer[lastIndex - i + 1] = input[i];
 				}
-				else if (Char.IsHighSurrogate(input[i]))
+				else if (char.IsHighSurrogate(input[i]))
 				{
 					buffer[lastIndex - i - 1] = input[i];
 				}
@@ -941,11 +938,10 @@ namespace Rant.Core.Framework
 
 		[RantFunction("revx")]
 		[RantDescription("Reverses the specified string and inverts common brackets and quotation marks, then prints the result to the output.")]
-		private static void ReverseEx(Sandbox sb, 
-			[RantDescription("The string to reverse.")]
-			string input)
+		private static void ReverseEx(Sandbox sb,
+			[RantDescription("The string to reverse.")] string input)
 		{
-			if (String.IsNullOrEmpty(input)) return;
+			if (string.IsNullOrEmpty(input)) return;
 			var buffer = new char[input.Length];
 			int numCombiners = 0;
 			int lastIndex = input.Length - 1;
@@ -969,11 +965,11 @@ namespace Rant.Core.Framework
 					}
 					numCombiners = 0;
 				}
-				else if (Char.IsLowSurrogate(input[i]))
+				else if (char.IsLowSurrogate(input[i]))
 				{
 					buffer[lastIndex - i + 1] = input[i];
 				}
-				else if (Char.IsHighSurrogate(input[i]))
+				else if (char.IsHighSurrogate(input[i]))
 				{
 					buffer[lastIndex - i - 1] = input[i];
 				}
@@ -983,6 +979,76 @@ namespace Rant.Core.Framework
 				}
 			}
 			sb.Print(new string(buffer));
+		}
+
+		[RantFunction("accent")]
+		[RantDescription("Accents the previous character.")]
+		private static void AddAccent(Sandbox sb, Accent accent)
+		{
+			sb.Print(accent.GetAccentChar());
+		}
+
+		[RantFunction("accent")]
+		[RantDescription("Accents the specified character.")]
+		private static void AddAccent(Sandbox sb, string character, Accent accent)
+		{
+			sb.Print($"{character}{accent.GetAccentChar()}".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("acute", "act")]
+		[RantDescription("Accents the specified character with an acute (a\u0301) accent.")]
+		private static void AccentAcute(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0301".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("circumflex", "cflex")]
+		[RantDescription("Accents the specified character with a circumflex (a\u0302) accent.")]
+		private static void AccentCircumflex(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0302".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("grave", "grv")]
+		[RantDescription("Accents the specified character with a grave (a\u0300) accent.")]
+		private static void AccentGrave(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0300".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("ring")]
+		[RantDescription("Accents the specified character with a ring (a\u030A) accent.")]
+		private static void AccentRing(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u030A".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("tilde", "tld")]
+		[RantDescription("Accents the specified character with a tilde (a\u0303) accent.")]
+		private static void AccentTilde(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0303".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("diaeresis", "dia")]
+		[RantDescription("Accents the specified character with a diaeresis (a\u0308) accent.")]
+		private static void AccentDiaeresis(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0308".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("caron", "crn")]
+		[RantDescription("Accents the specified character with a caron (c\u030C) accent.")]
+		private static void AccentCaron(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u030C".Normalize(NormalizationForm.FormC));
+		}
+
+		[RantFunction("macron", "mcn")]
+		[RantDescription("Accents the specified character with a macron (c\u0304) accent.")]
+		private static void AccentMacron(Sandbox sb, string character)
+		{
+			sb.Print($"{character}\u0304".Normalize(NormalizationForm.FormC));
 		}
 	}
 }

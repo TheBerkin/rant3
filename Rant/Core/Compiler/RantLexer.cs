@@ -137,7 +137,7 @@ namespace Rant.Core.Compiler
 						while (i < len && input[i] != '\n') i++;
 						goto iterate;
 
-						// Escape sequence
+					// Escape sequence
 					case '\\':
 					{
 						if (text.Length > 0)

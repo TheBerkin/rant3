@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rant.Vocabulary.Utilities;
-
 namespace Rant.Vocabulary
 {
 	/// <summary>
@@ -11,12 +9,30 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed class RantDictionaryEntry
 	{
+		private const int INITIAL_METADATA_CAPACITY = 4;
+
 		private readonly HashSet<string> _classes;
 		private readonly HashSet<string> _optionalClasses;
 		private readonly RantDictionaryTerm[] _terms;
+		private readonly Lazy<Dictionary<string, object>> _metadata = new Lazy<Dictionary<string, object>>(() => new Dictionary<string, object>(INITIAL_METADATA_CAPACITY));
 
 		/// <summary>
-		/// Creates a new RantDictionaryEntry object from the specified data.
+		/// Creates a new instance of the <see cref="RantDictionaryEntry"/> object from the specified term array.
+		/// </summary>
+		/// <param name="terms">The terms in the entry.</param>
+		public RantDictionaryEntry(RantDictionaryTerm[] terms)
+		{
+			if (terms == null) throw new ArgumentNullException(nameof(terms));
+			_terms = terms.ToArray();
+			if (_terms.Length == 0) throw new ArgumentException("Term list is empty.");
+			TermCount = _terms.Length;
+			_classes = new HashSet<string>();
+			_optionalClasses = new HashSet<string>();
+			Weight = 1;
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="RantDictionaryEntry"/> object from the specified term array, classes, and weight.
 		/// </summary>
 		/// <param name="terms">The terms in the entry.</param>
 		/// <param name="classes">The classes associated with the entry.</param>
@@ -27,7 +43,7 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Creates a new RantDictionaryEntry object from the specified data.
+		/// Creates a new <see cref="RantDictionaryEntry"/> object from the specified term collection, classes, and weight.
 		/// </summary>
 		/// <param name="terms">The terms in the entry.</param>
 		/// <param name="classes">The classes associated with the entry.</param>
@@ -36,6 +52,7 @@ namespace Rant.Vocabulary
 		{
 			if (terms == null) throw new ArgumentNullException(nameof(terms));
 			_terms = terms.ToArray();
+			if (_terms.Length == 0) throw new ArgumentException("Term list is empty.");
 			TermCount = _terms.Length;
 			_classes = new HashSet<string>();
 			_optionalClasses = new HashSet<string>();
@@ -43,13 +60,13 @@ namespace Rant.Vocabulary
 			{
 				if (c.EndsWith("?"))
 				{
-					string trimmed = VocabUtils.GetString(c.Substring(0, c.Length - 1));
+					string trimmed = String.Intern(c.Substring(0, c.Length - 1));
 					_optionalClasses.Add(trimmed);
 					_classes.Add(trimmed);
 				}
 				else
 				{
-					_classes.Add(VocabUtils.GetString(c));
+					_classes.Add(String.Intern(c));
 				}
 			}
 			Weight = weight;
@@ -113,6 +130,11 @@ namespace Rant.Vocabulary
 		/// <param name="optional">Specifies whether the class is optional in carrier associations.</param>
 		public void AddClass(string className, bool optional = false)
 		{
+			if (className.Trim().EndsWith("?"))
+			{
+				optional = true;
+				className = String.Intern(className.Trim().TrimEnd('?'));
+			}
 			_classes.Add(className);
 			if (optional) _optionalClasses.Add(className);
 		}
@@ -125,6 +147,17 @@ namespace Rant.Vocabulary
 		{
 			_classes.Remove(className);
 			_optionalClasses.Remove(className);
+		}
+
+		/// <summary>
+		/// Adds metadata under the specified key to the entry.
+		/// </summary>
+		/// <param name="key">The key to store the data under.</param>
+		/// <param name="value">The value to store.</param>
+		public void AddMetadata(string key, object value)
+		{
+			if (key == null) throw new ArgumentNullException(nameof(key));
+			_metadata.Value[key] = value;
 		}
 
 		/// <summary>
@@ -141,7 +174,7 @@ namespace Rant.Vocabulary
 		public IEnumerable<string> GetRequiredClasses() => _classes.Except(_optionalClasses);
 
 		/// <summary>
-		/// Returns a string representation of the current RantDictionaryEntry instance.
+		/// Returns a string representation of the current <see cref="RantDictionaryEntry"/> instance.
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString() => _terms.Any() ? _terms[0].Value : "???";

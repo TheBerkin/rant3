@@ -14,94 +14,90 @@ namespace Rant.Vocabulary
 	{
 		internal const string MissingTerm = "[?]";
 		private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
-		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>();
+		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>(); // TODO: Use for indexing / weighted selection
 		private readonly HashSet<string> _hidden = new HashSet<string>();
+		private readonly int _termsPerEntry;
+		private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+		private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>(); 
 
 		/// <summary>
-		/// Creates a new RantDictionaryTable with the specified entries.
+		/// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
 		/// </summary>
-		/// <param name="name">the name of the table.</param>
-		/// <param name="subtypes">The subtype names.</param>
-		/// <param name="entries">The entries to add to the table.</param>
-		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries)
+		/// <param name="name">The name of the table.</param>
+		/// <param name="termsPerEntry">The number of terms to store in each entry.</param>
+		public RantDictionaryTable(string name, int termsPerEntry)
 		{
-			if (subtypes == null) throw new ArgumentNullException(nameof(subtypes));
-			if (entries == null) throw new ArgumentNullException(nameof(entries));
-
-			if (!Util.ValidateName(name))
-				throw new FormatException($"Invalid table name: '{name}'");
-
-			if (!subtypes.All(Util.ValidateName))
-				throw new FormatException("Invalid subtype name(s): " +
-				                          string.Join(", ",
-					                          subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
-
-			Subtypes = subtypes;
+			if (name == null) throw new ArgumentNullException(nameof(name));
+			if (termsPerEntry <= 0) throw new ArgumentException("Terms per entry must be greater than zero.");
+			if (!Util.ValidateName(name)) throw new ArgumentException($"Invalid table name: '{name}'");
+			_termsPerEntry = termsPerEntry;
 			Name = name;
-			_entriesHash.AddRange(entries);
-			_entriesList.AddRange(entries);
 		}
 
 		/// <summary>
-		/// Creates a new RantDictionaryTable with the specified entries.
-		/// </summary>
-		/// <param name="name">the name of the table.</param>
-		/// <param name="subtypes">The subtype names.</param>
-		/// <param name="entries">The entries to add to the table.</param>
-		/// <param name="hiddenClasses">The classes to hide.</param>
-		public RantDictionaryTable(string name, string[] subtypes, IEnumerable<RantDictionaryEntry> entries,
-			IEnumerable<string> hiddenClasses)
-		{
-			if (entries == null) throw new ArgumentNullException(nameof(entries));
-			if (hiddenClasses == null) throw new ArgumentNullException(nameof(hiddenClasses));
-			if (!Util.ValidateName(name))
-				throw new FormatException($"Invalid table name: '{name}'");
-
-			if (!subtypes.All(Util.ValidateName))
-				throw new FormatException("Invalid subtype name(s): " +
-				                          string.Join(", ",
-					                          subtypes.Where(s => !Util.ValidateName(s)).Select(s => $"'{s}'").ToArray()));
-
-			Subtypes = subtypes;
-			Name = name;
-			_entriesHash.AddRange(entries);
-			_entriesList.AddRange(entries);
-			foreach (string hiddenClass in hiddenClasses.Where(Util.ValidateName)) _hidden.Add(hiddenClass);
-		}
-
-		/// <summary>
-		/// The subtypes used by the table entries.
-		/// </summary>
-		public string[] Subtypes { get; }
-
-		/// <summary>
-		/// The name of the table.
+		/// Gets the name of the table.
 		/// </summary>
 		public string Name { get; }
 
 		/// <summary>
-		/// The language of the table (not yet used).
+		/// Gets the language code associated with the table (not yet used).
 		/// </summary>
-		public string Language { get; } = "en_US";
+		public string Language { get; } = "en-US";
 
 		/// <summary>
 		/// Gets the hidden classes of the table.
 		/// </summary>
-		public IEnumerable<string> HiddenClasses => _hidden;
+		public IEnumerable<string> HiddenClasses => _hidden.AsEnumerable();
 
 		/// <summary>
-		/// The number of entries stored in the table.
+		/// Gets the number of entries stored in the table.
 		/// </summary>
 		public int EntryCount => _entriesHash.Count;
 
 		/// <summary>
-		/// Gets the entries stored in the table.
+		/// Enumerates the entries stored in the table.
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<RantDictionaryEntry> GetEntries()
 		{
 			foreach (var entry in _entriesHash) yield return entry;
 		}
+
+		/// <summary>
+		/// Gets the number of terms required for entries contained in the current table.
+		/// </summary>
+		public int TermsPerEntry => _termsPerEntry;
+
+		/// <summary>
+		/// Enumerates the subtypes contained in the current table.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetSubtypes() => _subtypes.Keys;
+
+		/// <summary>
+		/// Determines whether the specified class is hidden by the table.
+		/// </summary>
+		/// <param name="className">The name of the class to check.</param>
+		/// <returns></returns>
+		public bool IsClassHidden(string className)
+		{
+			if (className == null) throw new ArgumentNullException(nameof(className));
+			return _hidden.Contains(className);
+		}
+
+		/// <summary>
+		/// Hides the specified class.
+		/// </summary>
+		/// <param name="className">The name of the class to hide.</param>
+		/// <returns></returns>
+		public bool HideClass(string className) => Util.ValidateName(className) && _hidden.Add(className);
+
+		/// <summary>
+		/// Unhides the specified class.
+		/// </summary>
+		/// <param name="className">The name of the class to unhide.</param>
+		/// <returns></returns>
+		public bool UnhideClass(string className) => className != null && _hidden.Remove(className);
 
 		/// <summary>
 		/// Adds the specified entry to the table.
@@ -111,6 +107,7 @@ namespace Rant.Vocabulary
 		public bool AddEntry(RantDictionaryEntry entry)
 		{
 			if (entry == null) throw new ArgumentNullException(nameof(entry));
+			if (entry.TermCount != _termsPerEntry) return false;
 			if (!_entriesHash.Add(entry)) return false;
 			_entriesList.Add(entry);
 			return true;
@@ -154,25 +151,89 @@ namespace Rant.Vocabulary
 			}
 		}
 
-		private int GetSubtypeIndex(string subtype)
+		/// <summary>
+		/// Adds a subtype of the specified name to the table.
+		/// If a subtype with the name already exists, it will be overwritten.
+		/// Subtypes are case insensitive.
+		/// If the name is not a valid identifier string, it will not be accepted.
+		/// </summary>
+		/// <param name="subtypeName">The name of the subtype to add.</param>
+		/// <param name="index">The term index to associate with the name.</param>
+		/// <returns>FALSE if the name was not a valid identifier or the index was out of range. TRUE if the operation was successful.</returns>
+		public bool AddSubtype(string subtypeName, int index)
 		{
-			if (string.IsNullOrEmpty(subtype)) return 0;
-			for (int i = 0; i < Subtypes.Length; i++)
+			if (index < 0 || index >= _termsPerEntry) return false;
+			if (subtypeName == null) throw new ArgumentNullException(nameof(subtypeName));
+			if (!Util.ValidateName(subtypeName)) return false;
+			_subtypes[subtypeName] = index;
+			HashSet<string> subs;
+			if (!_subtypeIndexMap.TryGetValue(index, out subs))
 			{
-				if (string.Equals(subtype, Subtypes[i], StringComparison.OrdinalIgnoreCase)) return i;
+				_subtypeIndexMap[index] = subs = new HashSet<string>();
 			}
-			return -1;
+			subs.Add(subtypeName);
+			return true;
 		}
 
 		/// <summary>
-		/// Adds another table's entries to the current table, given that they share the same name and subtypes.
+		/// Removes the specified subtype from the table, if it exists.
+		/// Subtypes are case insensitive.
+		/// </summary>
+		/// <param name="subtypeName">The name of the subtype to remove.</param>
+		/// <returns>TRUE if the subtype was found and removed. FALSE if the subtype was not found.</returns>
+		public bool RemoveSubtype(string subtypeName)
+		{
+			if (Util.IsNullOrWhiteSpace(subtypeName)) return false;
+			if (!_subtypes.ContainsKey(subtypeName)) return false;
+			HashSet<string> subs;
+			if (_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out subs))
+			{
+				return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Retrieves the term index assigned to the specified subtype.
+		/// If the subtype is not found, the method will return -1.
+		/// If the subtype is a null, whitespace, or an empty string, the method will return 0.
+		/// </summary>
+		/// <param name="subtype">The subtype to look up.</param>
+		/// <returns></returns>
+		public int GetSubtypeIndex(string subtype)
+		{	
+			if (Util.IsNullOrWhiteSpace(subtype)) return 0;
+			if (!Util.ValidateName(subtype)) return -1;
+			int index;
+			if (int.TryParse(subtype, out index) && index >= 0) return index;
+			return _subtypes.TryGetValue(subtype, out index) ? index : -1;
+		}
+
+		/// <summary>
+		/// Enumerates the subtypes associated with the specified term index.
+		/// </summary>
+		/// <param name="index">The index to get subtypes for.</param>
+		/// <returns></returns>
+		public IEnumerable<string> GetSubtypesForIndex(int index)
+		{
+			if (index < 0 || index >= _termsPerEntry) yield break;
+			HashSet<string> subs;
+			if (!_subtypeIndexMap.TryGetValue(index, out subs)) yield break;
+			foreach (var sub in subs) yield return sub;
+		}  
+
+		/// <summary>
+		/// Adds another table's entries to the current table, given that they share the same name and term count.
 		/// </summary>
 		/// <param name="other">The table whose entries will be added to the current instance.</param>
 		/// <returns>True if merge succeeded; otherwise, False.</returns>
 		public bool Merge(RantDictionaryTable other)
 		{
 			if (other.Name != Name || other == this) return false;
-			if (!other.Subtypes.SequenceEqual(Subtypes)) return false;
+			if (other._termsPerEntry != _termsPerEntry) return false;
 			_entriesHash.AddRange(other._entriesHash);
 			_entriesList.AddRange(other._entriesHash);
 			return true;
@@ -182,28 +243,8 @@ namespace Rant.Vocabulary
 		{
 			int index = string.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
 			if (index == -1) return null;
-
-			// Apply class filter
-			var pool = query.ClassFilter == null || query.ClassFilter.IsEmpty
-				? _entriesHash
-				: _entriesHash.Where(e => query.ClassFilter.Test(e, query.Exclusive));
-
-			// Apply class hiding
-			if (_hidden.Any())
-			{
-				var hide = _hidden.Where(hc => !query.ClassFilter.AllowsClass(hc))
-					.Except(dictionary.IncludedHiddenClasses);
-				pool = pool.Where(e => !hide.Any(e.ContainsClass));
-			}
-
-			// Apply regex filters
-			if (query.RegexFilters != null && query.RegexFilters.Any())
-				pool = query.RegexFilters.Aggregate(pool,
-					(current, regex) => current.Where(e => regex.Item1 == regex.Item2.IsMatch(e[index].Value)));
-
-			if (query.SyllablePredicate != null)
-				pool = pool.Where(e => query.SyllablePredicate.Test(e[index].SyllableCount));
-
+			
+			var pool = _entriesHash.Where((e, i) => query.GetFilters().All(f => f.Test(dictionary, this, e, i, query)));
 			if (!pool.Any()) return null;
 
 			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index];

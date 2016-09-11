@@ -8,7 +8,7 @@ namespace Rant.Vocabulary.Querying
 	/// <summary>
 	/// Defines a set of class filtering rules for a query.
 	/// </summary>
-	public sealed class ClassFilter
+	internal sealed class ClassFilter : Filter
 	{
 		private readonly List<ClassFilterRule[]> _items = new List<ClassFilterRule[]>();
 
@@ -26,6 +26,11 @@ namespace Rant.Vocabulary.Querying
 			_items.Add(new[] { item });
 		}
 
+		public ClassFilter()
+		{
+			// Used by serializer
+		}
+
 		/// <summary>
 		/// Adds a rule set that must satisfy one of the specified rules.
 		/// </summary>
@@ -34,19 +39,17 @@ namespace Rant.Vocabulary.Querying
 		{
 			_items.Add(items);
 		}
-
-		/// <summary>
-		/// Determines if the specified dictionary entry passes the filter.
-		/// </summary>
-		/// <param name="entry">The entry to test.</param>
-		/// <param name="exclusive">Specifies whether the search is exclusive.</param>
-		/// <returns></returns>
-		public bool Test(RantDictionaryEntry entry, bool exclusive = false)
+		
+		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query)
 		{
-			return exclusive
+			bool match = query.Exclusive
 				? _items.Any() == entry.GetClasses().Any()
 				  && entry.GetClasses().All(c => _items.Any(item => item.Any(rule => rule.ShouldMatch && rule.Class == c)))
 				: !_items.Any() || _items.All(set => set.Any(rule => entry.ContainsClass(rule.Class) == rule.ShouldMatch));
+			
+			// Enumerate hidden classes that aren't manually exposed or explicitly allowed by the filter
+			var hidden = table.HiddenClasses.Where(c => !AllowsClass(c)).Except(dictionary.IncludedHiddenClasses);
+			return match && !hidden.Any(entry.ContainsClass);
 		}
 
 		/// <summary>
@@ -57,8 +60,9 @@ namespace Rant.Vocabulary.Querying
 		public bool AllowsClass(string className) =>
 			_items.Any(item => item.Any(rule => (rule.Class == className) && rule.ShouldMatch));
 
-		internal void Serialize(EasyWriter output)
+		public override void Serialize(EasyWriter output)
 		{
+			output.Write(FILTER_CLASS);
 			output.Write(_items.Count);
 			foreach (var filter in _items)
 			{
@@ -71,7 +75,7 @@ namespace Rant.Vocabulary.Querying
 			}
 		}
 
-		internal void Deserialize(EasyReader input)
+		public override void Deserialize(EasyReader input)
 		{
 			int count = input.ReadInt32();
 			for (int i = 0; i < count; i++)
@@ -82,7 +86,7 @@ namespace Rant.Vocabulary.Querying
 				{
 					bool shouldMatch = input.ReadBoolean();
 					string clName = input.ReadString();
-					sw[i] = new ClassFilterRule(clName, shouldMatch);
+					sw[j] = new ClassFilterRule(clName, shouldMatch);
 				}
 				_items.Add(sw);
 			}

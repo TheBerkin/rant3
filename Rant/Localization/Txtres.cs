@@ -173,9 +173,16 @@ namespace Rant.Localization
 
 		public static string GetString(string name)
 		{
+			if (name == null) return "<null>";
 			CheckLanguage();
 			string str;
+#if !DEBUG
 			return _currentTable.TryGetValue(name, out str) ? str : name;
+#else
+			if (_currentTable.TryGetValue(name, out str)) return str;
+			Console.WriteLine($"MISSING STRING: {name}");
+			return name;
+#endif
 		}
 
 		public static string GetString(string name, params object[] args)
@@ -188,7 +195,7 @@ namespace Rant.Localization
 			}
 			catch
 			{
-				return "<Format Error>";
+				return $"<Format Error ({name})>";
 			}
 		}
 	}

@@ -279,7 +279,12 @@ namespace Rant.Resources
 					{
 						var t = tables[table.Name] = new BsonItem();
 						t["name"] = new BsonItem(table.Name);
-						t["subs"] = new BsonItem(table.Subtypes);
+						var subs = new BsonItem[table.TermsPerEntry];
+						for(int i = 0; i < table.TermsPerEntry; i++)
+						{
+							subs[i] = new BsonItem(table.GetSubtypesForIndex(i).ToArray());
+						}
+						t["subs"] = new BsonItem(subs);
 						t["language"] = new BsonItem(table.Language);
 						t["hidden"] = new BsonItem(table.HiddenClasses.ToArray());
 						t["hints"] = new BsonItem(0);
@@ -401,13 +406,18 @@ namespace Rant.Resources
 					var names = tables.Keys;
 					foreach (string name in names)
 					{
-						var table = tables[name];
-						string tableName = table["name"];
-						var tableSubs = (string[])table["subs"];
-						var hiddenClasses = (string[])table["hidden"];
-
-						var entries = new List<RantDictionaryEntry>();
-						var entryList = table["entries"];
+						var tableData = tables[name];
+						string tableName = tableData["name"];
+						var tableSubs = (object[])tableData["subs"];
+						var table = new RantDictionaryTable(tableName, tableSubs.Length);
+						int si = 0;
+						foreach (var termSubs in tableSubs.Cast<string[]>())
+						{
+							foreach (var sub in termSubs) table.AddSubtype(sub, si);
+							si++;
+						}
+						foreach (var hc in (string[])tableData["hidden"]) table.HideClass(hc);
+						var entryList = tableData["entries"];
 						for (int i = 0; i < entryList.Count; i++)
 						{
 							var loadedEntry = entryList[i];
@@ -428,15 +438,9 @@ namespace Rant.Resources
 								requiredClasses.Concat(optionalClasses.Select(x => x + "?")),
 								weight
 								);
-							entries.Add(entry);
+							table.AddEntry(entry);
 						}
-						var rantTable = new RantDictionaryTable(
-							tableName,
-							tableSubs,
-							entries,
-							hiddenClasses
-							);
-						package.AddTable(rantTable);
+						package.AddTable(table);
 					}
 				}
 

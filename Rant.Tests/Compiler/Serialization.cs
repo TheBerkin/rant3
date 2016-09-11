@@ -26,6 +26,7 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"[`[aeiou]+[wy]?`:The quick brown fox jumps over the lazy dog.;ur]")]
 		[TestCase(@"[$[concat:a;b]:[arg:a][arg:b]][$concat:Hello\s;World!]")]
 		[TestCase(@"[$[runx2:@a]:[arg:a] [arg:a]][$runx2:[x:_;forward][xpin:_][after:[xstep:_]]{Hello|World!}]")]
+		[TestCase(@"<noun.plural-a|b|c-d|e|f ?`foo`i ?!`bar` :: !a =b &c>")]
 		public void SerializeAndExecute(string pattern)
 		{
 			var ms = new MemoryStream();
@@ -35,8 +36,8 @@ namespace Rant.Tests.Compiler
 			var pgmDeser = RantProgram.LoadStream("Test", ms);
 			var resultSer = rant.Do(pgmSer, seed: 0).Main;
 			var resultDeser = rant.Do(pgmDeser, seed: 0).Main;
-			Console.WriteLine($"Original: '{resultSer}'");
-			Console.WriteLine($"Deserialized: '{resultDeser}'");
+			Console.WriteLine($"Before: '{resultSer}'");
+			Console.WriteLine($"After: '{resultDeser}'");
 			Assert.AreEqual(resultSer, resultDeser);
 		}
 	}

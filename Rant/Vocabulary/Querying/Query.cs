@@ -8,8 +8,10 @@ namespace Rant.Vocabulary.Querying
 	/// <summary>
 	/// Represents a set of search criteria for a Rant dictionary.
 	/// </summary>
-	public sealed class Query
+	internal sealed class Query
 	{
+		private readonly HashSet<Filter> _filters = new HashSet<Filter>();
+
 		/// <summary>
 		/// The carrier for the query.
 		/// </summary>
@@ -31,23 +33,17 @@ namespace Rant.Vocabulary.Querying
 		public bool Exclusive { get; set; }
 
 		/// <summary>
-		/// The syllable range predicate. Set to null for no syllable count filtering.
-		/// </summary>
-		public Range SyllablePredicate { get; set; }
-
-		/// <summary>
-		/// The class filter to search by.
-		/// </summary>
-		public ClassFilter ClassFilter { get; set; }
-
-		/// <summary>
-		/// The regex filters to search by.
-		/// </summary>
-		public List<_<bool, Regex>> RegexFilters { get; set; }
-
-		/// <summary>
 		/// Complement for phrasal verbs. Not yet available in public API.
 		/// </summary>
 		internal RST Complement { get; set; }
+
+		public void AddFilter(Filter filter) => _filters.Add(filter);
+
+		public IEnumerable<Filter> GetFilters()
+		{
+			foreach (var filter in _filters) yield return filter;
+		} 
+
+		public int FilterCount => _filters.Count;
 	}
 }

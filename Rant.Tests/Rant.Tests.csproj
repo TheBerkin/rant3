@@ -79,6 +79,7 @@
     <Compile Include="StringLocalization.cs" />
     <Compile Include="StringOps.cs" />
     <Compile Include="Subroutines.cs" />
+    <Compile Include="Tables.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="Misc\Utilities.cs" />
   </ItemGroup>
@@ -87,6 +88,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Tables\emoji.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tables\verbs.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tables\nouns.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestFile.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

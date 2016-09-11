@@ -9,7 +9,7 @@ using Rant.Vocabulary.Querying;
 namespace Rant.Vocabulary
 {
 	/// <summary>
-	/// Represents a Rant dictionary.
+	/// Represents a dictionary that can be loaded and queried by Rant.
 	/// </summary>
 	public sealed class RantDictionary
 	{
@@ -17,14 +17,14 @@ namespace Rant.Vocabulary
 		private readonly Dictionary<string, RantDictionaryTable> _tables = new Dictionary<string, RantDictionaryTable>();
 
 		/// <summary>
-		/// Creates a new RantDictionary object that contains no tables.
+		/// Initializes a new instance of the <see cref="RantDictionary"/> class with no tables.
 		/// </summary>
 		public RantDictionary()
 		{
 		}
 
 		/// <summary>
-		/// Creates a new RantDictionary object from the specified dictionary collection.
+		/// Initializes a new instance of the <see cref="RantDictionary"/> class with the specified set of tables.
 		/// </summary>
 		/// <param name="tables">The tables to store in the dictionary.</param>
 		public RantDictionary(IEnumerable<RantDictionaryTable> tables)
@@ -75,14 +75,26 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Adds a new RantDictionaryTable object to the collection.
+		/// Determines whether the specified class has been manually exposed (overriding hidden status).
 		/// </summary>
-		/// <param name="table"></param>
+		/// <param name="className">The name of the class to check.</param>
+		/// <returns></returns>
+		public bool ClassExposed(string className)
+		{
+			if (className == null) throw new ArgumentNullException(nameof(className));
+			return _exposedClasses.Contains(className);
+		}
+
+		/// <summary>
+		/// Adds a new <see cref="RantDictionaryTable"/> object to the dictionary.
+		/// </summary>
+		/// <param name="table">The table to add.</param>
 		public void AddTable(RantDictionaryTable table)
 		{
 			RantDictionaryTable oldTable;
 			if (_tables.TryGetValue(table.Name, out oldTable))
 			{
+				if (Object.ReferenceEquals(table, oldTable)) return;
 				oldTable.Merge(table);
 			}
 			else

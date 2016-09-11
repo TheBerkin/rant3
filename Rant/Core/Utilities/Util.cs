@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+
+using Rant.Core.Formatting;
 
 namespace Rant.Core.Utilities
 {
@@ -51,9 +54,12 @@ namespace Rant.Core.Utilities
 			return true;
 		}
 
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 		public static bool IsNullOrWhiteSpace(string value)
 		{
-			return value == null || value.Trim().Length == 0;
+			return value == null || value.Length == 0 || value.All(char.IsWhiteSpace);
 		}
 
 		public static int HashOf(params object[] objects)
@@ -182,9 +188,12 @@ namespace Rant.Core.Utilities
 				(noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 		}
 
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
 		public static bool ValidateName(string input)
 		{
-			return input.All(c => char.IsLetterOrDigit(c) || c == '_');
+			return input != null && input.Length > 0 && input.All(c => char.IsLetterOrDigit(c) || c == '_');
 		}
 
 		public static string Alt(string input, string alternate)
@@ -193,7 +202,6 @@ namespace Rant.Core.Utilities
 		}
 
 		public static int Mod(int a, int b) => ((a % b) + b) % b;
-
 #if !UNITY
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
@@ -234,6 +242,57 @@ namespace Rant.Core.Utilities
 				default:
 					return c;
 			}
+		}
+
+		public static char GetAccentChar(this Accent accent)
+		{
+			switch (accent)
+			{
+				case Accent.Acute:
+					return '\u0301';
+				case Accent.Circumflex:
+					return '\u0302';
+				case Accent.Grave:
+					return '\u0300';
+				case Accent.Ring:
+					return '\u030A';
+				case Accent.Tilde:
+					return '\u0303';
+				case Accent.Diaeresis:
+					return '\u0308';
+				case Accent.Caron:
+					return '\u030C';
+				case Accent.Macron:
+					return '\u0304';
+				default:
+					return '?';
+			}
+		}
+
+#if !UNITY
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+		public static bool TryParseSurrogatePair(string value, out char highSurrogate, out char lowSurrogate)
+		{
+			highSurrogate = lowSurrogate = '\0';
+			if (value?.Length != 8) return false;
+
+			const uint lowSurrogateMask = 0x3ff;
+			const uint highSurrogateMask = lowSurrogateMask << 10;
+			const uint lowSurrogateOffset = 0xDC00;
+			const uint highSurrogateOffset = 0xD800;
+			const uint minCodePoint = 0x10000;
+			uint codePoint;
+
+			if (!uint.TryParse(value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+				return false;
+			if (codePoint < minCodePoint) return false;
+
+			codePoint -= minCodePoint;
+			highSurrogate = (char)(((codePoint & highSurrogateMask) >> 10) + highSurrogateOffset);
+			lowSurrogate = (char)((codePoint & lowSurrogateMask) + lowSurrogateOffset);
+
+			return true;
 		}
 	}
 }

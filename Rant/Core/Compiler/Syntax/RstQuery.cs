@@ -87,37 +87,10 @@ namespace Rant.Core.Compiler.Syntax
 			output.Write(_query.Name);
 			output.Write(_query.Subtype);
 			output.Write(_query.Exclusive);
-
-			// Syllable predicate
-			output.Write(_query.SyllablePredicate != null);
-			if (_query.SyllablePredicate != null)
+			output.Write(_query.FilterCount);
+			foreach (var filter in _query.GetFilters())
 			{
-				output.Write(_query.SyllablePredicate.Minimum != null);
-				if (_query.SyllablePredicate.Minimum != null)
-					output.Write(_query.SyllablePredicate.Minimum.Value);
-				output.Write(_query.SyllablePredicate.Maximum != null);
-				if (_query.SyllablePredicate.Maximum != null)
-					output.Write(_query.SyllablePredicate.Maximum.Value);
-			}
-
-			// Regex filters
-			output.Write(_query.RegexFilters.Count);
-			foreach (var regexFilter in _query.RegexFilters)
-			{
-				output.Write(regexFilter.Item1);
-				output.Write((regexFilter.Item2.Options & RegexOptions.IgnoreCase) != 0);
-				output.Write(regexFilter.Item2.ToString());
-			}
-
-			// Class filter
-			if (_query.ClassFilter != null)
-			{
-				output.Write(true);
-				_query.ClassFilter.Serialize(output);
-			}
-			else
-			{
-				output.Write(false);
+				filter.Serialize(output);
 			}
 
 			// Carrier
@@ -143,36 +116,14 @@ namespace Rant.Core.Compiler.Syntax
 			_query.Subtype = input.ReadString();
 			_query.Exclusive = input.ReadBoolean();
 
-			// Syllable predicate
-			if (input.ReadBoolean())
+			// Read filters
+			int filterCount = input.ReadInt32();
+			for (int i = 0; i < filterCount; i++)
 			{
-				int? min = null;
-				int? max = null;
-				if (input.ReadBoolean()) min = input.ReadInt32();
-				if (input.ReadBoolean()) max = input.ReadInt32();
-				_query.SyllablePredicate = new Range(min, max);
-			}
-
-			// Regex filters
-			int regexFilterCount = input.ReadInt32();
-			if (regexFilterCount > 0)
-			{
-				_query.RegexFilters = new List<_<bool, Regex>>(regexFilterCount);
-
-				for (int i = 0; i < regexFilterCount; i++)
-				{
-					var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
-					bool match = input.ReadBoolean();
-					if (input.ReadBoolean()) options |= RegexOptions.IgnoreCase;
-					_query.RegexFilters.Add(new _<bool, Regex>(match, new Regex(input.ReadString(), options)));
-				}
-			}
-
-			// Class filter
-			if (input.ReadBoolean())
-			{
-				_query.ClassFilter = new ClassFilter();
-				_query.ClassFilter.Deserialize(input);
+				var filter = Filter.GetFilterInstance(input.ReadUInt16());
+				if (filter == null) continue;
+				filter.Deserialize(input);
+				_query.AddFilter(filter);
 			}
 
 			// Carrier

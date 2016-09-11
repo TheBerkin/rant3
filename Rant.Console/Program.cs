@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Rant;
 using Rant.Vocabulary;
@@ -31,6 +32,7 @@ namespace RantConsole
 		{
 			//Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
+			OutputEncoding = Encoding.Unicode;
 			Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
 			var rant = new RantEngine();
