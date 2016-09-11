@@ -447,7 +447,7 @@ namespace Rant.Core.Compiler
 			}
 			SkipSpace();
 			var token = _tokens[Position++];
-			SkipSpace();
+			//SkipSpace();
 			return token;
 		}
 

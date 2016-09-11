@@ -49,7 +49,13 @@ namespace Rant.Core.Compiler.Syntax
 			{
 				if (result.IsSplit)
 				{
-					if (result.ValueSplitIndex == 0) // Pushes complement to the left of the query result
+					if (_query.Complement == null)
+					{
+						sb.Print(result.Value.Substring(0, result.ValueSplitIndex));
+						sb.Print(' ');
+						sb.Print(result.Value.Substring(result.ValueSplitIndex));
+					}
+					else if (result.ValueSplitIndex == 0) // Pushes complement to the left of the query result
 					{
 						yield return _query.Complement;
 						sb.Print(' ');
@@ -61,7 +67,7 @@ namespace Rant.Core.Compiler.Syntax
 						sb.Print(' ');
 						yield return _query.Complement;
 					}
-					else
+					else // Complement goes inside phrase
 					{
 						sb.Print(result.Value.Substring(0, result.ValueSplitIndex));
 						sb.Print(' ');

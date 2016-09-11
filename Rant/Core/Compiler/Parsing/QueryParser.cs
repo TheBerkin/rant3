@@ -59,6 +59,7 @@ namespace Rant.Core.Compiler.Parsing
 						var classFilter = new ClassFilter();
 						do
 						{
+							reader.SkipSpace();
 							bool blacklist = false;
 							// check if it's a blacklist filter
 							if (reader.PeekType() == R.Exclamation)
@@ -79,6 +80,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.Without:
 					case R.Question:
 					{
+						reader.SkipSpace();
 						bool blacklist = (token.Type == R.Without);
 
 						var regexFilter = reader.Read(R.Regex, "regex filter rule");

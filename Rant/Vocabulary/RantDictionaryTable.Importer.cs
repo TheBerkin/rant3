@@ -500,10 +500,11 @@ namespace Rant.Vocabulary
 						case ',':
 							if (t >= terms.Length)
 								throw new RantTableLoadException(origin, line, i, "err-table-too-many-terms", terms.Length, t);
-							terms[t++] = new RantDictionaryTerm(buffer.ToString());
+							terms[t++] = new RantDictionaryTerm(buffer.ToString(), split);
 							buffer.Length = 0;
 							white.Length = 0;
 							split = -1;
+							SkipSpace(str, len, ref i);
 							break;
 						default:
 							if (char.IsWhiteSpace(c))

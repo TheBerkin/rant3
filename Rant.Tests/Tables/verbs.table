@@ -13,6 +13,7 @@
 @sub 7,	plural_nominalization, noms
 
 @id dig
+@dummy
 > dig, dug, digging, digs, digger, dug, dig, digs
 	- class movement, physical
 
@@ -21,3 +22,6 @@
 
 @using dig
 > [] + through, [] + through, [] + through, [] + through, [], [] + through, [], []
+
+> piss + off, pissed + off, pissing + off, pisses + off, piss-offer, pissed-off, pissing-off, pissing-offs
+	- class phrasal_test

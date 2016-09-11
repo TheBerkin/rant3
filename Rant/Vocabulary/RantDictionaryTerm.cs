@@ -18,9 +18,11 @@ namespace Rant.Vocabulary
 		/// Intializes a new instance of the <see cref="RantDictionaryTerm"/> class with the specified value string.
 		/// </summary>
 		/// <param name="value">The value of the term.</param>
-		public RantDictionaryTerm(string value)
+		/// <param name="splitIndex">The split index of the term value. Specify -1 for no split.</param>
+		public RantDictionaryTerm(string value, int splitIndex = -1)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
+			ValueSplitIndex = splitIndex;
 			_value = String.Intern(value);
 		}
 
