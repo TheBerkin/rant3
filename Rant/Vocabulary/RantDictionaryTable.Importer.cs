@@ -368,6 +368,11 @@ namespace Rant.Vocabulary
 								throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
 							int start = i;
 							int termIndex = -1;
+							if (white.Length > 0)
+							{
+								buffer.Append(white);
+								white.Length = 0;
+							}
 							switch (str[i++])
 							{
 								// Current term from active template
