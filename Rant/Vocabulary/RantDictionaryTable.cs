@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.IO.Bson;
 using Rant.Core.Utilities;
+using Rant.Resources;
 using Rant.Vocabulary.Querying;
 
 namespace Rant.Vocabulary
@@ -10,13 +12,13 @@ namespace Rant.Vocabulary
 	/// <summary>
 	/// Represents a named collection of dictionary entries.
 	/// </summary>
-	public sealed partial class RantDictionaryTable
+	public sealed partial class RantDictionaryTable : RantResource
 	{
 		internal const string MissingTerm = "[?]";
 		private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
 		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>(); // TODO: Use for indexing / weighted selection
 		private readonly HashSet<string> _hidden = new HashSet<string>();
-		private readonly int _termsPerEntry;
+		private int _termsPerEntry;
 		private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 		private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>(); 
 
@@ -34,15 +36,20 @@ namespace Rant.Vocabulary
 			Name = name;
 		}
 
+		internal RantDictionaryTable()
+		{
+			// Used by serializer
+		}
+
 		/// <summary>
 		/// Gets the name of the table.
 		/// </summary>
-		public string Name { get; }
+		public string Name { get; private set; }
 
 		/// <summary>
 		/// Gets the language code associated with the table (not yet used).
 		/// </summary>
-		public string Language { get; } = "en-US";
+		public string Language { get; private set; } = "en-US";
 
 		/// <summary>
 		/// Gets the hidden classes of the table.
@@ -248,6 +255,119 @@ namespace Rant.Vocabulary
 			if (!pool.Any()) return null;
 
 			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index];
+		}
+
+		internal override void DeserializeData(BsonItem data)
+		{
+			// General data
+			Name = data["name"];
+			_termsPerEntry = (int)data["termc"];
+			Language = data["lang"];
+
+			// Subtypes
+			var subs = data["subs"].Values;
+			int si = 0;
+			foreach (var subList in subs)
+			{
+				foreach (var sub in subList.Values)
+				{
+					AddSubtype(sub, si);
+				}
+				si++;
+			}
+
+			// Hidden classes
+			foreach (var hiddenClass in data["hidden-classes"].Values) _hidden.Add(hiddenClass);
+
+			var entries = data["entries"];
+			int count = entries.Count;
+			
+			// Entries
+			for (int i = 0; i < count; i++)
+			{
+				var entryData = entries[i];
+				// Terms
+				var terms =
+					from BsonItem termData in entryData["terms"].ToValueArray()
+					let value = termData["value"]
+					let pron = termData["pron"]
+					let valueSplit = (int)(termData["value-split"] ?? -1)
+					let pronSplit = (int)(termData["pron-split"] ?? -1)
+					select new RantDictionaryTerm(value, pron, valueSplit, pronSplit);
+
+				var entry = new RantDictionaryEntry(terms.ToArray(), (string[])entryData["classes"], (int)(entryData["weight"] ?? 1));
+
+				// Optional classes
+				foreach (var optionalClass in (string[])entryData["optional-classes"].Value)
+				{
+					entry.AddClass(optionalClass, true);
+				}
+
+				// Metadata
+				var meta = entryData["metadata"];
+				foreach (string metaKey in meta.Keys)
+				{
+					entry.SetMetadata(metaKey, meta[metaKey].Value);
+				}
+			}
+		}
+
+		internal override BsonItem SerializeData()
+		{
+			var data = new BsonItem
+			{
+				["name"] = Name,
+				["lang"] = Language,
+				["termc"] = _termsPerEntry
+			};
+
+			var subs = new BsonItem[_termsPerEntry];
+			for (int i = 0; i < _termsPerEntry; i++)
+			{
+				subs[i] = new BsonItem(GetSubtypesForIndex(i).ToArray());
+			}
+			data["subs"] = new BsonItem(subs);
+
+			data["hidden-classes"] = new BsonItem(_hidden.ToArray());
+
+			var entries = new BsonItem[_entriesList.Count];
+			for (int i = 0; i < _entriesList.Count; i++)
+			{
+				var entry = _entriesList[i];
+				var entryData = new BsonItem();
+				var termData = new BsonItem[_termsPerEntry];
+				for (int j = 0; j < _termsPerEntry; j++)
+				{
+					termData[j] = new BsonItem
+					{
+						["value"] = entry[j].Value,
+						["pron"] = entry[j].Pronunciation,
+						["value-split"] = entry[j].ValueSplitIndex,
+						["pron-split"] = entry[j].PronunciationSplitIndex
+					};
+				}
+				entryData["terms"] = new BsonItem(termData);
+
+				entryData["classes"] = new BsonItem(entry.GetRequiredClasses().ToArray());
+				entryData["optional-classes"] = new BsonItem(entry.GetOptionalClasses().ToArray());
+
+				var metaData = new BsonItem();
+				foreach (var metaKey in entry.GetMetadataKeys())
+				{
+					metaData[metaKey] = new BsonItem(entry.GetMetadata(metaKey));
+				}
+				entryData["metadata"] = metaData;
+				entries[i] = entryData;
+			}
+
+			data["entries"] = new BsonItem(entries);
+
+			return data;
+		}
+
+		internal override void Load(RantEngine engine)
+		{
+			engine.Dictionary.AddTable(this);
 		}
 	}
 }

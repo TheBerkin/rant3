@@ -3,9 +3,8 @@
 namespace Rant
 {
 	/// <summary>
-	/// Represents an error caused by an internal flaw in Rant
+	/// Represents an error that has been caused by a problem inside the Rant engine. This typically indicates the presence of a bug.
 	/// </summary>
-	// TODO: better xml comment maybe?
 	public sealed class RantInternalException : Exception
 	{
 		internal RantInternalException()

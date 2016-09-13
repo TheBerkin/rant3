@@ -205,14 +205,7 @@ namespace Rant.Core.Framework
 				string word = words[0];
 				if (word.Length == 1)
 				{
-					if (char.IsUpper(word[0]))
-					{
-						output.Capitalize(Capitalization.First);
-					}
-					else
-					{
-						output.Capitalize(Capitalization.None);
-					}
+					output.Capitalize(char.IsUpper(word[0]) ? Capitalization.First : Capitalization.None);
 				}
 				else if (Util.IsUppercase(word))
 				{
@@ -662,7 +655,7 @@ namespace Rant.Core.Framework
 
 			try
 			{
-				action = sb.Engine.GetPattern(name).SyntaxTree;
+				action = sb.Engine.GetProgramInternal(name).SyntaxTree;
 			}
 			catch (RantCompilerException e)
 			{
@@ -870,13 +863,21 @@ namespace Rant.Core.Framework
 			}
 			string file;
 			if (File.Exists(name + ".module.rant"))
+			{
 				file = name + ".module.rant";
+			}
 			else if (File.Exists(name + ".rant"))
+			{
 				file = name + ".rant";
+			}
 			else if (File.Exists(name))
+			{
 				file = name;
+			}
 			else
+			{
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"Could not find module '{name}'.");
+			}
 			var pattern = RantProgram.CompileFile(file);
 			if (pattern.Module == null)
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"No module is defined in {file}.");

@@ -258,11 +258,11 @@ namespace Rant.Vocabulary
 								default:
 									if (args.Count == 1)
 									{
-										currentEntry.AddMetadata(propName, args[0].Value);
+										currentEntry.SetMetadata(propName, args[0].Value);
 									}
 									else
 									{
-										currentEntry.AddMetadata(propName, args.ToArray());
+										currentEntry.SetMetadata(propName, args.ToArray());
 									}
 									break;
 							}
@@ -352,6 +352,9 @@ namespace Rant.Vocabulary
 				{
 					switch (c = str[i++])
 					{
+						// Inline comment
+						case '#':
+							goto done;
 						// Phrasal split operator
 						case '+':
 							if (split > -1)
@@ -524,6 +527,8 @@ namespace Rant.Vocabulary
 					}
 				}
 
+				done:
+
 				if (t != terms.Length - 1)
 					throw new RantTableLoadException(origin, line, i, "err-table-too-few-terms", terms.Length, t + 1);
 
@@ -544,7 +549,7 @@ namespace Rant.Vocabulary
 			{
 				result = null;
 				while (i < len && char.IsWhiteSpace(str[i])) i++;
-				if (i == len) return false;
+				if (i == len || str[i] == '#') return false;
 				int start = i;
 				var buffer = new StringBuilder();
 				char c;
@@ -628,6 +633,7 @@ namespace Rant.Vocabulary
 					switch (c = str[i++])
 					{
 						case ',':
+						case '#':
 							result = new Argument(start, buffer.ToString());
 							return true;
 						case '\\':

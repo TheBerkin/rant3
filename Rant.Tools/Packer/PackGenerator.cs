@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 using Rant.Core.IO.Bson;
 using Rant.Resources;
-using Rant.Vocabulary;
 
 namespace Rant.Tools.Packer
 {
@@ -100,7 +99,7 @@ namespace Rant.Tools.Packer
 				string relativePath;
 				TryGetRelativePath(contentPath, path, out relativePath, true);
 				pattern.Name = relativePath;
-				package.AddPattern(pattern);
+				package.AddResource(pattern);
 				Console.WriteLine("+ " + pattern.Name);
 			}
 

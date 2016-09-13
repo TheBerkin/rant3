@@ -7,6 +7,7 @@ using System.Text;
 using Rant.Core.Compiler;
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.IO;
+using Rant.Core.IO.Bson;
 using Rant.Core.Utilities;
 using Rant.Resources;
 
@@ -18,10 +19,10 @@ namespace Rant
 	/// Represents a compiled pattern that can be executed by the engine. It is recommended to use this class when running the
 	/// same pattern multiple times.
 	/// </summary>
-	public sealed class RantProgram
+	public sealed class RantProgram : RantResource
 	{
-		private const string Magic = "RPGM";
-		private const string Extension = ".rpgm";
+		private const string Magic = "RANT";
+		private const string Extension = ".rantpgm";
 
 		private static readonly HashSet<char> _invalidNameChars =
 			new HashSet<char>(new[] { '$', '@', ':', '~', '%', '?', '>', '<', '[', ']', '|', '{', '}', '?' });
@@ -44,7 +45,7 @@ namespace Rant
 			Type = type;
 			Code = null;
 			SyntaxTree = rst;
-			Module = null; // TODO: What are modules even useful for?
+			Module = null;
 		}
 
 		/// <summary>
@@ -72,8 +73,8 @@ namespace Rant
 		/// </summary>
 		public string Code { get; }
 
-		internal RST SyntaxTree { get; }
-		internal RantModule Module { get; }
+		internal RST SyntaxTree { get; private set; }
+		internal RantModule Module { get; private set; }
 
 		/// <summary>
 		/// Compiles a program from the specified pattern.
@@ -170,5 +171,35 @@ namespace Rant
 		public override string ToString() => $"{Name} [{Type}]";
 
 		private static bool IsValidPatternName(string name) => !Util.IsNullOrWhiteSpace(name) && name.All(c => !_invalidNameChars.Contains(c));
+
+		internal override void DeserializeData(BsonItem data)
+		{
+			Name = data["name"];
+			using(var ms = new MemoryStream((byte[])data["code"].Value))
+			using(var reader = new EasyReader(ms))
+			{
+				SyntaxTree = RST.DeserializeRST(reader);
+			}
+		}
+
+		internal override BsonItem SerializeData()
+		{
+			var data = new BsonItem { ["name"] = Name };
+
+			using(var ms = new MemoryStream())
+			using(var writer = new EasyWriter(ms))
+			{
+				RST.SerializeRST(SyntaxTree, writer);
+				ms.Flush();
+				data["code"] = new BsonItem(ms.ToArray());
+			}
+			return data;
+		}
+
+		internal override void Load(RantEngine engine)
+		{
+			engine.CacheProgramInternal(this);
+			if (Module != null) engine.PackageModules[Name] = Module;
+		}
 	}
 }

@@ -8,7 +8,6 @@ using Rant.Core.IO;
 using Rant.Core.IO.Bson;
 using Rant.Core.IO.Compression;
 using Rant.Core.Utilities;
-using Rant.Vocabulary;
 
 using static Rant.Localization.Txtres;
 
@@ -19,12 +18,12 @@ namespace Rant.Resources
 	/// </summary>
 	public sealed class RantPackage
 	{
-		private const string MAGIC = "RANT";
-		private const byte PACKAGE_VERSION = 2;
+		private const string MAGIC = "RPKG";
+		internal const string EXTENSION = ".rantpkg";
+		private const ushort PACKAGE_VERSION = 3;
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
+		private readonly HashSet<RantResource> _resources = new HashSet<RantResource>(); 
 		private string _id = GetString("default-package-id");
-		private HashSet<RantProgram> _patterns = new HashSet<RantProgram>();
-		private HashSet<RantDictionaryTable> _tables = new HashSet<RantDictionaryTable>();
 		private string _title = GetString("untitled-package");
 		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
 
@@ -53,16 +52,6 @@ namespace Rant.Resources
 				_id = value;
 			}
 		}
-
-		/// <summary>
-		/// Determines whether the package contains any patterns.
-		/// </summary>
-		public bool HasPatterns => _patterns.Count > 0;
-
-		/// <summary>
-		/// Determines whether the package contains any tables.
-		/// </summary>
-		public bool HasDictionary => _tables.Count > 0;
 
 		/// <summary>
 		/// The description for the package.
@@ -174,54 +163,49 @@ namespace Rant.Resources
 		public void ClearDependencies() => _dependencies.Clear();
 
 		/// <summary>
-		/// Adds the specified pattern to the package.
+		/// Enumerates all resources in the package.
 		/// </summary>
-		/// <param name="pattern">The pattern to add.</param>
-		public void AddPattern(RantProgram pattern)
-			=> (_patterns ?? (_patterns = new HashSet<RantProgram>())).Add(pattern);
+		/// <returns></returns>
+		public IEnumerable<RantResource> GetResources() => _resources.AsEnumerable(); 
 
 		/// <summary>
-		/// Adds the specified table to the package.
+		/// Enumerates all resources matching the specified resource type.
 		/// </summary>
-		/// <param name="table">The table to add.</param>
-		public void AddTable(RantDictionaryTable table)
-			=> (_tables ?? (_tables = new HashSet<RantDictionaryTable>())).Add(table);
+		/// <typeparam name="TResource">The resource type to search for.</typeparam>
+		/// <returns></returns>
+		public IEnumerable<TResource> GetResources<TResource>() where TResource : RantResource => _resources.OfType<TResource>();
 
 		/// <summary>
-		/// Adds the tables from the specified dictionary to the package.
+		/// Adds the specified resource to the package.
 		/// </summary>
-		/// <param name="dictionary">The dictionary to add.</param>
-		public void AddDictionary(RantDictionary dictionary)
+		/// <param name="resource">The resource to add.</param>
+		/// <returns></returns>
+		public bool AddResource(RantResource resource)
 		{
-			if (_tables == null)
-				_tables = new HashSet<RantDictionaryTable>();
-
-			foreach (var table in dictionary.GetTables())
-			{
-				_tables.Add(table);
-			}
+			if (resource == null) throw new ArgumentNullException(nameof(resource));
+			return _resources.Add(resource);
 		}
 
 		/// <summary>
-		/// Enumerates the patterns contained in the package.
+		/// Removes the specified resource from the package.
 		/// </summary>
+		/// <param name="resource">The resource to remove.</param>
 		/// <returns></returns>
-		public IEnumerable<RantProgram> GetPatterns()
+		public bool RemoveResource(RantResource resource)
 		{
-			if (_patterns == null) yield break;
-			foreach (var pattern in _patterns)
-				yield return pattern;
+			if (resource == null) throw new ArgumentNullException(nameof(resource));
+			return _resources.Remove(resource);
 		}
 
 		/// <summary>
-		/// Enumerates the tables contained in the package.
+		/// Determines whether the package contains the specified resource.
 		/// </summary>
+		/// <param name="resource">The resource to search for.</param>
 		/// <returns></returns>
-		public IEnumerable<RantDictionaryTable> GetTables()
+		public bool ContainsResource(RantResource resource)
 		{
-			if (_tables == null) yield break;
-			foreach (var table in _tables)
-				yield return table;
+			if (resource == null) throw new ArgumentNullException(nameof(resource));
+			return _resources.Contains(resource);
 		}
 
 		/// <summary>
@@ -237,90 +221,43 @@ namespace Rant.Resources
 		{
 			if (string.IsNullOrEmpty(Path.GetExtension(path)))
 			{
-				path += ".rantpkg";
+				path += EXTENSION;
 			}
 
 			using (var writer = new EasyWriter(File.Create(path)))
 			{
-				var doc = new BsonDocument(stringTableMode);
-				var info = doc.Top["info"] = new BsonItem();
-				info["title"] = new BsonItem(_title);
-				info["id"] = new BsonItem(_id);
-				info["description"] = new BsonItem(Description);
-				info["tags"] = new BsonItem(Tags);
-				info["version"] = new BsonItem(Version.ToString());
-				info["authors"] = new BsonItem(Authors);
-				info["dependencies"] = new BsonItem(_dependencies.Select(dep =>
+				var doc = new BsonDocument(stringTableMode)
 				{
-					var depObj = new BsonItem();
-					depObj["id"] = dep.ID;
-					depObj["version"] = dep.Version.ToString();
-					depObj["allow-newer"] = dep.AllowNewer;
-					return depObj;
-				}).ToArray());
-
-				var patterns = doc.Top["patterns"] = new BsonItem();
-				if (_patterns != null)
-				{
-					foreach (var pattern in _patterns)
+					Top =
 					{
-						using (var ms = new MemoryStream())
+						["info"] = new BsonItem
 						{
-							pattern.SaveToStream(ms);
-							patterns[pattern.Name] = new BsonItem(ms.ToArray());
-						}
-					}
-				}
-
-				var tables = doc.Top["tables"] = new BsonItem();
-				if (_tables != null)
-				{
-					foreach (var table in _tables)
-					{
-						var t = tables[table.Name] = new BsonItem();
-						t["name"] = new BsonItem(table.Name);
-						var subs = new BsonItem[table.TermsPerEntry];
-						for(int i = 0; i < table.TermsPerEntry; i++)
-						{
-							subs[i] = new BsonItem(table.GetSubtypesForIndex(i).ToArray());
-						}
-						t["subs"] = new BsonItem(subs);
-						t["language"] = new BsonItem(table.Language);
-						t["hidden"] = new BsonItem(table.HiddenClasses.ToArray());
-						t["hints"] = new BsonItem(0);
-						var entries = new List<BsonItem>();
-						foreach (var entry in table.GetEntries())
-						{
-							var e = new BsonItem();
-							if (entry.Weight != 1)
-								e["weight"] = new BsonItem(entry.Weight);
-							var requiredClasses = entry.GetRequiredClasses().ToArray();
-							if (requiredClasses.Length > 0)
-								e["classes"] = new BsonItem(requiredClasses);
-							var optionalClasses = entry.GetOptionalClasses().ToArray();
-							if (optionalClasses.Length > 0)
-								e["optional_classes"] = new BsonItem();
-							var terms = new List<BsonItem>();
-							foreach (var term in entry.GetTerms())
+							["title"] = new BsonItem(_title),
+							["id"] = new BsonItem(_id),
+							["description"] = new BsonItem(Description),
+							["tags"] = new BsonItem(Tags),
+							["version"] = new BsonItem(Version.ToString()),
+							["authors"] = new BsonItem(Authors),
+							["dependencies"] = new BsonItem(_dependencies.Select(dep =>
 							{
-								var et = new BsonItem();
-								et["value"] = new BsonItem(term.Value);
-								if (term.Pronunciation != "")
-									et["pron"] = new BsonItem(term.Pronunciation);
-								terms.Add(et);
-							}
-							e["terms"] = new BsonItem(terms.ToArray());
-							entries.Add(e);
-						}
-						t["entries"] = new BsonItem(entries.ToArray());
+								var depObj = new BsonItem
+								{
+									["id"] = dep.ID,
+									["version"] = dep.Version.ToString(),
+									["allow-newer"] = dep.AllowNewer
+								};
+								return depObj;
+							}).ToArray())
+						},
+						["resources"] = new BsonItem(_resources.Select(RantResource.SerializeResource).ToList())
 					}
-				}
+				};
 
 				var data = doc.ToByteArray(stringTableMode != BsonStringTableMode.None);
 				if (compress)
 					data = EasyCompressor.Compress(data);
-				writer.Write(Encoding.ASCII.GetBytes("RANT"));
-				writer.Write((uint)2);
+				writer.Write(Encoding.ASCII.GetBytes(MAGIC));
+				writer.Write(PACKAGE_VERSION);
 				writer.Write(compress);
 				writer.Write(data.Length);
 				writer.Write(data);
@@ -334,7 +271,7 @@ namespace Rant.Resources
 		/// <returns></returns>
 		public static RantPackage Load(string path)
 		{
-			if (string.IsNullOrEmpty(Path.GetExtension(path))) path += ".rantpkg";
+			if (string.IsNullOrEmpty(Path.GetExtension(path))) path += EXTENSION;
 			return Load(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read));
 		}
 
@@ -351,14 +288,13 @@ namespace Rant.Resources
 				if (magic != MAGIC)
 					throw new InvalidDataException(GetString("err-file-corrupt"));
 				var package = new RantPackage();
-				uint version = reader.ReadUInt32();
+				ushort version = reader.ReadUInt16();
 				if (version != PACKAGE_VERSION)
-					throw new InvalidDataException(GetString("err-invalid-package-version"));
+					throw new InvalidDataException(GetString("err-invalid-package-version", version));
 				bool compress = reader.ReadBoolean();
 				int size = reader.ReadInt32();
 				var data = reader.ReadBytes(size);
-				if (compress)
-					data = EasyCompressor.Decompress(data);
+				if (compress) data = EasyCompressor.Decompress(data);
 				var doc = BsonDocument.Read(data);
 
 				var info = doc["info"];
@@ -371,6 +307,7 @@ namespace Rant.Resources
 				package.Description = info["description"];
 				package.Authors = (string[])info["authors"];
 				package.Tags = (string[])info["tags"];
+
 				var deps = info["dependencies"];
 				if (deps != null && deps.IsArray)
 				{
@@ -387,62 +324,8 @@ namespace Rant.Resources
 					}
 				}
 
-				var patterns = doc["patterns"];
-				if (patterns != null)
-				{
-					var names = patterns.Keys;
-					foreach (string name in names)
-					{
-						using (var ms = new MemoryStream((byte[])patterns[name].Value))
-						{
-							package.AddPattern(RantProgram.LoadStream(name, ms));
-						}
-					}
-				}
-
-				var tables = doc["tables"];
-				if (tables != null)
-				{
-					var names = tables.Keys;
-					foreach (string name in names)
-					{
-						var tableData = tables[name];
-						string tableName = tableData["name"];
-						var tableSubs = (object[])tableData["subs"];
-						var table = new RantDictionaryTable(tableName, tableSubs.Length);
-						int si = 0;
-						foreach (var termSubs in tableSubs.Cast<string[]>())
-						{
-							foreach (var sub in termSubs) table.AddSubtype(sub, si);
-							si++;
-						}
-						foreach (var hc in (string[])tableData["hidden"]) table.HideClass(hc);
-						var entryList = tableData["entries"];
-						for (int i = 0; i < entryList.Count; i++)
-						{
-							var loadedEntry = entryList[i];
-							int weight = 1;
-							if (loadedEntry.HasKey("weight"))
-								weight = (int)loadedEntry["weight"].Value;
-							var requiredClasses = (string[])loadedEntry["classes"];
-							var optionalClasses = (string[])loadedEntry["optional_classes"];
-							var terms = new List<RantDictionaryTerm>();
-							var termList = loadedEntry["terms"];
-							for (int j = 0; j < termList.Count; j++)
-							{
-								var t = new RantDictionaryTerm(termList[j]["value"], termList[j]["pron"]);
-								terms.Add(t);
-							}
-							var entry = new RantDictionaryEntry(
-								terms.ToArray(),
-								requiredClasses.Concat(optionalClasses.Select(x => x + "?")),
-								weight
-								);
-							table.AddEntry(entry);
-						}
-						package.AddTable(table);
-					}
-				}
+				
+				package._resources.AddRange(doc["resources"].Values.Select(RantResource.DeserializeResource).Where(res => res != null));
 
 				return package;
 			}

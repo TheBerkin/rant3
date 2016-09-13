@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -87,6 +88,8 @@ namespace Rant.Core.IO.Bson
 		/// </summary>
 		public string[] Keys => _objectValues.Keys.ToArray();
 
+		public IEnumerable<BsonItem> Values => _objectValues.Values; 
+
 		/// <summary>
 		/// Accesses the value of the specified key.
 		/// </summary>
@@ -124,21 +127,26 @@ namespace Rant.Core.IO.Bson
 		}
 
 		/// <summary>
+		/// Converts this BsonItem to an int.
+		/// </summary>
+		/// <param name="a">The BsonItem to convert.</param>
+		public static implicit operator int(BsonItem a)
+		{
+			return (int)a.Value;
+		}
+
+		/// <summary>
 		/// Convers this BsonItem to a string.
 		/// </summary>
 		/// <param name="a">The BsonItem to convert.</param>
 		public static implicit operator string(BsonItem a)
 		{
-			if (a == null)
-				return null;
-			return (string)a.Value;
+			return (string)a?.Value;
 		}
 
 		public static explicit operator string[](BsonItem a)
 		{
-			if (a == null)
-				return new string[] { };
-			return a.ToValueArray().Cast<string>().ToArray();
+			return a?.Values?.Cast<string>().ToArray() ?? new string[] { };
 		}
 
 		/// <summary>
@@ -210,8 +218,22 @@ namespace Rant.Core.IO.Bson
 		{
 			if (_value == null) return;
 			var type = _value.GetType();
-			if (!type.IsArray) return;
-			var arr = (object[])_value;
+			object[] arr;
+
+			if (type.IsArray)
+			{
+				arr = _value as object[];
+			}
+			else if (_value is IList)
+			{
+				arr = (_value as IList).OfType<object>().ToArray();
+			}
+			else
+			{
+				return;
+			}
+
+			if (arr == null) return;
 			_type = 0x04; // array
 			_typeSet = true;
 			_objectValues = new Dictionary<string, BsonItem>();
@@ -249,7 +271,9 @@ namespace Rant.Core.IO.Bson
 			else if (_value is int)
 				_type = 0x10;
 			else
+			{
 				_type = 0x00;
+			}
 		}
 	}
 }

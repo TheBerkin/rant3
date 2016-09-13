@@ -48,9 +48,7 @@ namespace Rant.Core.IO.Bson
 		{
 			get
 			{
-				if (Top.HasKey(key))
-					return Top[key];
-				return null;
+				return Top.HasKey(key) ? Top[key] : null;
 			}
 			set { Top[key] = value; }
 		}

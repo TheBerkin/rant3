@@ -150,14 +150,57 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Adds metadata under the specified key to the entry.
+		/// Sets a metadata value under the specified key in the entry.
 		/// </summary>
 		/// <param name="key">The key to store the data under.</param>
 		/// <param name="value">The value to store.</param>
-		public void AddMetadata(string key, object value)
+		public void SetMetadata(string key, object value)
 		{
-			if (key == null) throw new ArgumentNullException(nameof(key));
+			if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 			_metadata.Value[key] = value;
+		}
+
+		/// <summary>
+		/// Removes the metadata with the specified key from the entry.
+		/// </summary>
+		/// <param name="key">The key of the metadata entry to remove.</param>
+		/// <returns></returns>
+		public bool RemoveMetadata(string key)
+		{
+			return key != null && _metadata.IsValueCreated && _metadata.Value.Remove(key);
+		}
+
+		/// <summary>
+		/// Enumerates all the metadata keys contained in the entry.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetMetadataKeys()
+		{
+			if (!_metadata.IsValueCreated) yield break;
+			foreach (var key in _metadata.Value.Keys) yield return key;
+		}
+
+		/// <summary>
+		/// Locates and returns the metadata value associated with the specified key. Returns Null if not found.
+		/// </summary>
+		/// <param name="key">The key of the metadata to retrieve.</param>
+		/// <returns></returns>
+		public object GetMetadata(string key)
+		{
+			if (!_metadata.IsValueCreated) return null;
+			object result;
+			return !_metadata.Value.TryGetValue(key, out result) ? null : result;
+		}
+
+		/// <summary>
+		/// Determines if the entry contains metadata attached to the specified key.
+		/// </summary>
+		/// <param name="key">The key to search for.</param>
+		/// <returns></returns>
+		public bool ContainsMetadataKey(string key)
+		{
+			if (key == null || !_metadata.IsValueCreated) return false;
+			return _metadata.Value.ContainsKey(key);
 		}
 
 		/// <summary>

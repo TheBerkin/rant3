@@ -246,6 +246,7 @@
     <Compile Include="Resources\RantPackageVersion.cs" />
     <Compile Include="RantProgramArgs.cs" />
     <Compile Include="RantUtils.cs" />
+    <Compile Include="Resources\RantResource.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Formats\RantFormat.cs" />
     <Compile Include="Core\IO\BitField.cs" />

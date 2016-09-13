@@ -50,6 +50,7 @@ namespace Rant
 		/// <param name="dictionary">The vocabulary to load in this instance.</param>
 		public RantEngine(RantDictionary dictionary)
 		{
+			if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
 			_dictionary = dictionary;
 		}
 
@@ -130,13 +131,25 @@ namespace Rant
 		}
 
 		/// <summary>
-		/// Returns a boolean value indicating whether a pattern by the specified name has been loaded from a package.
+		/// Returns a boolean value indicating whether a program by the specified name has been loaded from a package.
 		/// </summary>
-		/// <param name="patternName">The name of the pattern to check.</param>
+		/// <param name="patternName">The name of the program to check.</param>
 		/// <returns></returns>
-		public bool PatternExists(string patternName)
+		public bool ProgramNameLoaded(string patternName)
 		{
 			return _patternCache != null && _patternCache.ContainsKey(patternName);
+		}
+
+		/// <summary>
+		/// Used by package loader
+		/// </summary>
+		/// <param name="program">Program to load</param>
+		/// <returns></returns>
+		internal bool CacheProgramInternal(RantProgram program)
+		{
+			if (Util.IsNullOrWhiteSpace(program.Name) || _patternCache.ContainsKey(program.Name)) return false;
+			_patternCache[program.Name] = program;
+			return true;
 		}
 
 		/// <summary>
@@ -148,36 +161,6 @@ namespace Rant
 			if (package == null) throw new ArgumentNullException(nameof(package));
 			if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
 
-			var patterns = package.GetPatterns();
-			var tables = package.GetTables();
-
-			if (package.HasPatterns)
-			{
-				foreach (var pattern in patterns)
-				{
-					_patternCache[pattern.Name] = pattern;
-					if (pattern.Module != null)
-						PackageModules[pattern.Name] = pattern.Module;
-				}
-			}
-
-			if (package.HasDictionary)
-			{
-				if (_dictionary == null)
-				{
-					_dictionary = new RantDictionary(tables);
-				}
-				else
-				{
-					foreach (var table in tables)
-					{
-						_dictionary.AddTable(table);
-					}
-				}
-			}
-
-			_loadedPackages.Add(RantPackageDependency.Create(package));
-
 			foreach (var dependency in package.GetDependencies())
 			{
 				RantPackage pkg;
@@ -185,6 +168,10 @@ namespace Rant
 					throw new FileNotFoundException(GetString("err-unresolvable-package", package, dependency));
 				LoadPackage(pkg);
 			}
+
+			foreach(var res in package.GetResources()) res.Load(this);
+
+			_loadedPackages.Add(RantPackageDependency.Create(package));
 		}
 
 		/// <summary>
@@ -197,7 +184,7 @@ namespace Rant
 				throw new ArgumentException(GetString("err-empty-path"));
 
 			if (Util.IsNullOrWhiteSpace(Path.GetExtension(path)))
-				path += ".rantpkg";
+				path += RantPackage.EXTENSION;
 
 			LoadPackage(RantPackage.Load(path));
 		}
@@ -208,7 +195,7 @@ namespace Rant
 		/// </summary>
 		/// <param name="name">The name or path of the pattern to retrieve.</param>
 		/// <returns></returns>
-		internal RantProgram GetPattern(string name)
+		internal RantProgram GetProgramInternal(string name)
 		{
 			RantProgram pattern;
 			if (_patternCache.TryGetValue(name, out pattern)) return pattern;
@@ -507,7 +494,7 @@ namespace Rant
 		/// <returns></returns>
 		public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
 		{
-			if (!PatternExists(patternName))
+			if (!ProgramNameLoaded(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
 			return
@@ -531,7 +518,7 @@ namespace Rant
 		public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
-			if (!PatternExists(patternName))
+			if (!ProgramNameLoaded(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
 			return
@@ -555,7 +542,7 @@ namespace Rant
 		public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
-			if (!PatternExists(patternName))
+			if (!ProgramNameLoaded(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
 
 			return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit, GetPreservedCarrierState(), args), timeout);

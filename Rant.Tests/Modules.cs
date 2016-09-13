@@ -33,7 +33,7 @@ namespace Rant.Tests
 			var package = new RantPackage();
 			var pattern = RantProgram.CompileString("[$[.hello_world]:Hello World]");
 			pattern.Name = "pkg_test";
-			package.AddPattern(pattern);
+			package.AddResource(pattern);
 			rant.LoadPackage(package);
 			Assert.AreEqual("Hello World", rant.Do("[use:pkg_test][$pkg_test.hello_world]").Main);
 		}
