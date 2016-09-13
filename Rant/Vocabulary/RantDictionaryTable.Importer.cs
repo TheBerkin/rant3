@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -199,6 +200,7 @@ namespace Rant.Vocabulary
 							Tools.ConstructTable(origin, name, subtypes, ref termsPerEntry, ref table);
 							Tools.ReadTerms(origin, l, len, line, ref i, table, activeTemplate, templates, out currentEntry);
 							if (!dummy) table.AddEntry(currentEntry);
+							foreach(var autoClass in autoClasses) currentEntry.AddClass(autoClass);
 							if (tId != null)
 							{
 								templates[tId] = currentEntry;
@@ -262,7 +264,7 @@ namespace Rant.Vocabulary
 									}
 									else
 									{
-										currentEntry.SetMetadata(propName, args.ToArray());
+										currentEntry.SetMetadata(propName, args.Select(a => a.Value).ToArray());
 									}
 									break;
 							}
@@ -727,6 +729,8 @@ namespace Rant.Vocabulary
 
 			public int CharIndex { get; }
 			public string Value { get; }
+
+			public override string ToString() => Value;
 		}
 	}
 }

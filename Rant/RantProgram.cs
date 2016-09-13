@@ -48,6 +48,11 @@ namespace Rant
 			Module = null;
 		}
 
+		internal RantProgram()
+		{
+			// Used by serializer
+		}
+
 		/// <summary>
 		/// Gets or sets the name of the source code.
 		/// </summary>

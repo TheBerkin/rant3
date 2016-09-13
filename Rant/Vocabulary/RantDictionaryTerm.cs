@@ -52,7 +52,7 @@ namespace Rant.Vocabulary
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
 			if (valueSplitIndex < 0 != pronSplitIndex < 0) throw new ArgumentException(GetString("err-incomplete-term-split"));
-			if (valueSplitIndex > _value.Length)
+			if (valueSplitIndex > value.Length)
 				throw new ArgumentException(GetString("err-invalid-term-split"), nameof(valueSplitIndex));
 			if (pronSplitIndex > pronunciation?.Length)
 				throw new ArgumentException(GetString("err-invalid-term-split"), nameof(pronSplitIndex));

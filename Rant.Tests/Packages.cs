@@ -24,12 +24,17 @@ namespace Rant.Tests
 			};
 
 			package.AddResource(RantDictionaryTable.FromStream("nouns", File.Open("Tables/nouns.table", FileMode.Open)));
-			package.AddResource(RantProgram.CompileString("TestProgram", @"<noun-fruit-long-yellow>"));
+			package.AddResource(RantProgram.CompileString("TestProgram", @"[case:title]<noun-food-fruit-yellow>"));
 			package.Save("TestPackage.rantpkg");
 			
-			rant.LoadPackage("TestPackage.rantpkg");
+			package = RantPackage.Load("TestPackage.rantpkg");
+			rant.LoadPackage(package);
 			
-			Assert.AreEqual("banana", rant.DoPackaged("TestProgram").Main);	
+			Assert.AreEqual("Banana", rant.DoPackaged("TestProgram").Main);	
+			Assert.AreEqual("TestPackage", package.ID);
+			Assert.AreEqual("This is a test.", package.Description);
+			Assert.AreEqual("Test Package?!", package.Title);
+			Assert.AreEqual("1.1.0", package.Version.ToString());
 		}
 	}
 }

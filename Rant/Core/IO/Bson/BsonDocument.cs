@@ -194,7 +194,8 @@ namespace Rant.Core.IO.Bson
 					writer.Write((int)item.Value);
 					break;
 				default:
-					throw new NotSupportedException($"Item type {item.Type} not supported.");
+					Console.WriteLine(item.Value);
+					throw new NotSupportedException($"Item type {item.Value.GetType()} (code {item.Type}) not supported.");
 			}
 		}
 

@@ -146,7 +146,7 @@ namespace Rant.Core.IO.Bson
 
 		public static explicit operator string[](BsonItem a)
 		{
-			return a?.Values?.Cast<string>().ToArray() ?? new string[] { };
+			return a?.Values?.Select(i => (string)i).ToArray() ?? new string[] { };
 		}
 
 		/// <summary>
