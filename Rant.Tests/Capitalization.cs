@@ -27,11 +27,11 @@ namespace Rant.Tests
 				rant.Do(@"[`.+`:this is a test of the automatic capitalization;[caps:title][match]]").Main);
         }
 
-        [Test]
-        public void SentenceCase()
+        [TestCase(@"[caps:sentence]this is a sentence. this is another sentence.", "This is a sentence. This is another sentence.")]
+        [TestCase(@"[caps:sentence][numfmt:verbal-en][n:1] is a number.", "One is a number.")]
+        public void SentenceCase(string pattern, string expected)
         {
-            Assert.AreEqual("This is a sentence. This is another sentence.", 
-				rant.Do(@"[caps:sentence]this is a sentence. this is another sentence.").Main);
+            Assert.AreEqual(expected, rant.Do(pattern).Main);
         }
 
 		[Test]

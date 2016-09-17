@@ -19,6 +19,7 @@ namespace Rant.Core.Compiler.Parsing
 			query.Carrier = new Carrier();
 			query.Exclusive = reader.TakeLoose(R.Dollar);
 			bool subtypeRead = false;
+			bool pluralSubtypeRead = false;
 			bool complementRead = false;
 			bool endOfQueryReached = false;
 
@@ -30,14 +31,27 @@ namespace Rant.Core.Compiler.Parsing
 				{
 					// read subtype
 					case R.Period:
+						if (reader.Take(R.Period)) // Plural subtype
+						{
+							if (pluralSubtypeRead)
+							{
+								compiler.SyntaxError(token, false, "err-compiler-multiple-pl-subtypes");
+								reader.Read(R.Text, "acc-pl-subtype-name");
+								break;
+							}
+
+							query.PluralSubtype = reader.Read(R.Text, "acc-pl-subtype-name").Value;
+							pluralSubtypeRead = true;
+							break;
+						}
 						// if there's already a subtype, throw an error and ignore it
 						if (subtypeRead)
 						{
 							compiler.SyntaxError(token, false, "err-compiler-multiple-subtypes");
-							reader.Read(R.Text, "query subtype name");
+							reader.Read(R.Text, "acc-subtype-name");
 							break;
 						}
-						query.Subtype = reader.Read(R.Text, "query subtype").Value;
+						query.Subtype = reader.Read(R.Text, "acc-subtype-name").Value;
 						subtypeRead = true;
 						break;
 					// complement
@@ -72,7 +86,7 @@ namespace Rant.Core.Compiler.Parsing
 							var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
 							classFilter.AddRule(rule);
 						} while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
-						
+
 						query.AddFilter(classFilter);
 						break;
 					}

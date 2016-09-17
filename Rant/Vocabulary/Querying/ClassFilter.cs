@@ -26,11 +26,6 @@ namespace Rant.Vocabulary.Querying
 			_items.Add(new[] { item });
 		}
 
-		public ClassFilter()
-		{
-			// Used by serializer
-		}
-
 		/// <summary>
 		/// Adds a rule set that must satisfy one of the specified rules.
 		/// </summary>
@@ -39,14 +34,14 @@ namespace Rant.Vocabulary.Querying
 		{
 			_items.Add(items);
 		}
-		
+
 		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query)
 		{
 			bool match = query.Exclusive
 				? _items.Any() == entry.GetClasses().Any()
 				  && entry.GetClasses().All(c => _items.Any(item => item.Any(rule => rule.ShouldMatch && rule.Class == c)))
 				: !_items.Any() || _items.All(set => set.Any(rule => entry.ContainsClass(rule.Class) == rule.ShouldMatch));
-			
+
 			// Enumerate hidden classes that aren't manually exposed or explicitly allowed by the filter
 			var hidden = table.HiddenClasses.Where(c => !AllowsClass(c)).Except(dictionary.IncludedHiddenClasses);
 			return match && !hidden.Any(entry.ContainsClass);

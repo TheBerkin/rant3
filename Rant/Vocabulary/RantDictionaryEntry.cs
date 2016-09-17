@@ -10,14 +10,13 @@ namespace Rant.Vocabulary
 	public sealed class RantDictionaryEntry
 	{
 		private const int INITIAL_METADATA_CAPACITY = 4;
-
 		private readonly HashSet<string> _classes;
+		private readonly Lazy<Dictionary<string, object>> _metadata = new Lazy<Dictionary<string, object>>(() => new Dictionary<string, object>(INITIAL_METADATA_CAPACITY));
 		private readonly HashSet<string> _optionalClasses;
 		private readonly RantDictionaryTerm[] _terms;
-		private readonly Lazy<Dictionary<string, object>> _metadata = new Lazy<Dictionary<string, object>>(() => new Dictionary<string, object>(INITIAL_METADATA_CAPACITY));
 
 		/// <summary>
-		/// Creates a new instance of the <see cref="RantDictionaryEntry"/> object from the specified term array.
+		/// Creates a new instance of the <see cref="RantDictionaryEntry" /> object from the specified term array.
 		/// </summary>
 		/// <param name="terms">The terms in the entry.</param>
 		public RantDictionaryEntry(RantDictionaryTerm[] terms)
@@ -32,7 +31,7 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="RantDictionaryEntry"/> object from the specified term array, classes, and weight.
+		/// Creates a new <see cref="RantDictionaryEntry" /> object from the specified term array, classes, and weight.
 		/// </summary>
 		/// <param name="terms">The terms in the entry.</param>
 		/// <param name="classes">The classes associated with the entry.</param>
@@ -43,7 +42,7 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="RantDictionaryEntry"/> object from the specified term collection, classes, and weight.
+		/// Creates a new <see cref="RantDictionaryEntry" /> object from the specified term collection, classes, and weight.
 		/// </summary>
 		/// <param name="terms">The terms in the entry.</param>
 		/// <param name="classes">The classes associated with the entry.</param>
@@ -60,13 +59,13 @@ namespace Rant.Vocabulary
 			{
 				if (c.EndsWith("?"))
 				{
-					string trimmed = String.Intern(c.Substring(0, c.Length - 1));
+					string trimmed = string.Intern(c.Substring(0, c.Length - 1));
 					_optionalClasses.Add(trimmed);
 					_classes.Add(trimmed);
 				}
 				else
 				{
-					_classes.Add(String.Intern(c));
+					_classes.Add(string.Intern(c));
 				}
 			}
 			Weight = weight;
@@ -133,7 +132,7 @@ namespace Rant.Vocabulary
 			if (className.Trim().EndsWith("?"))
 			{
 				optional = true;
-				className = String.Intern(className.Trim().TrimEnd('?'));
+				className = string.Intern(className.Trim().TrimEnd('?'));
 			}
 			_classes.Add(className);
 			if (optional) _optionalClasses.Add(className);
@@ -156,7 +155,7 @@ namespace Rant.Vocabulary
 		/// <param name="value">The value to store.</param>
 		public void SetMetadata(string key, object value)
 		{
-			if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+			if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 			_metadata.Value[key] = value;
 		}
 
@@ -177,7 +176,7 @@ namespace Rant.Vocabulary
 		public IEnumerable<string> GetMetadataKeys()
 		{
 			if (!_metadata.IsValueCreated) yield break;
-			foreach (var key in _metadata.Value.Keys) yield return key;
+			foreach (string key in _metadata.Value.Keys) yield return key;
 		}
 
 		/// <summary>
@@ -217,7 +216,7 @@ namespace Rant.Vocabulary
 		public IEnumerable<string> GetRequiredClasses() => _classes.Except(_optionalClasses);
 
 		/// <summary>
-		/// Returns a string representation of the current <see cref="RantDictionaryEntry"/> instance.
+		/// Returns a string representation of the current <see cref="RantDictionaryEntry" /> instance.
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString() => _terms.Any() ? _terms[0].Value : "???";

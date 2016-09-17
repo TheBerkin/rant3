@@ -88,7 +88,7 @@ namespace Rant.Core.IO.Bson
 		/// </summary>
 		public string[] Keys => _objectValues.Keys.ToArray();
 
-		public IEnumerable<BsonItem> Values => _objectValues.Values; 
+		public IEnumerable<BsonItem> Values => _objectValues.Values;
 
 		/// <summary>
 		/// Accesses the value of the specified key.

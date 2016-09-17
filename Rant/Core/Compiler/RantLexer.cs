@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 using Rant.Core.Utilities;
@@ -137,7 +136,7 @@ namespace Rant.Core.Compiler
 						while (i < len && input[i] != '\n') i++;
 						goto iterate;
 
-					// Escape sequence
+						// Escape sequence
 					case '\\':
 					{
 						if (text.Length > 0)

@@ -28,6 +28,7 @@ namespace Rant.Core
 		private readonly Stack<OutputWriter> _outputs;
 		private readonly Stopwatch _stopwatch;
 		private int _quoteLevel = 0;
+		private bool _plural = false;
 
 		/// <summary>
 		/// Gets the currently loaded modules.
@@ -177,6 +178,15 @@ namespace Rant.Core
 		/// </summary>
 		/// <param name="obj">The value to print.</param>
 		public void Print(object obj) => Output.Do(chain => chain.Print(obj));
+
+		public void SetPlural(bool plural) => _plural = plural;
+
+		public bool TakePlural()
+		{
+			bool p = _plural;
+			_plural = false;
+			return p;
+		}
 
 		public void PrintMany(Func<char> generator, int times)
 		{

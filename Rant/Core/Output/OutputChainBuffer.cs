@@ -101,12 +101,19 @@ namespace Rant.Core.Output
 
 		public void Print(object value)
 		{
+			string str;
 			if (IOUtil.IsNumericType(value.GetType()))
 			{
-				_buffer.Append(NumberFormatter.FormatNumber(Convert.ToDouble(value)));
-				return;
+				double num = Convert.ToDouble(value);
+				str = NumberFormatter.FormatNumber(num);
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				_sandbox.SetPlural(num != 1.0);
 			}
-			string str = value.ToString();
+			else
+			{
+				str = value.ToString();
+			}
+			
 			Format(ref str);
 			_buffer.Append(str);
 			PrintedSinceCapsChange = true;

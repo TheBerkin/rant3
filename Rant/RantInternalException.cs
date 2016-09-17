@@ -3,7 +3,8 @@
 namespace Rant
 {
 	/// <summary>
-	/// Represents an error that has been caused by a problem inside the Rant engine. This typically indicates the presence of a bug.
+	/// Represents an error that has been caused by a problem inside the Rant engine. This typically indicates the presence of
+	/// a bug.
 	/// </summary>
 	public sealed class RantInternalException : Exception
 	{

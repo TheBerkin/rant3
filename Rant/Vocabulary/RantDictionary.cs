@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
+using Rant.Core;
 using Rant.Core.Utilities;
 using Rant.Vocabulary.Querying;
 
@@ -17,14 +17,14 @@ namespace Rant.Vocabulary
 		private readonly Dictionary<string, RantDictionaryTable> _tables = new Dictionary<string, RantDictionaryTable>();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RantDictionary"/> class with no tables.
+		/// Initializes a new instance of the <see cref="RantDictionary" /> class with no tables.
 		/// </summary>
 		public RantDictionary()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RantDictionary"/> class with the specified set of tables.
+		/// Initializes a new instance of the <see cref="RantDictionary" /> class with the specified set of tables.
 		/// </summary>
 		/// <param name="tables">The tables to store in the dictionary.</param>
 		public RantDictionary(IEnumerable<RantDictionaryTable> tables)
@@ -86,7 +86,7 @@ namespace Rant.Vocabulary
 		}
 
 		/// <summary>
-		/// Adds a new <see cref="RantDictionaryTable"/> object to the dictionary.
+		/// Adds a new <see cref="RantDictionaryTable" /> object to the dictionary.
 		/// </summary>
 		/// <param name="table">The table to add.</param>
 		public void AddTable(RantDictionaryTable table)
@@ -94,7 +94,7 @@ namespace Rant.Vocabulary
 			RantDictionaryTable oldTable;
 			if (_tables.TryGetValue(table.Name, out oldTable))
 			{
-				if (Object.ReferenceEquals(table, oldTable)) return;
+				if (ReferenceEquals(table, oldTable)) return;
 				oldTable.Merge(table);
 			}
 			else
@@ -119,12 +119,12 @@ namespace Rant.Vocabulary
 		/// <param name="query">The search criteria to use.</param>
 		/// <param name="syncState">The state object to use for carrier synchronization.</param>
 		/// <returns></returns>
-		internal RantDictionaryTerm Query(RNG rng, Query query, CarrierState syncState)
+		internal RantDictionaryTerm Query(Sandbox sb, Query query, CarrierState syncState)
 		{
 			RantDictionaryTable table;
 			return !_tables.TryGetValue(query.Name, out table)
 				? null
-				: table.Query(this, rng, query, syncState);
+				: table.Query(this, sb, query, syncState);
 		}
 	}
 }

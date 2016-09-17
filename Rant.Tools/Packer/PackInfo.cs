@@ -6,7 +6,7 @@ using Rant.Resources;
 
 namespace Rant.Tools.Packer
 {
-	public class PackInfo
+	internal sealed class PackInfo
 	{
 		[JsonProperty("title")]
 		public string Title { get; set; }

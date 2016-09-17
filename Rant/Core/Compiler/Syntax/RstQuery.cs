@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 using Rant.Core.IO;
 using Rant.Localization;
@@ -39,7 +38,8 @@ namespace Rant.Core.Compiler.Syntax
 						sb.CarrierState.RemoveType(type, name);
 				yield break;
 			}
-			var result = sb.Engine.Dictionary.Query(sb.RNG, _query, sb.CarrierState);
+
+			var result = sb.Engine.Dictionary.Query(sb, _query, sb.CarrierState);
 
 			if (result == null)
 			{

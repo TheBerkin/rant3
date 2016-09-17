@@ -169,7 +169,7 @@ namespace Rant
 				LoadPackage(pkg);
 			}
 
-			foreach(var res in package.GetResources()) res.Load(this);
+			foreach (var res in package.GetResources()) res.Load(this);
 
 			_loadedPackages.Add(RantPackageDependency.Create(package));
 		}

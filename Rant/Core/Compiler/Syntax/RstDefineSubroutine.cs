@@ -9,7 +9,7 @@ namespace Rant.Core.Compiler.Syntax
 	internal class RstDefineSubroutine : RstSubroutineBase
 	{
 		public Dictionary<string, SubroutineParameterType> Parameters;
-		
+
 		public RstDefineSubroutine(LineCol location) : base(location)
 		{
 			// Used by serializer

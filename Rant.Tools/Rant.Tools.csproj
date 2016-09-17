@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CmdLine.cs" />
-    <Compile Include="DicSort\TableSorter.cs" />
     <Compile Include="Help.cs" />
     <Compile Include="Packer\DependencyListConverter.cs" />
     <Compile Include="Packer\PackGenerator.cs" />

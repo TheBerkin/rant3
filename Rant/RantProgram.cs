@@ -79,7 +79,7 @@ namespace Rant
 		public string Code { get; }
 
 		internal RST SyntaxTree { get; private set; }
-		internal RantModule Module { get; private set; }
+		internal RantModule Module { get; }
 
 		/// <summary>
 		/// Compiles a program from the specified pattern.
@@ -180,8 +180,8 @@ namespace Rant
 		internal override void DeserializeData(BsonItem data)
 		{
 			Name = data["name"];
-			using(var ms = new MemoryStream((byte[])data["code"].Value))
-			using(var reader = new EasyReader(ms))
+			using (var ms = new MemoryStream((byte[])data["code"].Value))
+			using (var reader = new EasyReader(ms))
 			{
 				SyntaxTree = RST.DeserializeRST(reader);
 			}
@@ -191,8 +191,8 @@ namespace Rant
 		{
 			var data = new BsonItem { ["name"] = Name };
 
-			using(var ms = new MemoryStream())
-			using(var writer = new EasyWriter(ms))
+			using (var ms = new MemoryStream())
+			using (var writer = new EasyWriter(ms))
 			{
 				RST.SerializeRST(SyntaxTree, writer);
 				ms.Flush();

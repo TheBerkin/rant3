@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Framework;
-using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -27,7 +26,7 @@ namespace Rant.Core.Compiler.Parsing
 					if (reader.IsNext(R.RegexFlags))
 					{
 						var flagsToken = reader.ReadToken();
-						foreach (var flag in flagsToken.Value)
+						foreach (char flag in flagsToken.Value)
 						{
 							switch (flag)
 							{

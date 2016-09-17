@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 
 using Rant;
-using Rant.Vocabulary;
 
 using static System.Console;
 
@@ -18,7 +17,6 @@ namespace RantConsole
 	{
 		public const double PATTERN_TIMEOUT = 10.0;
 		public static readonly string FILE = GetPaths().FirstOrDefault();
-		public static readonly string DIC_PATH = Property("dict");
 		public static readonly string PKG_PATH = Property("package");
 		public static readonly long SEED;
 		public static readonly bool USE_SEED;
@@ -30,8 +28,6 @@ namespace RantConsole
 
 		private static void Main(string[] args)
 		{
-			//Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
 			OutputEncoding = Encoding.Unicode;
 			Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
@@ -185,12 +181,12 @@ namespace RantConsole
 			catch (RantRuntimeException e)
 			{
 				ForegroundColor = ConsoleColor.Red;
-				WriteLine($"Runtime error: {e.Message}");
+				WriteLine(e.Message);
 			}
 			catch (RantCompilerException e)
 			{
 				ForegroundColor = ConsoleColor.Yellow;
-				WriteLine($"Compiler error: {e.Message}");
+				WriteLine(e.Message);
 			}
 			catch (Exception e)
 			{

@@ -200,7 +200,7 @@ namespace Rant.Vocabulary
 							Tools.ConstructTable(origin, name, subtypes, ref termsPerEntry, ref table);
 							Tools.ReadTerms(origin, l, len, line, ref i, table, activeTemplate, templates, out currentEntry);
 							if (!dummy) table.AddEntry(currentEntry);
-							foreach(var autoClass in autoClasses) currentEntry.AddClass(autoClass);
+							foreach (string autoClass in autoClasses) currentEntry.AddClass(autoClass);
 							if (tId != null)
 							{
 								templates[tId] = currentEntry;
@@ -357,7 +357,7 @@ namespace Rant.Vocabulary
 						// Inline comment
 						case '#':
 							goto done;
-						// Phrasal split operator
+							// Phrasal split operator
 						case '+':
 							if (split > -1)
 								throw new RantTableLoadException(origin, line, i, "err-table-multiple-splits");
@@ -729,7 +729,6 @@ namespace Rant.Vocabulary
 
 			public int CharIndex { get; }
 			public string Value { get; }
-
 			public override string ToString() => Value;
 		}
 	}

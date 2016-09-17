@@ -4,13 +4,12 @@ namespace Rant.Core.Compiler
 {
 	internal struct Token
 	{
-		public R Type;
-		public int Line;
+		public static readonly Token None = new Token(R.Text, 0, -1, -1, null);
 		public int Column;
 		public int Index;
+		public int Line;
+		public R Type;
 		public string Value;
-
-		public int Length => Value?.Length ?? 0;
 
 		public Token(R type, int line, int lastLineStart, int index, string value)
 		{
@@ -30,8 +29,7 @@ namespace Rant.Core.Compiler
 			Value = value.ToString(CultureInfo.InvariantCulture);
 		}
 
+		public int Length => Value?.Length ?? 0;
 		public LineCol ToLocation() => new LineCol(Line, Column, Index);
-
-		public static readonly Token None = new Token(R.Text, 0, -1, -1, null);
 	}
 }

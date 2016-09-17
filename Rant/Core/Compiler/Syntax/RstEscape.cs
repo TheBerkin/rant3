@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using Rant.Core.IO;
-using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -79,7 +78,7 @@ namespace Rant.Core.Compiler.Syntax
 		private int _times;
 		private bool _unicode;
 
-		public RstEscape(LineCol location, int quantity, bool unicode, char codeHighSurrogate, char codeLowSurrogate = '\0') 
+		public RstEscape(LineCol location, int quantity, bool unicode, char codeHighSurrogate, char codeLowSurrogate = '\0')
 			: base(location)
 		{
 			_codeLow = codeLowSurrogate;

@@ -23,10 +23,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Prints a random number between the specified minimum and maximum bounds.")]
 		private static void Number(Sandbox sb,
 			[RantDescription("The minimum value of the number to generate.")] int min,
-			[RantDescription("The maximum value of the number to generate.")] int max)
-		{
-			sb.Print(sb.RNG.Next(min, max + 1));
-		}
+			[RantDescription("The maximum value of the number to generate.")] int max) => sb.Print(sb.RNG.Next(min, max + 1));
 
 		[RantFunction("num")]
 		[RantDescription("Formats an input string using the current number format settings and prints the result.")]
@@ -40,10 +37,7 @@ namespace Rant.Core.Framework
 		[RantFunction("numfmt")]
 		[RantDescription("Sets the current number formatting mode.")]
 		private static void NumberFormat(Sandbox sb,
-			[RantDescription("The number format to use.")] NumberFormat format)
-		{
-			sb.Output.Do(chain => chain.Last.NumberFormatter.NumberFormat = format);
-		}
+			[RantDescription("The number format to use.")] NumberFormat format) => sb.Output.Do(chain => chain.Last.NumberFormatter.NumberFormat = format);
 
 		[RantFunction("numfmt")]
 		[RantDescription("Runs the specified pattern under a specific number formatting mode.")]
@@ -73,44 +67,29 @@ namespace Rant.Core.Framework
 		[RantDescription("Specifies the current digit formatting mode for numbers.")]
 		private static void Digits(Sandbox sb,
 			[RantDescription("The digit format to use.")] BinaryFormat format,
-			[RantDescription("The digit count to associate with the mode.")] int digits)
-		{
-			sb.Output.Do(chain =>
+			[RantDescription("The digit count to associate with the mode.")] int digits) => sb.Output.Do(chain =>
 			{
 				chain.Last.NumberFormatter.BinaryFormat = format;
 				chain.Last.NumberFormatter.BinaryFormatDigits = digits;
 			});
-		}
 
 		[RantFunction]
 		[RantDescription("Sets the current endianness for hex and binary formatted numbers.")]
 		private static void Endian(Sandbox sb,
-			[RantDescription("The endianness to use.")] Endianness endianness)
-		{
-			sb.Output.Do(chain => chain.Last.NumberFormatter.Endianness = endianness);
-		}
+			[RantDescription("The endianness to use.")] Endianness endianness) => sb.Output.Do(chain => chain.Last.NumberFormatter.Endianness = endianness);
 
 		[RantFunction("init")]
 		[RantDescription("Sets the index of the element to execute on the next block. Set to -1 to disable.")]
-		private static void Initial(Sandbox sb, int index)
-		{
-			sb.CurrentBlockAttribs.StartIndex = index;
-		}
+		private static void Initial(Sandbox sb, int index) => sb.CurrentBlockAttribs.StartIndex = index;
 
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb,
-			[RantDescription("The number of times to repeat the next block.")] int times)
-		{
-			sb.CurrentBlockAttribs.Repetitions = times;
-		}
+			[RantDescription("The number of times to repeat the next block.")] int times) => sb.CurrentBlockAttribs.Repetitions = times;
 
 		[RantFunction]
 		[RantDescription("Sets the repetition count to the number of items in the next block.")]
-		private static void RepEach(Sandbox sb)
-		{
-			sb.CurrentBlockAttribs.RepEach = true;
-		}
+		private static void RepEach(Sandbox sb) => sb.CurrentBlockAttribs.RepEach = true;
 
 		[RantFunction("sep", "s")]
 		[RantDescription("Sets the separator pattern for the next block.")]
@@ -159,34 +138,22 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb,
-			[RantDescription("The pattern to run before each iteration of the next block.")] RST beforeAction)
-		{
-			sb.CurrentBlockAttribs.Before = beforeAction;
-		}
+			[RantDescription("The pattern to run before each iteration of the next block.")] RST beforeAction) => sb.CurrentBlockAttribs.Before = beforeAction;
 
 		[RantFunction]
 		[RantDescription("Sets the postfix pattern for the next block.")]
 		private static void After(Sandbox sb,
-			[RantDescription("The pattern to run after each iteration of the next block.")] RST afterAction)
-		{
-			sb.CurrentBlockAttribs.After = afterAction;
-		}
+			[RantDescription("The pattern to run after each iteration of the next block.")] RST afterAction) => sb.CurrentBlockAttribs.After = afterAction;
 
 		[RantFunction]
 		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
 		private static void Chance(Sandbox sb,
-			[RantDescription("The percent probability that the next block will execute.")] double chance)
-		{
-			sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
-		}
+			[RantDescription("The percent probability that the next block will execute.")] double chance) => sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 
 		[RantFunction("case", "caps")]
 		[RantDescription("Changes the capitalization mode for all open channels.")]
 		private static void Case(Sandbox sb,
-			[RantDescription("The capitalization mode to use.")] Capitalization mode)
-		{
-			sb.Output.Capitalize(mode);
-		}
+			[RantDescription("The capitalization mode to use.")] Capitalization mode) => sb.Output.Capitalize(mode);
 
 		[RantFunction]
 		[RantDescription("Infers the capitalization of a given string and sets the capitalization mode to match it.")]
@@ -392,10 +359,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Prints the number of currently active blocks.")]
-		private static void Depth(Sandbox sb)
-		{
-			sb.Print(sb.Blocks.Count);
-		}
+		private static void Depth(Sandbox sb) => sb.Print(sb.Blocks.Count);
 
 		[RantFunction("index", "i")]
 		[RantDescription("Prints the zero-based index of the block item currently being executed.")]
@@ -462,51 +426,33 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets the current rhyming mode for queries.")]
 		private static void Rhyme(Sandbox sb,
-			[RantDescription("The rhyme types to use.")] RhymeFlags flags)
-		{
-			sb.CarrierState.Rhymer.AllowedRhymes = flags;
-		}
+			[RantDescription("The rhyme types to use.")] RhymeFlags flags) => sb.CarrierState.Rhymer.AllowedRhymes = flags;
 
 		[RantFunction("sync", "x")]
 		[RantDescription("Creates and applies a synchronizer with the specified name and type.")]
 		private static void Sync(Sandbox sb,
 			[RantDescription("The name of the synchronizer.")] string name,
-			[RantDescription("The synchronization type to use.")] SyncType type)
-		{
-			sb.SyncManager.Create(name, type, true);
-		}
+			[RantDescription("The synchronization type to use.")] SyncType type) => sb.SyncManager.Create(name, type, true);
 
 		[RantFunction("xpin")]
 		[RantDescription("Pins a synchronizer.")]
 		private static void SyncPin(Sandbox sb,
-			[RantDescription("The name of the synchronizer to pin.")] string name)
-		{
-			sb.SyncManager.SetPinned(name, true);
-		}
+			[RantDescription("The name of the synchronizer to pin.")] string name) => sb.SyncManager.SetPinned(name, true);
 
 		[RantFunction("xunpin")]
 		[RantDescription("Unpins a synchronizer.")]
 		private static void SyncUnpin(Sandbox sb,
-			[RantDescription("The name of the synchronizer to unpin.")] string name)
-		{
-			sb.SyncManager.SetPinned(name, false);
-		}
+			[RantDescription("The name of the synchronizer to unpin.")] string name) => sb.SyncManager.SetPinned(name, false);
 
 		[RantFunction("xstep")]
 		[RantDescription("Iterates a synchronizer.")]
 		private static void SyncStep(Sandbox sb,
-			[RantDescription("The name of the synchronizer to iterate.")] string name)
-		{
-			sb.SyncManager.Step(name);
-		}
+			[RantDescription("The name of the synchronizer to iterate.")] string name) => sb.SyncManager.Step(name);
 
 		[RantFunction("xreset")]
 		[RantDescription("Resets a synchronizer to its initial state.")]
 		private static void SyncReset(Sandbox sb,
-			[RantDescription("The name of the synchronizer to reset.")] string name)
-		{
-			sb.SyncManager.Reset(name);
-		}
+			[RantDescription("The name of the synchronizer to reset.")] string name) => sb.SyncManager.Reset(name);
 
 		[RantFunction("quote", "q")]
 		[RantDescription(
@@ -533,19 +479,13 @@ namespace Rant.Core.Framework
 		[RantFunction("target", "t")]
 		[RantDescription("Places a target with the specified name at the current write position.")]
 		private static void Target(Sandbox sb,
-			[RantDescription("The name of the target.")] string targetName)
-		{
-			sb.Output.InsertTarget(targetName);
-		}
+			[RantDescription("The name of the target.")] string targetName) => sb.Output.InsertTarget(targetName);
 
 		[RantFunction]
 		[RantDescription("Appends a string to the specified target's contents.")]
 		private static void Send(Sandbox sb,
 			[RantDescription("The name of the target to send to.")] string targetName,
-			[RantDescription("The string to send to the target.")] string value)
-		{
-			sb.Output.PrintToTarget(targetName, value);
-		}
+			[RantDescription("The string to send to the target.")] string value) => sb.Output.PrintToTarget(targetName, value);
 
 		[RantFunction]
 		[RantDescription("Overwrites the specified target's contents with the provided value.")]
@@ -560,18 +500,12 @@ namespace Rant.Core.Framework
 		[RantFunction("targetval")]
 		[RantDescription("Prints the current value of the specified target. This function will not spawn a target.")]
 		private static void GetTargetValue(Sandbox sb,
-			[RantDescription("The name of the target whose value to print.")] string targetName)
-		{
-			sb.Output.Do(chain => chain.Print(chain.GetTargetValue(targetName)));
-		}
+			[RantDescription("The name of the target whose value to print.")] string targetName) => sb.Output.Do(chain => chain.Print(chain.GetTargetValue(targetName)));
 
 		[RantFunction("clrt")]
 		[RantDescription("Clears the contents of the specified target.")]
 		private static void ClearTarget(Sandbox sb,
-			[RantDescription("The name of the target to be cleared.")] string targetName)
-		{
-			sb.Output.Do(chain => chain.ClearTarget(targetName));
-		}
+			[RantDescription("The name of the target to be cleared.")] string targetName) => sb.Output.Do(chain => chain.ClearTarget(targetName));
 
 		[RantFunction]
 		[RantDescription("Runs a pattern if the current block iteration is a multiple of the specified number.")]
@@ -625,26 +559,17 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run before the next block.")]
 		private static void Start(Sandbox sb,
-			[RantDescription("The pattern to run before the next block.")] RST beforePattern)
-		{
-			sb.CurrentBlockAttribs.Start = beforePattern;
-		}
+			[RantDescription("The pattern to run before the next block.")] RST beforePattern) => sb.CurrentBlockAttribs.Start = beforePattern;
 
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run after the next block.")]
 		private static void End(Sandbox sb,
-			[RantDescription("The pattern to run after the next block.")] RST endPattern)
-		{
-			sb.CurrentBlockAttribs.End = endPattern;
-		}
+			[RantDescription("The pattern to run after the next block.")] RST endPattern) => sb.CurrentBlockAttribs.End = endPattern;
 
 		// TODO: Finish [persist].
 		//[RantFunction]
 		[RantDescription("Instructs Rant not to consume the block attributes after they are used.")]
-		private static void Persist(Sandbox sb, AttribPersistence persistence)
-		{
-			sb.CurrentBlockAttribs.Persistence = persistence;
-		}
+		private static void Persist(Sandbox sb, AttribPersistence persistence) => sb.CurrentBlockAttribs.Persistence = persistence;
 
 		[RantFunction]
 		[RantDescription("Loads and runs a pattern from cache or file.")]
@@ -677,9 +602,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The list of flags to define.")] params string[] flags)
 		{
 			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
-			{
 				sb.Engine.Flags.Add(flag);
-			}
 		}
 
 		[RantFunction]
@@ -687,10 +610,7 @@ namespace Rant.Core.Framework
 		private static void Undef(Sandbox sb,
 			[RantDescription("The list of flags to undefine.")] params string[] flags)
 		{
-			foreach (string flag in flags)
-			{
-				sb.Engine.Flags.Remove(flag);
-			}
+			foreach (string flag in flags) sb.Engine.Flags.Remove(flag);
 		}
 
 		[RantFunction]
@@ -718,9 +638,7 @@ namespace Rant.Core.Framework
 			sb.FlagConditionExpectedResult = true;
 			sb.ConditionFlags.Clear();
 			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
-			{
 				sb.ConditionFlags.Add(flag);
-			}
 		}
 
 		[RantFunction]
@@ -731,9 +649,7 @@ namespace Rant.Core.Framework
 			sb.FlagConditionExpectedResult = false;
 			sb.ConditionFlags.Clear();
 			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
-			{
 				sb.ConditionFlags.Add(flag);
-			}
 		}
 
 		[RantFunction]
@@ -741,9 +657,7 @@ namespace Rant.Core.Framework
 		private static IEnumerator<RST> Then(Sandbox sb, RST conditionPassPattern)
 		{
 			if (sb.Engine.Flags.All(flag => sb.ConditionFlags.Contains(flag) == sb.FlagConditionExpectedResult))
-			{
 				yield return conditionPassPattern;
-			}
 		}
 
 		[RantFunction]
@@ -751,25 +665,17 @@ namespace Rant.Core.Framework
 		private static IEnumerator<RST> Else(Sandbox sb, RST conditionFailPattern)
 		{
 			if (sb.Engine.Flags.Any(flag => sb.ConditionFlags.Contains(flag) != sb.FlagConditionExpectedResult))
-			{
 				yield return conditionFailPattern;
-			}
 		}
 
 		[RantFunction]
 		[RantDescription("Yields the currenty written output.")]
-		private static void Yield(Sandbox sb)
-		{
-			sb.SetYield();
-		}
+		private static void Yield(Sandbox sb) => sb.SetYield();
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG according to a seed.")]
 		private static void Branch(Sandbox sb,
-			[RantDescription("The seed for the branch.")] string seed)
-		{
-			sb.RNG.Branch(seed.Hash());
-		}
+			[RantDescription("The seed for the branch.")] string seed) => sb.RNG.Branch(seed.Hash());
 
 		[RantFunction]
 		[RantDescription("Branches the internal RNG, executes the specified pattern, and then merges the branch.")]
@@ -784,10 +690,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Merges the topmost branch of the internal RNG, if it has been branched at least once.")]
-		private static void Merge(Sandbox sb)
-		{
-			sb.RNG.Merge();
-		}
+		private static void Merge(Sandbox sb) => sb.RNG.Merge();
 
 		[RantFunction("in")]
 		[RantDescription("Prints the value of the specified pattern argument.")]
@@ -842,10 +745,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("plural", "pl")]
 		[RantDescription("Infers and prints the plural form of the specified word.")]
-		private static void Plural(Sandbox sb, string word)
-		{
-			sb.Print(sb.Format.Pluralizer.Pluralize(word));
-		}
+		private static void Plural(Sandbox sb, string word) => sb.Print(sb.Format.Pluralizer.Pluralize(word));
 
 		[RantFunction("use")]
 		[RantDescription("Loads a module from the file name.module.rant, name.rant, or name, in that order.")]
@@ -887,10 +787,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Prints the current length of the specified channel, in characters.")]
 		private static void Len(Sandbox sb,
-			[RantDescription("The channel for which to retrieve the length.")] string channelName)
-		{
-			sb.Print(sb.Output.GetChannelLength(channelName));
-		}
+			[RantDescription("The channel for which to retrieve the length.")] string channelName) => sb.Print(sb.Output.GetChannelLength(channelName));
 
 		[RantFunction("rev")]
 		[RantDescription("Reverses the specified string and prints it to the output.")]
@@ -984,72 +881,46 @@ namespace Rant.Core.Framework
 
 		[RantFunction("accent")]
 		[RantDescription("Accents the previous character.")]
-		private static void AddAccent(Sandbox sb, Accent accent)
-		{
-			sb.Print(accent.GetAccentChar());
-		}
+		private static void AddAccent(Sandbox sb, Accent accent) => sb.Print(accent.GetAccentChar());
 
 		[RantFunction("accent")]
 		[RantDescription("Accents the specified character.")]
-		private static void AddAccent(Sandbox sb, string character, Accent accent)
-		{
-			sb.Print($"{character}{accent.GetAccentChar()}".Normalize(NormalizationForm.FormC));
-		}
+		private static void AddAccent(Sandbox sb, string character, Accent accent) => sb.Print($"{character}{accent.GetAccentChar()}".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("acute", "act")]
 		[RantDescription("Accents the specified character with an acute (a\u0301) accent.")]
-		private static void AccentAcute(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0301".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentAcute(Sandbox sb, string character) => sb.Print($"{character}\u0301".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("circumflex", "cflex")]
 		[RantDescription("Accents the specified character with a circumflex (a\u0302) accent.")]
-		private static void AccentCircumflex(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0302".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentCircumflex(Sandbox sb, string character) => sb.Print($"{character}\u0302".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("grave", "grv")]
 		[RantDescription("Accents the specified character with a grave (a\u0300) accent.")]
-		private static void AccentGrave(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0300".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentGrave(Sandbox sb, string character) => sb.Print($"{character}\u0300".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("ring")]
 		[RantDescription("Accents the specified character with a ring (a\u030A) accent.")]
-		private static void AccentRing(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u030A".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentRing(Sandbox sb, string character) => sb.Print($"{character}\u030A".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("tilde", "tld")]
 		[RantDescription("Accents the specified character with a tilde (a\u0303) accent.")]
-		private static void AccentTilde(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0303".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentTilde(Sandbox sb, string character) => sb.Print($"{character}\u0303".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("diaeresis", "dia")]
 		[RantDescription("Accents the specified character with a diaeresis (a\u0308) accent.")]
-		private static void AccentDiaeresis(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0308".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentDiaeresis(Sandbox sb, string character) => sb.Print($"{character}\u0308".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("caron", "crn")]
 		[RantDescription("Accents the specified character with a caron (c\u030C) accent.")]
-		private static void AccentCaron(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u030C".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentCaron(Sandbox sb, string character) => sb.Print($"{character}\u030C".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("macron", "mcn")]
 		[RantDescription("Accents the specified character with a macron (c\u0304) accent.")]
-		private static void AccentMacron(Sandbox sb, string character)
-		{
-			sb.Print($"{character}\u0304".Normalize(NormalizationForm.FormC));
-		}
+		private static void AccentMacron(Sandbox sb, string character) => sb.Print($"{character}\u0304".Normalize(NormalizationForm.FormC));
+
+		[RantFunction("cedilla", "ced")]
+		[RantDescription("Accents the specified character with a cedilla (c\u0327) accent.")]
+		private static void AccentCedilla(Sandbox sb, string character) => sb.Print($"{character}\u0327".Normalize(NormalizationForm.FormC));
 	}
 }

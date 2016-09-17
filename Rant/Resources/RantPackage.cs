@@ -22,7 +22,7 @@ namespace Rant.Resources
 		internal const string EXTENSION = ".rantpkg";
 		private const ushort PACKAGE_VERSION = 3;
 		private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
-		private readonly HashSet<RantResource> _resources = new HashSet<RantResource>(); 
+		private readonly HashSet<RantResource> _resources = new HashSet<RantResource>();
 		private string _id = GetString("default-package-id");
 		private string _title = GetString("untitled-package");
 		private RantPackageVersion _version = new RantPackageVersion(1, 0, 0);
@@ -166,7 +166,7 @@ namespace Rant.Resources
 		/// Enumerates all resources in the package.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<RantResource> GetResources() => _resources.AsEnumerable(); 
+		public IEnumerable<RantResource> GetResources() => _resources.AsEnumerable();
 
 		/// <summary>
 		/// Enumerates all resources matching the specified resource type.
@@ -324,7 +324,7 @@ namespace Rant.Resources
 					}
 				}
 
-				
+
 				package._resources.AddRange(doc["resources"].Values.Select(RantResource.DeserializeResource).Where(res => res != null));
 
 				return package;

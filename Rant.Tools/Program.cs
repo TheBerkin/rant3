@@ -1,6 +1,6 @@
 ﻿using System;
+using System.IO;
 
-using Rant.Tools.DicSort;
 using Rant.Tools.Packer;
 
 using static System.Console;
@@ -27,11 +27,6 @@ namespace Rant.Tools
 #endif
 				switch (CmdLine.Command)
 				{
-					case "sort":
-					{
-						TableSorter.Run();
-						break;
-					}
 					case "pack":
 					{
 						PackGenerator.Run();
@@ -39,33 +34,12 @@ namespace Rant.Tools
 					}
 					case "build":
 					{
-						// TODO: compiler command
-						WriteLine("Sorry, this command isn't implemented yet :(");
-						break;
-					}
-					case "help":
-					{
-						foreach (string name in CmdLine.GetPaths())
+						var paths = CmdLine.GetPaths();
+						foreach (var path in paths.Length == 0 ? Directory.GetFiles(Environment.CurrentDirectory, "*.rant") : paths)
 						{
-							WriteLine($"'{name}'\n");
-
-							switch (name.ToLower())
-							{
-								case "sort":
-									TableSorter.GetHelp();
-									break;
-								case "pack":
-									PackGenerator.GetHelp();
-									break;
-								case "help":
-									WriteLine("Are you serious?");
-									break;
-								default:
-									WriteLine($"No help info found for '{name}'");
-									break;
-							}
-							WriteLine();
+							Build(path);
 						}
+						Console.WriteLine("Done");
 						break;
 					}
 					default:
@@ -82,6 +56,26 @@ namespace Rant.Tools
 				Environment.Exit(1);
 			}
 #endif
+		}
+
+		private static void Build(string path)
+		{
+			try
+			{
+				Console.WriteLine($"Building: {path}");
+
+				var pgm = RantProgram.CompileFile(path);
+
+				pgm.SaveToFile(Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".rantpgm"));
+			}
+			catch (RantCompilerException ex)
+			{
+				Console.WriteLine($"Build failed for {path}.\n{ex.Message}\n");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error while building: {ex.Message}");
+			}
 		}
 	}
 }

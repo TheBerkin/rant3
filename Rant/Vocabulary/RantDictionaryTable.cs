@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core;
 using Rant.Core.IO.Bson;
 using Rant.Core.Utilities;
 using Rant.Resources;
@@ -14,13 +15,13 @@ namespace Rant.Vocabulary
 	/// </summary>
 	public sealed partial class RantDictionaryTable : RantResource
 	{
+		internal const string NSFW = "nsfw";
 		internal const string MissingTerm = "[?]";
 		private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
 		private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>(); // TODO: Use for indexing / weighted selection
-		private readonly HashSet<string> _hidden = new HashSet<string>();
-		private int _termsPerEntry;
+		private readonly HashSet<string> _hidden = new HashSet<string>(new[] { NSFW });
+		private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>();
 		private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-		private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>(); 
 
 		/// <summary>
 		/// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
@@ -32,7 +33,7 @@ namespace Rant.Vocabulary
 			if (name == null) throw new ArgumentNullException(nameof(name));
 			if (termsPerEntry <= 0) throw new ArgumentException("Terms per entry must be greater than zero.");
 			if (!Util.ValidateName(name)) throw new ArgumentException($"Invalid table name: '{name}'");
-			_termsPerEntry = termsPerEntry;
+			TermsPerEntry = termsPerEntry;
 			Name = name;
 		}
 
@@ -62,6 +63,11 @@ namespace Rant.Vocabulary
 		public int EntryCount => _entriesHash.Count;
 
 		/// <summary>
+		/// Gets the number of terms required for entries contained in the current table.
+		/// </summary>
+		public int TermsPerEntry { get; private set; }
+
+		/// <summary>
 		/// Enumerates the entries stored in the table.
 		/// </summary>
 		/// <returns></returns>
@@ -69,11 +75,6 @@ namespace Rant.Vocabulary
 		{
 			foreach (var entry in _entriesHash) yield return entry;
 		}
-
-		/// <summary>
-		/// Gets the number of terms required for entries contained in the current table.
-		/// </summary>
-		public int TermsPerEntry => _termsPerEntry;
 
 		/// <summary>
 		/// Enumerates the subtypes contained in the current table.
@@ -114,7 +115,7 @@ namespace Rant.Vocabulary
 		public bool AddEntry(RantDictionaryEntry entry)
 		{
 			if (entry == null) throw new ArgumentNullException(nameof(entry));
-			if (entry.TermCount != _termsPerEntry) return false;
+			if (entry.TermCount != TermsPerEntry) return false;
 			if (!_entriesHash.Add(entry)) return false;
 			_entriesList.Add(entry);
 			return true;
@@ -166,10 +167,13 @@ namespace Rant.Vocabulary
 		/// </summary>
 		/// <param name="subtypeName">The name of the subtype to add.</param>
 		/// <param name="index">The term index to associate with the name.</param>
-		/// <returns>FALSE if the name was not a valid identifier or the index was out of range. TRUE if the operation was successful.</returns>
+		/// <returns>
+		/// FALSE if the name was not a valid identifier or the index was out of range. TRUE if the operation was
+		/// successful.
+		/// </returns>
 		public bool AddSubtype(string subtypeName, int index)
 		{
-			if (index < 0 || index >= _termsPerEntry) return false;
+			if (index < 0 || index >= TermsPerEntry) return false;
 			if (subtypeName == null) throw new ArgumentNullException(nameof(subtypeName));
 			if (!Util.ValidateName(subtypeName)) return false;
 			_subtypes[subtypeName] = index;
@@ -197,10 +201,7 @@ namespace Rant.Vocabulary
 			{
 				return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
 			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 
 		/// <summary>
@@ -211,7 +212,7 @@ namespace Rant.Vocabulary
 		/// <param name="subtype">The subtype to look up.</param>
 		/// <returns></returns>
 		public int GetSubtypeIndex(string subtype)
-		{	
+		{
 			if (Util.IsNullOrWhiteSpace(subtype)) return 0;
 			if (!Util.ValidateName(subtype)) return -1;
 			int index;
@@ -226,11 +227,11 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<string> GetSubtypesForIndex(int index)
 		{
-			if (index < 0 || index >= _termsPerEntry) yield break;
+			if (index < 0 || index >= TermsPerEntry) yield break;
 			HashSet<string> subs;
 			if (!_subtypeIndexMap.TryGetValue(index, out subs)) yield break;
-			foreach (var sub in subs) yield return sub;
-		}  
+			foreach (string sub in subs) yield return sub;
+		}
 
 		/// <summary>
 		/// Adds another table's entries to the current table, given that they share the same name and term count.
@@ -240,28 +241,33 @@ namespace Rant.Vocabulary
 		public bool Merge(RantDictionaryTable other)
 		{
 			if (other.Name != Name || other == this) return false;
-			if (other._termsPerEntry != _termsPerEntry) return false;
+			if (other.TermsPerEntry != TermsPerEntry) return false;
 			_entriesHash.AddRange(other._entriesHash);
 			_entriesList.AddRange(other._entriesHash);
 			return true;
 		}
 
-		internal RantDictionaryTerm Query(RantDictionary dictionary, RNG rng, Query query, CarrierState syncState)
+		internal RantDictionaryTerm Query(RantDictionary dictionary, Sandbox sb, Query query, CarrierState syncState)
 		{
-			int index = string.IsNullOrEmpty(query.Subtype) ? 0 : GetSubtypeIndex(query.Subtype);
+			int index = sb.TakePlural() 
+				? string.IsNullOrEmpty(query.PluralSubtype) 
+					? GetSubtypeIndex(query.Subtype)
+					: GetSubtypeIndex(query.PluralSubtype)
+				: GetSubtypeIndex(query.Subtype);
+
 			if (index == -1) return null;
-			
+
 			var pool = _entriesHash.Where((e, i) => query.GetFilters().All(f => f.Test(dictionary, this, e, i, query)));
 			if (!pool.Any()) return null;
 
-			return syncState.GetEntry(query.Carrier, index, pool, rng)?[index];
+			return syncState.GetEntry(query.Carrier, index, pool, sb.RNG)?[index];
 		}
 
 		internal override void DeserializeData(BsonItem data)
 		{
 			// General data
 			Name = data["name"];
-			_termsPerEntry = (int)data["termc"];
+			TermsPerEntry = data["termc"];
 			Language = data["lang"];
 
 			// Subtypes
@@ -281,7 +287,7 @@ namespace Rant.Vocabulary
 
 			var entries = data["entries"];
 			int count = entries.Count;
-			
+
 			// Entries
 			for (int i = 0; i < count; i++)
 			{
@@ -298,7 +304,7 @@ namespace Rant.Vocabulary
 
 				var entryClasses = (string[])entryData["classes"];
 				var termArray = terms.ToArray();
-				var entry = new RantDictionaryEntry(termArray, entryClasses, (int)(entryData["weight"] ?? 1));
+				var entry = new RantDictionaryEntry(termArray, entryClasses, entryData["weight"] ?? 1);
 
 				// Optional classes
 				foreach (var optionalClass in entryData["optional-classes"].Values)
@@ -323,11 +329,11 @@ namespace Rant.Vocabulary
 			{
 				["name"] = Name,
 				["lang"] = Language,
-				["termc"] = _termsPerEntry
+				["termc"] = TermsPerEntry
 			};
 
-			var subs = new BsonItem[_termsPerEntry];
-			for (int i = 0; i < _termsPerEntry; i++)
+			var subs = new BsonItem[TermsPerEntry];
+			for (int i = 0; i < TermsPerEntry; i++)
 			{
 				subs[i] = new BsonItem(GetSubtypesForIndex(i).ToArray());
 			}
@@ -340,8 +346,8 @@ namespace Rant.Vocabulary
 			{
 				var entry = _entriesList[i];
 				var entryData = new BsonItem();
-				var termData = new BsonItem[_termsPerEntry];
-				for (int j = 0; j < _termsPerEntry; j++)
+				var termData = new BsonItem[TermsPerEntry];
+				for (int j = 0; j < TermsPerEntry; j++)
 				{
 					termData[j] = new BsonItem
 					{
@@ -357,7 +363,7 @@ namespace Rant.Vocabulary
 				entryData["optional-classes"] = new BsonItem(entry.GetOptionalClasses().ToArray());
 
 				var metaData = new BsonItem();
-				foreach (var metaKey in entry.GetMetadataKeys())
+				foreach (string metaKey in entry.GetMetadataKeys())
 				{
 					metaData[metaKey] = new BsonItem(entry.GetMetadata(metaKey));
 				}

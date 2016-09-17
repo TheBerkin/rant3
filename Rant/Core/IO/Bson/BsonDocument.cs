@@ -46,10 +46,7 @@ namespace Rant.Core.IO.Bson
 		/// <returns>The value of the given key, or null if it does not exist.</returns>
 		public BsonItem this[string key]
 		{
-			get
-			{
-				return Top.HasKey(key) ? Top[key] : null;
-			}
+			get { return Top.HasKey(key) ? Top[key] : null; }
 			set { Top[key] = value; }
 		}
 

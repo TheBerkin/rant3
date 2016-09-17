@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 using Rant.Core.IO.Bson;
 using Rant.Resources;
+using Rant.Vocabulary;
 
 namespace Rant.Tools.Packer
 {
@@ -64,6 +65,7 @@ namespace Rant.Tools.Packer
 			pkg.Description = info.Description;
 			pkg.ID = info.ID;
 			pkg.Tags = info.Tags;
+
 			foreach (var dep in info.Dependencies)
 			{
 				pkg.AddDependency(dep);
@@ -103,20 +105,18 @@ namespace Rant.Tools.Packer
 				Console.WriteLine("+ " + pattern.Name);
 			}
 
-			foreach (string path in Directory.GetFiles(contentPath, "*.dic", SearchOption.AllDirectories))
+			foreach (string path in Directory.GetFiles(contentPath, "*.table", SearchOption.AllDirectories))
 			{
-				throw new NotImplementedException(); // TODO
-				//Console.WriteLine("+ " + path);
-				//var table = RantDictionaryTable.FromFile(path);
-				//package.AddTable(table);
+				Console.WriteLine("+ " + path);
+				var table = RantDictionaryTable.FromStream(Path.GetFileNameWithoutExtension(path), File.Open(path, FileMode.Open));
+				package.AddResource(table);
 			}
 		}
 
 		private static bool TryGetRelativePath(string rootDir, string fullPath, out string relativePath, bool removeExtension = false)
 		{
 			relativePath = null;
-			if (string.IsNullOrWhiteSpace(rootDir)) return false;
-			if (string.IsNullOrWhiteSpace(fullPath)) return false;
+			if (string.IsNullOrWhiteSpace(rootDir) || string.IsNullOrWhiteSpace(fullPath)) return false;
 			var rootParts = Path.GetFullPath(rootDir).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 			var fullParts = Path.GetFullPath(fullPath).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 			if (rootParts.Length == 0 || fullParts.Length <= rootParts.Length)

@@ -17,15 +17,13 @@ namespace Rant.Vocabulary.Querying
 			// Used by serializer
 		}
 
-		public Regex Regex { get; set;  }
-
+		public Regex Regex { get; set; }
 		public bool Outcome { get; set; }
-
 		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query) => Regex.IsMatch(entry[termIndex].Value) == Outcome;
 
 		public override void Deserialize(EasyReader input)
 		{
-			RegexOptions options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+			var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
 			Outcome = input.ReadBoolean();
 			options |= (RegexOptions)input.ReadInt32();
 			Regex = new Regex(input.ReadString(), options);

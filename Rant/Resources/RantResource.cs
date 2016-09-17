@@ -12,8 +12,8 @@ namespace Rant.Resources
 	/// </summary>
 	public abstract class RantResource
 	{
-		private static readonly Dictionary<string, Type> _resourceTypeRegistry = new Dictionary<string, Type>(); 
-		private static readonly Dictionary<Type, string> _resourceIdRegistry = new Dictionary<Type, string>(); 
+		private static readonly Dictionary<string, Type> _resourceTypeRegistry = new Dictionary<string, Type>();
+		private static readonly Dictionary<Type, string> _resourceIdRegistry = new Dictionary<Type, string>();
 
 		static RantResource()
 		{
@@ -55,9 +55,7 @@ namespace Rant.Resources
 		}
 
 		internal abstract void DeserializeData(BsonItem data);
-
 		internal abstract BsonItem SerializeData();
-
 		internal abstract void Load(RantEngine engine);
 	}
 }

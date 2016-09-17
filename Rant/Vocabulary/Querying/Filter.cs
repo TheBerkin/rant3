@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Rant.Core.IO;
 
@@ -7,11 +6,11 @@ namespace Rant.Vocabulary.Querying
 {
 	internal abstract class Filter
 	{
-		internal const ushort FILTER_NONE =			0x0000;
-		internal const ushort FILTER_CLASS =		0x0001;
-		internal const ushort FILTER_REGEX =		0x0002;
-		internal const ushort FILTER_SYLRANGE =		0x0003;
-		internal const ushort FILTER_BIT_OTHER =	0x8000;
+		internal const ushort FILTER_NONE = 0x0000;
+		internal const ushort FILTER_CLASS = 0x0001;
+		internal const ushort FILTER_REGEX = 0x0002;
+		internal const ushort FILTER_SYLRANGE = 0x0003;
+		internal const ushort FILTER_BIT_OTHER = 0x8000;
 
 		public static Filter GetFilterInstance(ushort filterTypeCode)
 		{
@@ -42,7 +41,6 @@ namespace Rant.Vocabulary.Querying
 		public abstract bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query);
 
 		public abstract void Deserialize(EasyReader input);
-
 		public abstract void Serialize(EasyWriter output);
 	}
 }
