@@ -922,5 +922,8 @@ namespace Rant.Core.Framework
 		[RantFunction("cedilla", "ced")]
 		[RantDescription("Accents the specified character with a cedilla (c\u0327) accent.")]
 		private static void AccentCedilla(Sandbox sb, string character) => sb.Print($"{character}\u0327".Normalize(NormalizationForm.FormC));
+
+		[RantFunction("char")]
+		private static void Character(Sandbox sb, string name) => sb.Print(Unicode.GetByName(name));
 	}
 }
