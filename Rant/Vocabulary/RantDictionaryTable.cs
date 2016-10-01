@@ -257,7 +257,8 @@ namespace Rant.Vocabulary
 
 			if (index == -1) return null;
 
-			var pool = _entriesHash.Where((e, i) => query.GetFilters().All(f => f.Test(dictionary, this, e, i, query)));
+			var pool = _entriesHash.Where((e, i) => query.GetFilters().OrderBy(f => f.Priority).All(f => f.Test(dictionary, this, e, i, query)));
+
 			if (!pool.Any()) return null;
 
 			return syncState.GetEntry(query.Carrier, index, pool, sb.RNG)?[index];
