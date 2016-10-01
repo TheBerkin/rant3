@@ -105,6 +105,7 @@ namespace Rant.Vocabulary.Querying
 		public static RangeFilter Between(int min, int max) => new RangeFilter(min, max);
 
 		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query) => TestAgainst(entry[termIndex].SyllableCount);
+		public override int Priority => 1;
 
 		public override void Deserialize(EasyReader input)
 		{

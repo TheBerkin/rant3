@@ -20,6 +20,7 @@ namespace Rant.Vocabulary.Querying
 		public Regex Regex { get; set; }
 		public bool Outcome { get; set; }
 		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query) => Regex.IsMatch(entry[termIndex].Value) == Outcome;
+		public override int Priority => 100;
 
 		public override void Deserialize(EasyReader input)
 		{

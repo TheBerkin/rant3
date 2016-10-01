@@ -47,6 +47,8 @@ namespace Rant.Vocabulary.Querying
 			return match && !hidden.Any(entry.ContainsClass);
 		}
 
+		public override int Priority => 0;
+
 		/// <summary>
 		/// Returns a boolean value indicating whether the specified class is explicitly allowed by the current ClassFilter.
 		/// </summary>

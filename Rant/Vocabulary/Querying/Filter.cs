@@ -39,7 +39,7 @@ namespace Rant.Vocabulary.Querying
 		/// <param name="query">The originating query.</param>
 		/// <returns></returns>
 		public abstract bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query);
-
+		public abstract int Priority { get; }
 		public abstract void Deserialize(EasyReader input);
 		public abstract void Serialize(EasyWriter output);
 	}

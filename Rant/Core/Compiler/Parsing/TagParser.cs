@@ -229,6 +229,7 @@ namespace Rant.Core.Compiler.Parsing
 
 			while (compiler.NextContext == CompileContext.ArgumentSequence)
 			{
+				reader.SkipSpace();
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
 				arguments.Add(new RstSequence(actions, startToken.ToLocation()));
