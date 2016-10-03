@@ -11,7 +11,7 @@ namespace Rant.Vocabulary
 	{
 		private const int INITIAL_METADATA_CAPACITY = 4;
 		private readonly HashSet<string> _classes;
-		private readonly Lazy<Dictionary<string, object>> _metadata = new Lazy<Dictionary<string, object>>(() => new Dictionary<string, object>(INITIAL_METADATA_CAPACITY));
+		private Dictionary<string, object> _metadata;
 		private readonly HashSet<string> _optionalClasses;
 		private readonly RantDictionaryTerm[] _terms;
 
@@ -156,7 +156,8 @@ namespace Rant.Vocabulary
 		public void SetMetadata(string key, object value)
 		{
 			if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
-			_metadata.Value[key] = value;
+			if (_metadata == null) _metadata = new Dictionary<string, object>(INITIAL_METADATA_CAPACITY);
+			_metadata[key] = value;
 		}
 
 		/// <summary>
@@ -166,7 +167,7 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public bool RemoveMetadata(string key)
 		{
-			return key != null && _metadata.IsValueCreated && _metadata.Value.Remove(key);
+			return key != null && _metadata != null && _metadata.Remove(key);
 		}
 
 		/// <summary>
@@ -175,8 +176,8 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<string> GetMetadataKeys()
 		{
-			if (!_metadata.IsValueCreated) yield break;
-			foreach (string key in _metadata.Value.Keys) yield return key;
+			if (_metadata == null) yield break;
+			foreach (string key in _metadata.Keys) yield return key;
 		}
 
 		/// <summary>
@@ -186,9 +187,9 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public object GetMetadata(string key)
 		{
-			if (!_metadata.IsValueCreated) return null;
+			if (_metadata == null) return null;
 			object result;
-			return !_metadata.Value.TryGetValue(key, out result) ? null : result;
+			return !_metadata.TryGetValue(key, out result) ? null : result;
 		}
 
 		/// <summary>
@@ -198,8 +199,8 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public bool ContainsMetadataKey(string key)
 		{
-			if (key == null || !_metadata.IsValueCreated) return false;
-			return _metadata.Value.ContainsKey(key);
+			if (key == null || _metadata == null) return false;
+			return _metadata.ContainsKey(key);
 		}
 
 		/// <summary>
