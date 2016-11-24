@@ -43,6 +43,16 @@ namespace Rant.Vocabulary.Querying
 
 		public int FilterCount => _filters.Count;
 
+		/// <summary>
+		/// Returns whether the query is a "bare query" - should only return the table itself.
+		/// </summary>
+		public bool BareQuery => _filters.Count == 0 && !Exclusive && !HasCarrier;
+
+		/// <summary>
+		/// Returns whether the query has a carrier.
+		/// </summary>
+		public bool HasCarrier => Carrier != null && Carrier.GetTotalCount() != 0;
+
 		public void AddFilter(Filter filter) => _filters.Add(filter);
 
 		public IEnumerable<Filter> GetFilters()

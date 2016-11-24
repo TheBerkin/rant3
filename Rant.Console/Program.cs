@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 
 using Rant;
+using Rant.Vocabulary;
 
 using static System.Console;
 
@@ -15,9 +16,14 @@ namespace RantConsole
 {
 	internal class Program
 	{
+#if !DEBUG
 		public const double PATTERN_TIMEOUT = 10.0;
+#else
+		public const double PATTERN_TIMEOUT = 0.0;
+#endif
 		public static readonly string FILE = GetPaths().FirstOrDefault();
 		public static readonly string PKG_PATH = Property("package");
+		public static readonly string LEGACY_DIC_PATH = Property("ldict");
 		public static readonly long SEED;
 		public static readonly bool USE_SEED;
 
@@ -37,6 +43,16 @@ namespace RantConsole
 			try
 			{
 #endif
+				if(!string.IsNullOrEmpty(LEGACY_DIC_PATH))
+				{
+					var tables =
+						Directory
+							.GetFiles(LEGACY_DIC_PATH)
+							.Where(f => Path.GetExtension(f) == ".dic")
+							.Select(f => RantDictionaryTable.FromLegacyFile(f));
+					rant.Dictionary = new RantDictionary(tables);
+				}
+
 				if (!string.IsNullOrEmpty(PKG_PATH))
 				{
 #if DEBUG

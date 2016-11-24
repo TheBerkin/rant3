@@ -77,6 +77,16 @@ namespace Rant.Vocabulary
 		public int TermCount { get; }
 
 		/// <summary>
+		/// Gets the number of classes in the current entry.
+		/// </summary>
+		public int ClassCount => _classes.Count;
+
+		/// <summary>
+		/// Returns whether or not the entry has classes.
+		/// </summary>
+		public bool HasClasses => _classes.Any();
+
+		/// <summary>
 		/// Gets or sets the term at the specified index.
 		/// </summary>
 		/// <param name="index">The index of the term to access.</param>

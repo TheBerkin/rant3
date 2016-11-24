@@ -274,6 +274,8 @@ namespace Rant.Vocabulary
 				}
 			}
 
+			table.Commit();
+
 			return table;
 		}
 
