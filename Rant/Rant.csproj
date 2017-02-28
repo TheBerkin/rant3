@@ -259,6 +259,9 @@
     <Compile Include="Core\IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Resources\RantPackage.cs" />
+    <Compile Include="Vocabulary\ClassTree.cs" />
+    <Compile Include="Vocabulary\Legacy\DicLexer.cs" />
+    <Compile Include="Vocabulary\Legacy\RantDictionaryTable.Loader.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
@@ -268,6 +271,7 @@
     <Compile Include="Vocabulary\Querying\Filter.cs" />
     <Compile Include="Vocabulary\Querying\RegexFilter.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.Importer.cs" />
+    <Compile Include="Vocabulary\SyllableBuckets.cs" />
     <Compile Include="Vocabulary\Utilities\Diff.cs" />
     <Compile Include="Vocabulary\Utilities\DoubleMetaphone.cs" />
     <Compile Include="Core\Formatting\Emoji.cs" />

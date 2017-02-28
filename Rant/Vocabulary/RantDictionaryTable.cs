@@ -31,6 +31,7 @@ using Rant.Core;
 using Rant.Core.IO.Bson;
 using Rant.Core.Utilities;
 using Rant.Resources;
+using Rant.Vocabulary.Utilities;
 using Rant.Vocabulary.Querying;
 
 namespace Rant.Vocabulary
@@ -47,19 +48,28 @@ namespace Rant.Vocabulary
 		private readonly HashSet<string> _hidden = new HashSet<string>(new[] { NSFW });
 		private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>();
 		private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+		private ClassTree _classTree = new ClassTree(new RantDictionaryEntry[] { });
+		private SyllableBuckets[] _syllableBuckets;
 
 		/// <summary>
 		/// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
 		/// </summary>
 		/// <param name="name">The name of the table.</param>
 		/// <param name="termsPerEntry">The number of terms to store in each entry.</param>
-		public RantDictionaryTable(string name, int termsPerEntry)
+		public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
 		{
-			if (name == null) throw new ArgumentNullException(nameof(name));
-			if (termsPerEntry <= 0) throw new ArgumentException("Terms per entry must be greater than zero.");
-			if (!Util.ValidateName(name)) throw new ArgumentException($"Invalid table name: '{name}'");
+			if(name == null) throw new ArgumentNullException(nameof(name));
+			if(termsPerEntry <= 0) throw new ArgumentException("Terms per entry must be greater than zero.");
+			if(!Util.ValidateName(name)) throw new ArgumentException($"Invalid table name: '{name}'");
+			if(hidden != null) _hidden = hidden;
 			TermsPerEntry = termsPerEntry;
 			Name = name;
+
+			_syllableBuckets = new SyllableBuckets[termsPerEntry];
+			for(var i = 0; i < termsPerEntry; i++)
+			{
+				_syllableBuckets[i] = new SyllableBuckets(i, new RantDictionaryEntry[] { });
+			}
 		}
 
 		internal RantDictionaryTable()
@@ -98,7 +108,7 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<RantDictionaryEntry> GetEntries()
 		{
-			foreach (var entry in _entriesHash) yield return entry;
+			foreach(var entry in _entriesHash) yield return entry;
 		}
 
 		/// <summary>
@@ -114,7 +124,7 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public bool IsClassHidden(string className)
 		{
-			if (className == null) throw new ArgumentNullException(nameof(className));
+			if(className == null) throw new ArgumentNullException(nameof(className));
 			return _hidden.Contains(className);
 		}
 
@@ -139,9 +149,9 @@ namespace Rant.Vocabulary
 		/// <returns>True if successfully added; otherwise, False.</returns>
 		public bool AddEntry(RantDictionaryEntry entry)
 		{
-			if (entry == null) throw new ArgumentNullException(nameof(entry));
-			if (entry.TermCount != TermsPerEntry) return false;
-			if (!_entriesHash.Add(entry)) return false;
+			if(entry == null) throw new ArgumentNullException(nameof(entry));
+			if(entry.TermCount != TermsPerEntry) return false;
+			if(!_entriesHash.Add(entry)) return false;
 			_entriesList.Add(entry);
 			return true;
 		}
@@ -153,8 +163,8 @@ namespace Rant.Vocabulary
 		/// <returns>True if successfully removed; otherwise, False.</returns>
 		public bool RemoveEntry(RantDictionaryEntry entry)
 		{
-			if (entry == null) throw new ArgumentNullException(nameof(entry));
-			if (!_entriesHash.Remove(entry)) return false;
+			if(entry == null) throw new ArgumentNullException(nameof(entry));
+			if(!_entriesHash.Remove(entry)) return false;
 			_entriesList.Remove(entry);
 			return true;
 		}
@@ -166,7 +176,7 @@ namespace Rant.Vocabulary
 		/// <returns>True if found, False if not.</returns>
 		public bool ContainsEntry(RantDictionaryEntry entry)
 		{
-			if (entry == null) throw new ArgumentNullException(nameof(entry));
+			if(entry == null) throw new ArgumentNullException(nameof(entry));
 			return _entriesHash.Contains(entry);
 		}
 
@@ -196,9 +206,9 @@ namespace Rant.Vocabulary
 		/// </returns>
 		public bool AddSubtype(string subtypeName, int index)
 		{
-			if (index < 0 || index >= TermsPerEntry) return false;
-			if (subtypeName == null) throw new ArgumentNullException(nameof(subtypeName));
-			if (!Util.ValidateName(subtypeName)) return false;
+			if(index < 0 || index >= TermsPerEntry) return false;
+			if(subtypeName == null) throw new ArgumentNullException(nameof(subtypeName));
+			if(!Util.ValidateName(subtypeName)) return false;
 			_subtypes[subtypeName] = index;
 			HashSet<string> subs;
 			if (!_subtypeIndexMap.TryGetValue(index, out subs))
@@ -215,8 +225,8 @@ namespace Rant.Vocabulary
 		/// <returns>TRUE if the subtype was found and removed. FALSE if the subtype was not found.</returns>
 		public bool RemoveSubtype(string subtypeName)
 		{
-			if (Util.IsNullOrWhiteSpace(subtypeName)) return false;
-			if (!_subtypes.ContainsKey(subtypeName)) return false;
+			if(Util.IsNullOrWhiteSpace(subtypeName)) return false;
+			if(!_subtypes.ContainsKey(subtypeName)) return false;
 			HashSet<string> subs;
 			if (_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out subs))
 				return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
@@ -232,10 +242,10 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public int GetSubtypeIndex(string subtype)
 		{
-			if (Util.IsNullOrWhiteSpace(subtype)) return 0;
-			if (!Util.ValidateName(subtype)) return -1;
+			if(Util.IsNullOrWhiteSpace(subtype)) return 0;
+			if(!Util.ValidateName(subtype)) return -1;
 			int index;
-			if (int.TryParse(subtype, out index) && index >= 0) return index;
+			if(int.TryParse(subtype, out index) && index >= 0) return index;
 			return _subtypes.TryGetValue(subtype, out index) ? index : -1;
 		}
 
@@ -246,10 +256,10 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		public IEnumerable<string> GetSubtypesForIndex(int index)
 		{
-			if (index < 0 || index >= TermsPerEntry) yield break;
+			if(index < 0 || index >= TermsPerEntry) yield break;
 			HashSet<string> subs;
-			if (!_subtypeIndexMap.TryGetValue(index, out subs)) yield break;
-			foreach (string sub in subs) yield return sub;
+			if(!_subtypeIndexMap.TryGetValue(index, out subs)) yield break;
+			foreach(string sub in subs) yield return sub;
 		}
 
 		/// <summary>
@@ -259,11 +269,24 @@ namespace Rant.Vocabulary
 		/// <returns>True if merge succeeded; otherwise, False.</returns>
 		public bool Merge(RantDictionaryTable other)
 		{
-			if (other.Name != Name || other == this) return false;
-			if (other.TermsPerEntry != TermsPerEntry) return false;
+			if(other.Name != Name || other == this) return false;
+			if(other.TermsPerEntry != TermsPerEntry) return false;
 			_entriesHash.AddRange(other._entriesHash);
 			_entriesList.AddRange(other._entriesHash);
 			return true;
+		}
+
+		/// <summary>
+		/// Optimizes the table. Call this after writing items to the table or removing items from a table.
+		/// If you're writing or removing multiple items, call this after all the actions have been performed.
+		/// </summary>
+		public void Commit()
+		{
+			_classTree = new ClassTree(_entriesHash);
+			for(var i = 0; i < TermsPerEntry; i++)
+			{
+				_syllableBuckets[i] = new SyllableBuckets(i, _entriesList);
+			}
 		}
 
 		internal RantDictionaryTerm Query(RantDictionary dictionary, Sandbox sb, Query query, CarrierState syncState)
@@ -274,13 +297,55 @@ namespace Rant.Vocabulary
 					: GetSubtypeIndex(query.PluralSubtype)
 				: GetSubtypeIndex(query.Subtype);
 
-			if (index == -1) return null;
+			if(index == -1) return null;
 
-			var pool = _entriesHash.Where((e, i) => query.GetFilters().OrderBy(f => f.Priority).All(f => f.Test(dictionary, this, e, i, query)));
+			if(query.BareQuery) return _entriesList.PickEntry(sb.RNG)?[index];
 
-			if (!pool.Any()) return null;
+			// process simple class filters using class tree
+			var filters = query.GetFilters();
+			var classes = filters
+				.Where(f => f is ClassFilter)
+				.SelectMany(f => (f as ClassFilter).RequiredClasses);
 
-			return syncState.GetEntry(query.Carrier, index, pool, sb.RNG)?[index];
+			filters = filters.Where(f => !(f is ClassFilter) || !(f as ClassFilter).SimpleFilter);
+
+			IEnumerable<RantDictionaryEntry> pool = _entriesList;
+			if(classes.Any())
+			{
+				pool = _classTree.Query(classes);
+			}
+
+			// if it's just the class filters, let's leave now
+			if(!filters.Any() && !query.HasCarrier)
+			{
+				return pool.ToList().PickEntry(sb.RNG)?[index];
+			}
+
+			// process syllable count filters using syllable buckets
+			var rangeFilters = filters.Where(f => f is RangeFilter).Select(f => f as RangeFilter);
+			if(rangeFilters.Any())
+			{
+				foreach(var filter in rangeFilters)
+				{
+					pool = pool.Intersect(_syllableBuckets[index].Query(filter));
+				}
+
+				filters = filters.Where(f => !(f is RangeFilter));
+			}
+
+			if(filters.Any())
+			{
+				pool = pool.Where((e, i) => filters.OrderBy(f => f.Priority).All(f => f.Test(dictionary, this, e, index, query)));
+			}
+
+			if(!pool.Any()) return null;
+
+			if(query.HasCarrier)
+			{
+				return syncState.GetEntry(query.Carrier, index, pool, sb.RNG)?[index];
+			}
+
+			return pool.PickEntry(sb.RNG)?[index];
 		}
 
 		internal override void DeserializeData(BsonItem data)
@@ -293,21 +358,20 @@ namespace Rant.Vocabulary
 			// Subtypes
 			var subs = data["subs"].Values;
 			int si = 0;
-			foreach (var subList in subs)
+			foreach(var subList in subs)
 			{
-				foreach (var sub in subList.Values)
-					AddSubtype(sub, si);
+				foreach (var sub in subList.Values)	AddSubtype(sub, si);
 				si++;
 			}
 
 			// Hidden classes
-			foreach (var hiddenClass in data["hidden-classes"].Values) _hidden.Add(hiddenClass);
+			foreach(var hiddenClass in data["hidden-classes"].Values) _hidden.Add(hiddenClass);
 
 			var entries = data["entries"];
 			int count = entries.Count;
 
 			// Entries
-			for (int i = 0; i < count; i++)
+			for(int i = 0; i < count; i++)
 			{
 				var entryData = entries[i];
 
@@ -335,6 +399,8 @@ namespace Rant.Vocabulary
 
 				AddEntry(entry);
 			}
+
+			Commit();
 		}
 
 		internal override BsonItem SerializeData()
@@ -354,11 +420,12 @@ namespace Rant.Vocabulary
 			data["hidden-classes"] = new BsonItem(_hidden.ToArray());
 
 			var entries = new BsonItem[_entriesList.Count];
-			for (int i = 0; i < _entriesList.Count; i++)
+			for(int i = 0; i < _entriesList.Count; i++)
 			{
 				var entry = _entriesList[i];
 				var entryData = new BsonItem();
 				var termData = new BsonItem[TermsPerEntry];
+				
 				for (int j = 0; j < TermsPerEntry; j++)
 					termData[j] = new BsonItem
 					{

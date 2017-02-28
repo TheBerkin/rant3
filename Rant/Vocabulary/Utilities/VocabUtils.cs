@@ -33,6 +33,10 @@ namespace Rant.Vocabulary.Utilities
 	{
 		private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
 
+		public static RantDictionaryEntry PickEntry(this List<RantDictionaryEntry> hash, RNG rng)
+		{
+			return hash.Any() ? hash[rng.Next(hash.Count)] : null;
+		}
 		public static RantDictionaryEntry PickEntry(this IEnumerable<RantDictionaryEntry> enumerable, RNG rng)
 		{
 			var array = enumerable as RantDictionaryEntry[] ?? enumerable.ToArray();

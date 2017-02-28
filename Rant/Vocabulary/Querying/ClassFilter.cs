@@ -42,6 +42,13 @@ namespace Rant.Vocabulary.Querying
 		/// </summary>
 		public bool IsEmpty => _items.Count == 0;
 
+    	public string[] RequiredClasses => _items.Where(i => i.Length == 1 && i[0].ShouldMatch).Select(i => i[0].Class).ToArray();
+
+		/// <summary>
+		/// Whether the class filter is simple, i.e. there are no switch rules and every rule should match.
+		/// </summary>
+		public bool SimpleFilter => _items.All(i => i.Length == 1 && i[0].ShouldMatch);
+		
 		public override int Priority => 0;
 
 		/// <summary>
