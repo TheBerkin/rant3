@@ -1,4 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Constructs;
@@ -43,9 +68,7 @@ namespace Rant.Core.Compiler.Syntax
 				_weights = new double[_count];
 				for (int i = 0; i < _count; i++) _weights[i] = 1;
 				foreach (var cw in constantWeights)
-				{
 					_weights[cw.Item1] = cw.Item2;
-				}
 				_constantWeightSum = _weights.Sum() - _dynamicWeights.Count;
 				_weighted = true;
 			}
@@ -57,9 +80,7 @@ namespace Rant.Core.Compiler.Syntax
 
 			// Skip if chance doesn't fall within range
 			if (attribs.Chance < 100 && sb.RNG.NextDouble(0, 100) > attribs.Chance)
-			{
 				yield break;
-			}
 
 			int next = -1;
 			int reps = attribs.RepEach ? _elements.Count : attribs.Repetitions;
@@ -69,7 +90,6 @@ namespace Rant.Core.Compiler.Syntax
 			if (attribs.Start != null) yield return attribs.Start;
 
 			if (_weighted && attribs.Sync == null)
-			{
 				foreach (var dw in _dynamicWeights)
 				{
 					sb.AddOutputWriter();
@@ -81,7 +101,6 @@ namespace Rant.Core.Compiler.Syntax
 
 					weightSum += _weights[dw.Item1];
 				}
-			}
 
 			if (attribs.Sync?.Index == 0 && attribs.StartIndex >= 0)
 				attribs.Sync.Index = attribs.StartIndex;
@@ -119,7 +138,6 @@ namespace Rant.Core.Compiler.Syntax
 
 				// Separator
 				if (i > 0 && attribs.Separator != null)
-				{
 					if (attribs.IsSeries)
 					{
 						// Check if we're on the last separator in a series
@@ -127,10 +145,7 @@ namespace Rant.Core.Compiler.Syntax
 						{
 							// Add the oxford comma if specified
 							if (attribs.EndSeparator != null)
-							{
-								// If there are more than two items, print it!
 								if (reps > 2) yield return attribs.EndSeparator;
-							}
 
 							sb.Print(sb.Format.StandardSpace);
 
@@ -151,7 +166,6 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						yield return attribs.Separator;
 					}
-				}
 				sb.Blocks.Push(block); // Now put it back
 
 				// Prefix
@@ -182,9 +196,7 @@ namespace Rant.Core.Compiler.Syntax
 					output.Write(true);
 					output.Write(_constantWeightSum);
 					for (int i = 0; i < _count; i++)
-					{
 						output.Write(_weights[i]);
-					}
 				}
 				else
 				{
@@ -223,9 +235,7 @@ namespace Rant.Core.Compiler.Syntax
 					input.ReadDouble(out _constantWeightSum);
 					_weights = new double[_count];
 					for (int i = 0; i < _count; i++)
-					{
 						input.ReadDouble(out _weights[i]);
-					}
 				}
 
 				// Read dynamic weights

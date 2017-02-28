@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -398,7 +423,7 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantProgram input, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
+			new Sandbox(this, input, new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -414,7 +439,7 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantProgram input, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, input, new RNG(seed), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
+			new Sandbox(this, input, new RNG(seed), charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -430,7 +455,7 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(RantProgram input, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, input, rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
+			new Sandbox(this, input, rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -445,8 +470,8 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, RantProgram.CompileString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(),
-					args).RunSerial(timeout);
+			new Sandbox(this, RantProgram.CompileString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(),
+				args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -462,8 +487,8 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, RantProgram.CompileString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args)
-					.RunSerial(timeout);
+			new Sandbox(this, RantProgram.CompileString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args)
+				.RunSerial(timeout);
 
 		/// <summary>
 		/// Executes the specified pattern and returns a series of outputs.
@@ -479,7 +504,7 @@ namespace Rant
 		/// <returns></returns>
 		public IEnumerable<RantOutput> DoSerial(string input, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
-				new Sandbox(this, RantProgram.CompileString(input), rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
+			new Sandbox(this, RantProgram.CompileString(input), rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
 
 		/// <summary>
 		/// Executes a pattern that has been loaded from a package and returns the resulting output.

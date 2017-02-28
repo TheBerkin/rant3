@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -99,9 +124,7 @@ namespace Rant.Core.IO
 		void IDisposable.Dispose()
 		{
 			if (!_leaveOpen)
-			{
 				BaseStream.Dispose();
-			}
 		}
 
 		/// <summary>
@@ -494,9 +517,7 @@ namespace Rant.Core.IO
 			int length = ReadInt32();
 			var array = new string[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadString();
-			}
 			return array;
 		}
 
@@ -510,9 +531,7 @@ namespace Rant.Core.IO
 			int length = ReadInt32();
 			var array = new string[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadString();
-			}
 			value = array;
 			return this;
 		}
@@ -527,9 +546,7 @@ namespace Rant.Core.IO
 			int length = ReadInt32();
 			var array = new string[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadString(encoding);
-			}
 			return array;
 		}
 
@@ -544,9 +561,7 @@ namespace Rant.Core.IO
 			int length = ReadInt32();
 			var array = new string[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadString(encoding);
-			}
 			value = array;
 			return this;
 		}
@@ -563,9 +578,7 @@ namespace Rant.Core.IO
 			long count = use64bit ? ReadInt64() : ReadInt32();
 			var array = new T[count];
 			for (int i = 0; i < count; i++)
-			{
 				array[i] = ReadStruct<T>(isNumeric);
-			}
 			return array;
 		}
 
@@ -582,9 +595,7 @@ namespace Rant.Core.IO
 			long count = use64bit ? ReadInt64() : ReadInt32();
 			var array = new T[count];
 			for (int i = 0; i < count; i++)
-			{
 				array[i] = ReadStruct<T>(isNumeric);
-			}
 			value = array;
 			return this;
 		}
@@ -600,9 +611,7 @@ namespace Rant.Core.IO
 			bool isNumeric = IOUtil.IsNumericType(typeof(T));
 			var array = new T[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadStruct<T>(isNumeric);
-			}
 			return array;
 		}
 
@@ -618,9 +627,7 @@ namespace Rant.Core.IO
 			bool isNumeric = IOUtil.IsNumericType(typeof(T));
 			var array = new T[length];
 			for (int i = 0; i < length; i++)
-			{
 				array[i] = ReadStruct<T>(isNumeric);
-			}
 			value = array;
 			return this;
 		}
@@ -641,13 +648,9 @@ namespace Rant.Core.IO
 			bool vIsString = vtype == typeof(string);
 
 			if (!ktype.IsValueType && !kIsString)
-			{
 				throw new ArgumentException("TKey must be either a value type or System.String.");
-			}
 			if (!vtype.IsValueType && !vIsString)
-			{
 				throw new ArgumentException("TValue must be either a value type or System.String.");
-			}
 
 			bool isKNumeric = IOUtil.IsNumericType(typeof(TKey));
 			bool isVNumeric = IOUtil.IsNumericType(typeof(TValue));
@@ -658,22 +661,14 @@ namespace Rant.Core.IO
 			for (int i = 0; i < count; i++)
 			{
 				if (kIsString)
-				{
-					key = (TKey)((object)ReadString());
-				}
+					key = (TKey)(object)ReadString();
 				else
-				{
 					key = ReadStruct<TKey>(isKNumeric);
-				}
 
 				if (vIsString)
-				{
-					value = (TValue)((object)ReadString());
-				}
+					value = (TValue)(object)ReadString();
 				else
-				{
 					value = ReadStruct<TValue>(isVNumeric);
-				}
 
 				dict.Add(key, value);
 			}
@@ -703,9 +698,7 @@ namespace Rant.Core.IO
 		public TEnum ReadEnum<TEnum>() where TEnum : struct, IConvertible
 		{
 			if (!typeof(TEnum).IsEnum)
-			{
 				throw new ArgumentException("T must be an enumerated type.");
-			}
 			byte size = (byte)Marshal.SizeOf(Enum.GetUnderlyingType(typeof(TEnum)));
 			var data = ReadAndFormat(size);
 			Array.Resize(ref data, 8);
@@ -733,9 +726,7 @@ namespace Rant.Core.IO
 		public TStruct ReadStruct<TStruct>(bool convertEndian = true)
 		{
 			if (!typeof(TStruct).IsValueType)
-			{
 				throw new ArgumentException("TStruct must be a value type.");
-			}
 			int size = Marshal.SizeOf(typeof(TStruct));
 			bool numeric = IOUtil.IsNumericType(typeof(TStruct));
 			var data = numeric ? ReadAndFormat(size) : ReadBytes(size);
@@ -744,9 +735,7 @@ namespace Rant.Core.IO
 			var i = (TStruct)Marshal.PtrToStructure(ptr, typeof(TStruct));
 
 			if (convertEndian)
-			{
 				IOUtil.ConvertStructEndians(ref i);
-			}
 
 			Marshal.FreeHGlobal(ptr);
 			return i;
@@ -779,9 +768,7 @@ namespace Rant.Core.IO
 			T? value = null;
 			bool hasValue = ReadBoolean();
 			if (hasValue)
-			{
 				value = ReadStruct<T>();
-			}
 			return value;
 		}
 
@@ -796,9 +783,7 @@ namespace Rant.Core.IO
 			value = null;
 			bool hasValue = ReadBoolean();
 			if (hasValue)
-			{
 				value = ReadStruct<T>();
-			}
 			return this;
 		}
 
@@ -830,16 +815,10 @@ namespace Rant.Core.IO
 		private byte[] ReadAndFormat(int count)
 		{
 			if (BitConverter.IsLittleEndian != (Endianness == Endian.Little))
-			{
 				for (int i = 0; i < count; i++)
-				{
 					BaseStream.Read(_buffer, count - i - 1, 1);
-				}
-			}
 			else
-			{
 				BaseStream.Read(_buffer, 0, count);
-			}
 
 			return _buffer;
 		}

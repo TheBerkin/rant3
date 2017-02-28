@@ -1,3 +1,28 @@
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
 using System;
 using System.Linq;
 
@@ -32,23 +57,18 @@ namespace Rant.Vocabulary.Utilities
 			}
 			// last syllables are the same
 			if (IsEnabled(RhymeFlags.Syllabic))
-			{
 				if (term1.Syllables.Last() == term2.Syllables.Last()) return true;
-			}
 			// penultimate syllable is stressed but does not rhyme, last syllable rhymes
 			if (IsEnabled(RhymeFlags.Weak) && hasStress)
-			{
 				if (
 					term1.SyllableCount >= 2 &&
 					term2.SyllableCount >= 2 &&
 					term1.Syllables[term1.SyllableCount - 2].IndexOf('"') > -1 &&
 					term2.Syllables[term2.SyllableCount - 2].IndexOf('"') > -1 &&
 					GetFirstVowelSound(term1.Syllables.Last()) == GetFirstVowelSound(term2.Syllables.Last())
-					)
+				)
 					return true;
-			}
 			if (IsEnabled(RhymeFlags.Semirhyme))
-			{
 				if (Math.Abs(term1.SyllableCount - term2.SyllableCount) == 1)
 				{
 					var longestWord = term1.SyllableCount > term2.SyllableCount ? term1 : term2;
@@ -58,14 +78,13 @@ namespace Rant.Vocabulary.Utilities
 						GetFirstVowelSound(shortestWord.Syllables.Last()))
 						return true;
 				}
-			}
 			// psuedo-sound similar
 			if (IsEnabled(RhymeFlags.Forced))
 			{
 				int distance = LevenshteinDistance(
 					term1.Value.GenerateDoubleMetaphone(),
 					term2.Value.GenerateDoubleMetaphone()
-					);
+				);
 				if (distance <= 1)
 					return true;
 			}
@@ -80,13 +99,10 @@ namespace Rant.Vocabulary.Utilities
 			}
 			// matching first consonants
 			if (IsEnabled(RhymeFlags.Alliteration))
-			{
 				if (GetFirstConsonants(term1.Value) == GetFirstConsonants(term2.Value))
 					return true;
-			}
 			// matching all consonants
 			if (IsEnabled(RhymeFlags.Pararhyme))
-			{
 				if (term1.Value
 					.Where(x => !_vowels.Contains(x))
 					.SequenceEqual(
@@ -94,7 +110,6 @@ namespace Rant.Vocabulary.Utilities
 							.Where(x => !_vowels.Contains(x))
 					))
 					return true;
-			}
 
 			return false;
 		}
@@ -103,10 +118,8 @@ namespace Rant.Vocabulary.Utilities
 		{
 			int i;
 			for (i = 0; i < word.Length; i++)
-			{
 				if (_vowels.Contains(word[i]))
 					break;
-			}
 			if (i > 0)
 				return word.Substring(0, i);
 			return word;
@@ -117,10 +130,8 @@ namespace Rant.Vocabulary.Utilities
 		{
 			int i;
 			for (i = 0; i < pron.Length; i++)
-			{
 				if (_vowelSounds.Contains(pron[i]))
 					break;
-			}
 			return pron.Substring(i);
 		}
 
@@ -155,10 +166,10 @@ namespace Rant.Vocabulary.Utilities
 				int previousRow = currentRow ^ 1;
 				for (int j = 1; j <= m; j++)
 				{
-					int cost = (target[j - 1] == source[i - 1] ? 0 : 1);
+					int cost = target[j - 1] == source[i - 1] ? 0 : 1;
 					distance[currentRow, j] = Math.Min(Math.Min(
-						distance[previousRow, j] + 1,
-						distance[currentRow, j - 1] + 1),
+							distance[previousRow, j] + 1,
+							distance[currentRow, j - 1] + 1),
 						distance[previousRow, j - 1] + cost);
 				}
 			}

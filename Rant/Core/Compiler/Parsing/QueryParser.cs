@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -95,7 +120,7 @@ namespace Rant.Core.Compiler.Parsing
 					case R.Question:
 					{
 						reader.SkipSpace();
-						bool blacklist = (token.Type == R.Without);
+						bool blacklist = token.Type == R.Without;
 
 						var regexFilter = reader.Read(R.Regex, "regex filter rule");
 						var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
@@ -103,7 +128,6 @@ namespace Rant.Core.Compiler.Parsing
 						{
 							var flagsToken = reader.ReadToken();
 							foreach (char flag in flagsToken.Value)
-							{
 								switch (flag)
 								{
 									case 'i':
@@ -113,7 +137,6 @@ namespace Rant.Core.Compiler.Parsing
 										options |= RegexOptions.Multiline;
 										break;
 								}
-							}
 						}
 						if (regexFilter.Value == null) break;
 						query.AddFilter(new RegexFilter(new Regex(regexFilter.Value, options), !blacklist));
@@ -131,9 +154,7 @@ namespace Rant.Core.Compiler.Parsing
 							var firstNumberToken = reader.ReadLooseToken();
 							int firstNumber;
 							if (!Util.ParseInt(firstNumberToken.Value, out firstNumber))
-							{
 								compiler.SyntaxError(firstNumberToken, false, "err-compiler-bad-sylrange-value");
-							}
 
 							// (a-) or (a-b)
 							if (reader.PeekLooseToken().Type == R.Hyphen)
@@ -145,9 +166,7 @@ namespace Rant.Core.Compiler.Parsing
 									var secondNumberToken = reader.ReadLooseToken();
 									int secondNumber;
 									if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
-									{
 										compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
-									}
 
 									query.AddFilter(new RangeFilter(firstNumber, secondNumber));
 								}
@@ -170,9 +189,7 @@ namespace Rant.Core.Compiler.Parsing
 							var secondNumberToken = reader.ReadLoose(R.Text, "acc-syllable-range-value");
 							int secondNumber;
 							if (!Util.ParseInt(secondNumberToken.Value, out secondNumber))
-							{
 								compiler.SyntaxError(secondNumberToken, false, "err-compiler-bad-sylrange-value");
-							}
 							query.AddFilter(new RangeFilter(null, secondNumber));
 						}
 						// ()
@@ -213,9 +230,7 @@ namespace Rant.Core.Compiler.Parsing
 			}
 
 			if (!endOfQueryReached)
-			{
 				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
-			}
 
 			if (tableName.Value != null)
 				actionCallback(new RstQuery(query, tableName.ToLocation()));
@@ -267,21 +282,13 @@ namespace Rant.Core.Compiler.Parsing
 						if (reader.PeekToken().Type == R.Equal)
 						{
 							if (carrierType == CarrierComponentType.Associative)
-							{
 								carrierType = CarrierComponentType.MatchAssociative;
-							}
 							else if (carrierType == CarrierComponentType.Dissociative)
-							{
 								carrierType = CarrierComponentType.MatchDissociative;
-							}
 							else if (carrierType == CarrierComponentType.Divergent)
-							{
 								carrierType = CarrierComponentType.MatchDivergent;
-							}
 							else if (carrierType == CarrierComponentType.Relational)
-							{
 								carrierType = CarrierComponentType.MatchRelational;
-							}
 							reader.ReadToken();
 						}
 

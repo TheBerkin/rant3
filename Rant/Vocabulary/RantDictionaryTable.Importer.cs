@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -51,7 +76,7 @@ namespace Rant.Vocabulary
 						case '#':
 							continue;
 
-							// Directive
+						// Directive
 						case '@':
 						{
 							// Read directive name
@@ -171,24 +196,16 @@ namespace Rant.Vocabulary
 								case "endclass":
 								{
 									if (args.Count == 0)
-									{
 										if (autoClassStack.Count > 0)
-										{
 											foreach (string cName in autoClassStack.Pop())
-											{
 												autoClasses.Remove(cName);
-											}
-										}
 										else
-										{
 											foreach (var cArg in args)
 											{
 												if (!Tools.ValidateClassName(cArg.Value))
 													throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
 												autoClasses.Remove(cArg.Value);
 											}
-										}
-									}
 									break;
 								}
 							}
@@ -253,19 +270,13 @@ namespace Rant.Vocabulary
 									if (args.Count != table.TermsPerEntry)
 										continue;
 									for (int j = 0; j < currentEntry.TermCount; j++)
-									{
 										currentEntry[j].Pronunciation = args[j].Value;
-									}
 									break;
 								default:
 									if (args.Count == 1)
-									{
 										currentEntry.SetMetadata(propName, args[0].Value);
-									}
 									else
-									{
 										currentEntry.SetMetadata(propName, args.Select(a => a.Value).ToArray());
-									}
 									break;
 							}
 							break;
@@ -297,9 +308,7 @@ namespace Rant.Vocabulary
 				table = new RantDictionaryTable(name, termCount);
 
 				foreach (var sub in subs)
-				{
 					table.AddSubtype(sub.Key, sub.Value);
-				}
 			}
 
 #if !UNITY
@@ -331,9 +340,7 @@ namespace Rant.Vocabulary
 			{
 				if (input == null || input.Length == 0) return false;
 				for (int i = 0; i < input.Length; i++)
-				{
-					if ((!char.IsLetterOrDigit(input[i]) && input[i] != '_') || (i < input.Length - 1 && input[i] == '?')) return false;
-				}
+					if (!char.IsLetterOrDigit(input[i]) && input[i] != '_' || i < input.Length - 1 && input[i] == '?') return false;
 				return true;
 			}
 
@@ -351,13 +358,12 @@ namespace Rant.Vocabulary
 				var buffer = new StringBuilder();
 				var white = new StringBuilder();
 				while (i < len)
-				{
 					switch (c = str[i++])
 					{
 						// Inline comment
 						case '#':
 							goto done;
-							// Phrasal split operator
+						// Phrasal split operator
 						case '+':
 							if (split > -1)
 								throw new RantTableLoadException(origin, line, i, "err-table-multiple-splits");
@@ -478,7 +484,7 @@ namespace Rant.Vocabulary
 									continue;
 								case 'u':
 								{
-									if ((i + 4) > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+									if (i + 4 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 									ushort codePoint;
 									if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
 										throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -488,7 +494,7 @@ namespace Rant.Vocabulary
 								}
 								case 'U':
 								{
-									if ((i + 8) > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+									if (i + 8 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 									char high, low;
 									if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
 										throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -527,7 +533,6 @@ namespace Rant.Vocabulary
 							}
 							continue;
 					}
-				}
 
 				done:
 
@@ -561,7 +566,6 @@ namespace Rant.Vocabulary
 				{
 					if (++i >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
 					while (i < len)
-					{
 						switch (c = str[i++])
 						{
 							case '\"':
@@ -596,7 +600,7 @@ namespace Rant.Vocabulary
 										continue;
 									case 'u':
 									{
-										if ((i + 4) >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+										if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 										ushort codePoint;
 										if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
 											throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -606,7 +610,7 @@ namespace Rant.Vocabulary
 									}
 									case 'U':
 									{
-										if ((i + 8) >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+										if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 										char high, low;
 										if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
 											throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -623,7 +627,6 @@ namespace Rant.Vocabulary
 								buffer.Append(c);
 								break;
 						}
-					}
 					throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
 				}
 
@@ -631,7 +634,6 @@ namespace Rant.Vocabulary
 
 				// If it isn't a string literal, simply read until a comma is reached.
 				while (i < len)
-				{
 					switch (c = str[i++])
 					{
 						case ',':
@@ -670,7 +672,7 @@ namespace Rant.Vocabulary
 									continue;
 								case 'u':
 								{
-									if ((i + 4) >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+									if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 									ushort codePoint;
 									if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
 										throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -680,7 +682,7 @@ namespace Rant.Vocabulary
 								}
 								case 'U':
 								{
-									if ((i + 8) >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+									if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
 									char high, low;
 									if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
 										throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
@@ -712,7 +714,6 @@ namespace Rant.Vocabulary
 							}
 							continue;
 					}
-				}
 
 				result = new Argument(start, buffer.ToString());
 				return true;

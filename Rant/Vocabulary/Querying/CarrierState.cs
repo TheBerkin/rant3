@@ -1,4 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Utilities;
@@ -81,61 +106,45 @@ namespace Rant.Vocabulary.Querying
 			{
 				HashSet<RantDictionaryEntry> usedSet;
 				if (!_uniqueTable.TryGetValue(unique, out usedSet))
-				{
 					usedSet = _uniqueTable[unique] = new HashSet<RantDictionaryEntry>();
-				}
 
 				pool = pool.Except(usedSet);
 			}
 
 			// Handle match-unique carriers
 			foreach (string munique in carrier.GetComponentsOfType(CarrierComponentType.Unique))
-			{
 				if (_matchTable.TryGetValue(munique, out result))
 					pool = pool.Where(e => e != result);
-			}
 
 			// Handle relational carriers
 			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.Relational))
-			{
 				if (_assocTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => e.RelatesWith(result));
-			}
 
 			// Handle match-relational carriers
 			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.MatchRelational))
-			{
 				if (_matchTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => e.RelatesWith(result));
-			}
 
 			// Handle dissociative carriers
 			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.Dissociative))
-			{
 				if (_assocTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => !e.RelatesWith(result));
-			}
 
 			// Handle match-dissociative carriers
 			foreach (string relate in carrier.GetComponentsOfType(CarrierComponentType.MatchDissociative))
-			{
 				if (_matchTable.TryGetValue(relate, out result))
 					pool = pool.Where(e => !e.RelatesWith(result));
-			}
 
 			// Handle divergent carriers
 			foreach (string diverge in carrier.GetComponentsOfType(CarrierComponentType.Divergent))
-			{
 				if (_assocTable.TryGetValue(diverge, out result))
 					pool = pool.Where(e => e.DivergesFrom(result));
-			}
 
 			// Handle match-divergent carriers
 			foreach (string diverge in carrier.GetComponentsOfType(CarrierComponentType.MatchDivergent))
-			{
 				if (_matchTable.TryGetValue(diverge, out result))
 					pool = pool.Where(e => e.DivergesFrom(result));
-			}
 
 			result = pool.PickEntry(rng);
 

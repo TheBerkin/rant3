@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,15 +35,15 @@ namespace Rant.Core.Output
 			new HashSet<char>(new[] { 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'é', 'É' });
 
 		private static readonly string[] ignorePrefixes =
-		{ "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" };
+			{ "uni", "use", "uri", "urol", "U.", "one", "uvu", "eul", "euk", "eur" };
 
 		private static readonly string[] allowPrefixes =
-		{ "honest", "honor", "hour", "8" };
+			{ "honest", "honor", "hour", "8" };
 
 		private static readonly string[] ignoreWords = { "u" };
 
 		private static readonly string[] allowWords =
-		{ "f", "fbi", "fcc", "fda", "x", "l", "m", "n", "s", "h" };
+			{ "f", "fbi", "fcc", "fda", "x", "l", "m", "n", "s", "h" };
 
 		public OutputChainArticleBuffer(Sandbox sb, OutputChainBuffer prev) : base(sb, prev)
 		{
@@ -73,11 +98,11 @@ namespace Rant.Core.Output
 		{
 			if (string.IsNullOrEmpty(value)) return false;
 			return
-				(allowWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase))
-				 || allowPrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase)))
-				|| (vowels.Contains(value[0])
-				    && !ignorePrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase))
-				    && !ignoreWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase)));
+				allowWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase))
+				|| allowPrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase))
+				|| vowels.Contains(value[0])
+				&& !ignorePrefixes.Any(pfx => value.StartsWith(pfx, StringComparison.InvariantCultureIgnoreCase))
+				&& !ignoreWords.Any(word => string.Equals(word, value, StringComparison.InvariantCultureIgnoreCase));
 		}
 	}
 }

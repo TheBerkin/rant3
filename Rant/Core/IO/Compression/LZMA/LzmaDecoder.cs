@@ -1,4 +1,27 @@
-// LzmaDecoder.cs
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
 
 using System;
 using System.IO;
@@ -58,96 +81,98 @@ namespace Rant.Core.IO.Compression.LZMA
 			}
 			while (nowPos64 < outSize64)
 			{
-				// UInt64 next = Math.Min(nowPos64 + (1 << 18), outSize64);
-				// while(nowPos64 < next)
+				uint posState = (uint)nowPos64 & m_PosStateMask;
+				if (m_IsMatchDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
 				{
-					uint posState = (uint)nowPos64 & m_PosStateMask;
-					if (m_IsMatchDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
+					byte b;
+					byte prevByte = m_OutWindow.GetByte(0);
+					if (!state.IsCharState())
+						b = m_LiteralDecoder.DecodeWithMatchByte(m_RangeDecoder,
+							(uint)nowPos64, prevByte, m_OutWindow.GetByte(rep0));
+					else
+						b = m_LiteralDecoder.DecodeNormal(m_RangeDecoder, (uint)nowPos64, prevByte);
+					m_OutWindow.PutByte(b);
+					state.UpdateChar();
+					nowPos64++;
+				}
+				else
+				{
+					uint len;
+					if (m_IsRepDecoders[state.Index].Decode(m_RangeDecoder) == 1)
 					{
-						byte b;
-						byte prevByte = m_OutWindow.GetByte(0);
-						if (!state.IsCharState())
-							b = m_LiteralDecoder.DecodeWithMatchByte(m_RangeDecoder,
-								(uint)nowPos64, prevByte, m_OutWindow.GetByte(rep0));
+						if (m_IsRepG0Decoders[state.Index].Decode(m_RangeDecoder) == 0)
+						{
+							if (m_IsRep0LongDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
+							{
+								state.UpdateShortRep();
+								m_OutWindow.PutByte(m_OutWindow.GetByte(rep0));
+								nowPos64++;
+								continue;
+							}
+						}
 						else
-							b = m_LiteralDecoder.DecodeNormal(m_RangeDecoder, (uint)nowPos64, prevByte);
-						m_OutWindow.PutByte(b);
-						state.UpdateChar();
-						nowPos64++;
+						{
+							uint distance;
+							if (m_IsRepG1Decoders[state.Index].Decode(m_RangeDecoder) == 0)
+							{
+								distance = rep1;
+							}
+							else
+							{
+								if (m_IsRepG2Decoders[state.Index].Decode(m_RangeDecoder) == 0)
+								{
+									distance = rep2;
+								}
+								else
+								{
+									distance = rep3;
+									rep3 = rep2;
+								}
+								rep2 = rep1;
+							}
+							rep1 = rep0;
+							rep0 = distance;
+						}
+						len = m_RepLenDecoder.Decode(m_RangeDecoder, posState) + Base.kMatchMinLen;
+						state.UpdateRep();
 					}
 					else
 					{
-						uint len;
-						if (m_IsRepDecoders[state.Index].Decode(m_RangeDecoder) == 1)
+						rep3 = rep2;
+						rep2 = rep1;
+						rep1 = rep0;
+						len = Base.kMatchMinLen + m_LenDecoder.Decode(m_RangeDecoder, posState);
+						state.UpdateMatch();
+						uint posSlot = m_PosSlotDecoder[Base.GetLenToPosState(len)].Decode(m_RangeDecoder);
+						if (posSlot >= Base.kStartPosModelIndex)
 						{
-							if (m_IsRepG0Decoders[state.Index].Decode(m_RangeDecoder) == 0)
+							int numDirectBits = (int)((posSlot >> 1) - 1);
+							rep0 = (2 | (posSlot & 1)) << numDirectBits;
+							if (posSlot < Base.kEndPosModelIndex)
 							{
-								if (m_IsRep0LongDecoders[(state.Index << Base.kNumPosStatesBitsMax) + posState].Decode(m_RangeDecoder) == 0)
-								{
-									state.UpdateShortRep();
-									m_OutWindow.PutByte(m_OutWindow.GetByte(rep0));
-									nowPos64++;
-									continue;
-								}
+								rep0 += BitTreeDecoder.ReverseDecode(m_PosDecoders,
+									rep0 - posSlot - 1, m_RangeDecoder, numDirectBits);
 							}
 							else
 							{
-								uint distance;
-								if (m_IsRepG1Decoders[state.Index].Decode(m_RangeDecoder) == 0)
-								{
-									distance = rep1;
-								}
-								else
-								{
-									if (m_IsRepG2Decoders[state.Index].Decode(m_RangeDecoder) == 0)
-										distance = rep2;
-									else
-									{
-										distance = rep3;
-										rep3 = rep2;
-									}
-									rep2 = rep1;
-								}
-								rep1 = rep0;
-								rep0 = distance;
+								rep0 += m_RangeDecoder.DecodeDirectBits(
+									        numDirectBits - Base.kNumAlignBits) << Base.kNumAlignBits;
+								rep0 += m_PosAlignDecoder.ReverseDecode(m_RangeDecoder);
 							}
-							len = m_RepLenDecoder.Decode(m_RangeDecoder, posState) + Base.kMatchMinLen;
-							state.UpdateRep();
 						}
 						else
 						{
-							rep3 = rep2;
-							rep2 = rep1;
-							rep1 = rep0;
-							len = Base.kMatchMinLen + m_LenDecoder.Decode(m_RangeDecoder, posState);
-							state.UpdateMatch();
-							uint posSlot = m_PosSlotDecoder[Base.GetLenToPosState(len)].Decode(m_RangeDecoder);
-							if (posSlot >= Base.kStartPosModelIndex)
-							{
-								int numDirectBits = (int)((posSlot >> 1) - 1);
-								rep0 = ((2 | (posSlot & 1)) << numDirectBits);
-								if (posSlot < Base.kEndPosModelIndex)
-									rep0 += BitTreeDecoder.ReverseDecode(m_PosDecoders,
-										rep0 - posSlot - 1, m_RangeDecoder, numDirectBits);
-								else
-								{
-									rep0 += (m_RangeDecoder.DecodeDirectBits(
-										numDirectBits - Base.kNumAlignBits) << Base.kNumAlignBits);
-									rep0 += m_PosAlignDecoder.ReverseDecode(m_RangeDecoder);
-								}
-							}
-							else
-								rep0 = posSlot;
+							rep0 = posSlot;
 						}
-						if (rep0 >= m_OutWindow.TrainSize + nowPos64 || rep0 >= m_DictionarySizeCheck)
-						{
-							if (rep0 == 0xFFFFFFFF)
-								break;
-							throw new DataErrorException();
-						}
-						m_OutWindow.CopyBlock(rep0, len);
-						nowPos64 += len;
 					}
+					if (rep0 >= m_OutWindow.TrainSize + nowPos64 || rep0 >= m_DictionarySizeCheck)
+					{
+						if (rep0 == 0xFFFFFFFF)
+							break;
+						throw new DataErrorException();
+					}
+					m_OutWindow.CopyBlock(rep0, len);
+					nowPos64 += len;
 				}
 			}
 			m_OutWindow.Flush();
@@ -167,7 +192,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				throw new InvalidParamException();
 			uint dictionarySize = 0;
 			for (int i = 0; i < 4; i++)
-				dictionarySize += ((uint)(properties[1 + i])) << (i * 8);
+				dictionarySize += (uint)properties[1 + i] << (i * 8);
 			SetDictionarySize(dictionarySize);
 			SetLiteralProperties(lp, lc);
 			SetPosBitsProperties(pb);
@@ -179,7 +204,7 @@ namespace Rant.Core.IO.Compression.LZMA
 			{
 				m_DictionarySize = dictionarySize;
 				m_DictionarySizeCheck = Math.Max(m_DictionarySize, 1);
-				uint blockSize = Math.Max(m_DictionarySizeCheck, (1 << 12));
+				uint blockSize = Math.Max(m_DictionarySizeCheck, 1 << 12);
 				m_OutWindow.Create(blockSize);
 			}
 		}
@@ -278,7 +303,9 @@ namespace Rant.Core.IO.Compression.LZMA
 					return m_LowCoder[posState].Decode(rangeDecoder);
 				uint symbol = Base.kNumLowLenSymbols;
 				if (m_Choice2.Decode(rangeDecoder) == 0)
+				{
 					symbol += m_MidCoder[posState].Decode(rangeDecoder);
+				}
 				else
 				{
 					symbol += Base.kNumMidLenSymbols;
@@ -349,7 +376,9 @@ namespace Rant.Core.IO.Compression.LZMA
 				{
 					uint symbol = 1;
 					do
-						symbol = (symbol << 1) | m_Decoders[symbol].Decode(rangeDecoder); while (symbol < 0x100);
+					{
+						symbol = (symbol << 1) | m_Decoders[symbol].Decode(rangeDecoder);
+					} while (symbol < 0x100);
 					return (byte)symbol;
 				}
 
@@ -372,6 +401,6 @@ namespace Rant.Core.IO.Compression.LZMA
 					return (byte)symbol;
 				}
 			}
-		};
+		}
 	}
 }

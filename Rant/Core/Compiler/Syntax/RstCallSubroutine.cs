@@ -1,4 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.IO;
@@ -35,16 +60,18 @@ namespace Rant.Core.Compiler.Syntax
 						sb.Pattern,
 						this,
 						$"The module '{Name}' does not exist or has not been imported."
-						);
+					);
 				if (sb.Modules[Name][_moduleFunctionName] == null)
 					throw new RantRuntimeException(
 						sb.Pattern,
 						this,
 						$"The function '{_moduleFunctionName}' cannot be found in the module '{Name}'."
-						);
+					);
 			}
 			else if (sb.Objects[Name] == null)
+			{
 				throw new RantRuntimeException(sb.Pattern, this, $"The subroutine '{Name}' does not exist.");
+			}
 			var sub = (RstDefineSubroutine)(_inModule ? sb.Modules[Name][_moduleFunctionName] : sb.Objects[Name].Value);
 			if (sub.Parameters.Keys.Count != Arguments.Count)
 				throw new RantRuntimeException(sb.Pattern, this, "Argument mismatch on subroutine call.");
@@ -52,7 +79,6 @@ namespace Rant.Core.Compiler.Syntax
 			var args = new Dictionary<string, RST>();
 			var parameters = sub.Parameters.Keys.ToArray();
 			for (int i = 0; i < Arguments.Count; i++)
-			{
 				if (sub.Parameters[parameters[i]] == SubroutineParameterType.Greedy)
 				{
 					sb.AddOutputWriter();
@@ -61,8 +87,9 @@ namespace Rant.Core.Compiler.Syntax
 					args[parameters[i]] = new RstText(Location, output.Main);
 				}
 				else
+				{
 					args[parameters[i]] = Arguments[i];
-			}
+				}
 			sb.SubroutineArgs.Push(args);
 			yield return action;
 			sb.SubroutineArgs.Pop();

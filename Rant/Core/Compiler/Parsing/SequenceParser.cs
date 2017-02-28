@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -34,9 +59,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					case R.Pipe:
 						if (context == CompileContext.BlockSequence)
-						{
 							yield break;
-						}
 						goto default; // Print it if we're not in a block
 
 					case R.RightCurly:
@@ -51,9 +74,7 @@ namespace Rant.Core.Compiler.Parsing
 					// end of argument
 					case R.Semicolon:
 						if (context == CompileContext.ArgumentSequence)
-						{
 							yield break;
-						}
 						// this is probably just a semicolon in text
 						actionCallback(new RstText(token.Value, token.ToLocation()));
 						break;
@@ -192,9 +213,7 @@ namespace Rant.Core.Compiler.Parsing
 
 					case R.EOF:
 						if (context != CompileContext.DefaultSequence)
-						{
 							compiler.SyntaxError(token, true, "err-compiler-eof");
-						}
 						yield break;
 
 					default: // Handle text
@@ -204,9 +223,7 @@ namespace Rant.Core.Compiler.Parsing
 			}
 
 			if (reader.End && context != CompileContext.DefaultSequence)
-			{
 				compiler.SyntaxError(reader.PrevToken, true, "err-compiler-eof");
-			}
 		}
 	}
 }

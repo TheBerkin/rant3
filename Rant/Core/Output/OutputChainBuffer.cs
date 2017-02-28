@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -113,7 +138,7 @@ namespace Rant.Core.Output
 			{
 				str = value.ToString();
 			}
-			
+
 			Format(ref str);
 			_buffer.Append(str);
 			PrintedSinceCapsChange = true;
@@ -160,9 +185,7 @@ namespace Rant.Core.Output
 						? _buffer[_buffer.Length - 1]
 						: Prev?.LastChar ?? '\0';
 					if (char.IsWhiteSpace(lastChar) || _wordSepChars.Contains(lastChar) || lastChar == '\0')
-					{
 						CapitalizeFirstLetter(ref value);
-					}
 				}
 					break;
 				case Capitalization.Sentence:
@@ -176,7 +199,7 @@ namespace Rant.Core.Output
 					if (_buffer.Length == 0)
 					{
 						// Check if we're at the start
-						if (Prev == null || (Prev.Prev == null && Prev.Length == 0))
+						if (Prev == null || Prev.Prev == null && Prev.Length == 0)
 						{
 							CapitalizeFirstLetter(ref value);
 							break;
@@ -221,7 +244,6 @@ namespace Rant.Core.Output
 			var sb = new StringBuilder();
 			bool capitalize = false;
 			foreach (char c in value)
-			{
 				if (capitalize && char.IsLetter(c))
 				{
 					sb.Append(char.ToUpperInvariant(c));
@@ -232,7 +254,6 @@ namespace Rant.Core.Output
 					if (_sentenceTerminators.Contains(c)) capitalize = true;
 					sb.Append(c);
 				}
-			}
 			value = sb.ToString();
 		}
 
@@ -258,15 +279,12 @@ namespace Rant.Core.Output
 			var titleBuffer = new StringBuilder(value.Length);
 			bool first = true;
 			foreach (char c in value)
-			{
 				if (char.IsWhiteSpace(c))
 				{
 					if (wordBuffer.Length > 0)
 					{
-						if ((first && capitalizeFirstLetter) || !format.Excludes(wordBuffer.ToString()))
-						{
+						if (first && capitalizeFirstLetter || !format.Excludes(wordBuffer.ToString()))
 							wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
-						}
 						first = false;
 						titleBuffer.Append(wordBuffer);
 						wordBuffer.Length = 0;
@@ -277,13 +295,10 @@ namespace Rant.Core.Output
 				{
 					wordBuffer.Append(c);
 				}
-			}
 			if (wordBuffer.Length > 0)
 			{
-				if ((first && capitalizeFirstLetter) || !format.Excludes(wordBuffer.ToString()))
-				{
+				if (first && capitalizeFirstLetter || !format.Excludes(wordBuffer.ToString()))
 					wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
-				}
 				titleBuffer.Append(wordBuffer);
 			}
 			value = titleBuffer.ToString();
