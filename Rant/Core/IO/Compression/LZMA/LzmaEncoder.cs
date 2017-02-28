@@ -1,4 +1,27 @@
-// LzmaEncoder.cs
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
 
 using System;
 using System.IO;
@@ -48,9 +71,9 @@ namespace Rant.Core.IO.Compression.LZMA
 		private readonly uint[] tempPrices = new uint[Base.kNumFullDistances];
 		private uint _additionalOffset;
 		private uint _alignPriceCount;
-		private uint _dictionarySize = (1 << kDefaultDictionaryLogSize);
+		private uint _dictionarySize = 1 << kDefaultDictionaryLogSize;
 		private uint _dictionarySizePrev = 0xFFFFFFFF;
-		private uint _distTableSize = (kDefaultDictionaryLogSize * 2);
+		private uint _distTableSize = kDefaultDictionaryLogSize * 2;
 		private bool _finished;
 		private Stream _inStream;
 		private uint _longestMatchLength;
@@ -68,7 +91,7 @@ namespace Rant.Core.IO.Compression.LZMA
 		private uint _optimumEndIndex;
 		private BitTreeEncoder _posAlignEncoder = new BitTreeEncoder(Base.kNumAlignBits);
 		private int _posStateBits = 2;
-		private uint _posStateMask = (4 - 1);
+		private uint _posStateMask = 4 - 1;
 		private byte _previousByte;
 		private Base.State _state = new Base.State();
 		private uint _trainSize = 0;
@@ -83,7 +106,7 @@ namespace Rant.Core.IO.Compression.LZMA
 			g_FastPos[1] = 1;
 			for (byte slotFast = 2; slotFast < kFastSlots; slotFast++)
 			{
-				uint k = ((uint)1 << ((slotFast >> 1) - 1));
+				uint k = (uint)1 << ((slotFast >> 1) - 1);
 				for (uint j = 0; j < k; j++, c++)
 					g_FastPos[c] = slotFast;
 			}
@@ -113,9 +136,7 @@ namespace Rant.Core.IO.Compression.LZMA
 					if (finished)
 						return;
 					if (progress != null)
-					{
 						progress.SetProgress(processedInSize, processedOutSize);
-					}
 				}
 			}
 			finally
@@ -181,7 +202,7 @@ namespace Rant.Core.IO.Compression.LZMA
 						_dictionarySize = (uint)dictionarySize;
 						int dicLogSize;
 						for (dicLogSize = 0; dicLogSize < (uint)kDicLogSizeMaxCompress; dicLogSize++)
-							if (dictionarySize <= ((uint)(1) << dicLogSize))
+							if (dictionarySize <= (uint)1 << dicLogSize)
 								break;
 						_distTableSize = (uint)dicLogSize * 2;
 						break;
@@ -194,7 +215,7 @@ namespace Rant.Core.IO.Compression.LZMA
 						if (v < 0 || v > (uint)Base.kNumPosStatesBitsEncodingMax)
 							throw new InvalidParamException();
 						_posStateBits = v;
-						_posStateMask = (((uint)1) << _posStateBits) - 1;
+						_posStateMask = ((uint)1 << _posStateBits) - 1;
 						break;
 					}
 					case CoderPropID.LitPosBits:
@@ -241,18 +262,18 @@ namespace Rant.Core.IO.Compression.LZMA
 
 		private static uint GetPosSlot(uint pos)
 		{
-			if (pos < (1 << 11))
+			if (pos < 1 << 11)
 				return g_FastPos[pos];
-			if (pos < (1 << 21))
+			if (pos < 1 << 21)
 				return (uint)(g_FastPos[pos >> 10] + 20);
 			return (uint)(g_FastPos[pos >> 20] + 40);
 		}
 
 		private static uint GetPosSlot2(uint pos)
 		{
-			if (pos < (1 << 17))
+			if (pos < 1 << 17)
 				return (uint)(g_FastPos[pos >> 6] + 12);
-			if (pos < (1 << 27))
+			if (pos < 1 << 27)
 				return (uint)(g_FastPos[pos >> 16] + 32);
 			return (uint)(g_FastPos[pos >> 26] + 52);
 		}
@@ -367,7 +388,9 @@ namespace Rant.Core.IO.Compression.LZMA
 			{
 				price = _isRepG0[state.Index].GetPrice1();
 				if (repIndex == 1)
+				{
 					price += _isRepG1[state.Index].GetPrice0();
+				}
 				else
 				{
 					price += _isRepG1[state.Index].GetPrice1();
@@ -388,7 +411,7 @@ namespace Rant.Core.IO.Compression.LZMA
 			uint price;
 			uint lenToPosState = Base.GetLenToPosState(len);
 			if (pos < Base.kNumFullDistances)
-				price = _distancesPrices[(lenToPosState * Base.kNumFullDistances) + pos];
+				price = _distancesPrices[lenToPosState * Base.kNumFullDistances + pos];
 			else
 				price = _posSlotPrices[(lenToPosState << Base.kNumPosSlotBits) + GetPosSlot2(pos)] +
 				        _alignPrices[pos & Base.kAlignMask];
@@ -495,7 +518,7 @@ namespace Rant.Core.IO.Compression.LZMA
 
 			_optimum[0].State = _state;
 
-			uint posState = (position & _posStateMask);
+			uint posState = position & _posStateMask;
 
 			_optimum[1].Price = _isMatch[(_state.Index << Base.kNumPosStatesBitsMax) + posState].GetPrice0() +
 			                    _literalEncoder.GetSubCoder(position, _previousByte)
@@ -515,7 +538,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				}
 			}
 
-			uint lenEnd = ((lenMain >= repLens[repMaxIndex]) ? lenMain : repLens[repMaxIndex]);
+			uint lenEnd = lenMain >= repLens[repMaxIndex] ? lenMain : repLens[repMaxIndex];
 
 			if (lenEnd < 2)
 			{
@@ -532,7 +555,9 @@ namespace Rant.Core.IO.Compression.LZMA
 
 			uint len = lenEnd;
 			do
-				_optimum[len--].Price = kIfinityPrice; while (len >= 2);
+			{
+				_optimum[len--].Price = kIfinityPrice;
+			} while (len >= 2);
 
 			for (i = 0; i < Base.kNumRepDistances; i++)
 			{
@@ -556,7 +581,7 @@ namespace Rant.Core.IO.Compression.LZMA
 
 			uint normalMatchPrice = matchPrice + _isRep[_state.Index].GetPrice0();
 
-			len = ((repLens[0] >= 2) ? repLens[0] + 1 : 2);
+			len = repLens[0] >= 2 ? repLens[0] + 1 : 2;
 			if (len <= lenMain)
 			{
 				uint offs = 0;
@@ -614,11 +639,15 @@ namespace Rant.Core.IO.Compression.LZMA
 							state.UpdateMatch();
 					}
 					else
+					{
 						state = _optimum[posPrev].State;
+					}
 					state.UpdateChar();
 				}
 				else
+				{
 					state = _optimum[posPrev].State;
+				}
 				if (posPrev == cur - 1)
 				{
 					if (_optimum[cur].IsShortRep())
@@ -677,7 +706,7 @@ namespace Rant.Core.IO.Compression.LZMA
 					}
 					else
 					{
-						reps[0] = (pos - Base.kNumRepDistances);
+						reps[0] = pos - Base.kNumRepDistances;
 						reps[1] = opt.Backs0;
 						reps[2] = opt.Backs1;
 						reps[3] = opt.Backs2;
@@ -693,7 +722,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				currentByte = _matchFinder.GetIndexByte(0 - 1);
 				matchByte = _matchFinder.GetIndexByte((int)(0 - reps[0] - 1 - 1));
 
-				posState = (position & _posStateMask);
+				posState = position & _posStateMask;
 
 				uint curAnd1Price = curPrice +
 				                    _isMatch[(state.Index << Base.kNumPosStatesBitsMax) + posState].GetPrice0() +
@@ -753,7 +782,7 @@ namespace Rant.Core.IO.Compression.LZMA
 							while (lenEnd < offset)
 								_optimum[++lenEnd].Price = kIfinityPrice;
 							uint curAndLenPrice = nextRepMatchPrice + GetRepPrice(
-								0, lenTest2, state2, posStateNext);
+								                      0, lenTest2, state2, posStateNext);
 							var optimum = _optimum[offset];
 							if (curAndLenPrice < optimum.Price)
 							{
@@ -809,8 +838,8 @@ namespace Rant.Core.IO.Compression.LZMA
 								_isMatch[(state2.Index << Base.kNumPosStatesBitsMax) + posStateNext].GetPrice0() +
 								_literalEncoder.GetSubCoder(position + lenTest,
 									_matchFinder.GetIndexByte((int)lenTest - 1 - 1)).GetPrice(true,
-										_matchFinder.GetIndexByte((int)lenTest - 1 - (int)(reps[repIndex] + 1)),
-										_matchFinder.GetIndexByte((int)lenTest - 1));
+									_matchFinder.GetIndexByte((int)lenTest - 1 - (int)(reps[repIndex] + 1)),
+									_matchFinder.GetIndexByte((int)lenTest - 1));
 							state2.UpdateChar();
 							posStateNext = (position + lenTest + 1) & _posStateMask;
 							uint nextMatchPrice = curAndLenCharPrice +
@@ -883,7 +912,7 @@ namespace Rant.Core.IO.Compression.LZMA
 									uint curAndLenCharPrice = curAndLenPrice +
 									                          _isMatch[(state2.Index << Base.kNumPosStatesBitsMax) + posStateNext].GetPrice0() +
 									                          _literalEncoder.GetSubCoder(position + lenTest,
-										                          _matchFinder.GetIndexByte((int)lenTest - 1 - 1)).
+											                          _matchFinder.GetIndexByte((int)lenTest - 1 - 1)).
 										                          GetPrice(true,
 											                          _matchFinder.GetIndexByte((int)lenTest - (int)(curBack + 1) - 1),
 											                          _matchFinder.GetIndexByte((int)lenTest - 1));
@@ -922,7 +951,7 @@ namespace Rant.Core.IO.Compression.LZMA
 		private bool ChangePair(uint smallDist, uint bigDist)
 		{
 			const int kDif = 7;
-			return (smallDist < ((uint)(1) << (32 - kDif)) && bigDist >= (smallDist << kDif));
+			return smallDist < (uint)1 << (32 - kDif) && bigDist >= smallDist << kDif;
 		}
 
 		private void WriteEndMarker(uint posState)
@@ -939,7 +968,7 @@ namespace Rant.Core.IO.Compression.LZMA
 			uint lenToPosState = Base.GetLenToPosState(len);
 			_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, posSlot);
 			int footerBits = 30;
-			uint posReduced = (((uint)1) << footerBits) - 1;
+			uint posReduced = ((uint)1 << footerBits) - 1;
 			_rangeEncoder.EncodeDirectBits(posReduced >> Base.kNumAlignBits, footerBits - Base.kNumAlignBits);
 			_posAlignEncoder.ReverseEncode(_rangeEncoder, posReduced & Base.kAlignMask);
 		}
@@ -983,11 +1012,11 @@ namespace Rant.Core.IO.Compression.LZMA
 				}
 				uint len, numDistancePairs; // it's not used
 				ReadMatchDistances(out len, out numDistancePairs);
-				uint posState = (uint)(nowPos64) & _posStateMask;
+				uint posState = (uint)nowPos64 & _posStateMask;
 				_isMatch[(_state.Index << Base.kNumPosStatesBitsMax) + posState].Encode(_rangeEncoder, 0);
 				_state.UpdateChar();
 				byte curByte = _matchFinder.GetIndexByte((int)(0 - _additionalOffset));
-				_literalEncoder.GetSubCoder((uint)(nowPos64), _previousByte).Encode(_rangeEncoder, curByte);
+				_literalEncoder.GetSubCoder((uint)nowPos64, _previousByte).Encode(_rangeEncoder, curByte);
 				_previousByte = curByte;
 				_additionalOffset--;
 				nowPos64++;
@@ -1002,7 +1031,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				uint pos;
 				uint len = GetOptimum((uint)nowPos64, out pos);
 
-				uint posState = ((uint)nowPos64) & _posStateMask;
+				uint posState = (uint)nowPos64 & _posStateMask;
 				uint complexState = (_state.Index << Base.kNumPosStatesBitsMax) + posState;
 				if (len == 1 && pos == 0xFFFFFFFF)
 				{
@@ -1015,7 +1044,9 @@ namespace Rant.Core.IO.Compression.LZMA
 						subCoder.EncodeMatched(_rangeEncoder, matchByte, curByte);
 					}
 					else
+					{
 						subCoder.Encode(_rangeEncoder, curByte);
+					}
 					_previousByte = curByte;
 					_state.UpdateChar();
 				}
@@ -1037,7 +1068,9 @@ namespace Rant.Core.IO.Compression.LZMA
 						{
 							_isRepG0[_state.Index].Encode(_rangeEncoder, 1);
 							if (pos == 1)
+							{
 								_isRepG1[_state.Index].Encode(_rangeEncoder, 0);
+							}
 							else
 							{
 								_isRepG1[_state.Index].Encode(_rangeEncoder, 1);
@@ -1045,7 +1078,9 @@ namespace Rant.Core.IO.Compression.LZMA
 							}
 						}
 						if (len == 1)
+						{
 							_state.UpdateShortRep();
+						}
 						else
 						{
 							_repMatchLenEncoder.Encode(_rangeEncoder, len - Base.kMatchMinLen, posState);
@@ -1072,12 +1107,14 @@ namespace Rant.Core.IO.Compression.LZMA
 						if (posSlot >= Base.kStartPosModelIndex)
 						{
 							int footerBits = (int)((posSlot >> 1) - 1);
-							uint baseVal = ((2 | (posSlot & 1)) << footerBits);
+							uint baseVal = (2 | (posSlot & 1)) << footerBits;
 							uint posReduced = pos - baseVal;
 
 							if (posSlot < Base.kEndPosModelIndex)
+							{
 								BitTreeEncoder.ReverseEncode(_posEncoders,
 									baseVal - posSlot - 1, _rangeEncoder, footerBits, posReduced);
+							}
 							else
 							{
 								_rangeEncoder.EncodeDirectBits(posReduced >> Base.kNumAlignBits, footerBits - Base.kNumAlignBits);
@@ -1098,7 +1135,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				if (_additionalOffset == 0)
 				{
 					// if (!_fastMode)
-					if (_matchPriceCount >= (1 << 7))
+					if (_matchPriceCount >= 1 << 7)
 						FillDistancesPrices();
 					if (_alignPriceCount >= Base.kAlignTableSize)
 						FillAlignPrices();
@@ -1110,7 +1147,7 @@ namespace Rant.Core.IO.Compression.LZMA
 						return;
 					}
 
-					if (nowPos64 - progressPosValuePrev >= (1 << 12))
+					if (nowPos64 - progressPosValuePrev >= 1 << 12)
 					{
 						_finished = false;
 						finished = false;
@@ -1174,7 +1211,7 @@ namespace Rant.Core.IO.Compression.LZMA
 			{
 				uint posSlot = GetPosSlot(i);
 				int footerBits = (int)((posSlot >> 1) - 1);
-				uint baseVal = ((2 | (posSlot & 1)) << footerBits);
+				uint baseVal = (2 | (posSlot & 1)) << footerBits;
 				tempPrices[i] = BitTreeEncoder.ReverseGetPrice(_posEncoders,
 					baseVal - posSlot - 1, footerBits, i - baseVal);
 			}
@@ -1184,11 +1221,11 @@ namespace Rant.Core.IO.Compression.LZMA
 				uint posSlot;
 				var encoder = _posSlotEncoder[lenToPosState];
 
-				uint st = (lenToPosState << Base.kNumPosSlotBits);
+				uint st = lenToPosState << Base.kNumPosSlotBits;
 				for (posSlot = 0; posSlot < _distTableSize; posSlot++)
 					_posSlotPrices[st + posSlot] = encoder.GetPrice(posSlot);
 				for (posSlot = Base.kEndPosModelIndex; posSlot < _distTableSize; posSlot++)
-					_posSlotPrices[st + posSlot] += ((((posSlot >> 1) - 1) - Base.kNumAlignBits) << BitEncoder.kNumBitPriceShiftBits);
+					_posSlotPrices[st + posSlot] += ((posSlot >> 1) - 1 - Base.kNumAlignBits) << BitEncoder.kNumBitPriceShiftBits;
 
 				uint st2 = lenToPosState * Base.kNumFullDistances;
 				uint i;
@@ -1224,7 +1261,7 @@ namespace Rant.Core.IO.Compression.LZMA
 		{
 			BT2,
 			BT4
-		};
+		}
 
 		private class LiteralEncoder
 		{
@@ -1294,8 +1331,8 @@ namespace Rant.Core.IO.Compression.LZMA
 						if (same)
 						{
 							uint matchBit = (uint)((matchByte >> i) & 1);
-							state += ((1 + matchBit) << 8);
-							same = (matchBit == bit);
+							state += (1 + matchBit) << 8;
+							same = matchBit == bit;
 						}
 						m_Encoders[state].Encode(rangeEncoder, bit);
 						context = (context << 1) | bit;
@@ -1308,7 +1345,6 @@ namespace Rant.Core.IO.Compression.LZMA
 					uint context = 1;
 					int i = 7;
 					if (matchMode)
-					{
 						for (; i >= 0; i--)
 						{
 							uint matchBit = (uint)(matchByte >> i) & 1;
@@ -1321,7 +1357,6 @@ namespace Rant.Core.IO.Compression.LZMA
 								break;
 							}
 						}
-					}
 					for (; i >= 0; i--)
 					{
 						uint bit = (uint)(symbol >> i) & 1;
@@ -1408,7 +1443,7 @@ namespace Rant.Core.IO.Compression.LZMA
 				for (; i < numSymbols; i++)
 					prices[st + i] = b1 + _highCoder.GetPrice(i - Base.kNumLowLenSymbols - Base.kNumMidLenSymbols);
 			}
-		};
+		}
 
 		private class LenPriceTableEncoder : LenEncoder
 		{
@@ -1476,8 +1511,8 @@ namespace Rant.Core.IO.Compression.LZMA
 
 			public bool IsShortRep()
 			{
-				return (BackPrev == 0);
+				return BackPrev == 0;
 			}
-		};
+		}
 	}
 }

@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -68,10 +93,10 @@ namespace Rant.Core.Framework
 		private static void Digits(Sandbox sb,
 			[RantDescription("The digit format to use.")] BinaryFormat format,
 			[RantDescription("The digit count to associate with the mode.")] int digits) => sb.Output.Do(chain =>
-			{
-				chain.Last.NumberFormatter.BinaryFormat = format;
-				chain.Last.NumberFormatter.BinaryFormatDigits = digits;
-			});
+		{
+			chain.Last.NumberFormatter.BinaryFormat = format;
+			chain.Last.NumberFormatter.BinaryFormatDigits = digits;
+		});
 
 		[RantFunction]
 		[RantDescription("Sets the current endianness for hex and binary formatted numbers.")]
@@ -171,21 +196,13 @@ namespace Rant.Core.Framework
 			{
 				string word = words[0];
 				if (word.Length == 1)
-				{
 					output.Capitalize(char.IsUpper(word[0]) ? Capitalization.First : Capitalization.None);
-				}
 				else if (Util.IsUppercase(word))
-				{
 					output.Capitalize(Capitalization.Upper);
-				}
 				else if (char.IsUpper(word.SkipWhile(c => !char.IsLetterOrDigit(c)).FirstOrDefault()))
-				{
 					output.Capitalize(Capitalization.First);
-				}
 				else
-				{
 					output.Capitalize(Capitalization.None);
-				}
 			}
 			else
 			{
@@ -239,21 +256,13 @@ namespace Rant.Core.Framework
 				}
 
 				if (sentences.Length > 1 && all)
-				{
 					output.Capitalize(Capitalization.Sentence);
-				}
 				else if (none)
-				{
 					output.Capitalize(Capitalization.Lower);
-				}
 				else if (char.IsUpper(sample.SkipWhile(c => !char.IsLetterOrDigit(c)).FirstOrDefault()))
-				{
 					output.Capitalize(Capitalization.First);
-				}
 				else
-				{
 					output.Capitalize(Capitalization.None);
-				}
 			}
 		}
 
@@ -545,7 +554,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription(
 			"Runs a pattern if the current block iteration is not a multiple of the specified number offset by a specific amount."
-			)]
+		)]
 		private static IEnumerator<RST> NotNthO(Sandbox sb,
 			[RantDescription("The interval at which the pattern should not be run.")] int interval,
 			[RantDescription("The number of iterations to offset the interval by.")] int offset,
@@ -618,16 +627,10 @@ namespace Rant.Core.Framework
 		private static void Toggle(Sandbox sb, params string[] flags)
 		{
 			foreach (string flag in flags.Where(f => !Util.IsNullOrWhiteSpace(f) && Util.ValidateName(f)))
-			{
 				if (sb.Engine.Flags.Contains(flag))
-				{
 					sb.Engine.Flags.Remove(flag);
-				}
 				else
-				{
 					sb.Engine.Flags.Add(flag);
-				}
-			}
 		}
 
 		[RantFunction]
@@ -763,21 +766,13 @@ namespace Rant.Core.Framework
 			}
 			string file;
 			if (File.Exists(name + ".module.rant"))
-			{
 				file = name + ".module.rant";
-			}
 			else if (File.Exists(name + ".rant"))
-			{
 				file = name + ".rant";
-			}
 			else if (File.Exists(name))
-			{
 				file = name;
-			}
 			else
-			{
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"Could not find module '{name}'.");
-			}
 			var pattern = RantProgram.CompileFile(file);
 			if (pattern.Module == null)
 				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"No module is defined in {file}.");
@@ -799,7 +794,6 @@ namespace Rant.Core.Framework
 			int numCombiners = 0;
 			int lastIndex = input.Length - 1;
 			for (int i = lastIndex; i >= 0; i--)
-			{
 				if (CharUnicodeInfo.GetUnicodeCategory(input[i]) == UnicodeCategory.NonSpacingMark)
 				{
 					// It's combining, so increase the combiner count until we hit a regular char
@@ -809,13 +803,11 @@ namespace Rant.Core.Framework
 				{
 					// We've hit a non-combining character with combiners added.
 					// First thing to do is add the character to the buffer.
-					buffer[(lastIndex - i) - numCombiners] = input[i];
+					buffer[lastIndex - i - numCombiners] = input[i];
 
 					// Then we insert all the combining characters that come after it.
 					for (int j = 1; j <= numCombiners; j++)
-					{
-						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
-					}
+						buffer[lastIndex - i - numCombiners + j] = input[i + j];
 					numCombiners = 0;
 				}
 				else if (char.IsLowSurrogate(input[i]))
@@ -830,7 +822,6 @@ namespace Rant.Core.Framework
 				{
 					buffer[lastIndex - i] = input[i];
 				}
-			}
 			sb.Print(new string(buffer));
 		}
 
@@ -844,7 +835,6 @@ namespace Rant.Core.Framework
 			int numCombiners = 0;
 			int lastIndex = input.Length - 1;
 			for (int i = lastIndex; i >= 0; i--)
-			{
 				if (CharUnicodeInfo.GetUnicodeCategory(input[i]) == UnicodeCategory.NonSpacingMark)
 				{
 					// It's combining, so increase the combiner count until we hit a regular char
@@ -854,13 +844,11 @@ namespace Rant.Core.Framework
 				{
 					// We've hit a non-combining character with combiners added.
 					// First thing to do is add the character to the buffer.
-					buffer[(lastIndex - i) - numCombiners] = Util.ReverseChar(input[i]);
+					buffer[lastIndex - i - numCombiners] = Util.ReverseChar(input[i]);
 
 					// Then we insert all the combining characters that come after it.
 					for (int j = 1; j <= numCombiners; j++)
-					{
-						buffer[(lastIndex - i) - numCombiners + j] = input[i + j];
-					}
+						buffer[lastIndex - i - numCombiners + j] = input[i + j];
 					numCombiners = 0;
 				}
 				else if (char.IsLowSurrogate(input[i]))
@@ -875,7 +863,6 @@ namespace Rant.Core.Framework
 				{
 					buffer[lastIndex - i] = Util.ReverseChar(input[i]);
 				}
-			}
 			sb.Print(new string(buffer));
 		}
 

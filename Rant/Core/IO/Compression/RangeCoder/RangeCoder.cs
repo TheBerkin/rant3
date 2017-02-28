@@ -1,10 +1,35 @@
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
 using System.IO;
 
 namespace Rant.Core.IO.Compression.RangeCoder
 {
 	internal class Encoder
 	{
-		public const uint kTopValue = (1 << 24);
+		public const uint kTopValue = 1 << 24;
 		private byte _cache;
 		private uint _cacheSize;
 		public ulong Low;
@@ -69,10 +94,10 @@ namespace Rant.Core.IO.Compression.RangeCoder
 					Stream.WriteByte((byte)(temp + (Low >> 32)));
 					temp = 0xFF;
 				} while (--_cacheSize != 0);
-				_cache = (byte)(((uint)Low) >> 24);
+				_cache = (byte)((uint)Low >> 24);
 			}
 			_cacheSize++;
-			Low = ((uint)Low) << 8;
+			Low = (uint)Low << 8;
 		}
 
 		public void EncodeDirectBits(uint v, int numTotalBits)
@@ -94,7 +119,9 @@ namespace Rant.Core.IO.Compression.RangeCoder
 		{
 			uint newBound = (Range >> numTotalBits) * size0;
 			if (symbol == 0)
+			{
 				Range = newBound;
+			}
 			else
 			{
 				Low += newBound;
@@ -117,7 +144,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 
 	internal class Decoder
 	{
-		public const uint kTopValue = (1 << 24);
+		public const uint kTopValue = 1 << 24;
 		public uint Code;
 		public uint Range;
 		// public Buffer.InBuffer Stream = new Buffer.InBuffer(1 << 16);

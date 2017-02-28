@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -86,9 +111,7 @@ namespace Rant.Core.IO
 		public void Dispose()
 		{
 			if (!_leaveOpen)
-			{
 				BaseStream.Dispose();
-			}
 		}
 
 		/// <summary>
@@ -298,9 +321,7 @@ namespace Rant.Core.IO
 			int count = value.Length;
 			Write(count);
 			foreach (string str in value)
-			{
 				Write(str);
-			}
 			return this;
 		}
 
@@ -314,9 +335,7 @@ namespace Rant.Core.IO
 			int count = value.Length;
 			Write(count);
 			foreach (string str in value)
-			{
 				Write(str, encoding);
-			}
 			return this;
 		}
 
@@ -331,21 +350,13 @@ namespace Rant.Core.IO
 		{
 			bool isNumeric = IOUtil.IsNumericType(typeof(T));
 			if (prefixLength)
-			{
 				if (use64bit)
-				{
 					Write(array.LongLength);
-				}
 				else
-				{
 					Write(array.Length);
-				}
-			}
 
 			foreach (var item in array)
-			{
 				Write(item, isNumeric);
-			}
 			return this;
 		}
 
@@ -373,13 +384,9 @@ namespace Rant.Core.IO
 			bool vIsString = vtype == typeof(string);
 
 			if (!ktype.IsValueType && !kIsString)
-			{
 				throw new ArgumentException("TKey must be either a value type or System.String.");
-			}
 			if (!vtype.IsValueType && !vIsString)
-			{
 				throw new ArgumentException("TValue must be either a value type or System.String.");
-			}
 
 			Write(value.Count);
 
@@ -389,22 +396,14 @@ namespace Rant.Core.IO
 			foreach (var pair in value)
 			{
 				if (kIsString)
-				{
 					Write(pair.Key.ToString());
-				}
 				else
-				{
 					Write(pair.Key, isKNumeric);
-				}
 
 				if (vIsString)
-				{
 					Write(pair.Value.ToString());
-				}
 				else
-				{
 					Write(pair.Value, isVNumeric);
-				}
 			}
 			return this;
 		}
@@ -418,9 +417,7 @@ namespace Rant.Core.IO
 		public EasyWriter Write<TStruct>(TStruct value, bool convertEndian = true)
 		{
 			if (!typeof(TStruct).IsValueType)
-			{
 				throw new ArgumentException("TStruct must be a value type.");
-			}
 
 			var type = typeof(TStruct);
 			int size = type.IsEnum ? Marshal.SizeOf(Enum.GetUnderlyingType(type)) : Marshal.SizeOf(value);
@@ -442,9 +439,7 @@ namespace Rant.Core.IO
 			Marshal.Copy(ptr, data, 0, size);
 
 			if (convertEndian && (IOUtil.IsNumericType(type) || type.IsEnum))
-			{
 				IOUtil.ConvertEndian(data, Endianness);
-			}
 
 			Marshal.FreeHGlobal(ptr);
 			BaseStream.Write(data, 0, size);
@@ -473,9 +468,7 @@ namespace Rant.Core.IO
 			bool hasValue = value.HasValue;
 			Write(hasValue);
 			if (hasValue)
-			{
 				Write(value.Value);
-			}
 			return this;
 		}
 

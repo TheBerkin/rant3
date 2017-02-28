@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +63,6 @@ namespace Rant.Vocabulary.Utilities
 		public string Mark(string baseString)
 		{
 			foreach (var rule in _rules)
-			{
 				switch (rule.Type)
 				{
 					case DiffRuleType.Add:
@@ -56,7 +80,6 @@ namespace Rant.Vocabulary.Utilities
 						baseString = ReplaceWord(baseString, rule.ConcatString, rule.Factor, rule.Prepend);
 						continue;
 				}
-			}
 			return baseString;
 		}
 
@@ -88,17 +111,13 @@ namespace Rant.Vocabulary.Utilities
 				{
 					a = b;
 					while (a < baseString.Length && !char.IsLetterOrDigit(baseString[a]))
-					{
 						a++;
-					}
 
 					if (a >= baseString.Length) return baseString;
 
 					b = a;
 					while (b < baseString.Length && char.IsLetterOrDigit(baseString[b]))
-					{
 						b++;
-					}
 
 					currentWordIndex++;
 				}
@@ -110,17 +129,13 @@ namespace Rant.Vocabulary.Utilities
 				{
 					b = a;
 					while (b > 0 && !char.IsLetterOrDigit(baseString[b - 1]))
-					{
 						b--;
-					}
 
 					if (b <= 0) return baseString;
 
 					a = b;
 					while (a > 0 && char.IsLetterOrDigit(baseString[a - 1]))
-					{
 						a--;
-					}
 
 					currentWordIndex++;
 				}
@@ -274,18 +289,14 @@ namespace Rant.Vocabulary.Utilities
 
 			int matchIndex = 0;
 			for (int i = 0; i < minor.Length; i++)
-			{
-				for (int j = i + 1; j <= minor.Length; j++)
+			for (int j = i + 1; j <= minor.Length; j++)
+				if (j - i > length
+				    && (matchIndex = major.IndexOf(minor.Substring(i, j - i), StringComparison.InvariantCulture)) > -1)
 				{
-					if (j - i > length
-					    && (matchIndex = major.IndexOf(minor.Substring(i, j - i), StringComparison.InvariantCulture)) > -1)
-					{
-						majorStart = matchIndex;
-						minorStart = i;
-						length = j - i;
-					}
+					majorStart = matchIndex;
+					minorStart = i;
+					length = j - i;
 				}
-			}
 
 			if (a.Length >= b.Length)
 			{
@@ -307,9 +318,7 @@ namespace Rant.Vocabulary.Utilities
 			int l = Math.Min(a.Length, b.Length);
 
 			for (int i = 0; i < l; i++)
-			{
 				if (a[i] != b[i]) return i;
-			}
 			return l;
 		}
 
@@ -318,9 +327,7 @@ namespace Rant.Vocabulary.Utilities
 			if (a.Length * b.Length == 0) return 0;
 			int l = Math.Min(a.Length, b.Length);
 			for (int i = 0; i < l; i++)
-			{
-				if (a[(a.Length - 1) - i] != b[(b.Length - 1) - i]) return i;
-			}
+				if (a[a.Length - 1 - i] != b[b.Length - 1 - i]) return i;
 			return l;
 		}
 
@@ -360,20 +367,12 @@ namespace Rant.Vocabulary.Utilities
 				int factor = 0;
 
 				if (ruleType != DiffRuleType.Add)
-				{
 					if (prepend)
-					{
 						factor += tokens.Reverse().TakeWhile(t => t.Type == op).Count();
-					}
 					else
-					{
 						factor += tokens.TakeWhile(t => t.Type == op).Count();
-					}
-				}
 				else
-				{
 					factor++;
-				}
 
 				var sb = new StringBuilder();
 
@@ -382,9 +381,7 @@ namespace Rant.Vocabulary.Utilities
 						.Reverse()
 						.SkipWhile(t => RuleMap.ContainsKey(t.Type))
 						.Reverse())
-				{
 					sb.Append(token.Value);
-				}
 
 				return new Rule(sb.ToString(), prepend, ruleType, factor);
 			}
@@ -442,9 +439,7 @@ namespace Rant.Vocabulary.Utilities
 					nextToken = null;
 				}
 				if (text.Length > 0)
-				{
 					yield return new Token(DM.Text, text.ToString().Trim());
-				}
 			}
 
 			public static IEnumerable<IEnumerable<Token>> Lex(string patternString)
@@ -452,7 +447,6 @@ namespace Rant.Vocabulary.Utilities
 				var tokens = GetTokens(patternString);
 				var list = new List<Token>();
 				foreach (var token in tokens)
-				{
 					if (token.Type == DM.Delimiter && list.Any())
 					{
 						yield return list.ToArray();
@@ -462,7 +456,6 @@ namespace Rant.Vocabulary.Utilities
 					{
 						list.Add(token);
 					}
-				}
 				if (list.Any()) yield return list.ToArray();
 			}
 

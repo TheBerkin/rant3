@@ -1,4 +1,27 @@
-// LzBinTree.cs
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
 
 using System;
 using System.IO;
@@ -84,13 +107,13 @@ namespace Rant.Core.IO.Compression.LZ
 			if (HASH_ARRAY)
 			{
 				hs = historySize - 1;
-				hs |= (hs >> 1);
-				hs |= (hs >> 2);
-				hs |= (hs >> 4);
-				hs |= (hs >> 8);
+				hs |= hs >> 1;
+				hs |= hs >> 2;
+				hs |= hs >> 4;
+				hs |= hs >> 8;
 				hs >>= 1;
 				hs |= 0xFFFF;
-				if (hs > (1 << 24))
+				if (hs > 1 << 24)
 					hs >>= 1;
 				_hashMask = hs;
 				hs++;
@@ -104,7 +127,9 @@ namespace Rant.Core.IO.Compression.LZ
 		{
 			uint lenLimit;
 			if (_pos + _matchMaxLen <= _streamPos)
+			{
 				lenLimit = _matchMaxLen;
+			}
 			else
 			{
 				lenLimit = _streamPos - _pos;
@@ -116,7 +141,7 @@ namespace Rant.Core.IO.Compression.LZ
 			}
 
 			uint offset = 0;
-			uint matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0;
+			uint matchMinPos = _pos > _cyclicBufferSize ? _pos - _cyclicBufferSize : 0;
 			uint cur = _bufferOffset + _pos;
 			uint maxLen = kStartMaxLen; // to avoid items for len < hashSize;
 			uint hashValue, hash2Value = 0, hash3Value = 0;
@@ -125,12 +150,14 @@ namespace Rant.Core.IO.Compression.LZ
 			{
 				uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
 				hash2Value = temp & (kHash2Size - 1);
-				temp ^= ((uint)(_bufferBase[cur + 2]) << 8);
+				temp ^= (uint)_bufferBase[cur + 2] << 8;
 				hash3Value = temp & (kHash3Size - 1);
 				hashValue = (temp ^ (CRC.Table[_bufferBase[cur + 3]] << 5)) & _hashMask;
 			}
 			else
-				hashValue = _bufferBase[cur] ^ ((uint)(_bufferBase[cur + 1]) << 8);
+			{
+				hashValue = _bufferBase[cur] ^ ((uint)_bufferBase[cur + 1] << 8);
+			}
 
 			uint curMatch = _hash[kFixHashSize + hashValue];
 			if (HASH_ARRAY)
@@ -164,23 +191,19 @@ namespace Rant.Core.IO.Compression.LZ
 			_hash[kFixHashSize + hashValue] = _pos;
 
 			uint ptr0 = (_cyclicBufferPos << 1) + 1;
-			uint ptr1 = (_cyclicBufferPos << 1);
+			uint ptr1 = _cyclicBufferPos << 1;
 
 			uint len0, len1;
 			len0 = len1 = kNumHashDirectBytes;
 
 			if (kNumHashDirectBytes != 0)
-			{
 				if (curMatch > matchMinPos)
-				{
 					if (_bufferBase[_bufferOffset + curMatch + kNumHashDirectBytes] !=
 					    _bufferBase[cur + kNumHashDirectBytes])
 					{
 						distances[offset++] = maxLen = kNumHashDirectBytes;
 						distances[offset++] = _pos - curMatch - 1;
 					}
-				}
-			}
 
 			uint count = _cutValue;
 
@@ -192,9 +215,9 @@ namespace Rant.Core.IO.Compression.LZ
 					break;
 				}
 				uint delta = _pos - curMatch;
-				uint cyclicPos = ((delta <= _cyclicBufferPos)
-					? (_cyclicBufferPos - delta)
-					: (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+				uint cyclicPos = (delta <= _cyclicBufferPos
+					                 ? _cyclicBufferPos - delta
+					                 : _cyclicBufferPos - delta + _cyclicBufferSize) << 1;
 
 				uint pby1 = _bufferOffset + curMatch;
 				uint len = Math.Min(len0, len1);
@@ -240,7 +263,9 @@ namespace Rant.Core.IO.Compression.LZ
 			{
 				uint lenLimit;
 				if (_pos + _matchMaxLen <= _streamPos)
+				{
 					lenLimit = _matchMaxLen;
+				}
 				else
 				{
 					lenLimit = _streamPos - _pos;
@@ -251,7 +276,7 @@ namespace Rant.Core.IO.Compression.LZ
 					}
 				}
 
-				uint matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0;
+				uint matchMinPos = _pos > _cyclicBufferSize ? _pos - _cyclicBufferSize : 0;
 				uint cur = _bufferOffset + _pos;
 
 				uint hashValue;
@@ -261,19 +286,21 @@ namespace Rant.Core.IO.Compression.LZ
 					uint temp = CRC.Table[_bufferBase[cur]] ^ _bufferBase[cur + 1];
 					uint hash2Value = temp & (kHash2Size - 1);
 					_hash[hash2Value] = _pos;
-					temp ^= ((uint)(_bufferBase[cur + 2]) << 8);
+					temp ^= (uint)_bufferBase[cur + 2] << 8;
 					uint hash3Value = temp & (kHash3Size - 1);
 					_hash[kHash3Offset + hash3Value] = _pos;
 					hashValue = (temp ^ (CRC.Table[_bufferBase[cur + 3]] << 5)) & _hashMask;
 				}
 				else
-					hashValue = _bufferBase[cur] ^ ((uint)(_bufferBase[cur + 1]) << 8);
+				{
+					hashValue = _bufferBase[cur] ^ ((uint)_bufferBase[cur + 1] << 8);
+				}
 
 				uint curMatch = _hash[kFixHashSize + hashValue];
 				_hash[kFixHashSize + hashValue] = _pos;
 
 				uint ptr0 = (_cyclicBufferPos << 1) + 1;
-				uint ptr1 = (_cyclicBufferPos << 1);
+				uint ptr1 = _cyclicBufferPos << 1;
 
 				uint len0, len1;
 				len0 = len1 = kNumHashDirectBytes;
@@ -288,9 +315,9 @@ namespace Rant.Core.IO.Compression.LZ
 					}
 
 					uint delta = _pos - curMatch;
-					uint cyclicPos = ((delta <= _cyclicBufferPos)
-						? (_cyclicBufferPos - delta)
-						: (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+					uint cyclicPos = (delta <= _cyclicBufferPos
+						                 ? _cyclicBufferPos - delta
+						                 : _cyclicBufferPos - delta + _cyclicBufferSize) << 1;
 
 					uint pby1 = _bufferOffset + curMatch;
 					uint len = Math.Min(len0, len1);
@@ -327,7 +354,7 @@ namespace Rant.Core.IO.Compression.LZ
 
 		public void SetType(int numHashBytes)
 		{
-			HASH_ARRAY = (numHashBytes > 2);
+			HASH_ARRAY = numHashBytes > 2;
 			if (HASH_ARRAY)
 			{
 				kNumHashDirectBytes = 0;

@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -163,10 +188,8 @@ namespace Rant.Vocabulary
 		{
 			var lstClasses = new HashSet<string>();
 
-			foreach(string c in _entriesHash.SelectMany(e => e.GetClasses()))
-			{
-				if(lstClasses.Add(c)) yield return c;
-			}
+			foreach (string c in _entriesHash.SelectMany(e => e.GetClasses()))
+				if (lstClasses.Add(c)) yield return c;
 		}
 
 		/// <summary>
@@ -188,10 +211,8 @@ namespace Rant.Vocabulary
 			if(!Util.ValidateName(subtypeName)) return false;
 			_subtypes[subtypeName] = index;
 			HashSet<string> subs;
-			if(!_subtypeIndexMap.TryGetValue(index, out subs))
-			{
+			if (!_subtypeIndexMap.TryGetValue(index, out subs))
 				_subtypeIndexMap[index] = subs = new HashSet<string>();
-			}
 			subs.Add(subtypeName);
 			return true;
 		}
@@ -207,10 +228,8 @@ namespace Rant.Vocabulary
 			if(Util.IsNullOrWhiteSpace(subtypeName)) return false;
 			if(!_subtypes.ContainsKey(subtypeName)) return false;
 			HashSet<string> subs;
-			if(_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out subs))
-			{
+			if (_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out subs))
 				return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
-			}
 			return false;
 		}
 
@@ -341,10 +360,7 @@ namespace Rant.Vocabulary
 			int si = 0;
 			foreach(var subList in subs)
 			{
-				foreach(var sub in subList.Values)
-				{
-					AddSubtype(sub, si);
-				}
+				foreach (var sub in subList.Values)	AddSubtype(sub, si);
 				si++;
 			}
 
@@ -373,17 +389,13 @@ namespace Rant.Vocabulary
 				var entry = new RantDictionaryEntry(termArray, entryClasses, entryData["weight"] ?? 1);
 
 				// Optional classes
-				foreach(var optionalClass in entryData["optional-classes"].Values)
-				{
+				foreach (var optionalClass in entryData["optional-classes"].Values)
 					entry.AddClass(optionalClass, true);
-				}
 
 				// Metadata
 				var meta = entryData["metadata"];
-				foreach(string metaKey in meta.Keys)
-				{
+				foreach (string metaKey in meta.Keys)
 					entry.SetMetadata(metaKey, meta[metaKey].Value);
-				}
 
 				AddEntry(entry);
 			}
@@ -401,10 +413,8 @@ namespace Rant.Vocabulary
 			};
 
 			var subs = new BsonItem[TermsPerEntry];
-			for(int i = 0; i < TermsPerEntry; i++)
-			{
+			for (int i = 0; i < TermsPerEntry; i++)
 				subs[i] = new BsonItem(GetSubtypesForIndex(i).ToArray());
-			}
 			data["subs"] = new BsonItem(subs);
 
 			data["hidden-classes"] = new BsonItem(_hidden.ToArray());
@@ -415,8 +425,8 @@ namespace Rant.Vocabulary
 				var entry = _entriesList[i];
 				var entryData = new BsonItem();
 				var termData = new BsonItem[TermsPerEntry];
-				for(int j = 0; j < TermsPerEntry; j++)
-				{
+				
+				for (int j = 0; j < TermsPerEntry; j++)
 					termData[j] = new BsonItem
 					{
 						["value"] = entry[j].Value,
@@ -424,17 +434,14 @@ namespace Rant.Vocabulary
 						["value-split"] = entry[j].ValueSplitIndex,
 						["pron-split"] = entry[j].PronunciationSplitIndex
 					};
-				}
 				entryData["terms"] = new BsonItem(termData);
 
 				entryData["classes"] = new BsonItem(entry.GetRequiredClasses().ToArray());
 				entryData["optional-classes"] = new BsonItem(entry.GetOptionalClasses().ToArray());
 
 				var metaData = new BsonItem();
-				foreach(string metaKey in entry.GetMetadataKeys())
-				{
+				foreach (string metaKey in entry.GetMetadataKeys())
 					metaData[metaKey] = new BsonItem(entry.GetMetadata(metaKey));
-				}
 				entryData["metadata"] = metaData;
 				entries[i] = entryData;
 			}

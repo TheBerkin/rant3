@@ -1,4 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.IO;
@@ -17,12 +42,14 @@ namespace Rant.Vocabulary.Querying
 		/// </summary>
 		public bool IsEmpty => _items.Count == 0;
 
-		public string[] RequiredClasses => _items.Where(i => i.Length == 1 && i[0].ShouldMatch).Select(i => i[0].Class).ToArray();
+    	public string[] RequiredClasses => _items.Where(i => i.Length == 1 && i[0].ShouldMatch).Select(i => i[0].Class).ToArray();
 
 		/// <summary>
 		/// Whether the class filter is simple, i.e. there are no switch rules and every rule should match.
 		/// </summary>
 		public bool SimpleFilter => _items.All(i => i.Length == 1 && i[0].ShouldMatch);
+		
+		public override int Priority => 0;
 
 		/// <summary>
 		/// Adds a single-class rule to the filter.
@@ -54,15 +81,13 @@ namespace Rant.Vocabulary.Querying
 			return match && !hidden.Any(entry.ContainsClass);
 		}
 
-		public override int Priority => 0;
-
 		/// <summary>
 		/// Returns a boolean value indicating whether the specified class is explicitly allowed by the current ClassFilter.
 		/// </summary>
 		/// <param name="className">The class to test.</param>
 		/// <returns></returns>
 		public bool AllowsClass(string className) =>
-			_items.Any(item => item.Any(rule => (rule.Class == className) && rule.ShouldMatch));
+			_items.Any(item => item.Any(rule => rule.Class == className && rule.ShouldMatch));
 
 		public override void Serialize(EasyWriter output)
 		{

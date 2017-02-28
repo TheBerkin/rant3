@@ -1,9 +1,34 @@
+#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
 namespace Rant.Core.IO.Compression.RangeCoder
 {
 	internal struct BitEncoder
 	{
 		public const int kNumBitModelTotalBits = 11;
-		public const uint kBitModelTotal = (1 << kNumBitModelTotalBits);
+		public const uint kBitModelTotal = 1 << kNumBitModelTotalBits;
 		private const int kNumMoveBits = 5;
 		private const int kNumMoveReducingBits = 2;
 		public const int kNumBitPriceShiftBits = 6;
@@ -12,7 +37,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 
 		static BitEncoder()
 		{
-			const int kNumBits = (kNumBitModelTotalBits - kNumMoveReducingBits);
+			const int kNumBits = kNumBitModelTotalBits - kNumMoveReducingBits;
 			for (int i = kNumBits - 1; i >= 0; i--)
 			{
 				uint start = (uint)1 << (kNumBits - i - 1);
@@ -33,7 +58,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 			if (symbol == 0)
 				Prob += (kBitModelTotal - Prob) >> kNumMoveBits;
 			else
-				Prob -= (Prob) >> kNumMoveBits;
+				Prob -= Prob >> kNumMoveBits;
 		}
 
 		public void Encode(Encoder encoder, uint symbol)
@@ -50,7 +75,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 			{
 				encoder.Low += newBound;
 				encoder.Range -= newBound;
-				Prob -= (Prob) >> kNumMoveBits;
+				Prob -= Prob >> kNumMoveBits;
 			}
 			if (encoder.Range < Encoder.kTopValue)
 			{
@@ -61,7 +86,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 
 		public uint GetPrice(uint symbol)
 		{
-			return ProbPrices[(((Prob - symbol) ^ ((-(int)symbol))) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
+			return ProbPrices[(((Prob - symbol) ^ -(int)symbol) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
 		}
 
 		public uint GetPrice0()
@@ -78,7 +103,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 	internal struct BitDecoder
 	{
 		public const int kNumBitModelTotalBits = 11;
-		public const uint kBitModelTotal = (1 << kNumBitModelTotalBits);
+		public const uint kBitModelTotal = 1 << kNumBitModelTotalBits;
 		private const int kNumMoveBits = 5;
 		private uint Prob;
 
@@ -87,7 +112,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 			if (symbol == 0)
 				Prob += (kBitModelTotal - Prob) >> numMoveBits;
 			else
-				Prob -= (Prob) >> numMoveBits;
+				Prob -= Prob >> numMoveBits;
 		}
 
 		public void Init()
@@ -111,7 +136,7 @@ namespace Rant.Core.IO.Compression.RangeCoder
 			}
 			rangeDecoder.Range -= newBound;
 			rangeDecoder.Code -= newBound;
-			Prob -= (Prob) >> kNumMoveBits;
+			Prob -= Prob >> kNumMoveBits;
 			if (rangeDecoder.Range < Decoder.kTopValue)
 			{
 				rangeDecoder.Code = (rangeDecoder.Code << 8) | (byte)rangeDecoder.Stream.ReadByte();
