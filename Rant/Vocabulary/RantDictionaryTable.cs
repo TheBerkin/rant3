@@ -65,11 +65,7 @@ namespace Rant.Vocabulary
 			TermsPerEntry = termsPerEntry;
 			Name = name;
 
-			_syllableBuckets = new SyllableBuckets[termsPerEntry];
-			for(var i = 0; i < termsPerEntry; i++)
-			{
-				_syllableBuckets[i] = new SyllableBuckets(i, new RantDictionaryEntry[] { });
-			}
+			CreateSyllableBuckets();
 		}
 
 		internal RantDictionaryTable()
@@ -283,7 +279,8 @@ namespace Rant.Vocabulary
 		public void Commit()
 		{
 			_classTree = new ClassTree(_entriesHash);
-			for(var i = 0; i < TermsPerEntry; i++)
+			CreateSyllableBuckets();
+			for (var i = 0; i < TermsPerEntry; i++)
 			{
 				_syllableBuckets[i] = new SyllableBuckets(i, _entriesList);
 			}
@@ -320,12 +317,14 @@ namespace Rant.Vocabulary
 			{
 				return pool.ToList().PickEntry(sb.RNG)?[index];
 			}
-
+			
 			// process syllable count filters using syllable buckets
 			var rangeFilters = filters.Where(f => f is RangeFilter).Select(f => f as RangeFilter);
 			if(rangeFilters.Any())
 			{
-				foreach(var filter in rangeFilters)
+				CreateSyllableBuckets();
+
+				foreach (var filter in rangeFilters)
 				{
 					pool = pool.Intersect(_syllableBuckets[index].Query(filter));
 				}
@@ -454,6 +453,16 @@ namespace Rant.Vocabulary
 		internal override void Load(RantEngine engine)
 		{
 			engine.Dictionary.AddTable(this);
+		}
+
+		internal void CreateSyllableBuckets()
+		{
+			if (_syllableBuckets != null) return;
+			_syllableBuckets = new SyllableBuckets[TermsPerEntry];
+			for (var i = 0; i < TermsPerEntry; i++)
+			{
+				_syllableBuckets[i] = new SyllableBuckets(i, new RantDictionaryEntry[] { });
+			}
 		}
 	}
 }
