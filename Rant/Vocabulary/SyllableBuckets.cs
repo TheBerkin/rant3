@@ -29,6 +29,8 @@ namespace Rant.Vocabulary
 
 		public List<RantDictionaryEntry> Query(RangeFilter filter)
 		{
+            if (_buckets.Count == 0) return new List<RantDictionaryEntry>();
+
 			var min = (filter.Minimum == null ? 1 : (int)filter.Minimum);
 			var max = (filter.Maximum == null ? min : (int)filter.Maximum);
 
