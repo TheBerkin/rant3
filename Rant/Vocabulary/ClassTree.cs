@@ -8,6 +8,8 @@ namespace Rant.Vocabulary
 {
 	public class ClassTree
 	{
+        private const int MAX_DEPTH = 4;
+
 		public ClassTreeNode RootNode;
 
 		public ClassTree(IEnumerable<RantDictionaryEntry> entries)
@@ -37,6 +39,11 @@ namespace Rant.Vocabulary
 
 		private IEnumerable<RantDictionaryEntry> QueryNode(ClassTreeNode node, HashSet<string> classes)
 		{
+            if(node.DepthLimit)
+            {
+                return node.Entries.Where(e => classes.All(c => e.ContainsClass(c)));
+            }
+
 			// find the largest class
 			var largestClass = RootNode.ChildNodes
 				.Where(kv => classes.Contains(kv.Key))
@@ -54,15 +61,22 @@ namespace Rant.Vocabulary
 
 		private void PopulateNode(ClassTreeNode node, IEnumerable<RantDictionaryEntry> entries)
 		{
-			node.Entries = entries.Where(e => e.ClassCount == node.Classes.Length).ToList();
+			node.Entries = entries.Where(e => e.ClassCount >= node.Classes.Length).ToList();
 			if(node.Entries.Count == entries.Count()) return;
 
 			var otherEntries = entries.Where(e => e.ClassCount > node.Classes.Length);
-			var classes = OrderClasses(node.Classes, otherEntries);
+            
+            if(node.Depth == MAX_DEPTH)
+            {
+                node.DepthLimit = true;
+                return;
+            }
 
-			foreach(var className in classes)
+            var classes = OrderClasses(node.Classes, otherEntries);
+            foreach (var className in classes)
 			{
 				var childNode = new ClassTreeNode() { Name = className, Classes = node.Classes.Concat(new string[] { className }).ToArray() };
+                childNode.Depth = node.Depth + 1;
 
 				PopulateNode(childNode, otherEntries.Where(e => e.ContainsClass(className)));
 				CountNode(node);
@@ -109,5 +123,7 @@ namespace Rant.Vocabulary
 		public int Count = 0;
 		public Dictionary<string, ClassTreeNode> ChildNodes = new Dictionary<string, ClassTreeNode>();
 		public List<RantDictionaryEntry> Entries = new List<RantDictionaryEntry>();
+        public int Depth = 1;
+        public bool DepthLimit = false;
 	}
 }
