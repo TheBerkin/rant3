@@ -288,11 +288,9 @@ namespace Rant.Vocabulary
 
 		internal RantDictionaryTerm Query(RantDictionary dictionary, Sandbox sb, Query query, CarrierState syncState)
 		{
-			int index = sb.TakePlural()
-				? string.IsNullOrEmpty(query.PluralSubtype)
-					? GetSubtypeIndex(query.Subtype)
-					: GetSubtypeIndex(query.PluralSubtype)
-				: GetSubtypeIndex(query.Subtype);
+            int index = !String.IsNullOrEmpty(query.PluralSubtype) && sb.TakePlural()
+                ? GetSubtypeIndex(query.PluralSubtype)
+                : GetSubtypeIndex(query.Subtype);
 
 			if(index == -1) return null;
 
