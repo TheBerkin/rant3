@@ -42,6 +42,7 @@ namespace Rant.Vocabulary
             string name = null; // Stores the table name before final table construction
             int termsPerEntry = 0; // Stores the term count
             var subtypes = new Dictionary<string, int>(); // Stores subtypes before final table construction
+			var hidden = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             RantDictionaryTable table = null; // The table object, constructed when first entry is found
             string l; // Current line string
             int line = 0; // Current line number
@@ -158,6 +159,15 @@ namespace Rant.Vocabulary
                                             }
                                             break;
                                         }
+									case "hide":
+										if (args.Count == 0) break;
+										foreach(var a in args)
+										{
+											if (!Util.ValidateName(a.Value))
+												throw new RantTableLoadException(origin, line, i, "err-table-invalid-class", a.Value);
+											hidden.Add(String.Intern(a.Value));
+										}
+										break;
                                     case "dummy":
                                         if (args.Count != 0)
                                             throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 0, args.Count);
@@ -288,6 +298,12 @@ namespace Rant.Vocabulary
                     }
                 }
             }
+
+			// Add hidden classes
+			foreach(var hc in hidden)
+			{
+				table.HideClass(hc);
+			}
 
             table.Commit();
 
