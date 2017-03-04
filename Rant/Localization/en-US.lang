@@ -63,6 +63,7 @@ err-compiler-missing-quantity-comma = "Expected comma after quantity."
 
 err-table-invalid-class = "Invalid class name: {0}"
 err-table-too-few-terms = "Too few terms in entry: Expected {0}, found {1}."
+err-table-argc-mismatch = "Argument count mismatch: {0} expects {1}, found {2}"
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 
