@@ -269,6 +269,7 @@ namespace Rant.Vocabulary
 			if (other.TermsPerEntry != TermsPerEntry) return false;
 			_entriesHash.AddRange(other._entriesHash);
 			_entriesList.AddRange(other._entriesHash);
+			Commit();
 			return true;
 		}
 
@@ -288,9 +289,9 @@ namespace Rant.Vocabulary
 
 		internal RantDictionaryTerm Query(RantDictionary dictionary, Sandbox sb, Query query, CarrierState syncState)
 		{
-            int index = !String.IsNullOrEmpty(query.PluralSubtype) && sb.TakePlural()
-                ? GetSubtypeIndex(query.PluralSubtype)
-                : GetSubtypeIndex(query.Subtype);
+			int index = !String.IsNullOrEmpty(query.PluralSubtype) && sb.TakePlural()
+				? GetSubtypeIndex(query.PluralSubtype)
+				: GetSubtypeIndex(query.Subtype);
 
 			if (index == -1) return null;
 

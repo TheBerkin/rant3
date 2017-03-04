@@ -22,7 +22,7 @@ namespace RantConsole
 		public const double PATTERN_TIMEOUT = 0.0;
 #endif
 		public static readonly string FILE = GetPaths().FirstOrDefault();
-		public static readonly string PKG_PATH = Property("package");
+		public static readonly string PKG_DIR = Property("pkgdir");
 		public static readonly string LEGACY_DIC_PATH = Property("ldict");
 		public static readonly long SEED;
 		public static readonly bool USE_SEED;
@@ -53,12 +53,15 @@ namespace RantConsole
 					rant.Dictionary = new RantDictionary(tables);
 				}
 
-				if (!string.IsNullOrEmpty(PKG_PATH))
+				if (!string.IsNullOrEmpty(PKG_DIR))
 				{
 #if DEBUG
                     Stopwatch timer = Stopwatch.StartNew();
 #endif
-					rant.LoadPackage(PKG_PATH);
+                    foreach(var pkg in Directory.GetFiles(PKG_DIR, "*.rantpkg"))
+                    {
+                        rant.LoadPackage(pkg);
+                    }
 #if DEBUG
                     timer.Stop();
                     WriteLine($"Package loading: {timer.ElapsedMilliseconds}ms");

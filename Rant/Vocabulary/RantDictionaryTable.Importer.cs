@@ -550,6 +550,19 @@ namespace Rant.Vocabulary
                 terms[t] = new RantDictionaryTerm(buffer.ToString());
 
                 result = new RantDictionaryEntry(terms);
+
+                // Add classes from template
+                if (activeTemplate != null)
+                {
+                    foreach(var cl in activeTemplate.GetRequiredClasses())
+                    {
+                        result.AddClass(cl, false);
+                    }
+                    foreach (var cl in activeTemplate.GetOptionalClasses())
+                    {
+                        result.AddClass(cl, true);
+                    }
+                }
             }
 
 #if !UNITY
