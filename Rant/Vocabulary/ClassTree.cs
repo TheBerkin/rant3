@@ -46,7 +46,7 @@ namespace Rant.Vocabulary
 			}
 
 			// find the largest class
-			var largestClass = RootNode.ChildNodes
+			var largestClass = node.ChildNodes
 				.Where(kv => classes.Contains(kv.Key))
 				.OrderByDescending(kv => kv.Value.Count)
 				.Select(kv => kv.Value)
@@ -54,6 +54,8 @@ namespace Rant.Vocabulary
 
 			if (largestClass == default(ClassTreeNode))
 			{
+				if (classes.Any())
+					return new List<RantDictionaryEntry>();
 				return node.Entries;
 			}
 
@@ -63,8 +65,6 @@ namespace Rant.Vocabulary
 		private void PopulateNode(ClassTreeNode node, IEnumerable<RantDictionaryEntry> entries)
 		{
 			node.Entries = entries.Where(e => e.ClassCount >= node.Classes.Length).ToList();
-			if (node.Entries.Count == entries.Count()) return;
-
 			var otherEntries = entries.Where(e => e.ClassCount > node.Classes.Length);
 
 			if (node.Depth == MAX_DEPTH)
