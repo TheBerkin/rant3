@@ -211,15 +211,6 @@ namespace Rant.Vocabulary
                                                     foreach (string cName in autoClassStack.Pop())
                                                         autoClasses.Remove(cName);
                                             }
-                                            else
-                                            {
-                                                foreach (var cArg in args)
-                                                {
-                                                    if (!Tools.ValidateClassName(cArg.Value))
-                                                        throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
-                                                    autoClasses.Remove(cArg.Value);
-                                                }
-                                            }
                                             break;
                                         }
                                 }
