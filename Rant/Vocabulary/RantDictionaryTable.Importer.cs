@@ -362,7 +362,7 @@ namespace Rant.Vocabulary
             {
                 if (input == null || input.Length == 0) return false;
                 for (int i = 0; i < input.Length; i++)
-                    if (!char.IsLetterOrDigit(input[i]) && input[i] != '_' || i < input.Length - 1 && input[i] == '?') return false;
+                    if (!char.IsLetterOrDigit(input[i]) && input[i] != '_' && (i < input.Length - 1 && input[i] == '?')) return false;
                 return true;
             }
 
