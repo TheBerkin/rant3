@@ -51,3 +51,4 @@ only_commits:
     - Rant.Tools/
     - '*.cs'
     - '*.sln'
+    - 'appveyor.yml'
