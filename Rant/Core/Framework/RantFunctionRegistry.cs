@@ -37,6 +37,7 @@ using Rant.Core.Output;
 using Rant.Core.Utilities;
 using Rant.Metadata;
 using Rant.Vocabulary.Utilities;
+// ReSharper disable UnusedMember.Local
 
 namespace Rant.Core.Framework
 {
@@ -911,6 +912,8 @@ namespace Rant.Core.Framework
 		private static void AccentCedilla(Sandbox sb, string character) => sb.Print($"{character}\u0327".Normalize(NormalizationForm.FormC));
 
 		[RantFunction("char")]
-		private static void Character(Sandbox sb, string name) => sb.Print(Unicode.GetByName(name));
+        [RantDescription("Prints a Unicode character given its official Unicode-designated name (e.g. 'LATIN CAPITAL LETTER R' -> 'R').")]
+		private static void Character(Sandbox sb, 
+            [RantDescription("The name of the character to print (case-insensitive).")] string name) => sb.Print(Unicode.GetByName(name));
 	}
 }

@@ -221,9 +221,8 @@ namespace Rant.Vocabulary
 		public object GetMetadata(string key)
 		{
 			if (_metadata == null) return null;
-			object result;
-			return !_metadata.TryGetValue(key, out result) ? null : result;
-		}
+            return !_metadata.TryGetValue(key, out object result) ? null : result;
+        }
 
 		/// <summary>
 		/// Determines if the entry contains metadata attached to the specified key.

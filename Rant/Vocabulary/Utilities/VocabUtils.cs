@@ -84,9 +84,8 @@ namespace Rant.Vocabulary.Utilities
 
 		public static string GetString(string str)
 		{
-			string cstr;
-			if (!StringCache.TryGetValue(str, out cstr)) cstr = StringCache[str] = str;
-			return cstr;
+            if (!StringCache.TryGetValue(str, out string cstr)) cstr = StringCache[str] = str;
+            return cstr;
 		}
 
 		public static bool AssociatesWith(this RantDictionaryEntry a, RantDictionaryEntry b)

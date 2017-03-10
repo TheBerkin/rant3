@@ -81,15 +81,13 @@ namespace Rant.Vocabulary
                         case '@':
                             {
                                 // Read directive name
-                                string directiveName;
                                 int dPos = i;
-                                if (!Tools.ReadDirectiveName(l, len, ref i, out directiveName))
+                                if (!Tools.ReadDirectiveName(l, len, ref i, out string directiveName))
                                     throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-directive-name");
 
                                 // Read arguments
                                 var args = new List<Argument>();
-                                Argument arg;
-                                while (Tools.ReadArg(origin, l, len, line, ref i, out arg)) args.Add(arg);
+                                while (Tools.ReadArg(origin, l, len, line, ref i, out Argument arg)) args.Add(arg);
 
                                 switch (directiveName.ToLowerInvariant())
                                 {
@@ -122,9 +120,8 @@ namespace Rant.Vocabulary
                                             if (args.Count == 0)
                                                 throw new RantTableLoadException(origin, line, dPos + 1, "err-table-subtype-args");
 
-                                            int termIndex;
                                             // If the first argument is a number, use it as the subtype index.
-                                            if (int.TryParse(args[0].Value, out termIndex))
+                                            if (int.TryParse(args[0].Value, out int termIndex))
                                             {
                                                 // Disallow negative term indices
                                                 if (termIndex < 0)
@@ -239,15 +236,13 @@ namespace Rant.Vocabulary
                                 Tools.SkipSpace(l, len, ref i);
 
                                 // Read property name
-                                string propName;
                                 int dPos = i;
-                                if (!Tools.ReadDirectiveName(l, len, ref i, out propName))
+                                if (!Tools.ReadDirectiveName(l, len, ref i, out string propName))
                                     throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-property-name");
 
                                 // Read arguments
                                 var args = new List<Argument>();
-                                Argument arg;
-                                while (Tools.ReadArg(origin, l, len, line, ref i, out arg)) args.Add(arg);
+                                while (Tools.ReadArg(origin, l, len, line, ref i, out Argument arg)) args.Add(arg);
 
                                 // No args? Skip it.
                                 if (args.Count == 0)
@@ -265,8 +260,7 @@ namespace Rant.Vocabulary
                                         break;
                                     case "weight":
                                         {
-                                            int weight;
-                                            if (!int.TryParse(args[0].Value, out weight) || weight <= 0)
+                                            if (!int.TryParse(args[0].Value, out int weight) || weight <= 0)
                                                 throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-weight", args[0].Value);
                                             currentEntry.Weight = weight;
                                             break;
@@ -391,7 +385,6 @@ namespace Rant.Vocabulary
                                 if (i >= len)
                                     throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
                                 int start = i;
-                                int termIndex = -1;
                                 if (white.Length > 0)
                                 {
                                     buffer.Append(white);
@@ -437,8 +430,7 @@ namespace Rant.Vocabulary
                                                 // It's just a template ID.
                                                 case 1:
                                                     {
-                                                        RantDictionaryEntry entry;
-                                                        if (!templates.TryGetValue(id[0], out entry))
+                                                        if (!templates.TryGetValue(id[0], out RantDictionaryEntry entry))
                                                             throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
                                                         // Append term value to buffer
                                                         buffer.Append(entry[t].Value);
@@ -447,8 +439,7 @@ namespace Rant.Vocabulary
                                                 // Template ID and custom subtype
                                                 case 2:
                                                     {
-                                                        RantDictionaryEntry entry;
-                                                        if (!templates.TryGetValue(id[0], out entry))
+                                                        if (!templates.TryGetValue(id[0], out RantDictionaryEntry entry))
                                                             throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
                                                         int templateSubIndex = table.GetSubtypeIndex(id[1]);
                                                         if (templateSubIndex == -1 || templateSubIndex >= table.TermsPerEntry)
@@ -500,8 +491,7 @@ namespace Rant.Vocabulary
                                     case 'u':
                                         {
                                             if (i + 4 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append((char)codePoint);
                                             i += 4;
@@ -510,8 +500,7 @@ namespace Rant.Vocabulary
                                     case 'U':
                                         {
                                             if (i + 8 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
+                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append(high).Append(low);
                                             i += 8;
@@ -629,8 +618,7 @@ namespace Rant.Vocabulary
                                     case 'u':
                                         {
                                             if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append((char)codePoint);
                                             i += 4;
@@ -639,8 +627,7 @@ namespace Rant.Vocabulary
                                     case 'U':
                                         {
                                             if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
+                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append(high).Append(low);
                                             i += 8;
@@ -704,8 +691,7 @@ namespace Rant.Vocabulary
                                     case 'u':
                                         {
                                             if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append((char)codePoint);
                                             i += 4;
@@ -714,8 +700,7 @@ namespace Rant.Vocabulary
                                     case 'U':
                                         {
                                             if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
+                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
                                                 throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
                                             buffer.Append(high).Append(low);
                                             i += 8;

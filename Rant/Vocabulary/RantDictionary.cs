@@ -58,13 +58,12 @@ namespace Rant.Vocabulary
 
 			if (tables == null) return;
 
-			RantDictionaryTable table;
-			foreach (var list in tables)
-				if (_tables.TryGetValue(list.Name, out table))
-					table.Merge(list);
-				else
-					_tables[list.Name] = list;
-		}
+            foreach (var list in tables)
+                if (_tables.TryGetValue(list.Name, out RantDictionaryTable table))
+                    table.Merge(list);
+                else
+                    _tables[list.Name] = list;
+        }
 
 		/// <summary>
 		/// Gets all currently exposed hidden classes.
@@ -110,17 +109,16 @@ namespace Rant.Vocabulary
 		/// <param name="table">The table to add.</param>
 		public void AddTable(RantDictionaryTable table)
 		{
-			RantDictionaryTable oldTable;
-			if (_tables.TryGetValue(table.Name, out oldTable))
-			{
-				if (ReferenceEquals(table, oldTable)) return;
-				oldTable.Merge(table);
-			}
-			else
-			{
-				_tables[table.Name] = table;
-			}
-		}
+            if (_tables.TryGetValue(table.Name, out RantDictionaryTable oldTable))
+            {
+                if (ReferenceEquals(table, oldTable)) return;
+                oldTable.Merge(table);
+            }
+            else
+            {
+                _tables[table.Name] = table;
+            }
+        }
 
 		/// <summary>
 		/// Enumerates the tables contained in the current RantDictionary instance.
@@ -140,10 +138,9 @@ namespace Rant.Vocabulary
 		/// <returns></returns>
 		internal RantDictionaryTerm Query(Sandbox sb, Query query, CarrierState syncState)
 		{
-			RantDictionaryTable table;
-			return !_tables.TryGetValue(query.Name, out table)
-				? null
-				: table.Query(this, sb, query, syncState);
-		}
+            return !_tables.TryGetValue(query.Name, out RantDictionaryTable table)
+                ? null
+                : table.Query(this, sb, query, syncState);
+        }
 	}
 }

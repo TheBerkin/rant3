@@ -36,7 +36,7 @@ namespace Rant.Core.Framework
 	{
 		public RantFunctionParameter(string name, Type nativeType, RantFunctionParameterType rantType, bool isParams = false)
 		{
-			Name = name;
+			Name = Util.CamelToSnake(name);
 			NativeType = nativeType;
 			RantType = rantType;
 			IsParams = isParams;
@@ -54,7 +54,7 @@ namespace Rant.Core.Framework
 			if (!NativeType.IsEnum) yield break;
 			foreach (string value in Enum.GetNames(NativeType))
 				yield return new RantModeValue(Util.CamelToSnake(value),
-				(NativeType.GetMember(value)[0].GetCustomAttributes(typeof(RantDescriptionAttribute), true).First() as
+				(NativeType.GetMember(value)[0].GetCustomAttributes(typeof(RantDescriptionAttribute), true).FirstOrDefault() as
 					RantDescriptionAttribute)?.Description ?? string.Empty);
 		}
 	}

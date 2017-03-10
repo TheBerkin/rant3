@@ -313,7 +313,9 @@
     <EmbeddedResource Include="Localization\en-US.lang" />
     <EmbeddedResource Include="Localization\de-DE.lang" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Core\Formatting\unicode_code_points.dat" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

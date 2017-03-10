@@ -238,7 +238,9 @@ namespace Rant.Core.Utilities
 					return '{';
 				case '<':
 					return '>';
-				case '«':
+                case '>':
+                    return '<';
+                case '«':
 					return '»';
 				case '»':
 					return '«';

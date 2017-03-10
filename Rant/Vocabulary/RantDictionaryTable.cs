@@ -206,10 +206,9 @@ namespace Rant.Vocabulary
 			if (subtypeName == null) throw new ArgumentNullException(nameof(subtypeName));
 			if (!Util.ValidateName(subtypeName)) return false;
 			_subtypes[subtypeName] = index;
-			HashSet<string> subs;
-			if (!_subtypeIndexMap.TryGetValue(index, out subs))
-				_subtypeIndexMap[index] = subs = new HashSet<string>();
-			subs.Add(subtypeName);
+            if (!_subtypeIndexMap.TryGetValue(index, out HashSet<string> subs))
+                _subtypeIndexMap[index] = subs = new HashSet<string>();
+            subs.Add(subtypeName);
 			return true;
 		}
 
@@ -223,10 +222,9 @@ namespace Rant.Vocabulary
 		{
 			if (Util.IsNullOrWhiteSpace(subtypeName)) return false;
 			if (!_subtypes.ContainsKey(subtypeName)) return false;
-			HashSet<string> subs;
-			if (_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out subs))
-				return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
-			return false;
+            if (_subtypeIndexMap.TryGetValue(_subtypes[subtypeName], out HashSet<string> subs))
+                return subs.Remove(subtypeName) && _subtypes.Remove(subtypeName);
+            return false;
 		}
 
 		/// <summary>
@@ -240,9 +238,8 @@ namespace Rant.Vocabulary
 		{
 			if (Util.IsNullOrWhiteSpace(subtype)) return 0;
 			if (!Util.ValidateName(subtype)) return -1;
-			int index;
-			if (int.TryParse(subtype, out index) && index >= 0) return index;
-			return _subtypes.TryGetValue(subtype, out index) ? index : -1;
+            if (int.TryParse(subtype, out int index) && index >= 0) return index;
+            return _subtypes.TryGetValue(subtype, out index) ? index : -1;
 		}
 
 		/// <summary>
@@ -253,9 +250,8 @@ namespace Rant.Vocabulary
 		public IEnumerable<string> GetSubtypesForIndex(int index)
 		{
 			if (index < 0 || index >= TermsPerEntry) yield break;
-			HashSet<string> subs;
-			if (!_subtypeIndexMap.TryGetValue(index, out subs)) yield break;
-			foreach (string sub in subs) yield return sub;
+            if (!_subtypeIndexMap.TryGetValue(index, out HashSet<string> subs)) yield break;
+            foreach (string sub in subs) yield return sub;
 		}
 
 		/// <summary>
