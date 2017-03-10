@@ -31,32 +31,32 @@ using System.Text;
 
 namespace Rant.Core.Formatting
 {
-	internal static class Unicode
-	{
-		private static readonly Dictionary<uint, string> _cache = new Dictionary<uint, string>();
+    internal static class Unicode
+    {
+        private static readonly Dictionary<uint, string> _cache = new Dictionary<uint, string>();
 
-		private static readonly Dictionary<string, uint> _unicodeCharacterMap;
+        private static readonly Dictionary<string, uint> _unicodeCharacterMap;
 
-		static Unicode()
-		{
+        static Unicode()
+        {
             _unicodeCharacterMap = new Dictionary<string, uint>();
-		    var ass = Assembly.GetExecutingAssembly();
+            var ass = Assembly.GetExecutingAssembly();
             using (var stream = ass.GetManifestResourceStream("Rant.Core.Formatting.unicode_code_points.dat"))
-            using(var reader = new StreamReader(stream))
+            using (var reader = new StreamReader(stream))
             {
                 while (!reader.EndOfStream)
                 {
-                    var line = reader.ReadLine();
+                    string line = reader.ReadLine();
                     if (String.IsNullOrWhiteSpace(line)) continue;
                     var entry = line.Split(',');
                     _unicodeCharacterMap[entry[0].Trim()] = Convert.ToUInt32(entry[1].Trim());
                 }
             }
-		}
+        }
 
-		public static string GetByName(string name)
-		{
-			if (name == null) throw new ArgumentNullException(nameof(name));
+        public static string GetByName(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
             if (!_unicodeCharacterMap.TryGetValue(name, out uint codePoint))
             {
                 var sb = new StringBuilder();
@@ -83,24 +83,24 @@ namespace Rant.Core.Formatting
 
             if (_cache.TryGetValue(codePoint, out string result)) return result;
 
-			const uint minSurrogateCodePoint = 0x10000;
-			const uint lowSurrogateMask = 0x3ff;
-			const uint highSurrogateMask = lowSurrogateMask << 10;
-			const uint lowSurrogateOffset = 0xDC00;
-			const uint highSurrogateOffset = 0xD800;
+            const uint minSurrogateCodePoint = 0x10000;
+            const uint lowSurrogateMask = 0x3ff;
+            const uint highSurrogateMask = lowSurrogateMask << 10;
+            const uint lowSurrogateOffset = 0xDC00;
+            const uint highSurrogateOffset = 0xD800;
 
-			if (codePoint < minSurrogateCodePoint)
-				return _cache[codePoint] = ((char)codePoint).ToString();
+            if (codePoint < minSurrogateCodePoint)
+                return _cache[codePoint] = ((char)codePoint).ToString();
 
-			uint sp = codePoint - minSurrogateCodePoint;
+            uint sp = codePoint - minSurrogateCodePoint;
 
-			result = _cache[codePoint] = new string(new[]
-			{
-				(char)(((sp & highSurrogateMask) >> 10) + highSurrogateOffset),
-				(char)((sp & lowSurrogateMask) + lowSurrogateOffset)
-			});
+            result = _cache[codePoint] = new string(new[]
+            {
+                (char)(((sp & highSurrogateMask) >> 10) + highSurrogateOffset),
+                (char)((sp & lowSurrogateMask) + lowSurrogateOffset)
+            });
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

@@ -27,22 +27,22 @@ using System.IO;
 
 namespace Rant.Core.IO.Compression.LZ
 {
-	internal interface IInWindowStream
-	{
-		void SetStream(Stream inStream);
-		void Init();
-		void ReleaseStream();
-		byte GetIndexByte(int index);
-		uint GetMatchLen(int index, uint distance, uint limit);
-		uint GetNumAvailableBytes();
-	}
+    internal interface IInWindowStream
+    {
+        void SetStream(Stream inStream);
+        void Init();
+        void ReleaseStream();
+        byte GetIndexByte(int index);
+        uint GetMatchLen(int index, uint distance, uint limit);
+        uint GetNumAvailableBytes();
+    }
 
-	internal interface IMatchFinder : IInWindowStream
-	{
-		void Create(uint historySize, uint keepAddBufferBefore,
-			uint matchMaxLen, uint keepAddBufferAfter);
+    internal interface IMatchFinder : IInWindowStream
+    {
+        void Create(uint historySize, uint keepAddBufferBefore,
+            uint matchMaxLen, uint keepAddBufferAfter);
 
-		uint GetMatches(uint[] distances);
-		void Skip(uint num);
-	}
+        uint GetMatches(uint[] distances);
+        void Skip(uint num);
+    }
 }

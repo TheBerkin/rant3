@@ -25,78 +25,78 @@
 
 namespace Rant.Core.Compiler
 {
-	internal enum R
-	{
-		Text,
+    internal enum R
+    {
+        Text,
 
-		EscapeSequenceChar,
+        EscapeSequenceChar,
 
-		EscapeSequenceQuantifier,
+        EscapeSequenceQuantifier,
 
-		EscapeSequenceUnicode,
+        EscapeSequenceUnicode,
 
-		EscapeSequenceSurrogatePair,
+        EscapeSequenceSurrogatePair,
 
-		LeftSquare,
+        LeftSquare,
 
-		RightSquare,
+        RightSquare,
 
-		LeftCurly,
+        LeftCurly,
 
-		RightCurly,
+        RightCurly,
 
-		LeftAngle,
+        LeftAngle,
 
-		RightAngle,
+        RightAngle,
 
-		LeftParen,
+        LeftParen,
 
-		RightParen,
+        RightParen,
 
-		Pipe,
+        Pipe,
 
-		Colon,
+        Colon,
 
-		Semicolon,
+        Semicolon,
 
-		DoubleColon,
+        DoubleColon,
 
-		At,
+        At,
 
-		Question,
+        Question,
 
-		ForwardSlash,
+        ForwardSlash,
 
-		Exclamation,
+        Exclamation,
 
-		Dollar,
+        Dollar,
 
-		Hyphen,
+        Hyphen,
 
-		Comma,
+        Comma,
 
-		Without,
+        Without,
 
-		Regex,
+        Regex,
 
-		RegexFlags,
+        RegexFlags,
 
-		VerbatimString,
+        VerbatimString,
 
-		Whitespace,
+        Whitespace,
 
-		Equal,
+        Equal,
 
-		Ampersand,
+        Ampersand,
 
-		Caret,
+        Caret,
 
-		Plus,
+        Plus,
 
-		Number,
+        Number,
 
-		Period,
+        Period,
 
-		EOF
-	}
+        EOF
+    }
 }
