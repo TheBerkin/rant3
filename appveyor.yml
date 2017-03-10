@@ -15,15 +15,19 @@ assembly_info:
 build_script:
 - ps: >-
     nuget restore
+
     $env:Path = "C:\Program Files (x86)\MSBuild\15.0\Bin;" + $env:Path
+
     $pkgVersion = $env:APPVEYOR_BUILD_VERSION
 
     if ($env:APPVEYOR_REPO_BRANCH -like "dev*")
+    
     {
         $pkgVersion += "-dev"
     }
 
     msbuild "Rant.sln" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Configuration="Release" /p:Platform="Any CPU"
+
     msbuild "Rant.sln" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Configuration="Unity" /p:Platform="Any CPU"
 
     nuget pack Rant/Rant.csproj -Version $pkgVersion -OutputDirectory Rant
