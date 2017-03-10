@@ -12,25 +12,11 @@ assembly_info:
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
-build_script:
-- ps: >-
-    nuget restore
-
-    $env:Path = "C:\Program Files (x86)\MSBuild\15.0\Bin;" + $env:Path
-
-    $pkgVersion = $env:APPVEYOR_BUILD_VERSION
-
-    if ($env:APPVEYOR_REPO_BRANCH -like "dev*")
-    
-    {
-        $pkgVersion += "-dev"
-    }
-
-    msbuild "Rant.sln" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Configuration="Release" /p:Platform="Any CPU"
-
-    msbuild "Rant.sln" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:Configuration="Unity" /p:Platform="Any CPU"
-
-    nuget pack Rant/Rant.csproj -Version $pkgVersion -OutputDirectory Rant
+build:
+  parallel: true
+  verbosity: minimal
+after_build:
+- ps: "$pkgVersion = $env:APPVEYOR_BUILD_VERSION\n\nif ($env:APPVEYOR_REPO_BRANCH -like \"dev*\")\n    \n{\n    $pkgVersion += \"-dev\"\n}\n\nnuget pack Rant/Rant.csproj -Version $pkgVersion -OutputDirectory Rant"
 artifacts:
 - path: bin\MainBuild
   name: Rant
