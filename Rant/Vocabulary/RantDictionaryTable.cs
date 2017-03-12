@@ -45,6 +45,8 @@ namespace Rant.Vocabulary
         internal const string MissingTerm = "[?]";
         private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
         private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>(); // TODO: Use for indexing / weighted selection
+		// entries that don't have any hidden classes
+		private readonly List<RantDictionaryEntry> _visibleEntriesList = new List<RantDictionaryEntry>();
         private readonly HashSet<string> _hidden = new HashSet<string>(new[] { NSFW });
         private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>();
         private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
@@ -148,7 +150,9 @@ namespace Rant.Vocabulary
             if (entry == null) throw new ArgumentNullException(nameof(entry));
             if (entry.TermCount != TermsPerEntry) return false;
             if (!_entriesHash.Add(entry)) return false;
-            _entriesList.Add(entry);
+			if (entry.GetClasses().All(c => !_hidden.Contains(c)))
+				_visibleEntriesList.Add(entry);
+			_entriesList.Add(entry);
             return true;
         }
 
@@ -161,7 +165,9 @@ namespace Rant.Vocabulary
         {
             if (entry == null) throw new ArgumentNullException(nameof(entry));
             if (!_entriesHash.Remove(entry)) return false;
-            _entriesList.Remove(entry);
+			if(entry.GetClasses().All(c => !_hidden.Contains(c)))
+				_visibleEntriesList.Add(entry);
+			_entriesList.Remove(entry);
             return true;
         }
 
@@ -264,7 +270,8 @@ namespace Rant.Vocabulary
             if (other.Name != Name || other == this) return false;
             if (other.TermsPerEntry != TermsPerEntry) return false;
             _entriesHash.AddRange(other._entriesHash);
-            _entriesList.AddRange(other._entriesHash);
+			_visibleEntriesList.AddRange(other._visibleEntriesList);
+			_entriesList.AddRange(other._entriesHash);
             Commit();
             return true;
         }
@@ -289,7 +296,7 @@ namespace Rant.Vocabulary
 
             if (index == -1) return null;
 
-            if (query.BareQuery) return _entriesList.PickEntry(sb.RNG)?[index];
+            if (query.BareQuery) return _visibleEntriesList.PickEntry(sb.RNG)?[index];
 
             // process simple class filters using class tree
             var filters = query.GetFilters();
@@ -299,16 +306,16 @@ namespace Rant.Vocabulary
 
             filters = filters.Where(f => !(f is ClassFilter) || !(f as ClassFilter).SimpleFilter);
 
-            IEnumerable<RantDictionaryEntry> pool = _entriesList;
+            IEnumerable<RantDictionaryEntry> pool = _visibleEntriesList;
             if (classes.Any())
-                pool = _classTree.Query(classes);
+                pool = _classTree.Query(classes, new HashSet<string>(_hidden.Where(c => !classes.Contains(c))));
 
             // if it's just the class filters, let's leave now
             if (!filters.Any() && !query.HasCarrier)
                 return pool.ToList().PickEntry(sb.RNG)?[index];
 
-            // process syllable count filters using syllable buckets
-            var rangeFilters = filters.Where(f => f is RangeFilter).Select(f => f as RangeFilter);
+			// process syllable count filters using syllable buckets
+			var rangeFilters = filters.OfType<RangeFilter>();
             if (rangeFilters.Any())
             {
                 CreateSyllableBuckets();

@@ -55,12 +55,12 @@ namespace Rant.Vocabulary
             }
         }
 
-        public IEnumerable<RantDictionaryEntry> Query(IEnumerable<string> classes)
+        public IEnumerable<RantDictionaryEntry> Query(IEnumerable<string> classes, HashSet<string> hiddenClasses)
         {
-            return QueryNode(RootNode, new HashSet<string>(classes));
+            return QueryNode(RootNode, new HashSet<string>(classes), hiddenClasses);
         }
 
-        private IEnumerable<RantDictionaryEntry> QueryNode(ClassTreeNode node, HashSet<string> classes)
+        private IEnumerable<RantDictionaryEntry> QueryNode(ClassTreeNode node, HashSet<string> classes, HashSet<string> hiddenClasses)
         {
             if (node.DepthLimit)
                 return node.Entries.Where(e => classes.All(c => e.ContainsClass(c)));
@@ -76,10 +76,10 @@ namespace Rant.Vocabulary
             {
                 if (classes.Any())
                     return new List<RantDictionaryEntry>();
-                return node.Entries;
+                return node.Entries.Where(e => !e.GetClasses().Any(c => hiddenClasses.Contains(c)));
             }
 
-            return QueryNode(largestClass, new HashSet<string>(classes.Where(c => c != largestClass.Name)));
+            return QueryNode(largestClass, new HashSet<string>(classes.Where(c => c != largestClass.Name)), hiddenClasses);
         }
 
         private void PopulateNode(ClassTreeNode node, IEnumerable<RantDictionaryEntry> entries)
