@@ -42,7 +42,7 @@ namespace Rant.Vocabulary
             string name = null; // Stores the table name before final table construction
             int termsPerEntry = 0; // Stores the term count
             var subtypes = new Dictionary<string, int>(); // Stores subtypes before final table construction
-			var hidden = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+            var hidden = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             RantDictionaryTable table = null; // The table object, constructed when first entry is found
             string l; // Current line string
             int line = 0; // Current line number
@@ -79,143 +79,142 @@ namespace Rant.Vocabulary
 
                         // Directive
                         case '@':
+                        {
+                            // Read directive name
+                            int dPos = i;
+                            if (!Tools.ReadDirectiveName(l, len, ref i, out string directiveName))
+                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-directive-name");
+
+                            // Read arguments
+                            var args = new List<Argument>();
+                            while (Tools.ReadArg(origin, l, len, line, ref i, out Argument arg)) args.Add(arg);
+
+                            switch (directiveName.ToLowerInvariant())
                             {
-                                // Read directive name
-                                string directiveName;
-                                int dPos = i;
-                                if (!Tools.ReadDirectiveName(l, len, ref i, out directiveName))
-                                    throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-directive-name");
-
-                                // Read arguments
-                                var args = new List<Argument>();
-                                Argument arg;
-                                while (Tools.ReadArg(origin, l, len, line, ref i, out arg)) args.Add(arg);
-
-                                switch (directiveName.ToLowerInvariant())
+                                // Table name definition
+                                case "name":
                                 {
-                                    // Table name definition
-                                    case "name":
-                                        {
-                                            // Do not allow this to appear anywhere except at the top of the file
-                                            if (table != null)
-                                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-misplaced-header-directive");
-                                            // Do not allow multiple @name directives
-                                            if (name != null)
-                                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-multiple-names");
-                                            // One argument required
-                                            if (args.Count != 1)
-                                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-name-args");
-                                            // Must meet standard identifier requirements
-                                            if (!Util.ValidateName(args[0].Value))
-                                                throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-name", args[0].Value);
-                                            name = args[0].Value;
-                                            break;
-                                        }
-
-                                    // Subtype definition
-                                    case "sub":
-                                        {
-                                            // Do not allow this to appear anywhere except at the top of the file
-                                            if (table != null)
-                                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-misplaced-header-directive");
-                                            // @sub requires at least one argument
-                                            if (args.Count == 0)
-                                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-subtype-args");
-
-                                            int termIndex;
-                                            // If the first argument is a number, use it as the subtype index.
-                                            if (int.TryParse(args[0].Value, out termIndex))
-                                            {
-                                                // Disallow negative term indices
-                                                if (termIndex < 0)
-                                                    throw new RantTableLoadException(origin, line, dPos + 1, "err-table-sub-index-negative", termIndex);
-                                                // Requires at least one name
-                                                if (args.Count < 2)
-                                                    throw new RantTableLoadException(origin, line, dPos + 1, "err-table-sub-missing-name");
-                                                // If the index is outside the current term index range, increase the number.
-                                                if (termIndex >= termsPerEntry)
-                                                    termsPerEntry = termIndex + 1;
-                                                // Assign all following names to the index
-                                                for (int j = 1; j < args.Count; j++)
-                                                {
-                                                    // Validate subtype name
-                                                    if (!Util.ValidateName(args[j].Value))
-                                                        throw new RantTableLoadException(origin, line, args[j].CharIndex + 1, "err-table-bad-subtype", args[j].Value);
-                                                    subtypes[args[j].Value] = termIndex;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                // Add to last index
-                                                termIndex = termsPerEntry++;
-                                                // Assign all following names to the index
-                                                foreach (var a in args)
-                                                {
-                                                    // Validate subtype name
-                                                    if (!Util.ValidateName(a.Value))
-                                                        throw new RantTableLoadException(origin, line, a.CharIndex + 1, "err-table-bad-subtype", a.Value);
-                                                    subtypes[a.Value] = termIndex;
-                                                }
-                                            }
-                                            break;
-                                        }
-									case "hide":
-										if (args.Count == 0) break;
-										foreach(var a in args)
-										{
-											if (!Util.ValidateName(a.Value))
-												throw new RantTableLoadException(origin, line, i, "err-table-invalid-class", a.Value);
-											hidden.Add(String.Intern(a.Value));
-										}
-										break;
-                                    case "dummy":
-                                        if (args.Count != 0)
-                                            throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 0, args.Count);
-                                        dummy = true;
-                                        break;
-                                    case "id":
-                                        if (args.Count != 1)
-                                            throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 1, args.Count);
-                                        if (!Util.ValidateName(args[0].Value))
-                                            throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-bad-template-id", args[0].Value);
-                                        tId = args[0].Value;
-                                        break;
-                                    case "using":
-                                        if (args.Count != 1)
-                                            throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 1, args.Count);
-                                        if (!Util.ValidateName(args[0].Value))
-                                            throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-bad-template-id", args[0].Value);
-                                        if (!templates.TryGetValue(args[0].Value, out activeTemplate))
-                                            throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-template-not-found", args[0].Value);
-                                        break;
-                                    case "class":
-                                        {
-                                            var cList = new List<string>();
-                                            if (args.Count == 0)
-                                                throw new RantTableLoadException(origin, line, i, "err-table-args-expected", directiveName);
-                                            foreach (var cArg in args)
-                                            {
-                                                if (!Tools.ValidateClassName(cArg.Value))
-                                                    throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
-                                                cList.Add(cArg.Value);
-                                                autoClasses.Add(cArg.Value);
-                                            }
-                                            autoClassStack.Push(cList);
-                                            break;
-                                        }
-                                    case "endclass":
-                                        {
-                                            if (args.Count == 0)
-                                            {
-                                                if (autoClassStack.Count > 0)
-                                                    foreach (string cName in autoClassStack.Pop())
-                                                        autoClasses.Remove(cName);
-                                            }
-                                            break;
-                                        }
+                                    // Do not allow this to appear anywhere except at the top of the file
+                                    if (table != null)
+                                        throw new RantTableLoadException(origin, line, dPos + 1, "err-table-misplaced-header-directive");
+                                    // Do not allow multiple @name directives
+                                    if (name != null)
+                                        throw new RantTableLoadException(origin, line, dPos + 1, "err-table-multiple-names");
+                                    // One argument required
+                                    if (args.Count != 1)
+                                        throw new RantTableLoadException(origin, line, dPos + 1, "err-table-name-args");
+                                    // Must meet standard identifier requirements
+                                    if (!Util.ValidateName(args[0].Value))
+                                        throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-name", args[0].Value);
+                                    name = args[0].Value;
+                                    break;
                                 }
-                                break;
+
+                                // Subtype definition
+                                case "sub":
+                                {
+                                    // Do not allow this to appear anywhere except at the top of the file
+                                    if (table != null)
+                                        throw new RantTableLoadException(origin, line, dPos + 1, "err-table-misplaced-header-directive");
+                                    // @sub requires at least one argument
+                                    if (args.Count == 0)
+                                        throw new RantTableLoadException(origin, line, dPos + 1, "err-table-subtype-args");
+
+                                    // If the first argument is a number, use it as the subtype index.
+                                    if (int.TryParse(args[0].Value, out int termIndex))
+                                    {
+                                        // Disallow negative term indices
+                                        if (termIndex < 0)
+                                            throw new RantTableLoadException(origin, line, dPos + 1, "err-table-sub-index-negative", termIndex);
+                                        // Requires at least one name
+                                        if (args.Count < 2)
+                                            throw new RantTableLoadException(origin, line, dPos + 1, "err-table-sub-missing-name");
+                                        // If the index is outside the current term index range, increase the number.
+                                        if (termIndex >= termsPerEntry)
+                                            termsPerEntry = termIndex + 1;
+                                        // Assign all following names to the index
+                                        for (int j = 1; j < args.Count; j++)
+                                        {
+                                            // Validate subtype name
+                                            if (!Util.ValidateName(args[j].Value))
+                                                throw new RantTableLoadException(origin, line, args[j].CharIndex + 1, "err-table-bad-subtype", args[j].Value);
+                                            subtypes[args[j].Value] = termIndex;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Add to last index
+                                        termIndex = termsPerEntry++;
+                                        // Assign all following names to the index
+                                        foreach (var a in args)
+                                        {
+                                            // Validate subtype name
+                                            if (!Util.ValidateName(a.Value))
+                                                throw new RantTableLoadException(origin, line, a.CharIndex + 1, "err-table-bad-subtype", a.Value);
+                                            subtypes[a.Value] = termIndex;
+                                        }
+                                    }
+                                    break;
+                                }
+                                case "hide":
+                                    if (args.Count == 0) break;
+                                    foreach (var a in args)
+                                    {
+                                        if (!Util.ValidateName(a.Value))
+                                            throw new RantTableLoadException(origin, line, i, "err-table-invalid-class", a.Value);
+                                        hidden.Add(String.Intern(a.Value));
+                                    }
+                                    break;
+                                case "dummy":
+                                    if (args.Count != 0)
+                                        throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 0, args.Count);
+                                    dummy = true;
+                                    break;
+                                case "id":
+                                    if (args.Count != 1)
+                                        throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 1, args.Count);
+                                    if (!Util.ValidateName(args[0].Value))
+                                        throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-bad-template-id", args[0].Value);
+                                    tId = args[0].Value;
+                                    break;
+                                case "using":
+                                    if (args.Count != 1)
+                                        throw new RantTableLoadException(origin, line, i, "err-table-argc-mismatch", directiveName, 1, args.Count);
+                                    if (!Util.ValidateName(args[0].Value))
+                                        throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-bad-template-id", args[0].Value);
+                                    if (!templates.TryGetValue(args[0].Value, out activeTemplate))
+                                        throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-template-not-found", args[0].Value);
+                                    break;
+                                case "class":
+                                {
+                                    var cList = new List<string>();
+                                    if (args.Count == 0)
+                                        throw new RantTableLoadException(origin, line, i, "err-table-args-expected", directiveName);
+                                    foreach (var cArg in args)
+                                    {
+                                        if (!Tools.ValidateClassName(cArg.Value))
+                                            throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
+                                        cList.Add(cArg.Value);
+                                        autoClasses.Add(cArg.Value);
+                                    }
+                                    autoClassStack.Push(cList);
+                                    break;
+                                }
+                                case "endclass":
+                                {
+                                    if (args.Count == 0)
+                                    {
+                                        if (autoClassStack.Count > 0)
+                                        {
+                                            foreach (string cName in autoClassStack.Pop())
+                                                autoClasses.Remove(cName);
+                                        }
+                                    }
+                                    break;
+                                }
                             }
+                            break;
+                        }
 
                         // Entry
                         case '>':
@@ -234,67 +233,62 @@ namespace Rant.Vocabulary
 
                         // Property
                         case '-':
+                        {
+                            Tools.ConstructTable(origin, name, subtypes, ref termsPerEntry, ref table);
+                            Tools.SkipSpace(l, len, ref i);
+
+                            // Read property name
+                            int dPos = i;
+                            if (!Tools.ReadDirectiveName(l, len, ref i, out string propName))
+                                throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-property-name");
+
+                            // Read arguments
+                            var args = new List<Argument>();
+                            while (Tools.ReadArg(origin, l, len, line, ref i, out Argument arg)) args.Add(arg);
+
+                            // No args? Skip it.
+                            if (args.Count == 0)
+                                continue;
+
+                            switch (propName.ToLowerInvariant())
                             {
-                                Tools.ConstructTable(origin, name, subtypes, ref termsPerEntry, ref table);
-                                Tools.SkipSpace(l, len, ref i);
-
-                                // Read property name
-                                string propName;
-                                int dPos = i;
-                                if (!Tools.ReadDirectiveName(l, len, ref i, out propName))
-                                    throw new RantTableLoadException(origin, line, dPos + 1, "err-table-missing-property-name");
-
-                                // Read arguments
-                                var args = new List<Argument>();
-                                Argument arg;
-                                while (Tools.ReadArg(origin, l, len, line, ref i, out arg)) args.Add(arg);
-
-                                // No args? Skip it.
-                                if (args.Count == 0)
-                                    continue;
-
-                                switch (propName.ToLowerInvariant())
+                                case "class":
+                                    foreach (var cArg in args)
+                                    {
+                                        if (!Tools.ValidateClassName(cArg.Value))
+                                            throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
+                                        currentEntry.AddClass(cArg.Value);
+                                    }
+                                    break;
+                                case "weight":
                                 {
-                                    case "class":
-                                        foreach (var cArg in args)
-                                        {
-                                            if (!Tools.ValidateClassName(cArg.Value))
-                                                throw new RantTableLoadException(origin, line, cArg.CharIndex + 1, "err-table-invalid-class", cArg.Value);
-                                            currentEntry.AddClass(cArg.Value);
-                                        }
-                                        break;
-                                    case "weight":
-                                        {
-                                            int weight;
-                                            if (!int.TryParse(args[0].Value, out weight) || weight <= 0)
-                                                throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-weight", args[0].Value);
-                                            currentEntry.Weight = weight;
-                                            break;
-                                        }
-                                    case "pron":
-                                        if (args.Count != table.TermsPerEntry)
-                                            continue;
-                                        for (int j = 0; j < currentEntry.TermCount; j++)
-                                            currentEntry[j].Pronunciation = args[j].Value;
-                                        break;
-                                    default:
-                                        if (args.Count == 1)
-                                            currentEntry.SetMetadata(propName, args[0].Value);
-                                        else
-                                            currentEntry.SetMetadata(propName, args.Select(a => a.Value).ToArray());
-                                        break;
+                                    if (!int.TryParse(args[0].Value, out int weight) || weight <= 0)
+                                        throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-weight", args[0].Value);
+                                    currentEntry.Weight = weight;
+                                    break;
                                 }
-                                break;
+                                case "pron":
+                                    if (args.Count != table.TermsPerEntry)
+                                        continue;
+                                    for (int j = 0; j < currentEntry.TermCount; j++)
+                                        currentEntry[j].Pronunciation = args[j].Value;
+                                    break;
+                                default:
+                                    if (args.Count == 1)
+                                        currentEntry.SetMetadata(propName, args[0].Value);
+                                    else
+                                        currentEntry.SetMetadata(propName, args.Select(a => a.Value).ToArray());
+                                    break;
                             }
+                            break;
+                        }
                     }
                 }
             }
 
-			// Add hidden classes
-			foreach(var hc in hidden)
-			{
-				table.HideClass(hc);
-			}
+            // Add hidden classes
+            foreach (string hc in hidden)
+                table.HideClass(hc);
 
             table.Commit();
 
@@ -353,7 +347,7 @@ namespace Rant.Vocabulary
             {
                 if (input == null || input.Length == 0) return false;
                 for (int i = 0; i < input.Length; i++)
-                    if (!char.IsLetterOrDigit(input[i]) && input[i] != '_' && (i < input.Length - 1 && input[i] == '?')) return false;
+                    if (!char.IsLetterOrDigit(input[i]) && input[i] != '_' && i < input.Length - 1 && input[i] == '?') return false;
                 return true;
             }
 
@@ -371,6 +365,7 @@ namespace Rant.Vocabulary
                 var buffer = new StringBuilder();
                 var white = new StringBuilder();
                 while (i < len)
+                {
                     switch (c = str[i++])
                     {
                         // Inline comment
@@ -386,143 +381,138 @@ namespace Rant.Vocabulary
                             break;
                         // Term reference
                         case '[':
+                        {
+                            SkipSpace(str, len, ref i);
+                            if (i >= len)
+                                throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
+                            int start = i;
+                            if (white.Length > 0)
                             {
-                                SkipSpace(str, len, ref i);
-                                if (i >= len)
-                                    throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
-                                int start = i;
-                                int termIndex = -1;
-                                if (white.Length > 0)
-                                {
-                                    buffer.Append(white);
-                                    white.Length = 0;
-                                }
-                                switch (str[i++])
-                                {
-                                    // Current term from active template
-                                    case ']':
-                                        if (t == -1)
-                                            throw new RantTableLoadException(origin, line, start + 1, "err-table-no-template");
-                                        buffer.Append(activeTemplate[t].Value);
-                                        break;
-                                    // Custom term from active template
-                                    case '.':
-                                        {
-                                            if (activeTemplate == null)
-                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-no-template");
-                                            while (i < len && IsValidSubtypeChar(str[i])) i++; // Read subtype name
-                                            if (str[i] != ']')
-                                                throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
-                                            string subName = str.Substring(start + 1, i - start - 1);
-                                            if (subName.Length == 0)
-                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-empty-subtype-reference");
-                                            int templateSubIndex = table.GetSubtypeIndex(subName);
-                                            if (templateSubIndex == -1)
-                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-nonexistent-subtype", subName);
-
-                                            // Add term value to buffer
-                                            buffer.Append(activeTemplate[templateSubIndex].Value);
-                                            i++; // Skip past closing bracket
-                                            break;
-                                        }
-                                    // It is probably a reference to another entry, let's see.
-                                    default:
-                                        {
-                                            while (i < len && IsValidSubtypeChar(str[i]) || str[i] == '.') i++;
-                                            if (str[i] != ']')
-                                                throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
-                                            var id = str.Substring(start, i - start).Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                                            switch (id.Length)
-                                            {
-                                                // It's just a template ID.
-                                                case 1:
-                                                    {
-                                                        RantDictionaryEntry entry;
-                                                        if (!templates.TryGetValue(id[0], out entry))
-                                                            throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
-                                                        // Append term value to buffer
-                                                        buffer.Append(entry[t].Value);
-                                                        break;
-                                                    }
-                                                // Template ID and custom subtype
-                                                case 2:
-                                                    {
-                                                        RantDictionaryEntry entry;
-                                                        if (!templates.TryGetValue(id[0], out entry))
-                                                            throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
-                                                        int templateSubIndex = table.GetSubtypeIndex(id[1]);
-                                                        if (templateSubIndex == -1 || templateSubIndex >= table.TermsPerEntry)
-                                                            throw new RantTableLoadException(origin, line, start + 1, "err-table-nonexistent-subtype", id[1]);
-                                                        buffer.Append(entry[templateSubIndex].Value);
-                                                        break;
-                                                    }
-                                                // ???
-                                                default:
-                                                    throw new RantTableLoadException(origin, line, start + 1, "err-table-invalid-term-reference");
-                                            }
-
-                                            i++; // Skip past closing bracket
-                                            break;
-                                        }
-                                }
-                                break;
+                                buffer.Append(white);
+                                white.Length = 0;
                             }
+                            switch (str[i++])
+                            {
+                                // Current term from active template
+                                case ']':
+                                    if (t == -1)
+                                        throw new RantTableLoadException(origin, line, start + 1, "err-table-no-template");
+                                    buffer.Append(activeTemplate[t].Value);
+                                    break;
+                                // Custom term from active template
+                                case '.':
+                                {
+                                    if (activeTemplate == null)
+                                        throw new RantTableLoadException(origin, line, start + 1, "err-table-no-template");
+                                    while (i < len && IsValidSubtypeChar(str[i])) i++; // Read subtype name
+                                    if (str[i] != ']')
+                                        throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
+                                    string subName = str.Substring(start + 1, i - start - 1);
+                                    if (subName.Length == 0)
+                                        throw new RantTableLoadException(origin, line, start + 1, "err-table-empty-subtype-reference");
+                                    int templateSubIndex = table.GetSubtypeIndex(subName);
+                                    if (templateSubIndex == -1)
+                                        throw new RantTableLoadException(origin, line, start + 1, "err-table-nonexistent-subtype", subName);
+
+                                    // Add term value to buffer
+                                    buffer.Append(activeTemplate[templateSubIndex].Value);
+                                    i++; // Skip past closing bracket
+                                    break;
+                                }
+                                // It is probably a reference to another entry, let's see.
+                                default:
+                                {
+                                    while (i < len && IsValidSubtypeChar(str[i]) || str[i] == '.') i++;
+                                    if (str[i] != ']')
+                                        throw new RantTableLoadException(origin, line, i, "err-table-incomplete-term-reference");
+                                    var id = str.Substring(start, i - start).Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                                    switch (id.Length)
+                                    {
+                                        // It's just a template ID.
+                                        case 1:
+                                        {
+                                            if (!templates.TryGetValue(id[0], out RantDictionaryEntry entry))
+                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
+                                            // Append term value to buffer
+                                            buffer.Append(entry[t].Value);
+                                            break;
+                                        }
+                                        // Template ID and custom subtype
+                                        case 2:
+                                        {
+                                            if (!templates.TryGetValue(id[0], out RantDictionaryEntry entry))
+                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-entry-not-found");
+                                            int templateSubIndex = table.GetSubtypeIndex(id[1]);
+                                            if (templateSubIndex == -1 || templateSubIndex >= table.TermsPerEntry)
+                                                throw new RantTableLoadException(origin, line, start + 1, "err-table-nonexistent-subtype", id[1]);
+                                            buffer.Append(entry[templateSubIndex].Value);
+                                            break;
+                                        }
+                                        // ???
+                                        default:
+                                            throw new RantTableLoadException(origin, line, start + 1, "err-table-invalid-term-reference");
+                                    }
+
+                                    i++; // Skip past closing bracket
+                                    break;
+                                }
+                            }
+                            break;
+                        }
                         case '\\':
+                        {
+                            if (white.Length > 0)
                             {
-                                if (white.Length > 0)
-                                {
-                                    buffer.Append(white);
-                                    white.Length = 0;
-                                }
-                                switch (c = str[i++])
-                                {
-                                    case 'n':
-                                        buffer.Append('\n');
-                                        continue;
-                                    case 'r':
-                                        buffer.Append('\r');
-                                        continue;
-                                    case 't':
-                                        buffer.Append('\t');
-                                        continue;
-                                    case 'v':
-                                        buffer.Append('\v');
-                                        continue;
-                                    case 'f':
-                                        buffer.Append('\f');
-                                        continue;
-                                    case 'b':
-                                        buffer.Append('\b');
-                                        continue;
-                                    case 's':
-                                        buffer.Append(' ');
-                                        continue;
-                                    case 'u':
-                                        {
-                                            if (i + 4 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append((char)codePoint);
-                                            i += 4;
-                                            continue;
-                                        }
-                                    case 'U':
-                                        {
-                                            if (i + 8 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append(high).Append(low);
-                                            i += 8;
-                                            continue;
-                                        }
-                                    default:
-                                        buffer.Append(c);
-                                        continue;
-                                }
-                                continue;
+                                buffer.Append(white);
+                                white.Length = 0;
                             }
+                            switch (c = str[i++])
+                            {
+                                case 'n':
+                                    buffer.Append('\n');
+                                    continue;
+                                case 'r':
+                                    buffer.Append('\r');
+                                    continue;
+                                case 't':
+                                    buffer.Append('\t');
+                                    continue;
+                                case 'v':
+                                    buffer.Append('\v');
+                                    continue;
+                                case 'f':
+                                    buffer.Append('\f');
+                                    continue;
+                                case 'b':
+                                    buffer.Append('\b');
+                                    continue;
+                                case 's':
+                                    buffer.Append(' ');
+                                    continue;
+                                case 'u':
+                                {
+                                    if (i + 4 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                    if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
+                                        throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                    buffer.Append((char)codePoint);
+                                    i += 4;
+                                    continue;
+                                }
+                                case 'U':
+                                {
+                                    if (i + 8 > len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                    if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
+                                        throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                    buffer.Append(high).Append(low);
+                                    i += 8;
+                                    continue;
+                                }
+                                default:
+                                    buffer.Append(c);
+                                    continue;
+                            }
+                            continue;
+                        }
                         case ',':
                             if (t >= terms.Length)
                                 throw new RantTableLoadException(origin, line, i, "err-table-too-many-terms", terms.Length, t);
@@ -534,9 +524,7 @@ namespace Rant.Vocabulary
                             break;
                         default:
                             if (char.IsWhiteSpace(c))
-                            {
                                 white.Append(c);
-                            }
                             else
                             {
                                 if (white.Length > 0)
@@ -548,6 +536,7 @@ namespace Rant.Vocabulary
                             }
                             continue;
                     }
+                }
 
                 done:
 
@@ -561,14 +550,10 @@ namespace Rant.Vocabulary
                 // Add classes from template
                 if (activeTemplate != null)
                 {
-                    foreach(var cl in activeTemplate.GetRequiredClasses())
-                    {
+                    foreach (string cl in activeTemplate.GetRequiredClasses())
                         result.AddClass(cl, false);
-                    }
-                    foreach (var cl in activeTemplate.GetOptionalClasses())
-                    {
+                    foreach (string cl in activeTemplate.GetOptionalClasses())
                         result.AddClass(cl, true);
-                    }
                 }
             }
 
@@ -594,6 +579,7 @@ namespace Rant.Vocabulary
                 {
                     if (++i >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
                     while (i < len)
+                    {
                         switch (c = str[i++])
                         {
                             case '\"':
@@ -627,25 +613,23 @@ namespace Rant.Vocabulary
                                         buffer.Append(' ');
                                         continue;
                                     case 'u':
-                                        {
-                                            if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append((char)codePoint);
-                                            i += 4;
-                                            continue;
-                                        }
+                                    {
+                                        if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                        if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
+                                            throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                        buffer.Append((char)codePoint);
+                                        i += 4;
+                                        continue;
+                                    }
                                     case 'U':
-                                        {
-                                            if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append(high).Append(low);
-                                            i += 8;
-                                            continue;
-                                        }
+                                    {
+                                        if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                        if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
+                                            throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                        buffer.Append(high).Append(low);
+                                        i += 8;
+                                        continue;
+                                    }
                                     default:
                                         buffer.Append(c);
                                         continue;
@@ -655,6 +639,7 @@ namespace Rant.Vocabulary
                                 buffer.Append(c);
                                 break;
                         }
+                    }
                     throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
                 }
 
@@ -662,6 +647,7 @@ namespace Rant.Vocabulary
 
                 // If it isn't a string literal, simply read until a comma is reached.
                 while (i < len)
+                {
                     switch (c = str[i++])
                     {
                         case ',':
@@ -672,68 +658,64 @@ namespace Rant.Vocabulary
                             i = len;
                             return true;
                         case '\\':
+                        {
+                            if (white.Length > 0)
                             {
-                                if (white.Length > 0)
-                                {
-                                    buffer.Append(white);
-                                    white.Length = 0;
-                                }
-                                switch (c = str[i++])
-                                {
-                                    case 'n':
-                                        buffer.Append('\n');
-                                        continue;
-                                    case 'r':
-                                        buffer.Append('\r');
-                                        continue;
-                                    case 't':
-                                        buffer.Append('\t');
-                                        continue;
-                                    case 'v':
-                                        buffer.Append('\v');
-                                        continue;
-                                    case 'f':
-                                        buffer.Append('\f');
-                                        continue;
-                                    case 'b':
-                                        buffer.Append('\b');
-                                        continue;
-                                    case 's':
-                                        buffer.Append(' ');
-                                        continue;
-                                    case 'u':
-                                        {
-                                            if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            ushort codePoint;
-                                            if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append((char)codePoint);
-                                            i += 4;
-                                            continue;
-                                        }
-                                    case 'U':
-                                        {
-                                            if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
-                                            char high, low;
-                                            if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out high, out low))
-                                                throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
-                                            buffer.Append(high).Append(low);
-                                            i += 8;
-                                            continue;
-                                        }
-                                    default:
-                                        buffer.Append(c);
-                                        continue;
-                                }
-                                continue;
+                                buffer.Append(white);
+                                white.Length = 0;
                             }
+                            switch (c = str[i++])
+                            {
+                                case 'n':
+                                    buffer.Append('\n');
+                                    continue;
+                                case 'r':
+                                    buffer.Append('\r');
+                                    continue;
+                                case 't':
+                                    buffer.Append('\t');
+                                    continue;
+                                case 'v':
+                                    buffer.Append('\v');
+                                    continue;
+                                case 'f':
+                                    buffer.Append('\f');
+                                    continue;
+                                case 'b':
+                                    buffer.Append('\b');
+                                    continue;
+                                case 's':
+                                    buffer.Append(' ');
+                                    continue;
+                                case 'u':
+                                {
+                                    if (i + 4 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                    if (!ushort.TryParse(str.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ushort codePoint))
+                                        throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                    buffer.Append((char)codePoint);
+                                    i += 4;
+                                    continue;
+                                }
+                                case 'U':
+                                {
+                                    if (i + 8 >= len) throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-escape");
+                                    if (!Util.TryParseSurrogatePair(str.Substring(i, 8), out char high, out char low))
+                                        throw new RantTableLoadException(origin, line, i + 1, "err-table-unrecognized-codepoint");
+                                    buffer.Append(high).Append(low);
+                                    i += 8;
+                                    continue;
+                                }
+                                default:
+                                    buffer.Append(c);
+                                    continue;
+                            }
+                            continue;
+                        }
                         case '\"':
                             throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
                         default:
                             if (char.IsWhiteSpace(c))
-                            {
                                 white.Append(c);
-                            }
                             else
                             {
                                 if (white.Length > 0)
@@ -745,6 +727,7 @@ namespace Rant.Vocabulary
                             }
                             continue;
                     }
+                }
 
                 result = new Argument(start, buffer.ToString());
                 return true;

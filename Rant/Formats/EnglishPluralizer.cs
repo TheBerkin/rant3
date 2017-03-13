@@ -31,14 +31,14 @@ using Rant.Core.Utilities;
 
 namespace Rant.Formats
 {
-	/// <summary>
-	/// Pluralizer for English nouns.
-	/// </summary>
-	public sealed class EnglishPluralizer : Pluralizer
-	{
-		private static readonly HashSet<char> consonants =
-			new HashSet<char>(new[]
-				{ 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' });
+    /// <summary>
+    /// Pluralizer for English nouns.
+    /// </summary>
+    public sealed class EnglishPluralizer : Pluralizer
+    {
+        private static readonly HashSet<char> consonants =
+            new HashSet<char>(new[]
+                { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' });
 
 		private static readonly HashSet<char> hardConsonants =
 			new HashSet<char>(new[] { 'j', 's', 'x', 'z' });
@@ -95,44 +95,44 @@ namespace Rant.Formats
 				{ "matrix", "matrices" }
 			};
 
-		private static readonly HashSet<string> ignore = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
-		{
-			"deer",
-			"fish",
-			"means",
-			"offspring",
-			"series",
-			"sheep",
-			"species",
-			"trout",
-			"bison",
-			"buffalo",
-			"moose",
-			"pike",
-			"plankton",
-			"salmon",
-			"squid",
-			"swine",
-			"swiss",
-			"chinese"
-		};
+        private static readonly HashSet<string> ignore = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            "deer",
+            "fish",
+            "means",
+            "offspring",
+            "series",
+            "sheep",
+            "species",
+            "trout",
+            "bison",
+            "buffalo",
+            "moose",
+            "pike",
+            "plankton",
+            "salmon",
+            "squid",
+            "swine",
+            "swiss",
+            "chinese"
+        };
 
-		/// <summary>
-		/// Determines the plural form of the specified English noun.
-		/// </summary>
-		/// <param name="input">The singular form of the noun to pluralize.</param>
-		/// <returns></returns>
-		public override string Pluralize(string input)
-		{
-			if (Util.IsNullOrWhiteSpace(input)) return input;
-			input = input.Trim().ToLowerInvariant();
-			int l = input.Length;
-			if (l == 1) return input.ToUpperInvariant() + "'s";
-			if (ignore.Contains(input)) return input;
-			string result;
-			if (irregulars.TryGetValue(input, out result)) return result;
-			if ((result = irregulars.Keys.FirstOrDefault(w => input.EndsWith(w))) != null)
-				return input.Substring(0, l - result.Length) + irregulars[result];
+        /// <summary>
+        /// Determines the plural form of the specified English noun.
+        /// </summary>
+        /// <param name="input">The singular form of the noun to pluralize.</param>
+        /// <returns></returns>
+        public override string Pluralize(string input)
+        {
+            if (Util.IsNullOrWhiteSpace(input)) return input;
+            input = input.Trim().ToLowerInvariant();
+            int l = input.Length;
+            if (l == 1) return input.ToUpperInvariant() + "'s";
+            if (ignore.Contains(input)) return input;
+            string result;
+            if (irregulars.TryGetValue(input, out result)) return result;
+            if ((result = irregulars.Keys.FirstOrDefault(w => input.EndsWith(w))) != null)
+                return input.Substring(0, l - result.Length) + irregulars[result];
 
 			if (input.EndsWith("ff")) return input + "s";
 
@@ -149,14 +149,14 @@ namespace Rant.Formats
 				if (input.EndsWith("y")) return input.Substring(0, l - 1) + "ies";
 			}
 
-			// Plurals of words ending in "man" end in "men"
-			if (input.EndsWith("man")) return input.Substring(0, l - 2) + "en";
+            // Plurals of words ending in "man" end in "men"
+            if (input.EndsWith("man")) return input.Substring(0, l - 2) + "en";
 
 			// Add -es to words ending in a hard consonant or fricative
 			if (input.EndsWith("ch") || input.EndsWith("sh") || hardConsonants.Contains(input[l - 1])) return input + "es";
 
-			// Default
-			return input + "s";
-		}
-	}
+            // Default
+            return input + "s";
+        }
+    }
 }
