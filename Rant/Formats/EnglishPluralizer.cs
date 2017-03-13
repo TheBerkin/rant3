@@ -41,26 +41,25 @@ namespace Rant.Formats
 				{ 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' });
 
 		private static readonly HashSet<char> hardConsonants =
-			new HashSet<char>(new[] { 'b', 'c', 'd', 'f', 'g', 'j', 'm', 'q', 's', 'v', 'x', 'z' });
+			new HashSet<char>(new[] { 'j', 's', 'x', 'z' });
+
+		private static readonly HashSet<string> compounds =
+			new HashSet<string>(new[] {
+				" of staff",
+				"-in-law"
+			});
 
 		private static readonly Dictionary<string, string> irregulars =
 			new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
 			{
 				{ "man", "men" },
+				{ "safe", "safes" },
 				{ "foot", "feet" },
 				{ "tooth", "teeth" },
 				{ "antenna", "antennae" },
 				{ "thesis", "theses" },
 				{ "axis", "axes" },
 				{ "basis", "bases" },
-				{ "leaf", "leaves" },
-				{ "calf", "calves" },
-				{ "knife", "knives" },
-				{ "life", "lives" },
-				{ "dwarf", "dwarves" },
-				{ "wolf", "wolves" },
-				{ "hoof", "hooves" },
-				{ "elf", "elves" },
 				{ "goose", "geese" },
 				{ "louse", "lice" },
 				{ "mouse", "mice" },
@@ -73,6 +72,8 @@ namespace Rant.Formats
 				{ "criterion", "criteria" },
 				{ "passerby", "passersby" },
 				{ "ox", "oxen" },
+				{ "fox", "foxes" },
+				{ "piano", "pianos" },
 				{ "alumnus", "alumni" },
 				{ "cactus", "cacti" },
 				{ "fungus", "fungi" },
@@ -80,7 +81,18 @@ namespace Rant.Formats
 				{ "nucleus", "nuclei" },
 				{ "radius", "radii" },
 				{ "stimulus", "stimuli" },
-				{ "child", "children" }
+				{ "child", "children" },
+				{ "pro", "pros" },
+				{ "zero", "zeros" },
+				{ "photo", "photos" },
+				{ "kimono", "kimonos" },
+				{ "canto", "cantos" },
+				{ "hetero", "heteros" },
+				{ "crisis", "crises" },
+				{ "testis", "testes" },
+				{ "nemesis", "nemeses" },
+				{ "genesis", "geneses" },
+				{ "matrix", "matrices" }
 			};
 
 		private static readonly HashSet<string> ignore = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
@@ -122,19 +134,25 @@ namespace Rant.Formats
 			if ((result = irregulars.Keys.FirstOrDefault(w => input.EndsWith(w))) != null)
 				return input.Substring(0, l - result.Length) + irregulars[result];
 
+			if (input.EndsWith("ff")) return input + "s";
+
+			if (input[l - 1] == 'f') return input.Substring(0, l - 1) + "ves";
+
+			if (input.EndsWith("fe")) return input.Substring(0, l - 2) + "ves";
+
 			if (consonants.Contains(input[l - 2]))
 			{
 				// With nouns ending in o preceded by a consonant, the plural in many cases is spelled by adding -es...
 				if (input.EndsWith("o")) return input + "es";
 
 				// Nouns ending in a y preceded by a consonant usually drop the y and add -ies...
-				if (input.EndsWith("y") || input.EndsWith("quy")) return input.Substring(0, l - 1) + "ies";
+				if (input.EndsWith("y")) return input.Substring(0, l - 1) + "ies";
 			}
 
 			// Plurals of words ending in "man" end in "men"
 			if (input.EndsWith("man")) return input.Substring(0, l - 2) + "en";
 
-			// Add -es to words ending in a hard consonant
+			// Add -es to words ending in a hard consonant or fricative
 			if (input.EndsWith("ch") || input.EndsWith("sh") || hardConsonants.Contains(input[l - 1])) return input + "es";
 
 			// Default
