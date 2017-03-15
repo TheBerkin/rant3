@@ -87,7 +87,7 @@ namespace Rant
             set
             {
                 if (!IsValidPatternName(value))
-                    throw new ArgumentException($"Invalid pattern name: '{value ?? "<null>"}'");
+                    throw new ArgumentException(GetString("err-bad-pattern-name", value ?? "<null>"));
                 _name = string.Join("/",
                     value.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray());
             }

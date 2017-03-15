@@ -277,14 +277,21 @@ namespace Rant.Core.Compiler.Parsing
                         // match
                         if (reader.PeekToken().Type == R.Equal)
                         {
-                            if (carrierType == CarrierComponentType.Associative)
-                                carrierType = CarrierComponentType.MatchAssociative;
-                            else if (carrierType == CarrierComponentType.Dissociative)
-                                carrierType = CarrierComponentType.MatchDissociative;
-                            else if (carrierType == CarrierComponentType.Divergent)
-                                carrierType = CarrierComponentType.MatchDivergent;
-                            else if (carrierType == CarrierComponentType.Relational)
-                                carrierType = CarrierComponentType.MatchRelational;
+                            switch (carrierType)
+                            {
+                                case CarrierComponentType.Associative:
+                                    carrierType = CarrierComponentType.MatchAssociative;
+                                    break;
+                                case CarrierComponentType.Dissociative:
+                                    carrierType = CarrierComponentType.MatchDissociative;
+                                    break;
+                                case CarrierComponentType.Divergent:
+                                    carrierType = CarrierComponentType.MatchDivergent;
+                                    break;
+                                case CarrierComponentType.Relational:
+                                    carrierType = CarrierComponentType.MatchRelational;
+                                    break;
+                            }
                             reader.ReadToken();
                         }
 

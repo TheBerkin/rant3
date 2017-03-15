@@ -30,6 +30,7 @@ using System.Linq;
 using Rant.Core;
 using Rant.Core.IO.Bson;
 using Rant.Core.Utilities;
+using Rant.Localization;
 using Rant.Resources;
 using Rant.Vocabulary.Querying;
 using Rant.Vocabulary.Utilities;
@@ -61,8 +62,8 @@ namespace Rant.Vocabulary
         public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            if (termsPerEntry <= 0) throw new ArgumentException("Terms per entry must be greater than zero.");
-            if (!Util.ValidateName(name)) throw new ArgumentException($"Invalid table name: '{name}'");
+            if (termsPerEntry <= 0) throw new ArgumentException(Txtres.GetString("err-bad-term-count"));
+            if (!Util.ValidateName(name)) throw new ArgumentException(Txtres.GetString("err-invalid-tablename", name));
             if (hidden != null) _hidden = hidden;
             TermsPerEntry = termsPerEntry;
             Name = name;

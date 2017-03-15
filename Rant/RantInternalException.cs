@@ -25,6 +25,8 @@
 
 using System;
 
+using Rant.Localization;
+
 namespace Rant
 {
     /// <summary>
@@ -34,17 +36,17 @@ namespace Rant
     public sealed class RantInternalException : Exception
     {
         internal RantInternalException()
-            : base("An internal error has occurred. This is often caused by a bug in Rant.")
+            : base(Txtres.GetString("err-internal-error"))
         {
         }
 
         internal RantInternalException(string message)
-            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message}.")
+            : base(Txtres.GetString("err-internal-error-msg", message))
         {
         }
 
         internal RantInternalException(string message, Exception inner)
-            : base($"An internal error has occurred. This is often caused by a bug in Rant. Message: {message}.", inner)
+            : base(Txtres.GetString("err-internal-error-msg", message), inner)
         {
         }
     }
