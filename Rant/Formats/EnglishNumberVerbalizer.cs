@@ -76,7 +76,7 @@ namespace Rant.Formats
 				}
 				else if ((gn > 1 && gv != 0) || gn == 1)
 				{
-					if (gn > 0 && gv < 100) sb.Append("and ");
+					if (gn > 1 && gv < 100) sb.Append("and ");
 					// Print last three digits
 					sb.Append(cache[gv]);
 				}

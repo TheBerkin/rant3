@@ -9,7 +9,8 @@ namespace Rant.Formats
 {
 	public sealed class GermanNumberVerbalizer : NumberVerbalizer
 	{
-		private readonly string[] thousandPowers = { "tausend", "million", "milliarde", "billion", "billiarde", "trillion", "trilliarde", "quadrillion", "quadrilliarde" };
+		private readonly string[] thousandPowers = { "tausend", "eine Million ", "eine Milliarde ", "eine Billion ", "eine Billiarde ", "eine Trillion ", "eine Trilliarde ", "eine Quadrillion ", "eine Quadrilliarde " };
+		private readonly string[] thousandPowersPl = { "tausend", " Millionen ", " Milliarden ", " Billionen ", " Billiarden ", " Trillionen ", " Trilliarden ", " Quadrillionen ", " Quadrilliarden " };
 
 		private static readonly string[] cache;
 
@@ -71,9 +72,18 @@ namespace Rant.Formats
 				int gv = Int32.Parse(group);
 				if (p > 0)
 				{
-					// Print powers of thousand
-					if (gv > 1) sb.Append(cache[gv]);
-					if (gv > 0) sb.Append(thousandPowers[p - 1]);
+					if (gv == 1	 && p > 1)
+					{
+						// One million +
+						sb.Append(thousandPowers[p - 1]);
+					}
+					else
+					{
+						// Print powers of thousand
+						if (gv > 1) sb.Append(cache[gv]);
+						if (gv > 0) sb.Append(thousandPowersPl[p - 1]);						
+					}
+					
 				}
 				else if ((gn > 1 && gv != 0) || gn == 1)
 				{
@@ -81,7 +91,7 @@ namespace Rant.Formats
 					sb.Append(cache[gv]);
 				}
 			}
-			return sb.ToString();
+			return sb.ToString().Trim();
 		}
 	}
 }
