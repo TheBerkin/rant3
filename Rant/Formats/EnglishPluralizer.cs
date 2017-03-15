@@ -91,8 +91,7 @@ namespace Rant.Formats
 				{ "crisis", "crises" },
 				{ "testis", "testes" },
 				{ "nemesis", "nemeses" },
-				{ "genesis", "geneses" },
-				{ "matrix", "matrices" }
+				{ "genesis", "geneses" }
 			};
 
         private static readonly HashSet<string> ignore = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)

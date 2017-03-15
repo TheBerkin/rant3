@@ -37,7 +37,7 @@ namespace Rant.Core.Output
         // Engine
         private readonly Sandbox sandbox;
         // Targets
-        private readonly Dictionary<string, OutputChainBuffer> targets = new Dictionary<string, OutputChainBuffer>();
+        private readonly Dictionary<object, OutputChainBuffer> targets = new Dictionary<object, OutputChainBuffer>();
 
         public OutputChain(Sandbox sb, string name)
         {
@@ -50,7 +50,7 @@ namespace Rant.Core.Output
         // Buffer endpoint references
 
         // Public
-        public OutputChainBuffer First { get; }
+        public OutputChainBuffer First { get; private set; }
         public OutputChainBuffer Last { get; private set; }
         public ChannelVisibility Visibility { get; set; } = ChannelVisibility.Public;
         public string Name { get; }
@@ -60,29 +60,39 @@ namespace Rant.Core.Output
             return Last = new OutputChainBuffer(sandbox, Last);
         }
 
-        public void InsertTarget(string targetName)
-        {
-            // Check if the buffer was already created
-            OutputChainBuffer buffer;
-            if (!targets.TryGetValue(targetName, out buffer))
-                buffer = targets[targetName] = AddBuffer();
-            else
-                Last = new OutputChainBuffer(sandbox, Last, buffer);
+		public void AddBufferBefore(int bufferInvIndex, string value)
+		{
+			OutputChainBuffer bufReference = Last;
+			for(int i = 0; i < bufferInvIndex; i++)
+			{
+				bufReference = bufReference.Prev;
+			}
+			var bufInsert = new OutputChainBuffer(sandbox, bufReference.Prev);
+			if (bufInsert.Next == First) First = bufInsert;
+			bufInsert.Print(value);
+		}
 
-            // Then add an empty buffer after it so we don't start printing onto the target.
-            AddBuffer();
+        public void InsertTarget(object targetName)
+        {
+			// Check if the buffer was already created
+			if (!targets.TryGetValue(targetName, out OutputChainBuffer buffer))
+				buffer = targets[targetName] = AddBuffer();
+			else
+				Last = new OutputChainBuffer(sandbox, Last, buffer);
+
+			// Then add an empty buffer after it so we don't start printing onto the target.
+			AddBuffer();
         }
 
-        public void PrintToTarget(string targetName, string value)
+        public void PrintToTarget(object targetName, object value)
         {
-            OutputChainBuffer buffer;
-            if (!targets.TryGetValue(targetName, out buffer))
-                buffer = targets[targetName] = new OutputChainBuffer(sandbox, null);
+			if (!targets.TryGetValue(targetName, out OutputChainBuffer buffer))
+				buffer = targets[targetName] = new OutputChainBuffer(sandbox, null);
 
-            buffer.Print(value);
+			buffer.Print(value);
         }
 
-        public void ClearTarget(string targetName)
+        public void ClearTarget(object targetName)
         {
             OutputChainBuffer buffer;
             if (targets.TryGetValue(targetName, out buffer))

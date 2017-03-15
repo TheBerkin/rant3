@@ -57,7 +57,8 @@ namespace Rant.Core.Output
 
             if (prev != null)
             {
-                prev.Next = this;
+				if (prev.Next != null) prev.Next.Prev = this;
+				prev.Next = this;
                 _caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
                 NumberFormatter.BinaryFormat = prev.NumberFormatter.BinaryFormat;
                 NumberFormatter.BinaryFormatDigits = prev.NumberFormatter.BinaryFormatDigits;
@@ -100,7 +101,7 @@ namespace Rant.Core.Output
         protected bool PrintedSinceCapsChange { get; private set; } = false;
         public NumberFormatter NumberFormatter { get; } = new NumberFormatter();
         public OutputChainBuffer Next { get; private set; }
-        public OutputChainBuffer Prev { get; }
+        public OutputChainBuffer Prev { get; private set; }
         public char LastChar => _buffer.Length > 0 ? _buffer[_buffer.Length - 1] : '\0';
         public char FirstChar => _buffer.Length > 0 ? _buffer[0] : '\0';
         public int Length => _buffer.Length;

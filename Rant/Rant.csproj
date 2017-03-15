@@ -176,9 +176,11 @@
     <Compile Include="Core\Compiler\LineCol.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockManager.cs" />
+    <Compile Include="Core\Constructs\QueryBuilder.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
     <Compile Include="Core\Formatting\Accent.cs" />
     <Compile Include="Core\Formatting\Unicode.cs" />
+    <Compile Include="Core\Sandbox.State.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
     <Compile Include="Metadata\IRantFunctionGroup.cs" />

@@ -50,65 +50,7 @@ namespace Rant.Core.Compiler.Syntax
 
         public override IEnumerator<RST> Run(Sandbox sb)
         {
-            if (sb.Engine.Dictionary == null)
-            {
-                sb.Print(Txtres.GetString("missing-table"));
-                yield break;
-            }
-            // carrier erase query
-            if (_query.Name == null)
-            {
-                foreach (CarrierComponentType type in Enum.GetValues(typeof(CarrierComponentType)))
-                foreach (string name in _query.Carrier.GetComponentsOfType(type))
-                    sb.CarrierState.RemoveType(type, name);
-                yield break;
-            }
-
-            var result = sb.Engine.Dictionary.Query(sb, _query, sb.CarrierState);
-
-            if (result == null)
-                sb.Print("[No Match]");
-            else
-            {
-                if (result.IsSplit)
-                {
-                    if (_query.Complement == null)
-                    {
-                        sb.Print(result.Value.Substring(0, result.ValueSplitIndex));
-                        sb.Print(' ');
-                        sb.Print(result.Value.Substring(result.ValueSplitIndex));
-                    }
-                    else if (result.ValueSplitIndex == 0) // Pushes complement to the left of the query result
-                    {
-                        yield return _query.Complement;
-                        sb.Print(' ');
-                        sb.Print(result.Value);
-                    }
-                    else if (result.ValueSplitIndex == result.Value.Length)
-                    {
-                        sb.Print(result.Value);
-                        sb.Print(' ');
-                        yield return _query.Complement;
-                    }
-                    else // Complement goes inside phrase
-                    {
-                        sb.Print(result.Value.Substring(0, result.ValueSplitIndex));
-                        sb.Print(' ');
-                        yield return _query.Complement;
-                        sb.Print(' ');
-                        sb.Print(result.Value.Substring(result.ValueSplitIndex));
-                    }
-                }
-                else
-                {
-                    sb.Print(result.Value);
-                    if (_query.Complement != null)
-                    {
-                        sb.Print(' '); // TODO: Pull phrasal separator from format info
-                        yield return _query.Complement;
-                    }
-                }
-            }
+			return _query.Run(sb);
         }
 
         protected override IEnumerator<RST> Serialize(EasyWriter output)

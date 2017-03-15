@@ -37,6 +37,7 @@ using Rant.Core.Output;
 using Rant.Core.Utilities;
 using Rant.Metadata;
 using Rant.Vocabulary.Utilities;
+using Rant.Vocabulary.Querying;
 
 // ReSharper disable UnusedMember.Local
 
@@ -910,5 +911,65 @@ namespace Rant.Core.Framework
         [RantDescription("Prints a Unicode character given its official Unicode-designated name (e.g. 'LATIN CAPITAL LETTER R' -> 'R').")]
         private static void Character(Sandbox sb,
             [RantDescription("The name of the character to print (case-insensitive).")] string name) => sb.Print(Unicode.GetByName(name));
-    }
+
+		[RantFunction("rcc")]
+		[RantDescription("Resets the specified carrier components.")]
+		private static void ResetCarrier(Sandbox sb, 
+			[RantDescription("The list of carrier component identifiers to reset.")]
+			params string[] ids)
+		{
+			foreach(var id in ids)
+			{
+				if (String.IsNullOrWhiteSpace(id)) continue;
+				sb.CarrierState.DeleteAssociation(id);
+				sb.CarrierState.DeleteMatch(id);
+				sb.CarrierState.DeleteRhyme(id);
+				sb.CarrierState.DeleteUnique(id);
+			}
+		}
+
+		[RantFunction("query")]
+		private static IEnumerator<RST> QueryRun(Sandbox sb)
+		{
+			return sb.QueryBuilder.CurrentQuery?.Run(sb);
+		}
+
+		[RantFunction("qname")]
+		private static void QueryName(Sandbox sb, string id, string name)
+		{
+			sb.QueryBuilder.GetQuery(id).Name = name;
+		}
+
+		[RantFunction("qsub")]
+		private static void QuerySubtype(Sandbox sb, string id, string name)
+		{
+			sb.QueryBuilder.GetQuery(id).Subtype = name;
+		}
+
+		[RantFunction("qcf")]
+		private static void QueryClassFilterPositive(Sandbox sb, string id, params string[] classes)
+		{
+			Query q;
+			ClassFilter cf;
+			cf = (q = sb.QueryBuilder.GetQuery(id)).GetFilters().FirstOrDefault(f => f is ClassFilter) as ClassFilter;
+			if (cf == null) q.AddFilter(cf = new ClassFilter());
+			foreach(var cl in classes)
+			{
+				cf.AddRule(new ClassFilterRule(cl, true));
+			}
+		}
+
+		[RantFunction("qcfn")]
+		private static void QueryClassFilterNegative(Sandbox sb, string id, params string[] classes)
+		{
+			Query q;
+			ClassFilter cf;
+			cf = (q = sb.QueryBuilder.GetQuery(id)).GetFilters().FirstOrDefault(f => f is ClassFilter) as ClassFilter;
+			if (cf == null) q.AddFilter(cf = new ClassFilter());
+			foreach (var cl in classes)
+			{
+				cf.AddRule(new ClassFilterRule(cl, false));
+			}
+		}
+	}
 }

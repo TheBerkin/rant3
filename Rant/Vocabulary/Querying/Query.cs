@@ -26,6 +26,9 @@
 using System.Collections.Generic;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core;
+using Rant.Localization;
+using System;
 
 namespace Rant.Vocabulary.Querying
 {
@@ -34,6 +37,8 @@ namespace Rant.Vocabulary.Querying
     /// </summary>
     internal sealed class Query
     {
+		private const string PHRASAL_SEP = " ";
+
         private readonly HashSet<Filter> _filters = new HashSet<Filter>();
 
         /// <summary>
@@ -84,5 +89,69 @@ namespace Rant.Vocabulary.Querying
         {
             foreach (var filter in _filters) yield return filter;
         }
+
+		internal IEnumerator<RST> Run(Sandbox sb)
+		{
+			if (Name == null) yield break;
+			if (sb.Engine.Dictionary == null)
+			{
+				sb.Print(Txtres.GetString("missing-table"));
+				yield break;
+			}
+
+			var result = sb.Engine.Dictionary.Query(sb, this, sb.CarrierState);
+
+			if (result == null)
+			{
+				sb.Print("[No Match]");
+			}
+			else
+			{
+				if (result.IsSplit)
+				{
+					if (this.Complement == null)
+					{
+						sb.Print(result.LeftSide);
+						sb.Print(PHRASAL_SEP);
+						sb.Print(result.RightSide);
+					}
+					else if (result.ValueSplitIndex == 0) // Pushes complement to the left of the query result
+					{
+						long l = sb.SizeLimit.Value;
+						yield return this.Complement;
+						if (sb.SizeLimit.Value > l) sb.Print(PHRASAL_SEP);
+						sb.Print(result.Value);
+					}
+					else if (result.ValueSplitIndex == result.Value.Length)
+					{
+						sb.Print(result.Value);
+						long l = sb.SizeLimit.Value;
+						var t = sb.Output.InsertAnonymousTarget();
+						yield return this.Complement;
+						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, PHRASAL_SEP);
+					}
+					else // Complement goes inside phrase
+					{
+						sb.Print(result.LeftSide);
+						sb.Print(PHRASAL_SEP);
+						long l = sb.SizeLimit.Value;
+						yield return this.Complement;
+						if (sb.SizeLimit.Value > l) sb.Print(PHRASAL_SEP);
+						sb.Print(result.RightSide);
+					}
+				}
+				else
+				{
+					sb.Print(result.Value);
+					if (this.Complement != null)
+					{
+						long l = sb.SizeLimit.Value;
+						var t = sb.Output.InsertAnonymousTarget();
+						yield return this.Complement;
+						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, PHRASAL_SEP);
+					}
+				}
+			}
+		}
     }
 }

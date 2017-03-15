@@ -35,377 +35,259 @@ using Rant.Core.Constructs;
 using Rant.Core.ObjectModel;
 using Rant.Core.Output;
 using Rant.Core.Utilities;
-using Rant.Formats;
-using Rant.Resources;
 using Rant.Vocabulary.Querying;
 
 using static Rant.Localization.Txtres;
 
 namespace Rant.Core
 {
-    /// <summary>
-    /// Represents a Rant interpreter instance that produces a single output.
-    /// </summary>
-    internal class Sandbox
-    {
-        private static readonly object fallbackArgsLockObj = new object();
-        private readonly BlockManager _blockManager;
-        private readonly Stack<OutputWriter> _outputs;
-        private readonly Stopwatch _stopwatch;
-        private bool _plural = false;
-        private int _quoteLevel = 0;
+	/// <summary>
+	/// Represents a Rant interpreter instance that produces a single output.
+	/// </summary>
+	internal sealed partial class Sandbox
+	{
+		private static readonly object fallbackArgsLockObj = new object();
 
-        /// <summary>
-        /// Gets the currently loaded modules.
-        /// </summary>
-        public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
+		public Sandbox(RantEngine engine, RantProgram pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
+			RantProgramArgs args = null)
+		{
+			// Public members
+			RNG = rng;
+			StartingGen = rng.Generation;
+			Engine = engine;
+			Format = engine.Format;
+			SizeLimit = new Limit(sizeLimit);			
+			Pattern = pattern;
+			Objects = new ObjectStack(engine.Objects);
+			Blocks = new Stack<BlockState>();
+			RegexMatches = new Stack<Match>();
+			CarrierState = carrierState ?? new CarrierState();
+			SubroutineArgs = new Stack<Dictionary<string, RST>>();
+			SyncManager = new SyncManager(this);			
+			ScriptObjectStack = new Stack<object>();
+			PatternArgs = args;
 
-        /// <summary>
-        /// Modules that were loaded from packages.
-        /// </summary>
-        public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
+			// Private members
+			_blockManager = new BlockManager();
+			_stopwatch = new Stopwatch();
 
-        private bool shouldYield = false;
+			// Output initialization
+			BaseOutput = new OutputWriter(this);
+			_outputs = new Stack<OutputWriter>();
+			_outputs.Push(BaseOutput);
+		}
 
-        /// <summary>
-        /// Modules that were not loaded from code, but were provided to RantEngine by the user.
-        /// </summary>
-        public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
+		/// <summary>
+		/// Prints the specified value to the output channel stack.
+		/// </summary>
+		/// <param name="obj">The value to print.</param>
+		public void Print(object obj) => Output.Do(chain => chain.Print(obj));
 
-        public Sandbox(RantEngine engine, RantProgram pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
-            RantProgramArgs args = null)
-        {
-            Engine = engine;
-            Format = engine.Format;
-            SizeLimit = new Limit(sizeLimit);
-            BaseOutput = new OutputWriter(this);
-            _outputs = new Stack<OutputWriter>();
-            _outputs.Push(BaseOutput);
-            RNG = rng;
-            StartingGen = rng.Generation;
-            Pattern = pattern;
-            Objects = new ObjectStack(engine.Objects);
-            Blocks = new Stack<BlockState>();
-            RegexMatches = new Stack<Match>();
-            CarrierState = carrierState ?? new CarrierState();
-            SubroutineArgs = new Stack<Dictionary<string, RST>>();
-            SyncManager = new SyncManager(this);
-            _blockManager = new BlockManager();
-            ScriptObjectStack = new Stack<object>();
-            PatternArgs = args;
-            _stopwatch = new Stopwatch();
-        }
+		public void SetPlural(bool plural) => _plural = plural;
 
-        /// <summary>
-        /// Gets the engine instance to which the sandbox is bound.
-        /// </summary>
-        public RantEngine Engine { get; }
+		public bool TakePlural()
+		{
+			bool p = _plural;
+			_plural = false;
+			return p;
+		}
 
-        /// <summary>
-        /// Gets the main output channel stack.
-        /// </summary>
-        public OutputWriter BaseOutput { get; }
+		public void PrintMany(Func<char> generator, int times)
+		{
+			if (times == 1)
+			{
+				Output.Do(chain => chain.Print(generator()));
+				return;
+			}
+			var buffer = new StringBuilder();
+			for (int i = 0; i < times; i++) buffer.Append(generator());
+			Output.Do(chain => chain.Print(buffer));
+		}
 
-        /// <summary>
-        /// Gets the current output channel stack.
-        /// </summary>
-        public OutputWriter Output => _outputs.Peek();
+		public void PrintMany(Func<string> generator, int times)
+		{
+			if (times == 1)
+			{
+				Output.Do(chain => chain.Print(generator()));
+				return;
+			}
+			var buffer = new StringBuilder();
+			for (int i = 0; i < times; i++) buffer.Append(generator());
+			Output.Do(chain => chain.Print(buffer));
+		}
 
-        /// <summary>
-        /// Gets the random number generator in use by the interpreter.
-        /// </summary>
-        public RNG RNG { get; }
+		public void AddOutputWriter() => _outputs.Push(new OutputWriter(this));
 
-        /// <summary>
-        /// The starting generation of the RNG.
-        /// </summary>
-        public long StartingGen { get; }
+		public RantOutput Return() => _outputs.Pop().ToRantOutput();
 
-        /// <summary>
-        /// Gets the currently set block attributes.
-        /// </summary>
-        public BlockAttribs CurrentBlockAttribs { get; private set; } = new BlockAttribs();
+		public void IncreaseQuote() => _quoteLevel++;
 
-        /// <summary>
-        /// Gets the format used by the interpreter.
-        /// </summary>
-        public RantFormat Format { get; }
+		public void DecreaseQuote() => _quoteLevel--;
 
-        /// <summary>
-        /// Gest the object stack used by the interpreter.
-        /// </summary>
-        public ObjectStack Objects { get; }
+		public void PrintOpeningQuote()
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.OpeningPrimaryQuote : Format.OpeningSecondaryQuote));
 
-        /// <summary>
-        /// Gets the block state stack.
-        /// </summary>
-        public Stack<BlockState> Blocks { get; }
+		public void PrintClosingQuote()
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.ClosingPrimaryQuote : Format.ClosingSecondaryQuote));
 
-        /// <summary>
-        /// Gets the replacer match stack. The topmost item is the current match for the current replacer.
-        /// </summary>
-        public Stack<Match> RegexMatches { get; }
+		public void SetYield() => shouldYield = true;
 
-        /// <summary>
-        /// Gets the current query state.
-        /// </summary>
-        public CarrierState CarrierState { get; }
+		/// <summary>
+		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
+		/// </summary>
+		/// <returns></returns>
+		public BlockAttribs NextAttribs(RstBlock block)
+		{
+			var attribs = CurrentBlockAttribs;
 
-        /// <summary>
-        /// Gets the current RantPattern.
-        /// </summary>
-        public RantProgram Pattern { get; }
+			_blockManager.Add(attribs, block);
+			_blockManager.SetPrevAttribs(attribs);
 
-        public Stack<Dictionary<string, RST>> SubroutineArgs { get; }
+			switch (attribs.Persistence)
+			{
+				case AttribPersistence.Off:
+					CurrentBlockAttribs = new BlockAttribs();
+					break;
 
-        /// <summary>
-        /// Gets the synchronizer manager instance for the current Sandbox.
-        /// </summary>
-        public SyncManager SyncManager { get; }
+				case AttribPersistence.On:
+					CurrentBlockAttribs = new BlockAttribs();
+					break;
 
-        /// <summary>
-        /// Gets the size limit for the pattern.
-        /// </summary>
-        public Limit SizeLimit { get; }
+				case AttribPersistence.Once:
+					CurrentBlockAttribs = _blockManager.GetPrevious(1);
+					break;
+			}
 
-        /// <summary>
-        /// Gets the current RantAction being executed.
-        /// </summary>
-        public RST CurrentAction { get; private set; }
+			return attribs;
+		}
 
-        /// <summary>
-        /// Gets the last used timeout.
-        /// </summary>
-        public double LastTimeout { get; internal set; }
+		public RantOutput Run(double timeout, RantProgram pattern = null)
+		{
+			lock (PatternArgs ?? fallbackArgsLockObj)
+			{
+				if (pattern == null) pattern = Pattern;
+				LastTimeout = timeout;
+				long timeoutMS = (long)(timeout * 1000);
+				bool timed = timeoutMS > 0;
+				bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
+				if (!_stopwatch.IsRunning)
+				{
+					_stopwatch.Reset();
+					_stopwatch.Start();
+				}
 
-        /// <summary>
-        /// Gets the current object stack of the Richard engine.
-        /// </summary>
-        public Stack<object> ScriptObjectStack { get; }
+				ScriptObjectStack.Clear();
+				var callStack = new Stack<IEnumerator<RST>>();
+				IEnumerator<RST> action;
 
-        /// <summary>
-        /// Gets or sets the expected result for the current flag condition.
-        /// </summary>
-        public bool FlagConditionExpectedResult { get; set; }
+				// Push the AST root
+				CurrentAction = pattern.SyntaxTree;
+				callStack.Push(pattern.SyntaxTree.Run(this));
 
-        /// <summary>
-        /// Gets a collection of the flags currently being used for the flag condition.
-        /// </summary>
-        public HashSet<string> ConditionFlags { get; } = new HashSet<string>();
+			top:
+				while (callStack.Any())
+				{
+					// Get the topmost call stack item
+					action = callStack.Peek();
 
-        /// <summary>
-        /// Gets the arguments passed to the pattern.
-        /// </summary>
-        public RantProgramArgs PatternArgs { get; }
+					// Execute the node until it runs out of children
+					while (action.MoveNext())
+					{
+						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
+						{
+							throw new RantRuntimeException(pattern, action.Current.Location,
+								GetString("err-pattern-timeout", timeout));
+						}
 
-        /// <summary>
-        /// Prints the specified value to the output channel stack.
-        /// </summary>
-        /// <param name="obj">The value to print.</param>
-        public void Print(object obj) => Output.Do(chain => chain.Print(obj));
+						if (callStack.Count >= RantEngine.MaxStackSize)
+						{
+							throw new RantRuntimeException(pattern, action.Current.Location,
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
+						}
 
-        public void SetPlural(bool plural) => _plural = plural;
+						if (action.Current == null) break;
 
-        public bool TakePlural()
-        {
-            bool p = _plural;
-            _plural = false;
-            return p;
-        }
+						// Push child node onto stack and start over
+						CurrentAction = action.Current;
+						callStack.Push(CurrentAction.Run(this));
+						goto top;
+					}
 
-        public void PrintMany(Func<char> generator, int times)
-        {
-            if (times == 1)
-            {
-                Output.Do(chain => chain.Print(generator()));
-                return;
-            }
-            var buffer = new StringBuilder();
-            for (int i = 0; i < times; i++) buffer.Append(generator());
-            Output.Do(chain => chain.Print(buffer));
-        }
+					// Remove node once finished
+					callStack.Pop();
+				}
 
-        public void PrintMany(Func<string> generator, int times)
-        {
-            if (times == 1)
-            {
-                Output.Do(chain => chain.Print(generator()));
-                return;
-            }
-            var buffer = new StringBuilder();
-            for (int i = 0; i < times; i++) buffer.Append(generator());
-            Output.Do(chain => chain.Print(buffer));
-        }
+				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
 
-        public void AddOutputWriter() => _outputs.Push(new OutputWriter(this));
-        public RantOutput Return() => _outputs.Pop().ToRantOutput();
-        public void IncreaseQuote() => _quoteLevel++;
-        public void DecreaseQuote() => _quoteLevel--;
+				return Return();
+			}
+		}
 
-        public void PrintOpeningQuote()
-            => Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.OpeningPrimaryQuote : Format.OpeningSecondaryQuote));
+		public IEnumerable<RantOutput> RunSerial(double timeout, RantProgram pattern = null)
+		{
+			lock (PatternArgs ?? fallbackArgsLockObj)
+			{
+				if (pattern == null) pattern = Pattern;
+				LastTimeout = timeout;
+				long timeoutMS = (long)(timeout * 1000);
+				bool timed = timeoutMS > 0;
+				bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
+				if (!_stopwatch.IsRunning)
+				{
+					_stopwatch.Reset();
+					_stopwatch.Start();
+				}
 
-        public void PrintClosingQuote()
-            => Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.ClosingPrimaryQuote : Format.ClosingSecondaryQuote));
+				ScriptObjectStack.Clear();
+				var callStack = new Stack<IEnumerator<RST>>();
+				IEnumerator<RST> action;
 
-        /// <summary>
-        /// Dequeues the current block attribute set and returns it, queuing a new attribute set.
-        /// </summary>
-        /// <returns></returns>
-        public BlockAttribs NextAttribs(RstBlock block)
-        {
-            var attribs = CurrentBlockAttribs;
+				// Push the AST root
+				CurrentAction = pattern.SyntaxTree;
+				callStack.Push(pattern.SyntaxTree.Run(this));
 
-            _blockManager.Add(attribs, block);
-            _blockManager.SetPrevAttribs(attribs);
+			top:
+				while (callStack.Any())
+				{
+					// Get the topmost call stack item
+					action = callStack.Peek();
 
-            switch (attribs.Persistence)
-            {
-                case AttribPersistence.Off:
-                    CurrentBlockAttribs = new BlockAttribs();
-                    break;
+					// Execute the node until it runs out of children
+					while (action.MoveNext())
+					{
+						if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
+						{
+							throw new RantRuntimeException(pattern, action.Current.Location,
+								GetString("err-pattern-timeout", timeout));
+						}
 
-                case AttribPersistence.On:
-                    CurrentBlockAttribs = new BlockAttribs();
-                    break;
+						if (callStack.Count >= RantEngine.MaxStackSize)
+						{
+							throw new RantRuntimeException(pattern, action.Current.Location,
+								GetString("err-stack-overflow", RantEngine.MaxStackSize));
+						}
 
-                case AttribPersistence.Once:
-                    CurrentBlockAttribs = _blockManager.GetPrevious(1);
-                    break;
-            }
+						if (action.Current == null) break;
 
-            return attribs;
-        }
+						// Push child node onto stack and start over
+						CurrentAction = action.Current;
+						callStack.Push(CurrentAction.Run(this));
+						goto top;
+					}
 
-        public void SetYield() => shouldYield = true;
+					if (shouldYield)
+					{
+						shouldYield = false;
+						yield return Return();
+						AddOutputWriter();
+					}
 
-        public RantOutput Run(double timeout, RantProgram pattern = null)
-        {
-            lock (PatternArgs ?? fallbackArgsLockObj)
-            {
-                if (pattern == null) pattern = Pattern;
-                LastTimeout = timeout;
-                long timeoutMS = (long)(timeout * 1000);
-                bool timed = timeoutMS > 0;
-                bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
-                if (!_stopwatch.IsRunning)
-                {
-                    _stopwatch.Reset();
-                    _stopwatch.Start();
-                }
+					// Remove node once finished
+					callStack.Pop();
+				}
 
-                ScriptObjectStack.Clear();
-                var callStack = new Stack<IEnumerator<RST>>();
-                IEnumerator<RST> action;
-
-                // Push the AST root
-                CurrentAction = pattern.SyntaxTree;
-                callStack.Push(pattern.SyntaxTree.Run(this));
-
-                top:
-                while (callStack.Any())
-                {
-                    // Get the topmost call stack item
-                    action = callStack.Peek();
-
-                    // Execute the node until it runs out of children
-                    while (action.MoveNext())
-                    {
-                        if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-                        {
-                            throw new RantRuntimeException(pattern, action.Current.Location,
-                                GetString("err-pattern-timeout", timeout));
-                        }
-
-                        if (callStack.Count >= RantEngine.MaxStackSize)
-                        {
-                            throw new RantRuntimeException(pattern, action.Current.Location,
-                                GetString("err-stack-overflow", RantEngine.MaxStackSize));
-                        }
-
-                        if (action.Current == null) break;
-
-                        // Push child node onto stack and start over
-                        CurrentAction = action.Current;
-                        callStack.Push(CurrentAction.Run(this));
-                        goto top;
-                    }
-
-                    // Remove node once finished
-                    callStack.Pop();
-                }
-
-                if (!stopwatchAlreadyRunning) _stopwatch.Stop();
-
-                return Return();
-            }
-        }
-
-        public IEnumerable<RantOutput> RunSerial(double timeout, RantProgram pattern = null)
-        {
-            lock (PatternArgs ?? fallbackArgsLockObj)
-            {
-                if (pattern == null) pattern = Pattern;
-                LastTimeout = timeout;
-                long timeoutMS = (long)(timeout * 1000);
-                bool timed = timeoutMS > 0;
-                bool stopwatchAlreadyRunning = _stopwatch.IsRunning;
-                if (!_stopwatch.IsRunning)
-                {
-                    _stopwatch.Reset();
-                    _stopwatch.Start();
-                }
-
-                ScriptObjectStack.Clear();
-                var callStack = new Stack<IEnumerator<RST>>();
-                IEnumerator<RST> action;
-
-                // Push the AST root
-                CurrentAction = pattern.SyntaxTree;
-                callStack.Push(pattern.SyntaxTree.Run(this));
-
-                top:
-                while (callStack.Any())
-                {
-                    // Get the topmost call stack item
-                    action = callStack.Peek();
-
-                    // Execute the node until it runs out of children
-                    while (action.MoveNext())
-                    {
-                        if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
-                        {
-                            throw new RantRuntimeException(pattern, action.Current.Location,
-                                GetString("err-pattern-timeout", timeout));
-                        }
-
-                        if (callStack.Count >= RantEngine.MaxStackSize)
-                        {
-                            throw new RantRuntimeException(pattern, action.Current.Location,
-                                GetString("err-stack-overflow", RantEngine.MaxStackSize));
-                        }
-
-                        if (action.Current == null) break;
-
-                        // Push child node onto stack and start over
-                        CurrentAction = action.Current;
-                        callStack.Push(CurrentAction.Run(this));
-                        goto top;
-                    }
-
-                    if (shouldYield)
-                    {
-                        shouldYield = false;
-                        yield return Return();
-                        AddOutputWriter();
-                    }
-
-                    // Remove node once finished
-                    callStack.Pop();
-                }
-
-                if (!stopwatchAlreadyRunning) _stopwatch.Stop();
-            }
-        }
-    }
+				if (!stopwatchAlreadyRunning) _stopwatch.Stop();
+			}
+		}
+	}
 }

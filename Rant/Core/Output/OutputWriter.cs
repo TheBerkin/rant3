@@ -91,9 +91,8 @@ namespace Rant.Core.Output
 
         public int GetChannelLength(string channelName)
         {
-            OutputChain c;
-            if (!chains.TryGetValue(channelName, out c)) return 0;
-            var buffer = c.First;
+			if (!chains.TryGetValue(channelName, out OutputChain c)) return 0;
+			var buffer = c.First;			
             int length = 0;
             do
             {
@@ -105,8 +104,18 @@ namespace Rant.Core.Output
         public void Capitalize(Capitalization caps) => Do(chain => chain.Last.Caps = caps);
         public void Print(string value) => Do(chain => chain.Print(value));
         public void Print(object obj) => Do(chain => chain.Print(obj));
-        public void InsertTarget(string targetName) => Do(chain => chain.InsertTarget(targetName));
-        public void PrintToTarget(string targetName, string value) => Do(chain => chain.PrintToTarget(targetName, value));
+        public void InsertTarget(object targetName) => Do(chain => chain.InsertTarget(targetName));
+        public void PrintToTarget(object targetName, string value) => Do(chain => chain.PrintToTarget(targetName, value));
+		public object InsertAnonymousTarget()
+		{
+			var obj = new object();
+			Do(chain => chain.InsertTarget(obj));
+			return obj;
+		}
+		public void BackPrint(int invIndex, string value)
+		{
+			Do(chain => chain.AddBufferBefore(invIndex, value));
+		}
         public RantOutput ToRantOutput() => new RantOutput(sandbox.RNG.Seed, sandbox.StartingGen, chains.Values);
     }
 }

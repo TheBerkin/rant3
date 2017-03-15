@@ -27,19 +27,21 @@ namespace Rant.Core.Utilities
 {
     internal sealed class Limit
     {
-        private int _value;
+        private long _value;
 
-        public Limit(int max)
+        public Limit(long max)
         {
             Maximum = max;
             _value = 0;
         }
 
-        public int Maximum { get; }
+        public long Maximum { get; }
+
+		public long Value => _value;
 
         public bool Accumulate(int value)
         {
-            return Maximum > 0 && (_value += value) > Maximum;
+            return (_value += value) > Maximum && Maximum > 0;
         }
     }
 }

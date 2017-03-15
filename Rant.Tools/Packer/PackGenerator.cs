@@ -24,7 +24,7 @@ namespace Rant.Tools.Packer
 			Console.WriteLine("    - Creates a package from the specified directories.");
 			Console.WriteLine("      -out: Specifies the output path for the package. Optional if rantpkg.json specifies an output path.");
 			Console.WriteLine("  Options:");
-			Console.WriteLine("    --compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
+			Console.WriteLine("    -compression [true|false]: Enable or disable LZMA compression. Defaults to true.");
 			Console.WriteLine("    -string-table [mode]: Set the string table mode. 0 = none, 1 = keys, 2 = keys and values.");
 			Console.WriteLine("                          Defaults to keys.");
 			Console.WriteLine("    -version [version]: Overrides the version in rantpkg.json.");
@@ -71,11 +71,19 @@ namespace Rant.Tools.Packer
 				pkg.AddDependency(dep);
 			}
 
-			if (!string.IsNullOrWhiteSpace(info.OutputPath))
+			// -out property overrides rantpkg.json's output path
+			if (!string.IsNullOrWhiteSpace(CmdLine.Property("out")))
+			{
+				outputPath = Path.Combine(CmdLine.Property("out"), $"{pkg.ID}-{pkg.Version}.rantpkg");
+				Directory.CreateDirectory(CmdLine.Property("out"));
+			}
+			// Otherwise, use rantpkg.json's "out" property
+			else if (!string.IsNullOrWhiteSpace(info.OutputPath))
 			{
 				outputPath = Path.Combine(contentDir, info.OutputPath, $"{pkg.ID}-{pkg.Version}.rantpkg");
 				Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 			}
+			// If it doesn't have one, put it in the package content directory
 			else
 			{
 				outputPath = Path.Combine(Directory.GetParent(contentDir).FullName, $"{pkg.ID}-{pkg.Version}.rantpkg");
