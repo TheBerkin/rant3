@@ -31,6 +31,8 @@ namespace Rant.Core.Formatting
 {
     internal class NumberFormatter
     {
+		private readonly Sandbox sb;
+
         private static readonly NumberFormatInfo CommaGroupFormat = new NumberFormatInfo
         {
             NumberGroupSizes = new[] { 3 },
@@ -44,6 +46,11 @@ namespace Rant.Core.Formatting
             NumberGroupSeparator = ".",
             NumberDecimalSeparator = ","
         };
+
+		public NumberFormatter(Sandbox sandbox)
+		{
+			sb = sandbox;
+		}
 
         public Endianness Endianness { get; set; } = Endianness.Default;
         public BinaryFormat BinaryFormat { get; set; } = BinaryFormat.Normal;
@@ -67,8 +74,8 @@ namespace Rant.Core.Formatting
                     return Numerals.ToRoman(number);
                 case NumberFormat.RomanLower:
                     return Numerals.ToRoman(number, true);
-                case NumberFormat.VerbalEn:
-                    return number % 1 > 0 ? "?" : Numerals.ToVerbal((long)number);
+                case NumberFormat.Verbal:
+                    return number % 1 > 0 ? "?" : sb.Format.NumberVerbalizer.Verbalize((long)number);
                 case NumberFormat.Hex:
                 case NumberFormat.HexUpper:
                     return GetHex((long)number, true);

@@ -125,10 +125,10 @@ namespace Rant.Core
 		public void DecreaseQuote() => _quoteLevel--;
 
 		public void PrintOpeningQuote()
-			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.OpeningPrimaryQuote : Format.OpeningSecondaryQuote));
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.WritingSystem.Quotations.OpeningPrimary : Format.WritingSystem.Quotations.OpeningSecondary));
 
 		public void PrintClosingQuote()
-			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.ClosingPrimaryQuote : Format.ClosingSecondaryQuote));
+			=> Output.Do(chain => chain.Print(_quoteLevel == 1 ? Format.WritingSystem.Quotations.ClosingPrimary : Format.WritingSystem.Quotations.ClosingSecondary));
 
 		public void SetYield() => shouldYield = true;
 

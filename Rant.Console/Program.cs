@@ -11,6 +11,7 @@ using Rant.Vocabulary;
 using static System.Console;
 
 using static Rant.Common.CmdLine;
+using Rant.Formats;
 
 namespace RantConsole
 {

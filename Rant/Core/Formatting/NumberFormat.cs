@@ -50,8 +50,8 @@ namespace Rant.Core.Formatting
         [RantDescription("Lowercase Roman numerals.")]
         RomanLower,
 
-        [RantDescription("US English spellings of numbers. Only works with integers.")]
-        VerbalEn,
+        [RantDescription("Number verbalization. Only works with integers.")]
+        Verbal,
 
         [RantDescription("Uppercase hexadecimal.")]
         Hex,

@@ -136,11 +136,11 @@ namespace Rant.Localization
                                     case 'u':
                                     {
                                         if (i + 5 >= valueLiteral.Length) goto loop;
-                                        short code;
-                                        if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
-                                            NumberStyles.AllowHexSpecifier,
-                                            CultureInfo.InvariantCulture, out code)) goto loop;
-                                        sb.Append((char)code);
+										if (!short.TryParse(valueLiteral.Substring(i + 1, 4),
+										NumberStyles.AllowHexSpecifier,
+										CultureInfo.InvariantCulture, out short code))
+											goto loop;
+										sb.Append((char)code);
                                         i += 6;
                                         continue;
                                     }
@@ -169,19 +169,18 @@ namespace Rant.Localization
             try
             {
                 _langName = CultureInfo.CurrentCulture.Name;
-                Dictionary<string, string> table;
-                if (!_languages.TryGetValue(_langName, out table))
-                {
-                    using (
-                        var stream =
-                            Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{_langName}.lang"))
-                    {
-                        if (stream == null) return;
-                        table = new Dictionary<string, string>();
-                        LoadStringTableData(_langName, stream, table);
-                    }
-                }
-                _currentTable = table;
+				if (!_languages.TryGetValue(_langName, out Dictionary<string, string> table))
+				{
+					using (
+						var stream =
+							Assembly.GetExecutingAssembly().GetManifestResourceStream($"{LanguageResourceNamespace}.{_langName}.lang"))
+					{
+						if (stream == null) return;
+						table = new Dictionary<string, string>();
+						LoadStringTableData(_langName, stream, table);
+					}
+				}
+				_currentTable = table;
             }
             catch (Exception ex)
             {

@@ -37,8 +37,6 @@ namespace Rant.Vocabulary.Querying
     /// </summary>
     internal sealed class Query
     {
-		private const string PHRASAL_SEP = " ";
-
         private readonly HashSet<Filter> _filters = new HashSet<Filter>();
 
         /// <summary>
@@ -112,14 +110,14 @@ namespace Rant.Vocabulary.Querying
 					if (this.Complement == null)
 					{
 						sb.Print(result.LeftSide);
-						sb.Print(PHRASAL_SEP);
+						sb.Print(sb.Format.WritingSystem.Space);
 						sb.Print(result.RightSide);
 					}
 					else if (result.ValueSplitIndex == 0) // Pushes complement to the left of the query result
 					{
 						long l = sb.SizeLimit.Value;
 						yield return this.Complement;
-						if (sb.SizeLimit.Value > l) sb.Print(PHRASAL_SEP);
+						if (sb.SizeLimit.Value > l) sb.Print(sb.Format.WritingSystem.Space);
 						sb.Print(result.Value);
 					}
 					else if (result.ValueSplitIndex == result.Value.Length)
@@ -128,15 +126,15 @@ namespace Rant.Vocabulary.Querying
 						long l = sb.SizeLimit.Value;
 						var t = sb.Output.InsertAnonymousTarget();
 						yield return this.Complement;
-						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, PHRASAL_SEP);
+						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, sb.Format.WritingSystem.Space);
 					}
 					else // Complement goes inside phrase
 					{
 						sb.Print(result.LeftSide);
-						sb.Print(PHRASAL_SEP);
+						sb.Print(sb.Format.WritingSystem.Space);
 						long l = sb.SizeLimit.Value;
 						yield return this.Complement;
-						if (sb.SizeLimit.Value > l) sb.Print(PHRASAL_SEP);
+						if (sb.SizeLimit.Value > l) sb.Print(sb.Format.WritingSystem.Space);
 						sb.Print(result.RightSide);
 					}
 				}
@@ -148,7 +146,7 @@ namespace Rant.Vocabulary.Querying
 						long l = sb.SizeLimit.Value;
 						var t = sb.Output.InsertAnonymousTarget();
 						yield return this.Complement;
-						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, PHRASAL_SEP);
+						if (sb.SizeLimit.Value > l) sb.Output.PrintToTarget(t, sb.Format.WritingSystem.Space);
 					}
 				}
 			}

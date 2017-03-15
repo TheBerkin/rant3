@@ -53,7 +53,8 @@ namespace Rant.Core.Output
 
         public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev)
         {
-            Prev = prev;
+			NumberFormatter = new NumberFormatter(sb);
+			Prev = prev;
 
             if (prev != null)
             {
@@ -73,7 +74,8 @@ namespace Rant.Core.Output
 
         public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin)
         {
-            Prev = prev;
+			NumberFormatter = new NumberFormatter(sb);
+			Prev = prev;
 
             if (prev != null)
             {
@@ -82,7 +84,7 @@ namespace Rant.Core.Output
             }
 
             _buffer = targetOrigin._buffer;
-            _sandbox = sb;
+            _sandbox = sb;			
         }
 
         public StringBuilder Buffer => _buffer;
@@ -99,7 +101,7 @@ namespace Rant.Core.Output
 
         public bool IsTarget { get; } = false;
         protected bool PrintedSinceCapsChange { get; private set; } = false;
-        public NumberFormatter NumberFormatter { get; } = new NumberFormatter();
+        public NumberFormatter NumberFormatter { get; }
         public OutputChainBuffer Next { get; private set; }
         public OutputChainBuffer Prev { get; private set; }
         public char LastChar => _buffer.Length > 0 ? _buffer[_buffer.Length - 1] : '\0';

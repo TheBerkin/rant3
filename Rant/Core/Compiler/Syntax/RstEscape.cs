@@ -58,13 +58,13 @@ namespace Rant.Core.Compiler.Syntax
                     'c',
                     (sb, c) =>
                         sb.PrintMany(
-                            () => char.ToLowerInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)
+                            () => char.ToLowerInvariant(sb.Format.WritingSystem.AlphabetArray[sb.RNG.Next(sb.Format.WritingSystem.AlphabetArray.Length)]), c)
                 },
                 {
                     'C',
                     (sb, c) =>
                         sb.PrintMany(
-                            () => char.ToUpperInvariant(sb.Format.LettersInternal[sb.RNG.Next(sb.Format.LettersInternal.Length)]), c)
+                            () => char.ToUpperInvariant(sb.Format.WritingSystem.AlphabetArray[sb.RNG.Next(sb.Format.WritingSystem.AlphabetArray.Length)]), c)
                 },
                 { 'x', (sb, c) => sb.PrintMany(() => "0123456789abcdef"[sb.RNG.Next(16)], c) },
                 { 'X', (sb, c) => sb.PrintMany(() => "0123456789ABCDEF"[sb.RNG.Next(16)], c) },
@@ -74,9 +74,9 @@ namespace Rant.Core.Compiler.Syntax
                         int i;
                         sb.PrintMany(() =>
                         {
-                            i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
+                            i = sb.RNG.Next(sb.Format.WritingSystem.AlphabetArray.Length + 10);
                             return i >= 10
-                                ? char.ToLowerInvariant(sb.Format.LettersInternal[i - 10])
+                                ? char.ToLowerInvariant(sb.Format.WritingSystem.AlphabetArray[i - 10])
                                 : Convert.ToChar(i + 48);
                         }, c);
                     }
@@ -87,9 +87,9 @@ namespace Rant.Core.Compiler.Syntax
                         int i;
                         sb.PrintMany(() =>
                         {
-                            i = sb.RNG.Next(sb.Format.LettersInternal.Length + 10);
+                            i = sb.RNG.Next(sb.Format.WritingSystem.AlphabetArray.Length + 10);
                             return i >= 10
-                                ? char.ToUpperInvariant(sb.Format.LettersInternal[i - 10])
+                                ? char.ToUpperInvariant(sb.Format.WritingSystem.AlphabetArray[i - 10])
                                 : Convert.ToChar(i + 48);
                         }, c);
                     }

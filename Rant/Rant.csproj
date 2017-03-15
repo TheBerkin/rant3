@@ -181,6 +181,11 @@
     <Compile Include="Core\Formatting\Accent.cs" />
     <Compile Include="Core\Formatting\Unicode.cs" />
     <Compile Include="Core\Sandbox.State.cs" />
+    <Compile Include="Formats\EnglishNumberVerbalizer.cs" />
+    <Compile Include="Formats\GermanNumberVerbalizer.cs" />
+    <Compile Include="Formats\NumberVerbalizer.cs" />
+    <Compile Include="Formats\QuotationMarks.cs" />
+    <Compile Include="Formats\WritingSystem.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
     <Compile Include="Metadata\IRantFunctionGroup.cs" />

@@ -148,19 +148,19 @@ namespace Rant.Core.Compiler.Syntax
                             if (attribs.EndSeparator != null)
                                 if (reps > 2) yield return attribs.EndSeparator;
 
-                            sb.Print(sb.Format.StandardSpace);
+                            sb.Print(sb.Format.WritingSystem.Space);
 
                             // Add conjunction if specified (it normally should be, if it's a series)
                             if (attribs.EndConjunction != null)
                             {
                                 yield return attribs.EndConjunction;
-                                sb.Print(sb.Format.StandardSpace);
+                                sb.Print(sb.Format.WritingSystem.Space);
                             }
                         }
                         else if (reps > 2)
                         {
                             yield return attribs.Separator;
-                            sb.Print(sb.Format.StandardSpace);
+                            sb.Print(sb.Format.WritingSystem.Space);
                         }
                     }
                     else
