@@ -64,7 +64,6 @@ namespace Rant.Core
 			CarrierState = carrierState ?? new CarrierState();
 			SubroutineArgs = new Stack<Dictionary<string, RST>>();
 			SyncManager = new SyncManager(this);			
-			ScriptObjectStack = new Stack<object>();
 			PatternArgs = args;
 
 			// Private members
@@ -185,8 +184,7 @@ namespace Rant.Core
 					_stopwatch.Reset();
 					_stopwatch.Start();
 				}
-
-				ScriptObjectStack.Clear();
+				
 				var callStack = new Stack<IEnumerator<RST>>();
 				IEnumerator<RST> action;
 
@@ -247,8 +245,7 @@ namespace Rant.Core
 					_stopwatch.Reset();
 					_stopwatch.Start();
 				}
-
-				ScriptObjectStack.Clear();
+				
 				var callStack = new Stack<IEnumerator<RST>>();
 				IEnumerator<RST> action;
 

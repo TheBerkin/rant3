@@ -125,11 +125,6 @@ namespace Rant.Core
 		public double LastTimeout { get; internal set; }
 
 		/// <summary>
-		/// Gets the current object stack of the Richard engine.
-		/// </summary>
-		public Stack<object> ScriptObjectStack { get; }
-
-		/// <summary>
 		/// Gets or sets the expected result for the current flag condition.
 		/// </summary>
 		public bool FlagConditionExpectedResult { get; set; }
