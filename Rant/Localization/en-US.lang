@@ -72,6 +72,7 @@ err-table-too-few-terms = "Too few terms in entry: Expected {0}, found {1}."
 err-table-argc-mismatch = "Argument count mismatch: {0} expects {1}, found {2}"
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
+err-runtime-missing-var = "The variable '{0}' does not exist."
 
 acc-carrier-name = "carrier name"
 acc-table-name = "table name"

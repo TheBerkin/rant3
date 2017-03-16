@@ -59,8 +59,7 @@ namespace Rant.Core.Framework
 		private static void Number(Sandbox sb,
 			[RantDescription("The string to convert into a number.")] string input)
 		{
-			double number;
-			sb.Print(double.TryParse(input, out number) ? number : 0);
+			sb.Print(double.TryParse(input, out double number) ? number : 0);
 		}
 
 		[RantFunction("numfmt")]
@@ -84,10 +83,9 @@ namespace Rant.Core.Framework
 
 			yield return rangeAction;
 
-			NumberFormat fmt;
 			sb.Output.Do(chain =>
 			{
-				if (!oldFmtMap.TryGetValue(chain, out fmt)) return;
+				if (!oldFmtMap.TryGetValue(chain, out NumberFormat fmt)) return;
 				chain.Last.NumberFormatter.NumberFormat = fmt;
 			});
 		}

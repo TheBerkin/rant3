@@ -66,6 +66,7 @@ err-compiler-invalid-vchar = "Ungültigen Unicode-Zeichennamen in wörtlichem Ze
 err-compiler-incomplete-vchar = "Unvollständiges wörtliches Zeichenliteral."
 
 err-runtime-invalid-dynamic-weight = "Vorlage für dynamisches Blockelementgewicht hat einen ungültigen Gewichtswert zurückgegeben: '{0}'"
+err-runtime-missing-var = "Die Variable '{0}' existiert nicht."
 
 acc-carrier-name = "Anfragezustandspeichernamen"
 acc-table-name = "Tabellenamen"
