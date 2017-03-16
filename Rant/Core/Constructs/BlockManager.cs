@@ -35,7 +35,6 @@ namespace Rant.Core.Constructs
     {
         private readonly Dictionary<BlockAttribs, List<RstBlock>> _blockList;
         private BlockAttribs _prevAttribs;
-        private int _prevCount = 0;
 
         public BlockManager()
         {

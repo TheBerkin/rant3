@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Rant.Formats
 {
+	/// <summary>
+	/// Represents a number verbalizer for English (US).
+	/// </summary>
 	public sealed class EnglishNumberVerbalizer : NumberVerbalizer
 	{
 		private readonly string[] thousandPowers = { "thousand", "million", "billion", "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion" };
@@ -40,6 +43,11 @@ namespace Rant.Formats
 			}
 		}
 
+		/// <summary>
+		/// Verbalizes the specified value.
+		/// </summary>
+		/// <param name="number">The number to verbalize.</param>
+		/// <returns></returns>
 		public override string Verbalize(long number)
 		{
 			var sb = new StringBuilder();

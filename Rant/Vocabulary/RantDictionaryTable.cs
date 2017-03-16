@@ -185,8 +185,7 @@ namespace Rant.Vocabulary
         /// <returns>True if found, False if not.</returns>
         public bool ContainsEntry(RantDictionaryEntry entry)
         {
-            if (entry == null) throw new ArgumentNullException(nameof(entry));
-            return _entriesHash.Contains(entry);
+            return _entriesHash.Contains(entry ?? throw new ArgumentNullException(nameof(entry)));
         }
 
         /// <summary>

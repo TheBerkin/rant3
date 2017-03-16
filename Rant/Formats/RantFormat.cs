@@ -69,15 +69,15 @@ namespace Rant.Formats
         {
         }
 
-        /// <summary>
-        /// Creates a new RantFormat instance with the specified configuration data.
-        /// </summary>
-        /// <param name="culture">The culture to associate with the format.</param>
+		/// <summary>
+		/// Creates a new RantFormat instance with the specified configuration data.
+		/// </summary>
+		/// <param name="culture">The culture to associate with the format.</param>
 		/// <param name="writingSystem">The writing system to use.</param>
-		/// <param name="quotes">The quotation format to use.</param>
-        /// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
-        /// <param name="pluralizer">The pluralizer to use.</param>
-        public RantFormat(
+		/// <param name="titleCaseExclusions">A collection of words to exclude from title case capitalization.</param>
+		/// <param name="pluralizer">The pluralizer to use.</param>
+		/// <param name="numVerbalizer">The number verbalizer to use.</param>
+		public RantFormat(
 			CultureInfo culture, WritingSystem writingSystem, IEnumerable<string> titleCaseExclusions, 
 			Pluralizer pluralizer, NumberVerbalizer numVerbalizer)
         {
@@ -115,6 +115,9 @@ namespace Rant.Formats
         /// </summary>
         public Pluralizer Pluralizer { get; } = new EnglishPluralizer();
 
+		/// <summary>
+		/// The number verbalizer for the current format.
+		/// </summary>
 		public NumberVerbalizer NumberVerbalizer { get; } = new EnglishNumberVerbalizer();
 
         internal bool Excludes(string word) => TitleCaseExclusions.Contains(word);

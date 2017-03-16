@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace Rant.Vocabulary
 {
-    public class ClassTree
+    internal class ClassTree
     {
         private const int MAX_DEPTH = 4;
 
@@ -135,7 +135,7 @@ namespace Rant.Vocabulary
         }
     }
 
-    public class ClassTreeNode
+    internal class ClassTreeNode
     {
         public Dictionary<string, ClassTreeNode> ChildNodes = new Dictionary<string, ClassTreeNode>();
         public string[] Classes;

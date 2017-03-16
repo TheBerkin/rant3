@@ -33,10 +33,18 @@ using System.Text;
 
 using Rant.Core.Utilities;
 
+#pragma warning disable CS0162 // Unreachable code detected
+
 namespace Rant.Vocabulary
 {
     public partial class RantDictionaryTable
     {
+		/// <summary>
+		/// Loads a table from the specified stream.
+		/// </summary>
+		/// <param name="origin">The origin of the stream. This will typically be a file path or package name.</param>
+		/// <param name="stream">The stream to load the table from.</param>
+		/// <returns></returns>
         public static RantDictionaryTable FromStream(string origin, Stream stream)
         {
             string name = null; // Stores the table name before final table construction
@@ -572,7 +580,8 @@ namespace Rant.Vocabulary
 #if !UNITY
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-            public static bool ReadArg(string origin, string str, int len, int line, ref int i, out Argument result)
+
+			public static bool ReadArg(string origin, string str, int len, int line, ref int i, out Argument result)
             {
                 result = null;
                 while (i < len && char.IsWhiteSpace(str[i])) i++;
@@ -716,8 +725,8 @@ namespace Rant.Vocabulary
                                     buffer.Append(c);
                                     continue;
                             }
-                            continue;
-                        }
+							continue;
+						}
                         case '\"':
                             throw new RantTableLoadException(origin, line, i + 1, "err-table-incomplete-literal");
                         default:
@@ -739,9 +748,9 @@ namespace Rant.Vocabulary
                 result = new Argument(start, buffer.ToString());
                 return true;
             }
-        }
+		}
 
-        internal sealed class Argument
+		internal sealed class Argument
         {
             public Argument(int charIndex, string value)
             {

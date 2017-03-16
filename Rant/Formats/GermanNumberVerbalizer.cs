@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Rant.Formats
 {
+	/// <summary>
+	/// Represents a number verbalizer for Standard German.
+	/// </summary>
 	public sealed class GermanNumberVerbalizer : NumberVerbalizer
 	{
 		private readonly string[] thousandPowers = { "tausend", "eine Million ", "eine Milliarde ", "eine Billion ", "eine Billiarde ", "eine Trillion ", "eine Trilliarde ", "eine Quadrillion ", "eine Quadrilliarde " };
@@ -44,6 +44,11 @@ namespace Rant.Formats
 			}
 		}
 
+		/// <summary>
+		/// Verbalizes the specified value.
+		/// </summary>
+		/// <param name="number">The number to verbalize.</param>
+		/// <returns></returns>
 		public override string Verbalize(long number)
 		{
 			var sb = new StringBuilder();

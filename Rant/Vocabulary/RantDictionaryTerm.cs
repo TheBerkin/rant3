@@ -110,8 +110,14 @@ namespace Rant.Vocabulary
         /// </summary>
         public bool IsSplit => ValueSplitIndex > -1;
 
+		/// <summary>
+		/// Gets the term value substring on the left side of the split.
+		/// </summary>
 		public string LeftSide => Value.Substring(0, ValueSplitIndex);
 
+		/// <summary>
+		/// Gets the term value substring on the right side of the split.
+		/// </summary>
 		public string RightSide => Value.Substring(ValueSplitIndex);
 
         /// <summary>
