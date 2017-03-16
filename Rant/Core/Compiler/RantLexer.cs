@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Rant.Core.Utilities;
+using Rant.Core.Formatting;
 
 namespace Rant.Core.Compiler
 {
@@ -179,6 +180,30 @@ namespace Rant.Core.Compiler
                         // At this point we know there's at least one character. Great!
 
                         int escStart = i++; // Skip the slash
+
+						// Verbose character
+						if (input[i] == '@')
+						{
+							int nameStart = ++i;
+							while(i < len)
+							{
+								if (input[i] == '@')
+								{
+									var name = input.Substring(nameStart, i - nameStart).Trim();
+									var unicode = Unicode.GetByName(name);
+									if (string.IsNullOrEmpty(unicode))
+									{
+										compiler.SyntaxError(line, lastLineStart, nameStart, i - nameStart, false, "err-compiler-invalid-vchar", name);
+										goto iterate;
+									}
+									yield return new Token(R.Text, line, lastLineStart, nameStart, unicode);
+									goto iterate;
+								}
+								i++;
+							}
+							compiler.SyntaxError(line, lastLineStart, i - 1, 1, false, "err-compiler-incomplete-vchar");
+							break;
+						}
 
                         // No escaping whitespace.
                         if (char.IsWhiteSpace(input[i]))
