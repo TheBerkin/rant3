@@ -75,8 +75,7 @@ namespace Rant
         /// <param name="dictionary">The vocabulary to load in this instance.</param>
         public RantEngine(RantDictionary dictionary)
         {
-            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
-            _dictionary = dictionary;
+			_dictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
         }
 
         /// <summary>
@@ -92,8 +91,7 @@ namespace Rant
             get { return _format; }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _format = value;
+				_format = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -105,8 +103,7 @@ namespace Rant
             get { return _dictionary; }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _dictionary = value;
+				_dictionary = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -118,8 +115,7 @@ namespace Rant
             get { return _resolver; }
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _resolver = value;
+				_resolver = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -222,9 +218,8 @@ namespace Rant
         /// <returns></returns>
         internal RantProgram GetProgramInternal(string name)
         {
-            RantProgram pattern;
-            if (_patternCache.TryGetValue(name, out pattern)) return pattern;
-            return _patternCache[name] = RantProgram.CompileFile(name);
+			if (_patternCache.TryGetValue(name, out RantProgram pattern)) return pattern;
+			return _patternCache[name] = RantProgram.CompileFile(name);
         }
 
         #region Static members

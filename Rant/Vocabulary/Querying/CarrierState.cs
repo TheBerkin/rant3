@@ -74,10 +74,9 @@ namespace Rant.Vocabulary.Querying
             _uniqueTable.Clear();
         }
 
-        internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool,
-            RNG rng)
+        internal RantDictionaryEntry GetEntry(Carrier carrier, int subtypeIndex, IEnumerable<RantDictionaryEntry> pool, RNG rng, bool weighted)
         {
-            if (carrier == null) return pool.PickEntry(rng);
+            if (carrier == null) return pool.PickEntry(rng, weighted);
 
             RantDictionaryEntry result = null;
 
@@ -160,7 +159,7 @@ namespace Rant.Vocabulary.Querying
                     pool = pool.Where(e => e.DivergesFrom(result));
             }
 
-            result = pool.PickEntry(rng);
+            result = pool.PickEntry(rng, weighted);
 
             // Handle rhyme carrier
             foreach (string rhyme in carrier.GetComponentsOfType(CarrierComponentType.Rhyme))
@@ -170,7 +169,7 @@ namespace Rant.Vocabulary.Querying
                 {
                     result = pool
                         .Where(e => !Util.IsNullOrWhiteSpace(e[subtypeIndex].Pronunciation))
-                        .PickEntry(rng);
+                        .PickEntry(rng, weighted);
                     if (result == null) return null;
                     _rhymeTable[rhyme] = _.Create(result[subtypeIndex], new HashSet<RantDictionaryEntry>(new[] { result }));
                     break;
@@ -180,7 +179,7 @@ namespace Rant.Vocabulary.Querying
                         .Where(e =>
                             !Util.IsNullOrWhiteSpace(e[subtypeIndex].Pronunciation) &&
                             Rhymer.Rhyme(rhymeState.Item1, e[subtypeIndex]))
-                        .PickEntry(rng);
+                        .PickEntry(rng, weighted);
 
                 if (result != null) rhymeState.Item2.Add(result);
                 break; // Ignore any extra rhyme carriers

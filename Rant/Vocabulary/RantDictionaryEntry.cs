@@ -52,7 +52,6 @@ namespace Rant.Vocabulary
             TermCount = _terms.Length;
             _classes = new HashSet<string>();
             _optionalClasses = new HashSet<string>();
-            Weight = 1;
         }
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, int weight = 1)
+        public RantDictionaryEntry(string[] terms, IEnumerable<string> classes, float weight = 1.0f)
             : this(terms.Select(s => new RantDictionaryTerm(s)), classes, weight)
         {
         }
@@ -72,7 +71,7 @@ namespace Rant.Vocabulary
         /// <param name="terms">The terms in the entry.</param>
         /// <param name="classes">The classes associated with the entry.</param>
         /// <param name="weight">The weight of the entry.</param>
-        public RantDictionaryEntry(IEnumerable<RantDictionaryTerm> terms, IEnumerable<string> classes, int weight = 1)
+        public RantDictionaryEntry(IEnumerable<RantDictionaryTerm> terms, IEnumerable<string> classes, float weight = 1.0f)
         {
             if (terms == null) throw new ArgumentNullException(nameof(terms));
             _terms = terms.ToArray();
@@ -126,10 +125,10 @@ namespace Rant.Vocabulary
             }
         }
 
-        /// <summary>
-        /// Gets the weight value of the entry.
-        /// </summary>
-        public int Weight { get; set; }
+		/// <summary>
+		/// Gets the weight value of the entry.
+		/// </summary>
+		public float Weight { get; set; } = 1.0f;
 
         /// <summary>
         /// Enumerates the terms stored in the current entry.

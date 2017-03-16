@@ -38,7 +38,7 @@ namespace Rant
     {
         private const int Mask32 = 0x7FFFFFFF;
         private const long Mask64 = 0x7FFFFFFFFFFFFFFF;
-        private const double MaxDouble = long.MaxValue;
+        private const double MaxDouble = double.MaxValue;
 
         [ThreadStatic]
         private static RNGHashState _hashState = new RNGHashState();

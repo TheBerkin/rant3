@@ -72,6 +72,12 @@ namespace Rant.Vocabulary
         /// </summary>
         public IEnumerable<string> IncludedHiddenClasses => _exposedClasses.AsEnumerable();
 
+		/// <summary>
+		/// Determines whether tables will favor weighted distribution, if available.
+		/// Weighted distribution has a significantl impact on performance.
+		/// </summary>
+		public bool EnableWeighting { get; set; } = true;
+
         /// <summary>
         /// Exposes a hidden class to query results.
         /// </summary>
@@ -129,14 +135,14 @@ namespace Rant.Vocabulary
             foreach (var pair in _tables) yield return pair.Value;
         }
 
-        /// <summary>
-        /// Queries the RantDictionary according to the specified criteria and returns a random match.
-        /// </summary>
-        /// <param name="rng">The random number generator to randomize the match with.</param>
-        /// <param name="query">The search criteria to use.</param>
-        /// <param name="syncState">The state object to use for carrier synchronization.</param>
-        /// <returns></returns>
-        internal RantDictionaryTerm Query(Sandbox sb, Query query, CarrierState syncState)
+		/// <summary>
+		/// Queries the RantDictionary according to the specified criteria and returns a random match.
+		/// </summary>
+		/// <param name="sb">The sandbox the query is to be run under.</param>
+		/// <param name="query">The search criteria to use.</param>
+		/// <param name="syncState">The state object to use for carrier synchronization.</param>
+		/// <returns></returns>
+		internal RantDictionaryTerm Query(Sandbox sb, Query query, CarrierState syncState)
         {
             return !_tables.TryGetValue(query.Name, out RantDictionaryTable table)
                 ? null

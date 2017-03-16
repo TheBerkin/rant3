@@ -262,9 +262,10 @@ namespace Rant.Vocabulary
                                     break;
                                 case "weight":
                                 {
-                                    if (!int.TryParse(args[0].Value, out int weight) || weight <= 0)
+                                    if (!float.TryParse(args[0].Value, out float weight) || weight <= 0)
                                         throw new RantTableLoadException(origin, line, args[0].CharIndex + 1, "err-table-invalid-weight", args[0].Value);
                                     currentEntry.Weight = weight;
+									table.EnableWeighting = true;
                                     break;
                                 }
                                 case "pron":

@@ -33,14 +33,42 @@ namespace Rant.Vocabulary.Utilities
     {
         private static readonly Dictionary<string, string> StringCache = new Dictionary<string, string>();
 
-        public static RantDictionaryEntry PickEntry(this List<RantDictionaryEntry> hash, RNG rng)
+        public static RantDictionaryEntry PickEntry(this List<RantDictionaryEntry> list, RNG rng, bool useWeights)
         {
-            return hash.Any() ? hash[rng.Next(hash.Count)] : null;
+			if (useWeights)
+			{
+				float sum = list.Sum(e => e.Weight);
+				float n = (float)rng.NextDouble(sum);
+				RantDictionaryEntry entry;
+				for(int i = 0; i < list.Count; i++)
+				{
+					entry = list[i];
+					if (n < entry.Weight)
+					{
+						return entry;
+					}
+					n -= entry.Weight;
+				}
+			}
+            return list.Any() ? list[rng.Next(list.Count)] : null;
         }
 
-        public static RantDictionaryEntry PickEntry(this IEnumerable<RantDictionaryEntry> enumerable, RNG rng)
+        public static RantDictionaryEntry PickEntry(this IEnumerable<RantDictionaryEntry> entries, RNG rng, bool useWeights)
         {
-            var array = enumerable as RantDictionaryEntry[] ?? enumerable.ToArray();
+			if (useWeights)
+			{
+				float sum = entries.Sum(e => e.Weight);
+				float n = (float)rng.NextDouble(sum);
+				foreach(RantDictionaryEntry entry in entries)
+				{
+					if (n < entry.Weight)
+					{
+						return entry;
+					}
+					n -= entry.Weight;
+				}
+			}
+			var array = entries as RantDictionaryEntry[] ?? entries.ToArray();
             return array.Length > 0 ? array[rng.Next(array.Length)] : null;
         }
 

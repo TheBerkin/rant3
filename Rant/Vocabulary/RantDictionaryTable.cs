@@ -51,15 +51,16 @@ namespace Rant.Vocabulary
         private readonly HashSet<string> _hidden = new HashSet<string>(new[] { NSFW });
         private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>();
         private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-        private ClassTree _classTree = new ClassTree(new RantDictionaryEntry[] { });
+        private ClassTree _classTree = new ClassTree(new RantDictionaryEntry[0]);
         private SyllableBuckets[] _syllableBuckets;
 
-        /// <summary>
-        /// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
-        /// </summary>
-        /// <param name="name">The name of the table.</param>
-        /// <param name="termsPerEntry">The number of terms to store in each entry.</param>
-        public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
+		/// <summary>
+		/// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
+		/// </summary>
+		/// <param name="name">The name of the table.</param>
+		/// <param name="termsPerEntry">The number of terms to store in each entry.</param>
+		/// <param name="hidden">Collection of hidden classes.</param>
+		public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (termsPerEntry <= 0) throw new ArgumentException(Txtres.GetString("err-bad-term-count"));
@@ -140,6 +141,11 @@ namespace Rant.Vocabulary
         /// <param name="className">The name of the class to unhide.</param>
         /// <returns></returns>
         public bool UnhideClass(string className) => className != null && _hidden.Remove(className);
+
+		/// <summary>
+		/// Determines whether weights are enabled on this table.
+		/// </summary>
+		public bool EnableWeighting { get; set; } = false;
 
         /// <summary>
         /// Adds the specified entry to the table.
@@ -297,7 +303,7 @@ namespace Rant.Vocabulary
 
             if (index == -1) return null;
 
-            if (query.BareQuery) return _visibleEntriesList.PickEntry(sb.RNG)?[index];
+            if (query.BareQuery) return _visibleEntriesList.PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
 
             // process simple class filters using class tree
             var filters = query.GetFilters();
@@ -313,7 +319,7 @@ namespace Rant.Vocabulary
 
             // if it's just the class filters, let's leave now
             if (!filters.Any() && !query.HasCarrier)
-                return pool.ToList().PickEntry(sb.RNG)?[index];
+                return pool.ToList().PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
 
 			// process syllable count filters using syllable buckets
 			var rangeFilters = filters.OfType<RangeFilter>();
@@ -332,10 +338,9 @@ namespace Rant.Vocabulary
 
             if (!pool.Any()) return null;
 
-            if (query.HasCarrier)
-                return syncState.GetEntry(query.Carrier, index, pool, sb.RNG)?[index];
-
-            return pool.PickEntry(sb.RNG)?[index];
+			return query.HasCarrier
+				? syncState.GetEntry(query.Carrier, index, pool, sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index]
+				: pool.PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
         }
 
         internal override void DeserializeData(BsonItem data)
