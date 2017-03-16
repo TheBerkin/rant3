@@ -64,6 +64,8 @@ err-compiler-incomplete-verbatim = "Incomplete verbatim string."
 err-compiler-incomplete-regex = "Incomplete regular expression literal."
 err-compiler-bad-escape-quantity = "Invalid escape quantifier. Must be an integer greater than zero."
 err-compiler-missing-quantity-comma = "Expected comma after quantity."
+err-compiler-invalid-vchar = "Invalid Unicode character name in verbose character literal: {0}"
+err-compiler-incomplete-vchar = "Incomplete verbose character literal."
 
 err-table-invalid-class = "Invalid class name: {0}"
 err-table-too-few-terms = "Too few terms in entry: Expected {0}, found {1}."

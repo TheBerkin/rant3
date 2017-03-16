@@ -62,6 +62,8 @@ err-compiler-empty-weight = "Leeres Blockelementgewicht."
 err-compiler-invalid-constweight = "Ungültige Gewichtskonstante. Sie muss eine positive Zahl sein."
 err-compiler-incomplete-verbatim = "Unvollständiges wörtliches Zeichenkettenliteral."
 err-compiler-missing-quantity-comma = "Komma nach der Anzahl erwartet."
+err-compiler-invalid-vchar = "Ungültigen Unicode-Zeichennamen in wörtlichem Zeichenliteral gefunden: {0}"
+err-compiler-incomplete-vchar = "Unvollständiges wörtliches Zeichenliteral."
 
 err-runtime-invalid-dynamic-weight = "Vorlage für dynamisches Blockelementgewicht hat einen ungültigen Gewichtswert zurückgegeben: '{0}'"
 
