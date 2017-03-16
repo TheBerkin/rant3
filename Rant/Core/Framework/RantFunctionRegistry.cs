@@ -188,6 +188,12 @@ namespace Rant.Core.Framework
 		private static void Case(Sandbox sb,
 			[RantDescription("The capitalization mode to use.")] Capitalization mode) => sb.Output.Capitalize(mode);
 
+		[RantFunction("txtfmt")]
+		[RantDescription("Sets the text conversion format for all open channels.")]
+		private static void TxtFmt(Sandbox sb, 
+			[RantDescription("The conversion mode to use.")]
+			CharConversion format) => sb.Output.SetConversion(format);
+
 		[RantFunction]
 		[RantDescription("Infers the capitalization of a given string and sets the capitalization mode to match it.")]
 		private static void CapsInfer(Sandbox sb,

@@ -47,8 +47,6 @@ namespace Rant.Core.Output
             Name = name;
         }
 
-        // Buffer endpoint references
-
         // Public
         public OutputChainBuffer First { get; private set; }
         public OutputChainBuffer Last { get; private set; }
@@ -94,16 +92,13 @@ namespace Rant.Core.Output
 
         public void ClearTarget(object targetName)
         {
-            OutputChainBuffer buffer;
-            if (targets.TryGetValue(targetName, out buffer))
-                buffer.Clear();
-        }
+			if (targets.TryGetValue(targetName, out OutputChainBuffer buffer)) buffer.Clear();
+		}
 
         public string GetTargetValue(string targetName)
         {
-            OutputChainBuffer buffer;
-            return targets.TryGetValue(targetName, out buffer) ? buffer.ToString() : string.Empty;
-        }
+			return targets.TryGetValue(targetName, out OutputChainBuffer buffer) ? buffer.ToString() : string.Empty;
+		}
 
         public void Print(string value)
         {

@@ -102,7 +102,8 @@ namespace Rant.Core.Output
         }
 
         public void Capitalize(Capitalization caps) => Do(chain => chain.Last.Caps = caps);
-        public void Print(string value) => Do(chain => chain.Print(value));
+		public void SetConversion(CharConversion conv) => Do(chain => chain.Last.Conversion = conv);
+		public void Print(string value) => Do(chain => chain.Print(value));
         public void Print(object obj) => Do(chain => chain.Print(obj));
         public void InsertTarget(object targetName) => Do(chain => chain.InsertTarget(targetName));
         public void PrintToTarget(object targetName, string value) => Do(chain => chain.PrintToTarget(targetName, value));

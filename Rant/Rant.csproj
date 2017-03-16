@@ -179,6 +179,8 @@
     <Compile Include="Core\Constructs\QueryBuilder.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
     <Compile Include="Core\Formatting\Accent.cs" />
+    <Compile Include="Core\Formatting\CharConverter.cs" />
+    <Compile Include="Core\Formatting\CharConversion.cs" />
     <Compile Include="Core\Formatting\Unicode.cs" />
     <Compile Include="Core\Sandbox.State.cs" />
     <Compile Include="Formats\EnglishNumberVerbalizer.cs" />
