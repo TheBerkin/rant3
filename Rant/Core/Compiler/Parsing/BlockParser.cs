@@ -58,33 +58,29 @@ namespace Rant.Core.Compiler.Parsing
 
                     var firstToken = reader.ReadLooseToken();
 
-                    // constant weight
-                    if (reader.PeekLooseToken().Type == R.Text)
-                    {
-                        string value = reader.ReadLooseToken().Value;
-                        double doubleValue;
-                        if (!double.TryParse(value, out doubleValue))
-                            compiler.SyntaxError(reader.PrevLooseToken, false, "err-compiler-invalid-constweight");
-                        else
-                            constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
-                        reader.Read(R.RightParen);
-                    }
-                    // dynamic weight
-                    else
-                    {
-                        var weightActions = new List<RST>();
+					List<RST> sequence = new List<RST>();
+					Action<RST> cb = rst => sequence.Add(rst);
+					compiler.SetNextActionCallback(cb);
+					compiler.AddContext(CompileContext.BlockWeight);
+					yield return Get<SequenceParser>();
 
-                        Action<RST> weightActionCallback = rst => weightActions.Add(rst);
-
-                        compiler.SetNextActionCallback(weightActionCallback);
-                        compiler.AddContext(CompileContext.BlockWeight);
-                        yield return Get<SequenceParser>();
-
-                        if (weightActions.Count == 0)
-                            compiler.SyntaxError(firstToken, false, "err-compiler-empty-weight");
-                        else
-                            dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(weightActions, weightActions[0].Location)));
-                    }
+					// Constant
+					if (sequence.Count == 1 && sequence[0] is RstText txtNode)
+					{
+						string txt = txtNode.Text;
+						if (!double.TryParse(txt, out double doubleValue))
+							compiler.SyntaxError(reader.PrevLooseToken, false, "err-compiler-invalid-constweight");
+						else
+							constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
+					}
+					// Dynamic
+					else
+					{
+						if (sequence.Count == 0)
+							compiler.SyntaxError(firstToken, false, "err-compiler-empty-weight");
+						else
+							dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(sequence, sequence[0].Location)));
+					}
                 }
 
                 compiler.SetNextActionCallback(itemCallback);

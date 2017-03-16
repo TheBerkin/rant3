@@ -173,7 +173,7 @@ namespace RantConsole
 #if DEBUG
                             WriteLine($"'{chan.Value}'");
 #else
-							WriteLine(chan.Value);
+							WriteLine(chan.Value.Normalize(NormalizationForm.FormC));
 #endif
 						}
 					}

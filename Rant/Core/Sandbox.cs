@@ -69,7 +69,7 @@ namespace Rant.Core
 
 			// Private members
 			_blockManager = new BlockManager();
-			_stopwatch = new Stopwatch();
+			_stopwatch = new Stopwatch();			
 
 			// Output initialization
 			BaseOutput = new OutputWriter(this);
@@ -132,6 +132,16 @@ namespace Rant.Core
 
 		public void SetYield() => shouldYield = true;
 
+		public void PushRedirectedOutput()
+		{
+			if (_redirOutputs == null) _redirOutputs = new Stack<RantOutput>();
+			_redirOutputs.Push(_outputs.Pop().ToRantOutput());
+		}
+
+		public RantOutput PopRedirectedOutput() => _redirOutputs.Pop();
+
+		public RantOutput GetRedirectedOutput() => _redirOutputs.Count > 0 ? _redirOutputs.Peek() : null;
+
 		/// <summary>
 		/// Dequeues the current block attribute set and returns it, queuing a new attribute set.
 		/// </summary>
@@ -154,7 +164,7 @@ namespace Rant.Core
 					break;
 
 				case AttribPersistence.Once:
-					CurrentBlockAttribs = _blockManager.GetPrevious(1);
+					CurrentBlockAttribs = _blockManager.GetPrevious();
 					break;
 			}
 

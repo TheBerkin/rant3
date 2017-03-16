@@ -20,6 +20,7 @@ namespace Rant.Core
 		private bool _plural = false;
 		private int _quoteLevel = 0;
 		private bool shouldYield = false;
+		private Stack<RantOutput> _redirOutputs;
 
 		public QueryBuilder QueryBuilder { get; } = new QueryBuilder();
 
@@ -142,5 +143,10 @@ namespace Rant.Core
 		/// Gets the arguments passed to the pattern.
 		/// </summary>
 		public RantProgramArgs PatternArgs { get; }
+
+		/// <summary>
+		/// The block manager.
+		/// </summary>
+		public BlockManager BlockManager => _blockManager;
 	}
 }

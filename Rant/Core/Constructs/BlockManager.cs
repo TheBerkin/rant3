@@ -48,18 +48,7 @@ namespace Rant.Core.Constructs
             return attribs;
         }
 
-        public BlockAttribs GetPrevious(int repeatMaximum)
-        {
-            if (repeatMaximum < 0) return _prevAttribs;
-
-            if (_prevCount < repeatMaximum - 1)
-            {
-                _prevCount += 1;
-                return _prevAttribs;
-            }
-            _prevCount = 0;
-            return new BlockAttribs();
-        }
+		public BlockAttribs GetPrevious() => _prevAttribs;
 
         public void Add(BlockAttribs attribs, RstBlock block)
         {

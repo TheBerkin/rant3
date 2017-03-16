@@ -51,6 +51,7 @@ namespace Rant.Core.Constructs
         public RST Before { get; set; }
         public RST After { get; set; }
         public RST End { get; set; }
+		public RST Redirect { get; set; }
         public Synchronizer Sync { get; set; }
         public double Chance { get; set; } = 100.0;
         public AttribPersistence Persistence { get; set; } = AttribPersistence.Off;
@@ -82,8 +83,7 @@ namespace Rant.Core.Constructs
         public int NextIndex(int blockItemCount, RNG rng)
         {
             // Use synchronizer if available
-            if (Sync != null)
-                return Sync.NextItem(blockItemCount);
+            if (Sync != null) return Sync.NextItem(blockItemCount);
 
             return rng.Next(blockItemCount);
         }

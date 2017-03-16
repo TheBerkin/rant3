@@ -119,6 +119,12 @@ namespace Rant.Core.Framework
         [RantDescription("Sets the repetition count to the number of items in the next block.")]
         private static void RepEach(Sandbox sb) => sb.CurrentBlockAttribs.RepEach = true;
 
+		[RantFunction("sep")]
+		private static IEnumerator<RST> PrintSep(Sandbox sb)
+		{
+			yield return sb.BlockManager.GetPrevious().Separator;
+		}
+
         [RantFunction("sep", "s")]
         [RantDescription("Sets the separator pattern for the next block.")]
         private static void Sep(Sandbox sb,
@@ -970,6 +976,24 @@ namespace Rant.Core.Framework
 			{
 				cf.AddRule(new ClassFilterRule(cl, false));
 			}
+		}
+
+		[RantFunction("pipe")]
+		private static void Redirect(Sandbox sb, RST redirectCallback)
+		{
+			sb.CurrentBlockAttribs.Redirect = redirectCallback;
+		}
+
+		[RantFunction("item")]
+		private static void RedirectedItem(Sandbox sb)
+		{
+			sb.Print(sb.GetRedirectedOutput().Main);
+		}
+
+		[RantFunction("item")]
+		private static void RedirectedItem(Sandbox sb, string channel)
+		{
+			sb.Print(sb.GetRedirectedOutput()[channel]);
 		}
 	}
 }
