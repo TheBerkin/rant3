@@ -28,7 +28,7 @@ namespace Rant.Tests
         }
 
         [TestCase(@"[caps:sentence]this is a sentence. this is another sentence.", "This is a sentence. This is another sentence.")]
-        [TestCase(@"[caps:sentence][numfmt:verbal-en][n:1] is a number.", "One is a number.")]
+        [TestCase(@"[caps:sentence][numfmt:verbal][n:1] is a number.", "One is a number.")]
         public void SentenceCase(string pattern, string expected)
         {
             Assert.AreEqual(expected, rant.Do(pattern).Main);
