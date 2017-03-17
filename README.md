@@ -4,13 +4,13 @@
 
 <p align="center">
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status">
-    </img>
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
   </a>
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status">
-    </img>
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
   </a>
+  <br/><br/>
+  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
 </p>
 
 **Rant** is an all-purpose procedural text generation engine.
@@ -24,7 +24,7 @@ With zero cost to you.
 
 Don't just write. Write with Rant.
 
-[berkin.me/rant](http://berkin.me/rant)
+**[berkin.me/rant](http://berkin.me/rant)**
 
 ## Features
 
@@ -44,7 +44,7 @@ Rant is like a templating language but much more awesome. Here are a few example
 
 **Liven up a narrative with a few simple queries in your text.**
 ```
-<name-male> likes to <verb-transitive> <noun.s> with <pron.poss-male> pet <noun-animal> on <timenoun.s-dayofweek>.
+<name-male> likes to <verb-transitive> <noun.pl> with <pro.dposs-male> pet <noun-animal> on <noun.pl  -dayofweek>.
 ```
 ```
 Alick likes to mount shuttlecocks with his pet bat on Mondays.
@@ -54,7 +54,7 @@ Alick likes to mount shuttlecocks with his pet bat on Mondays.
 
 **Count to ten and spell it out.**
 ```
-[case:sentence][numfmt:verbal-en][rs:10;\s]{[rn].}
+[case:sentence][numfmt:verbal][rs:10;\s]{[rn].}
 ```
 ```
 One. Two. Three. Four. Five. Six. Seven. Eight. Nine. Ten.
@@ -107,7 +107,6 @@ If you speak a language besides English and want to translate Rant into your nat
 ## Learn Rant
 See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
 
-## Donate
-If you love my work and want to support it by donating, you can do so [here](http://paypal.me/nicholasfleck).
-Donations help me afford better software and equipment for my projects, and any amount is very appreciated.
-Thank you!
+## Donating
+If you love my work, you can support me on [Patreon](https://patreon.com/Berkin) (preferred) or by donating through [PayPal](http://paypal.me/nicholasfleck).
+Your support helps me make projects like Rant even better. Thank you!
