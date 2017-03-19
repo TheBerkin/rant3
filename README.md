@@ -13,36 +13,33 @@
   <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
 </p>
 
-**Rant** is an all-purpose procedural text generation engine.
+**Rant** is an all-purpose procedural text engine
+that is most simply described as the opposite of Regex.
 It has been refined to include a dizzying array of features for handling everything from
 the most basic of string generation tasks to advanced dialogue generation,
 code templating, automatic formatting, and more.
 
-The goal of the project is to enable creators, especially those in game development,
+The goal of the project is to enable developers of all kinds
 to automate repetitive writing tasks with a high degree of creative freedom.
-With zero cost to you.
-
-Don't just write. Write with Rant.
 
 **[berkin.me/rant](http://berkin.me/rant)**
 
 ## Features
 
-* Recursive, weighted branching with several available selection modes
-* Supports queryable dictionaries.
-* Tools for automatic capitalization, rhyming, and indefinite articles
-* Return multiple outputs at once
-* Probability modifiers
+* Recursive, weighted branching with several selection modes
+* Queryable dictionaries
+* Automatic capitalization, rhyming, English indefinite articles, and multi-lingual number verbalization
+* Print to multiple separate outputs
+* Probability modifiers for pattern elements
 * Loops, conditional statements, and subroutines
+* Fully-functional object model
 * Import/Export resources easily with the .rantpkg format
-* Unity3D-ready!
-* **And that's just the beginning...**
+* Fully-compatible with Unity3D
+* *And much, much, much more...*
 
 ## Examples
 
-Rant is like a templating language but much more awesome. Here are a few examples of how it works.
-
-**Liven up a narrative with a few simple queries in your text.**
+**Liven up a narrative with a few simple queries.**
 ```
 <name-male> likes to <verb-transitive> <noun.pl> with <pro.dposs-male> pet <noun-animal> on <noun.pl  -dayofweek>.
 ```
