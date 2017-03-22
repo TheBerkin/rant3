@@ -98,6 +98,7 @@ namespace Rant.Core.Compiler.Syntax
 							}
 							else
 							{
+								throw new RantRuntimeException(sb.Pattern, sb.CurrentAction, "err-runtime-invalid-arg", strNum, p.Name, p.RantType.ToString().ToLower());
 							}
 						}
                         args[i] = Convert.ChangeType(d, p.NativeType);
