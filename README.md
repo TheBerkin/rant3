@@ -81,9 +81,7 @@ PM> Install-Package Rant -Pre
 Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
 ## Improve Rant
-If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. I will try to get back to you within a day.
-
-If you speak a language besides English and want to translate Rant into your native language, please feel free to write a .lang file for it and send a pull request.
+If there is something you want fixed, added, or changed, feel free to submit an issue/pull request; I will try to get back to you within a day. If you would like to translate Rant into your native language, simply write a .lang file for it [like this one here](https://github.com/TheBerkin/Rant/blob/dev-3.0/Rant/Localization/en-US.lang).
 
 ## Rant Resources
 * [Rant Homepage](http://berkin.me/rant)
