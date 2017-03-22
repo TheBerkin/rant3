@@ -1,17 +1,7 @@
 <p align="center">
-<img src="http://i.imgur.com/Vx7LyRP.png" alt="Rant logo" height="275px" width="275px"></img>
+<img src="http://i.imgur.com/Vx7LyRP.png" alt="Rant logo" height="225px" width="225px"></img>
 </p>
-
-<p align="center">
-  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
-  </a>
-  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
-  </a>
-  <br/><br/>
-  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
-</p>
+<br/>
 
 **Rant** is an all-purpose procedural text engine
 that is most simply described as the opposite of Regex.
@@ -21,8 +11,6 @@ code templating, automatic formatting, and more.
 
 The goal of the project is to enable developers of all kinds
 to automate repetitive writing tasks with a high degree of creative freedom.
-
-**[berkin.me/rant](http://berkin.me/rant)**
 
 ## Features
 
@@ -74,7 +62,6 @@ The drug dug the smug plug.
 ---
 
 
-
 ## NuGet
 Rant is also available as a [NuGet package](https://www.nuget.org/packages/Rant/).
 Enter this command in your package manager,
@@ -90,20 +77,34 @@ Or if development builds are your thing:
 PM> Install-Package Rant -Pre
 ```
 
-## Standard Dictionary
-Rant's standard dictionary can be found [**here**](http://github.com/TheBerkin/Rantionary).
-
 ## License
 Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/master/LICENSE).
 
 ## Improve Rant
-If there is something you want fixed, added, or changed, feel free to submit an issue/pull request. I will try to get back to you within a day.
+If there is something you want fixed, added, or changed, feel free to submit an issue/pull request; I will try to get back to you within a day. If you would like to translate Rant into your native language, simply write a .lang file for it [like this one here](https://github.com/TheBerkin/Rant/blob/dev-3.0/Rant/Localization/en-US.lang).
 
-If you speak a language besides English and want to translate Rant into your native language, please feel free to write a .lang file for it and send a pull request.
+## Rant Resources
+* [Rant Homepage](http://berkin.me/rant)
+* [Rant Documentation](http://berkin.me/rantdocs)
+* [Rantionary - Rant Standard Dictionary](https://github.com/TheBerkin/Rantionary)
 
-## Learn Rant
-See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
+## Build Status
 
-## Donating
-If you love my work, you can support me on [Patreon](https://patreon.com/Berkin) (preferred) or by donating through [PayPal](http://paypal.me/nicholasfleck).
-Your support helps me make projects like Rant even better. Thank you!
+ <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
+  </a>
+  <br/>
+  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
+  </a>
+
+## Support My Projects
+<br/>
+<p align="center">
+  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="20%" height="20%" /></a>
+</p>
+
+If you love my work, please consider supporting me on [Patreon](https://patreon.com/Berkin). Alternatively, I also accept donations through [PayPal](http://paypal.me/nicholasfleck).
+Donations help me make projects like Rant even better. Thank you.
+
+
