@@ -286,7 +286,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		public override string ToString()
 		{
-			return $"Block ({_count})";
+			return $"{{ {_count}... }}";
 		}
 	}
 }

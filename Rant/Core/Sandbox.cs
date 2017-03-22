@@ -145,10 +145,12 @@ namespace Rant.Core
 		public string GetStackTrace()
 		{
 			var sb = new StringBuilder();
+			int i = 0;
 			foreach(var layer in _trace)
 			{
 				if (layer is RstSequence && layer != Pattern.SyntaxTree) continue;
-				sb.AppendLine($"  in {layer}, Line {layer.Location.Line}");
+				sb.AppendLine($"  in {layer} @ ({layer.Location.Line}, {layer.Location.Column})");
+				i++;
 			}
 			return sb.ToString();
 		}
