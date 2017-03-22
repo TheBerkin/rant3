@@ -12,10 +12,6 @@ code templating, automatic formatting, and more.
 The goal of the project is to enable developers of all kinds
 to automate repetitive writing tasks with a high degree of creative freedom.
 
-<p align="center">
-  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
-</p>
-
 ## Features
 
 * Recursive, weighted branching with several selection modes
@@ -105,5 +101,12 @@ If you speak a language besides English and want to translate Rant into your nat
   </a>
 
 ## Support My Projects
-If you love my work, you can support me on [Patreon](https://patreon.com/Berkin),or alternatively through [PayPal](http://paypal.me/nicholasfleck).
-Your support helps me make projects like Rant even better. Thank you!
+<br/>
+<p align="center">
+  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="20%" height="20%" /></a>
+</p>
+
+If you love my work, please consider supporting me on [Patreon](https://patreon.com/Berkin). Alternatively, I also accept donations through [PayPal](http://paypal.me/nicholasfleck).
+Donations help me make projects like Rant even better. Thank you.
+
+
