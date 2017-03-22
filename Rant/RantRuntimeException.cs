@@ -30,6 +30,7 @@ using Rant.Core.Compiler.Syntax;
 
 using static Rant.Localization.Txtres;
 using Rant.Core;
+using Rant.Localization;
 
 namespace Rant
 {
@@ -101,7 +102,7 @@ namespace Rant
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return $"{Message}\n\nStack Trace:\n{RantStackTrace}";
+			return $"{Message}\n\n{GetString("stack-trace")}:\n{RantStackTrace}";
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿untitled-package = "Untitled Package"
 default-package-id = "Package"
 pattern = "Pattern"
+stack-trace = "Stack Trace"
 
 src-line-col = "({0}: Ln {1}, Col {2})"
 
