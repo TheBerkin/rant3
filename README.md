@@ -3,13 +3,6 @@
 </p>
 
 <p align="center">
-  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
-  </a>
-  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
-  </a>
-  <br/><br/>
   <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
 </p>
 
@@ -103,6 +96,16 @@ If you speak a language besides English and want to translate Rant into your nat
 
 ## Learn Rant
 See [berkin.me/rantdocs](http://berkin.me/rantdocs) for full documentation of the API and Rant language, as well as additional example code.
+
+## Build Status
+
+ <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
+  </a>
+  <br/>
+  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
+  </a>
 
 ## Donating
 If you love my work, you can support me on [Patreon](https://patreon.com/Berkin) (preferred) or by donating through [PayPal](http://paypal.me/nicholasfleck).
