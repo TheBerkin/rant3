@@ -14,7 +14,7 @@ namespace Rant.Core
 {
 	internal sealed partial class Sandbox
 	{
-		private readonly BlockManager _blockManager;
+		private readonly BlockAttribManager _blockManager;
 		private readonly Stack<OutputWriter> _outputs;
 		private readonly Stopwatch _stopwatch;
 		private bool _plural = false;
@@ -65,17 +65,12 @@ namespace Rant.Core
 		public long StartingGen { get; }
 
 		/// <summary>
-		/// Gets the currently set block attributes.
-		/// </summary>
-		public BlockAttribs CurrentBlockAttribs { get; private set; } = new BlockAttribs();
-
-		/// <summary>
 		/// Gets the format used by the interpreter.
 		/// </summary>
 		public RantFormat Format { get; }
 
 		/// <summary>
-		/// Gest the object stack used by the interpreter.
+		/// Gets the object stack used by the interpreter.
 		/// </summary>
 		public ObjectStack Objects { get; }
 
@@ -142,6 +137,6 @@ namespace Rant.Core
 		/// <summary>
 		/// The block manager.
 		/// </summary>
-		public BlockManager BlockManager => _blockManager;
+		public BlockAttribManager AttribManager => _blockManager;
 	}
 }

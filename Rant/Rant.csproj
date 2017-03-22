@@ -175,7 +175,7 @@
     <Compile Include="Core\Compiler\Token.cs" />
     <Compile Include="Core\Compiler\LineCol.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
-    <Compile Include="Core\Constructs\BlockManager.cs" />
+    <Compile Include="Core\Constructs\BlockAttribManager.cs" />
     <Compile Include="Core\Constructs\QueryBuilder.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
     <Compile Include="Core\Formatting\Accent.cs" />

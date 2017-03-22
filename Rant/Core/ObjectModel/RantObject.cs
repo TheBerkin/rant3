@@ -238,9 +238,8 @@ namespace Rant.Core.ObjectModel
                             return new RantObject(_boolean ? 1 : 0);
                         case RantObjectType.String:
                         {
-                            double num;
-                            return double.TryParse(_string, out num) ? new RantObject(num) : Null;
-                        }
+							return double.TryParse(_string, out double num) ? new RantObject(num) : Null;
+						}
                     }
                     break;
                 }

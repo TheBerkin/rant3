@@ -65,9 +65,8 @@ namespace Rant.Core.Compiler.Syntax
             // Convert arguments to their native types
             int paramc = _funcInfo.Parameters.Length;
             var args = new object[_argc];
-            double d;
-            RantFunctionParameter p;
-            for (int i = 0; i < _argc; i++)
+			RantFunctionParameter p;
+			for (int i = 0; i < _argc; i++)
             {
                 p = GetParameter(i);
                 switch (p.RantType)
@@ -90,12 +89,17 @@ namespace Rant.Core.Compiler.Syntax
                         sb.AddOutputWriter();
                         yield return _args[i];
                         string strNum = sb.Return().Main;
-                        if (!double.TryParse(strNum, out d))
+                        if (!double.TryParse(strNum, out double d))
                         {
                             d = 0;
-                            int n;
-                            if (Util.ParseInt(strNum, out n)) d = n;
-                        }
+							if (Util.ParseInt(strNum, out int n))
+							{
+								d = n;
+							}
+							else
+							{
+							}
+						}
                         args[i] = Convert.ChangeType(d, p.NativeType);
                         break;
                     }

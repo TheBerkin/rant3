@@ -107,21 +107,21 @@ namespace Rant.Core.Framework
 
 		[RantFunction("init")]
 		[RantDescription("Sets the index of the element to execute on the next block. Set to -1 to disable.")]
-		private static void Initial(Sandbox sb, int index) => sb.CurrentBlockAttribs.StartIndex = index;
+		private static void Initial(Sandbox sb, int index) => sb.AttribManager.CurrentAttribs.StartIndex = index;
 
 		[RantFunction("rep", "r")]
 		[RantDescription("Sets the repetition count for the next block.")]
 		private static void Rep(Sandbox sb,
-			[RantDescription("The number of times to repeat the next block.")] int times) => sb.CurrentBlockAttribs.Repetitions = times;
+			[RantDescription("The number of times to repeat the next block.")] int times) => sb.AttribManager.CurrentAttribs.Repetitions = times;
 
 		[RantFunction]
 		[RantDescription("Sets the repetition count to the number of items in the next block.")]
-		private static void RepEach(Sandbox sb) => sb.CurrentBlockAttribs.RepEach = true;
+		private static void RepEach(Sandbox sb) => sb.AttribManager.CurrentAttribs.RepEach = true;
 
 		[RantFunction("sep")]
 		private static IEnumerator<RST> PrintSep(Sandbox sb)
 		{
-			yield return sb.BlockManager.GetPrevious().Separator;
+			yield return sb.Blocks.Peek().Attribs.Separator;
 		}
 
 		[RantFunction("sep", "s")]
@@ -129,8 +129,8 @@ namespace Rant.Core.Framework
 		private static void Sep(Sandbox sb,
 			[RantDescription("The separator pattern to run between iterations of the next block.")] RST separator)
 		{
-			sb.CurrentBlockAttribs.IsSeries = false;
-			sb.CurrentBlockAttribs.Separator = separator;
+			sb.AttribManager.CurrentAttribs.IsSeries = false;
+			sb.AttribManager.CurrentAttribs.Separator = separator;
 		}
 
 		[RantFunction("sep", "s")]
@@ -139,9 +139,9 @@ namespace Rant.Core.Framework
 			[RantDescription("The separator pattern to run between items.")] RST separator,
 			[RantDescription("The conjunction pattern to run before the last item.")] RST conjunction)
 		{
-			sb.CurrentBlockAttribs.IsSeries = true;
-			sb.CurrentBlockAttribs.Separator = separator;
-			sb.CurrentBlockAttribs.EndConjunction = conjunction;
+			sb.AttribManager.CurrentAttribs.IsSeries = true;
+			sb.AttribManager.CurrentAttribs.Separator = separator;
+			sb.AttribManager.CurrentAttribs.EndConjunction = conjunction;
 		}
 
 		[RantFunction("sep", "s")]
@@ -151,10 +151,10 @@ namespace Rant.Core.Framework
 			[RantDescription("The Oxford comma pattern to run before the last item.")] RST oxford,
 			[RantDescription("The conjunction pattern to run before the last item in the series.")] RST conjunction)
 		{
-			sb.CurrentBlockAttribs.IsSeries = true;
-			sb.CurrentBlockAttribs.Separator = separator;
-			sb.CurrentBlockAttribs.EndSeparator = oxford;
-			sb.CurrentBlockAttribs.EndConjunction = conjunction;
+			sb.AttribManager.CurrentAttribs.IsSeries = true;
+			sb.AttribManager.CurrentAttribs.Separator = separator;
+			sb.AttribManager.CurrentAttribs.EndSeparator = oxford;
+			sb.AttribManager.CurrentAttribs.EndConjunction = conjunction;
 		}
 
 		[RantFunction("rs")]
@@ -163,25 +163,25 @@ namespace Rant.Core.Framework
 			[RantDescription("The number of times to repeat the next block.")] int times,
 			[RantDescription("The separator pattern to run between iterations of the next block.")] RST separator)
 		{
-			sb.CurrentBlockAttribs.IsSeries = false;
-			sb.CurrentBlockAttribs.Repetitions = times;
-			sb.CurrentBlockAttribs.Separator = separator;
+			sb.AttribManager.CurrentAttribs.IsSeries = false;
+			sb.AttribManager.CurrentAttribs.Repetitions = times;
+			sb.AttribManager.CurrentAttribs.Separator = separator;
 		}
 
 		[RantFunction]
 		[RantDescription("Sets the prefix pattern for the next block.")]
 		private static void Before(Sandbox sb,
-			[RantDescription("The pattern to run before each iteration of the next block.")] RST beforeAction) => sb.CurrentBlockAttribs.Before = beforeAction;
+			[RantDescription("The pattern to run before each iteration of the next block.")] RST beforeAction) => sb.AttribManager.CurrentAttribs.Before = beforeAction;
 
 		[RantFunction]
 		[RantDescription("Sets the postfix pattern for the next block.")]
 		private static void After(Sandbox sb,
-			[RantDescription("The pattern to run after each iteration of the next block.")] RST afterAction) => sb.CurrentBlockAttribs.After = afterAction;
+			[RantDescription("The pattern to run after each iteration of the next block.")] RST afterAction) => sb.AttribManager.CurrentAttribs.After = afterAction;
 
 		[RantFunction]
 		[RantDescription("Modifies the likelihood that the next block will execute. Specified in percentage.")]
 		private static void Chance(Sandbox sb,
-			[RantDescription("The percent probability that the next block will execute.")] double chance) => sb.CurrentBlockAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
+			[RantDescription("The percent probability that the next block will execute.")] double chance) => sb.AttribManager.CurrentAttribs.Chance = chance < 0 ? 0 : chance > 100 ? 100 : chance;
 
 		[RantFunction("case", "caps")]
 		[RantDescription("Changes the capitalization mode for all open channels.")]
@@ -305,7 +305,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
-			if (block.Iteration == block.Count) yield return action;
+			if (block.Iteration == block.Repetitions) yield return action;
 		}
 
 		[RantFunction]
@@ -315,7 +315,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
-			if (block.Iteration < block.Count) yield return action;
+			if (block.Iteration < block.Repetitions) yield return action;
 		}
 
 		[RantFunction]
@@ -325,7 +325,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
-			if (block.Iteration > 1 && block.Iteration < block.Count) yield return action;
+			if (block.Iteration > 1 && block.Iteration < block.Repetitions) yield return action;
 		}
 
 		[RantFunction]
@@ -335,7 +335,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) yield break;
 			var block = sb.Blocks.Peek();
-			if (block.Iteration == 1 || block.Iteration == block.Count) yield return action;
+			if (block.Iteration == 1 || block.Iteration == block.Repetitions) yield return action;
 		}
 
 		[RantFunction("repnum", "rn")]
@@ -359,7 +359,7 @@ namespace Rant.Core.Framework
 		private static void RepCount(Sandbox sb)
 		{
 			if (!sb.Blocks.Any()) return;
-			sb.Print(sb.Blocks.Peek().Count);
+			sb.Print(sb.Blocks.Peek().Repetitions);
 		}
 
 		[RantFunction("reprem", "rr")]
@@ -368,7 +368,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) return;
 			var block = sb.Blocks.Peek();
-			sb.Print(block.Count - block.Iteration);
+			sb.Print(block.Repetitions - block.Iteration);
 		}
 
 		[RantFunction("repqueued", "rq")]
@@ -377,7 +377,7 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) return;
 			var block = sb.Blocks.Peek();
-			sb.Print(block.Count - (block.Iteration - 1));
+			sb.Print(block.Repetitions - (block.Iteration - 1));
 		}
 
 		[RantFunction]
@@ -582,17 +582,17 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run before the next block.")]
 		private static void Start(Sandbox sb,
-			[RantDescription("The pattern to run before the next block.")] RST beforePattern) => sb.CurrentBlockAttribs.Start = beforePattern;
+			[RantDescription("The pattern to run before the next block.")] RST beforePattern) => sb.AttribManager.CurrentAttribs.Start = beforePattern;
 
 		[RantFunction]
 		[RantDescription("Sets a pattern that will run after the next block.")]
 		private static void End(Sandbox sb,
-			[RantDescription("The pattern to run after the next block.")] RST endPattern) => sb.CurrentBlockAttribs.End = endPattern;
+			[RantDescription("The pattern to run after the next block.")] RST endPattern) => sb.AttribManager.CurrentAttribs.End = endPattern;
 
 		// TODO: Finish [persist].
 		//[RantFunction]
 		[RantDescription("Instructs Rant not to consume the block attributes after they are used.")]
-		private static void Persist(Sandbox sb, AttribPersistence persistence) => sb.CurrentBlockAttribs.Persistence = persistence;
+		private static void Persist(Sandbox sb, AttribPersistence persistence) => sb.AttribManager.CurrentAttribs.Persistence = persistence;
 
 		[RantFunction]
 		[RantDescription("Loads and runs a pattern from cache or file.")]
@@ -984,21 +984,37 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("pipe")]
-		private static void Redirect(Sandbox sb, RST redirectCallback)
+		[RantDescription("Redirects the output from the next block into the specified callback. Access block output with [item].")]
+		private static void Redirect(Sandbox sb, 
+			[RantDescription("The callback to redirect block output to.")]
+			RST redirectCallback)
 		{
-			sb.CurrentBlockAttribs.Redirect = redirectCallback;
+			sb.AttribManager.CurrentAttribs.Redirect = redirectCallback;
 		}
 
 		[RantFunction("item")]
+		[RantDescription("Prints the main output from the current block iteration.")]
 		private static void RedirectedItem(Sandbox sb)
 		{
 			sb.Print(sb.GetRedirectedOutput().Main);
 		}
 
 		[RantFunction("item")]
+		[RantDescription("Prints the specified channel from the current block iteration.")]
 		private static void RedirectedItem(Sandbox sb, string channel)
 		{
 			sb.Print(sb.GetRedirectedOutput()[channel]);
+		}
+
+		[RantFunction("protect")]
+		[RantDescription("Spawns a new block attribute context for the specified callback so any blocks therein will not consume the current attributes.")]
+		private static IEnumerator<RST> Protect(Sandbox sb, 
+			[RantDescription("The callback to protect.")]
+			RST pattern)
+		{
+			sb.AttribManager.AddLayer();
+			yield return pattern;
+			sb.AttribManager.RemoveLayer();
 		}
 
 		[RantFunction("vs")]
@@ -1049,5 +1065,43 @@ namespace Rant.Core.Framework
 				sb.Print(o);
 			}
 		}
+
+		[RantFunction("add")]
+		private static void ValAdd(Sandbox sb, double a, double b)
+		{
+			sb.Print(a + b);
+		}
+
+		[RantFunction("addval")]
+		private static void VarAddVal(Sandbox sb, string a, double b)
+		{
+			sb.Objects[a] += new RantObject(b);
+		}
+
+		[RantFunction("addvar")]
+		private static void VarAddVar(Sandbox sb, string a, string b)
+		{
+			sb.Objects[a] += sb.Objects[b];
+		}
+
+		[RantFunction("sub")]
+		private static void ValSub(Sandbox sb, double a, double b)
+		{
+			sb.Print(a - b);
+		}
+
+		[RantFunction("subval")]
+		private static void VarSubVal(Sandbox sb, string a, double b)
+		{
+			sb.Objects[a] -= new RantObject(b);
+		}
+
+		[RantFunction("subvar")]
+		private static void VarSubVar(Sandbox sb, string a, string b)
+		{
+			sb.Objects[a] -= sb.Objects[b];
+		}
+
+
 	}
 }

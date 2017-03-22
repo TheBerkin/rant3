@@ -30,14 +30,16 @@ namespace Rant.Core.Constructs
     /// </summary>
     internal class BlockState
     {
-        public BlockState(int count)
+        public BlockState(int reps, BlockAttribs attribs)
         {
-            Count = count;
+            Repetitions = reps;
+			Attribs = attribs;
         }
 
-        public int Count { get; }
+        public int Repetitions { get; }
         public int Iteration { get; private set; }
         public int Index { get; private set; }
+		public BlockAttribs Attribs { get; }
 
         public void Next(int index)
         {

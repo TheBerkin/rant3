@@ -30,7 +30,7 @@ err-invalid-weight = "Invalid entry weight value."
 err-bad-term-count = "Terms per entry must be greater than zero."
 err-bad-pattern-name = "Invalid pattern name: {0}"
 err-internal-error = "An internal error has occurred. This is often caused by a bug in Rant."
-err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant. Message: {0}."
+err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant.\nMessage: {0}"
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
 err-stack-overflow = "Exceeded the maximum stack size ({0})."
@@ -73,6 +73,7 @@ err-table-argc-mismatch = "Argument count mismatch: {0} expects {1}, found {2}"
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 err-runtime-missing-var = "The variable '{0}' does not exist."
+err-runtime-invalid-arg = "The value '{0}' is not valid for the parameter '{1}' ({2} expected)."
 
 acc-carrier-name = "carrier name"
 acc-table-name = "table name"

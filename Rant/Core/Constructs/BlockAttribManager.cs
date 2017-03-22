@@ -24,30 +24,40 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-using Rant.Localization;
+using Rant.Core.Compiler.Syntax;
 
-namespace Rant
+namespace Rant.Core.Constructs
 {
-    /// <summary>
-    /// Represents an error that has been caused by a problem inside the Rant engine. This typically indicates the presence of
-    /// a bug.
-    /// </summary>
-    public sealed class RantInternalException : Exception
+    internal class BlockAttribManager
     {
-        internal RantInternalException(Exception inner)
-            : base(Txtres.GetString("err-internal-error"), inner)
+        private Stack<BlockAttribs> _attribStack;
+
+        public BlockAttribManager()
         {
+			_attribStack = new Stack<BlockAttribs>();
+			_attribStack.Push(new BlockAttribs());
         }
 
-        internal RantInternalException(string message)
-            : base(Txtres.GetString("err-internal-error-msg", message))
-        {
-        }
+		public BlockAttribs CurrentAttribs => _attribStack.Peek();
+		
+		public BlockAttribs TakeAttribs()
+		{
+			var attribs = _attribStack.Pop();
+			_attribStack.Push(new BlockAttribs());
+			return attribs;
+		}
 
-        internal RantInternalException(string message, Exception inner)
-            : base(Txtres.GetString("err-internal-error-msg", message), inner)
-        {
-        }
+		public void AddLayer()
+		{
+			_attribStack.Push(new BlockAttribs());
+		}
+
+		public void RemoveLayer()
+		{
+			_attribStack.Pop();
+		}
     }
 }

@@ -76,7 +76,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
-			var attribs = sb.NextAttribs(this);
+			var attribs = sb.AttribManager.TakeAttribs();
 
 			// Skip if chance doesn't fall within range
 			if (attribs.Chance < 100 && sb.RNG.NextDouble(0, 100) > attribs.Chance)
@@ -84,7 +84,7 @@ namespace Rant.Core.Compiler.Syntax
 
 			int next = -1;
 			int reps = attribs.RepEach ? _elements.Count : attribs.Repetitions;
-			var block = new BlockState(attribs.Repetitions);
+			var block = new BlockState(reps, attribs);
 			double weightSum = _constantWeightSum;
 
 			if (attribs.Start != null) yield return attribs.Start;
@@ -218,11 +218,12 @@ namespace Rant.Core.Compiler.Syntax
 				{
 					output.Write(true);
 					output.Write(_constantWeightSum);
-					for (int i = 0; i < _count; i++)
-						output.Write(_weights[i]);
+					for (int i = 0; i < _count; i++) output.Write(_weights[i]);
 				}
 				else
+				{
 					output.Write(false);
+				}
 
 				// Write dynamic weights
 				if (_dynamicWeights != null)
@@ -235,7 +236,9 @@ namespace Rant.Core.Compiler.Syntax
 					}
 				}
 				else
+				{
 					output.Write(0);
+				}
 			}
 
 			// Block elements
@@ -253,8 +256,7 @@ namespace Rant.Core.Compiler.Syntax
 				{
 					input.ReadDouble(out _constantWeightSum);
 					_weights = new double[_count];
-					for (int i = 0; i < _count; i++)
-						input.ReadDouble(out _weights[i]);
+					for (int i = 0; i < _count; i++) input.ReadDouble(out _weights[i]);
 				}
 
 				// Read dynamic weights
