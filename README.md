@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
+  <b><a href="http://berkin.me/rant">berkin.me/rant</a></b>
 </p>
 
 **Rant** is an all-purpose procedural text engine
@@ -15,7 +15,9 @@ code templating, automatic formatting, and more.
 The goal of the project is to enable developers of all kinds
 to automate repetitive writing tasks with a high degree of creative freedom.
 
-**[berkin.me/rant](http://berkin.me/rant)**
+<p align="center">
+  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="17%" height="17%" /></a>
+</p>
 
 ## Features
 
