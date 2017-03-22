@@ -104,5 +104,10 @@ namespace Rant.Core.Compiler.Syntax
             yield return complementRequest;
             _query.Complement = complementRequest.Result;
         }
-    }
+
+		public override string ToString()
+		{
+			return $"<{_query.Name}...>";
+		}
+	}
 }

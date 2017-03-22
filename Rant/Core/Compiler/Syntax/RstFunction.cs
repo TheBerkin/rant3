@@ -98,7 +98,7 @@ namespace Rant.Core.Compiler.Syntax
 							}
 							else
 							{
-								throw new RantRuntimeException(sb.Pattern, sb.CurrentAction, "err-runtime-invalid-arg", strNum, p.Name, p.RantType.ToString().ToLower());
+								throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-invalid-arg", strNum, p.Name, p.RantType.ToString().ToLower());
 							}
 						}
                         args[i] = Convert.ChangeType(d, p.NativeType);
@@ -114,7 +114,7 @@ namespace Rant.Core.Compiler.Syntax
                         object value;
                         if (!Util.TryParseEnum(p.NativeType, strMode, out value))
                         {
-                            throw new RantRuntimeException(sb.Pattern, _args[i].Location,
+                            throw new RantRuntimeException(sb, _args[i].Location,
                                 $"Unknown mode value '{strMode}'.");
                         }
                         args[i] = value;
@@ -134,7 +134,7 @@ namespace Rant.Core.Compiler.Syntax
                         {
                             if (!Util.TryParseEnum(enumType, flag, out value))
                             {
-                                throw new RantRuntimeException(sb.Pattern, _args[i].Location,
+                                throw new RantRuntimeException(sb, _args[i].Location,
                                     $"Unknown flag value '{flag}'.");
                             }
                             flags |= Convert.ToInt64(value);
@@ -182,5 +182,10 @@ namespace Rant.Core.Compiler.Syntax
                 _args.Add(request.Result);
             }
         }
-    }
+
+		public override string ToString()
+		{
+			return _funcInfo.ToString();
+		}
+	}
 }

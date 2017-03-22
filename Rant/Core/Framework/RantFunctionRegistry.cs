@@ -607,12 +607,12 @@ namespace Rant.Core.Framework
 			}
 			catch (RantCompilerException e)
 			{
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location,
+				throw new RantRuntimeException(sb, sb.CurrentAction.Location,
 					$"Failed to compile imported pattern '{name}':\n{e.Message}");
 			}
 			catch (Exception e)
 			{
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location,
+				throw new RantRuntimeException(sb, sb.CurrentAction.Location,
 					$"Failed to import '{name}':\n{e.Message}");
 			}
 
@@ -765,35 +765,6 @@ namespace Rant.Core.Framework
 		[RantFunction("plural", "pl")]
 		[RantDescription("Infers and prints the plural form of the specified word.")]
 		private static void Plural(Sandbox sb, string word) => sb.Print(sb.Format.Pluralizer.Pluralize(word));
-
-		[RantFunction("use")]
-		[RantDescription("Loads a module from the file name.module.rant, name.rant, or name, in that order.")]
-		private static void Use(Sandbox sb, string name)
-		{
-			if (sb.UserModules.ContainsKey(name))
-			{
-				sb.Modules[name] = sb.UserModules[name];
-				return;
-			}
-			if (sb.PackageModules.ContainsKey(name))
-			{
-				sb.Modules[name] = sb.PackageModules[name];
-				return;
-			}
-			string file;
-			if (File.Exists(name + ".module.rant"))
-				file = name + ".module.rant";
-			else if (File.Exists(name + ".rant"))
-				file = name + ".rant";
-			else if (File.Exists(name))
-				file = name;
-			else
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"Could not find module '{name}'.");
-			var pattern = RantProgram.CompileFile(file);
-			if (pattern.Module == null)
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction.Location, $"No module is defined in {file}.");
-			sb.Modules[Path.GetFileNameWithoutExtension(name)] = pattern.Module;
-		}
 
 		[RantFunction]
 		[RantDescription("Prints the current length of the specified channel, in characters.")]
@@ -1053,7 +1024,7 @@ namespace Rant.Core.Framework
 			var o = sb.Objects[name];
 			if (o == null)
 			{
-				throw new RantRuntimeException(sb.Pattern, sb.CurrentAction, "err-runtime-missing-var", name);
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-missing-var", name);
 			}
 
 			if (o.Type == RantObjectType.Action)

@@ -148,11 +148,8 @@ namespace Rant.Core.Compiler.Parsing
             // subroutine definition
             if (reader.TakeLoose(R.LeftSquare, false))
             {
-                bool inModule = false;
-
                 if (reader.TakeLoose(R.Period))
                 {
-                    inModule = true;
                     compiler.HasModule = true;
                 }
                 var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
@@ -189,8 +186,6 @@ namespace Rant.Core.Compiler.Parsing
                 compiler.SetNextActionCallback(actionCallback);
 
                 subroutine.Body = new RstSequence(actions, bodyStart.ToLocation());
-                if (inModule)
-                    compiler.Module.AddActionFunction(subroutineName.Value, subroutine);
                 actionCallback(subroutine);
             }
             else

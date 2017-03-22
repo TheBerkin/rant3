@@ -201,12 +201,12 @@ namespace RantConsole
 			catch (RantRuntimeException e)
 			{
 				ForegroundColor = ConsoleColor.Red;
-				WriteLine(e.Message);
+				WriteLine(e);
 			}
 			catch (RantCompilerException e)
 			{
 				ForegroundColor = ConsoleColor.Yellow;
-				WriteLine(e.Message);
+				WriteLine(e);
 			}
 			catch (Exception e)
 			{

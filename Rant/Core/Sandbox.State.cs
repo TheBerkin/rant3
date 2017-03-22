@@ -25,21 +25,6 @@ namespace Rant.Core
 		public QueryBuilder QueryBuilder { get; } = new QueryBuilder();
 
 		/// <summary>
-		/// Gets the currently loaded modules.
-		/// </summary>
-		public Dictionary<string, RantModule> Modules = new Dictionary<string, RantModule>();
-
-		/// <summary>
-		/// Modules that were loaded from packages.
-		/// </summary>
-		public Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
-
-		/// <summary>
-		/// Modules that were not loaded from code, but were provided to RantEngine by the user.
-		/// </summary>
-		public Dictionary<string, RantModule> UserModules = new Dictionary<string, RantModule>();
-
-		/// <summary>
 		/// Gets the engine instance to which the sandbox is bound.
 		/// </summary>
 		public RantEngine Engine { get; }

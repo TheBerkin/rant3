@@ -33,7 +33,7 @@ err-internal-error = "An internal error has occurred. This is often caused by a 
 err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant.\nMessage: {0}"
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
-err-stack-overflow = "Exceeded the maximum stack size ({0})."
+err-stack-overflow = "Exceeded the maximum stack size."
 
 err-generic-runtime = "An unspecified runtime error was encountered."
 err-generic-compiler = "An unspecified compiler error was encountered."

@@ -47,6 +47,7 @@ namespace Rant.Core
 	internal sealed partial class Sandbox
 	{
 		private static readonly object fallbackArgsLockObj = new object();
+		private readonly Stack<RST> _trace = new Stack<RST>();
 
 		public Sandbox(RantEngine engine, RantProgram pattern, RNG rng, int sizeLimit = 0, CarrierState carrierState = null,
 			RantProgramArgs args = null)
@@ -141,6 +142,17 @@ namespace Rant.Core
 
 		public RantOutput GetRedirectedOutput() => _redirOutputs.Count > 0 ? _redirOutputs.Peek() : null;
 
+		public string GetStackTrace()
+		{
+			var sb = new StringBuilder();
+			foreach(var layer in _trace)
+			{
+				if (layer is RstSequence && layer != Pattern.SyntaxTree) continue;
+				sb.AppendLine($"  in {layer}, Line {layer.Location.Line}");
+			}
+			return sb.ToString();
+		}
+
 		public RantOutput Run(double timeout, RantProgram pattern = null)
 		{
 #if !DEBUG
@@ -165,6 +177,7 @@ namespace Rant.Core
 
 					// Push the AST root
 					CurrentAction = pattern.SyntaxTree;
+					_trace.Push(pattern.SyntaxTree);
 					callStack.Push(pattern.SyntaxTree.Run(this));
 
 				top:
@@ -178,26 +191,28 @@ namespace Rant.Core
 						{
 							if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							{
-								throw new RantRuntimeException(pattern, action.Current.Location,
+								throw new RantRuntimeException(this, action.Current.Location,
 									GetString("err-pattern-timeout", timeout));
 							}
 
 							if (callStack.Count >= RantEngine.MaxStackSize)
 							{
-								throw new RantRuntimeException(pattern, action.Current.Location,
-									GetString("err-stack-overflow", RantEngine.MaxStackSize));
+								throw new RantRuntimeException(this, action.Current.Location,
+									GetString("err-stack-overflow"));
 							}
 
 							if (action.Current == null) break;
 
 							// Push child node onto stack and start over
 							CurrentAction = action.Current;
+							_trace.Push(action.Current);
 							callStack.Push(CurrentAction.Run(this));
 							goto top;
 						}
 
 						// Remove node once finished
 						callStack.Pop();
+						_trace.Pop();
 					}
 
 					if (!stopwatchAlreadyRunning) _stopwatch.Stop();
@@ -271,13 +286,13 @@ namespace Rant.Core
 						{
 							if (timed && _stopwatch.ElapsedMilliseconds >= timeoutMS)
 							{
-								throw new RantRuntimeException(pattern, action.Current.Location,
+								throw new RantRuntimeException(this, action.Current.Location,
 									GetString("err-pattern-timeout", timeout));
 							}
 
 							if (callStack.Count >= RantEngine.MaxStackSize)
 							{
-								throw new RantRuntimeException(pattern, action.Current.Location,
+								throw new RantRuntimeException(this, action.Current.Location,
 									GetString("err-stack-overflow", RantEngine.MaxStackSize));
 							}
 

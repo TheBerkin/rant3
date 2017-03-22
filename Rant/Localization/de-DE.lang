@@ -33,7 +33,7 @@ err-internal-error = "Ein interner Fehler ist aufgetreten. Diese Fehler werden m
 err-internal-error-msg = "Ein interner Fehler ist aufgetreten. Diese Fehler werden meistens von einem Bug in Rant verursacht. Fehlermeldung: {0}"
 
 err-pattern-timeout = "Der Ausführungszeitraum ist abgelaufen ({0} Sekunden)."
-err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten (Maximaltiefe: {0})."
+err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten."
 
 err-generic-runtime = "Ein unspezifizierter Laufzeitfehler ist aufgetreten."
 err-generic-compiler = "Ein unspezifizierter Erstellungsfehler ist aufgetreten."

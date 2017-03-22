@@ -39,7 +39,6 @@ namespace Rant.Core.Compiler
         private readonly Stack<CompileContext> _contextStack = new Stack<CompileContext>();
         private readonly TokenReader _reader;
         private readonly string _sourceName;
-        internal readonly RantModule Module;
         private List<RantCompilerMessage> _errors;
         private Action<RST> _nextActionCallback = null;
         // private List<RantCompilerMessage> _warnings;
@@ -47,8 +46,6 @@ namespace Rant.Core.Compiler
 
         public RantCompiler(string sourceName, string source)
         {
-            Module = new RantModule(sourceName);
-
             _sourceName = sourceName;
             Source = source;
             _reader = new TokenReader(sourceName, RantLexer.Lex(this, source), this);

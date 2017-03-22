@@ -102,7 +102,7 @@ namespace Rant.Core.Compiler.Syntax
 					}
 					else if (!double.TryParse(strWeight, out _weights[dw.Item1]))
 					{
-						throw new RantRuntimeException(sb.Pattern, dw.Item2.Location,
+						throw new RantRuntimeException(sb, dw.Item2.Location,
 							GetString("err-runtime-invalid-dynamic-weight", strWeight));
 					}
 
@@ -282,6 +282,11 @@ namespace Rant.Core.Compiler.Syntax
 				yield return request;
 				_elements.Add(request.Result);
 			}
+		}
+
+		public override string ToString()
+		{
+			return $"Block ({_count})";
 		}
 	}
 }

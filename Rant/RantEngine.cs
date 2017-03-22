@@ -60,7 +60,6 @@ namespace Rant
 		private RantFormat _format = RantFormat.English;
 		private bool _preserveCarrierState = false;
 		private RantDependencyResolver _resolver = new RantDependencyResolver();
-		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
 
 		/// <summary>
 		/// Creates a new RantEngine object without a dictionary.
@@ -77,11 +76,6 @@ namespace Rant
 		{
 			_dictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
 		}
-
-		/// <summary>
-		/// User-defined Rant modules.
-		/// </summary>
-		public Dictionary<string, RantModule> Modules { get; } = new Dictionary<string, RantModule>();
 
 		/// <summary>
 		/// The current formatting settings for the engine.
@@ -255,8 +249,6 @@ namespace Rant
 #endif
 		private RantOutput RunVM(Sandbox vm, double timeout)
 		{
-			vm.UserModules = Modules;
-			vm.PackageModules = PackageModules;
 			if (_preserveCarrierState && _carrierState == null)
 				_carrierState = vm.CarrierState;
 			return vm.Run(timeout);
