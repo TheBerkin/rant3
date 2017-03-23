@@ -54,10 +54,10 @@ namespace Rant.Core.Compiler.Syntax
         public override IEnumerator<RST> Run(Sandbox sb)
         {
 			if (sb.Objects[Name] == null)
-                throw new RantRuntimeException(sb, this, $"The subroutine '{Name}' does not exist.");
+                throw new RantRuntimeException(sb, this, "err-runtime-missing-subroutine", Name);
             var sub = (RstDefineSubroutine)(sb.Objects[Name].Value);
             if (sub.Parameters.Keys.Count != Arguments.Count)
-                throw new RantRuntimeException(sb, this, "Argument mismatch on subroutine call.");
+                throw new RantRuntimeException(sb, this, "err-runtime-subarg-mismatch", Name);
             var action = sub.Body;
             var args = new Dictionary<string, RST>();
             var parameters = sub.Parameters.Keys.ToArray();
@@ -71,7 +71,9 @@ namespace Rant.Core.Compiler.Syntax
                     args[parameters[i]] = new RstText(Location, output.Main);
                 }
                 else
+                {
                     args[parameters[i]] = Arguments[i];
+                }
             }
             sb.SubroutineArgs.Push(args);
             yield return action;

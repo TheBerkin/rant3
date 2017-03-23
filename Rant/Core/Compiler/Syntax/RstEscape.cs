@@ -34,8 +34,8 @@ namespace Rant.Core.Compiler.Syntax
     [RST("eseq")]
     internal class RstEscape : RST
     {
-        private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = new Dictionary
-            <char, Action<Sandbox, int>>
+        private static readonly Dictionary<char, Action<Sandbox, int>> EscapeTable = 
+            new Dictionary<char, Action<Sandbox, int>>
             {
                 { 'n', (sb, c) => sb.Print(new string('\n', c)) },
                 {
@@ -136,9 +136,13 @@ namespace Rant.Core.Compiler.Syntax
             {
                 Action<Sandbox, int> func;
                 if (!EscapeTable.TryGetValue(_codeHigh, out func))
+                {
                     sb.Print(new string(_codeHigh, _times));
+                }
                 else
+                {
                     func(sb, _times);
+                }
             }
             yield break;
         }

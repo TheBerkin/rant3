@@ -75,7 +75,7 @@ namespace Rant.Core.Compiler.Syntax
 
         protected override IEnumerator<RST> Serialize(EasyWriter output)
         {
-            output.Write((_regex.Options & RegexOptions.IgnoreCase) == RegexOptions.IgnoreCase); // Ignore case?
+            output.Write((_regex.Options & RegexOptions.IgnoreCase) > 0); // Ignore case?
             output.Write(_regex.ToString());
             yield return _rstSource;
             yield return _rstMatchEval;
@@ -92,6 +92,11 @@ namespace Rant.Core.Compiler.Syntax
             request = new DeserializeRequest();
             yield return request;
             _rstMatchEval = request.Result;
+        }
+
+        public override string ToString()
+        {
+            return $"Replacer `{_regex}`{((_regex.Options & RegexOptions.IgnoreCase) > 0 ? "i" : "")}{((_regex.Options & RegexOptions.Multiline) > 0 ? "m" : "")}";
         }
     }
 }

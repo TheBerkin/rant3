@@ -218,7 +218,7 @@ namespace Rant
 
 		#region Static members
 
-		private static int _maxStackSize = 64;
+		private static int _maxStackSize = 128;
 		private static readonly RNG Seeds = new RNG();
 
 		static RantEngine()

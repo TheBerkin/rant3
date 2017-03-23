@@ -111,11 +111,9 @@ namespace Rant.Core.Compiler.Syntax
                         sb.AddOutputWriter();
                         yield return _args[i];
                         string strMode = sb.Return().Main;
-                        object value;
-                        if (!Util.TryParseEnum(p.NativeType, strMode, out value))
+                        if (!Util.TryParseEnum(p.NativeType, strMode, out object value))
                         {
-                            throw new RantRuntimeException(sb, _args[i].Location,
-                                $"Unknown mode value '{strMode}'.");
+                            throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-mode", strMode);
                         }
                         args[i] = value;
                         break;
@@ -129,13 +127,11 @@ namespace Rant.Core.Compiler.Syntax
                         yield return _args[i];
                         long flags = 0;
                         string strFlags = sb.Return().Main;
-                        object value;
                         foreach (string flag in strFlags.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                         {
-                            if (!Util.TryParseEnum(enumType, flag, out value))
+                            if (!Util.TryParseEnum(enumType, flag, out object value))
                             {
-                                throw new RantRuntimeException(sb, _args[i].Location,
-                                    $"Unknown flag value '{flag}'.");
+                                throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-flag", flag);
                             }
                             flags |= Convert.ToInt64(value);
                         }
