@@ -1178,6 +1178,74 @@ namespace Rant.Core.Framework
             sb.Objects[a] = !o;
         }
 
+        [RantFunction("and")]
+        private static void And(Sandbox sb, bool a, params bool[] b)
+        {
+            bool result = a;
+            if (!a)
+            {
+                sb.Print(FALSE);
+                return;
+            }
+            for(int i = 0; i < b.Length; i++)
+            {
+                result = result && b[i];
+            }
+            sb.Print(result ? TRUE : FALSE);
+        }
+
+        [RantFunction("nand")]
+        private static void Nand(Sandbox sb, bool a, params bool[] b)
+        {
+            bool result = a;
+            if (!a)
+            {
+                sb.Print(TRUE);
+                return;
+            }
+            for (int i = 0; i < b.Length; i++)
+            {
+                result = result && b[i];
+            }
+            sb.Print(result ? FALSE : TRUE);
+        }
+
+        [RantFunction("or")]
+        private static void Or(Sandbox sb, bool a, params bool[] b)
+        {
+            if (a)
+            {
+                sb.Print(TRUE);
+                return;
+            }
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (!b[i]) continue;
+                sb.Print(TRUE);
+                return;
+            }
+            sb.Print(FALSE);
+        }
+
+        [RantFunction("xor")]
+        private static void Xor(Sandbox sb, bool a, params bool[] b)
+        {
+            bool x = a;
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (b[i])
+                {
+                    if (x)
+                    {
+                        sb.Print(FALSE);
+                        return;
+                    }
+                    x = b[i];
+                }
+            }
+            sb.Print(x ? TRUE : FALSE);
+        }
+
         [RantFunction("maybe")]
         private static void Maybe(Sandbox sb)
         {
