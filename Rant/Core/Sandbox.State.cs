@@ -21,6 +21,13 @@ namespace Rant.Core
 		private int _quoteLevel = 0;
 		private bool shouldYield = false;
 		private Stack<RantOutput> _redirOutputs;
+		private HashSet<string> _conditionFlags;
+		private ObjectStack _objectStack;
+		private Stack<Dictionary<string, RST>> _subArgs;
+		private CarrierState _carrierState;
+		private Stack<Match> _matches;
+		private Stack<BlockState> _blocks;
+		private SyncManager _syncManager;
 
 		public QueryBuilder QueryBuilder { get; } = new QueryBuilder();
 
@@ -57,22 +64,34 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets the object stack used by the interpreter.
 		/// </summary>
-		public ObjectStack Objects { get; }
+		public ObjectStack Objects
+		{
+			get { return _objectStack ?? (_objectStack = new ObjectStack(Engine.Objects)); }
+		}
 
 		/// <summary>
 		/// Gets the block state stack.
 		/// </summary>
-		public Stack<BlockState> Blocks { get; }
+		public Stack<BlockState> Blocks
+		{
+			get { return _blocks ?? (_blocks = new Stack<BlockState>()); }
+		}
 
 		/// <summary>
 		/// Gets the replacer match stack. The topmost item is the current match for the current replacer.
 		/// </summary>
-		public Stack<Match> RegexMatches { get; }
+		public Stack<Match> RegexMatches
+		{
+			get { return _matches ?? (_matches = new Stack<Match>()); }
+		}
 
 		/// <summary>
 		/// Gets the current query state.
 		/// </summary>
-		public CarrierState CarrierState { get; }
+		public CarrierState CarrierState
+		{
+			get { return _carrierState ?? (_carrierState = new CarrierState()); }
+		}
 
 		/// <summary>
 		/// Gets the current RantPattern.
@@ -82,12 +101,18 @@ namespace Rant.Core
 		/// <summary>
 		/// Subroutine argument stack.
 		/// </summary>
-		public Stack<Dictionary<string, RST>> SubroutineArgs { get; }
+		public Stack<Dictionary<string, RST>> SubroutineArgs
+		{
+			get { return _subArgs ?? (_subArgs = new Stack<Dictionary<string, RST>>()); }
+		}
 
 		/// <summary>
 		/// Gets the synchronizer manager instance for the current Sandbox.
 		/// </summary>
-		public SyncManager SyncManager { get; }
+		public SyncManager SyncManager
+		{
+			get { return _syncManager ?? (_syncManager = new SyncManager(this)); }
+		}
 
 		/// <summary>
 		/// Gets the size limit for the pattern.
@@ -112,7 +137,10 @@ namespace Rant.Core
 		/// <summary>
 		/// Gets a collection of the flags currently being used for the flag condition.
 		/// </summary>
-		public HashSet<string> ConditionFlags { get; } = new HashSet<string>();
+		public HashSet<string> ConditionFlags
+		{
+			get { return (_conditionFlags ?? (_conditionFlags = new HashSet<string>())); }
+		}
 
 		/// <summary>
 		/// Gets the arguments passed to the pattern.

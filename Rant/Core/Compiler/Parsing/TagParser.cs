@@ -32,211 +32,231 @@ using Rant.Core.Framework;
 
 namespace Rant.Core.Compiler.Parsing
 {
-    internal class TagParser : Parser
-    {
-        public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
-            Action<RST> actionCallback)
-        {
-            var nextType = reader.PeekType();
+	internal class TagParser : Parser
+	{
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
+		{
+			var nextType = reader.PeekType();
 
-            var tagStart = reader.PrevToken;
+			var tagStart = reader.PrevToken;
 
-            // replacer
-            switch (nextType)
-            {
-                case R.Regex:
-                {
-                    var regex = reader.Read(R.Regex, "acc-replacer-regex");
-                    var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
-                    if (reader.IsNext(R.RegexFlags))
-                    {
-                        var flagsToken = reader.ReadToken();
-                        foreach (char flag in flagsToken.Value)
-                        {
-                            switch (flag)
-                            {
-                                case 'i':
-                                    options |= RegexOptions.IgnoreCase;
-                                    break;
-                                case 'm':
-                                    options |= RegexOptions.Multiline;
-                                    break;
-                            }
-                        }
-                    }
+			// replacer
+			switch (nextType)
+			{
+				case R.Regex:
+				{
+					var regex = reader.Read(R.Regex, "acc-replacer-regex");
+					var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+					if (reader.IsNext(R.RegexFlags))
+					{
+						var flagsToken = reader.ReadToken();
+						foreach (char flag in flagsToken.Value)
+						{
+							switch (flag)
+							{
+								case 'i':
+								options |= RegexOptions.IgnoreCase;
+								break;
+								case 'm':
+								options |= RegexOptions.Multiline;
+								break;
+							}
+						}
+					}
 
-                    reader.Read(R.Colon);
+					reader.Read(R.Colon);
 
-                    var arguments = new List<RST>();
+					var arguments = new List<RST>();
 
-                    var iterator = ReadArguments(compiler, reader, arguments);
-                    while (iterator.MoveNext())
-                        yield return iterator.Current;
+					var iterator = ReadArguments(compiler, reader, arguments);
+					while (iterator.MoveNext())
+						yield return iterator.Current;
 
-                    compiler.SetNextActionCallback(actionCallback);
+					compiler.SetNextActionCallback(actionCallback);
 
-                    if (arguments.Count != 2)
-                    {
-                        compiler.SyntaxError(tagStart, reader.PrevToken, false, "err-compiler-replacer-argcount");
-                        yield break;
-                    }
+					if (arguments.Count != 2)
+					{
+						compiler.SyntaxError(tagStart, reader.PrevToken, false, "err-compiler-replacer-argcount");
+						yield break;
+					}
 
-                    actionCallback(new RstReplacer(regex.ToLocation(), new Regex(regex.Value, options), arguments[0], arguments[1]));
-                }
-                    break;
-                case R.Dollar:
-                {
-                    reader.ReadToken();
-                    var e = ParseSubroutine(compiler, context, reader, actionCallback);
-                    while (e.MoveNext())
-                        yield return e.Current;
-                }
-                    break;
-                default:
-                {
-                    var e = ParseFunction(compiler, context, reader, actionCallback);
-                    while (e.MoveNext())
-                        yield return e.Current;
-                }
-                    break;
-            }
-        }
+					actionCallback(new RstReplacer(regex.ToLocation(), new Regex(regex.Value, options), arguments[0], arguments[1]));
+				}
+				break;
+				case R.Dollar:
+				{
+					reader.ReadToken();
+					var e = ParseSubroutine(compiler, context, reader, actionCallback);
+					while (e.MoveNext())
+						yield return e.Current;
+				}
+				break;
+				default:
+				{
+					var e = ParseFunction(compiler, context, reader, actionCallback);
+					while (e.MoveNext())
+						yield return e.Current;
+				}
+				break;
+			}
+		}
 
-        private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader,
-            Action<RST> actionCallback)
-        {
-            var functionName = reader.Read(R.Text, "acc-function-name");
+		private IEnumerator<Parser> ParseFunction(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
+		{
+			var functionName = reader.Read(R.Text, "acc-function-name");
 
-            var arguments = new List<RST>();
+			var arguments = new List<RST>();
 
-            if (reader.PeekType() == R.Colon)
-            {
-                reader.ReadToken();
+			if (reader.PeekType() == R.Colon)
+			{
+				reader.ReadToken();
 
-                var iterator = ReadArguments(compiler, reader, arguments);
-                while (iterator.MoveNext())
-                    yield return iterator.Current;
+				var iterator = ReadArguments(compiler, reader, arguments);
+				while (iterator.MoveNext())
+					yield return iterator.Current;
 
-                compiler.SetNextActionCallback(actionCallback);
-            }
-            else
-                reader.Read(R.RightSquare);
+				compiler.SetNextActionCallback(actionCallback);
+			}
+			else
+			{
+				reader.Read(R.RightSquare);
+			}
 
-            RantFunctionSignature sig = null;
+			RantFunctionSignature sig = null;
 
-            if (functionName.Value != null)
-            {
-                if (!RantFunctionRegistry.FunctionExists(functionName.Value))
-                {
-                    compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
-                    yield break;
-                }
+			if (functionName.Value != null)
+			{
+				if (!RantFunctionRegistry.FunctionExists(functionName.Value))
+				{
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
+					yield break;
+				}
 
-                if ((sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count)) == null)
-                {
-                    compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName.Value, arguments.Count);
-                    yield break;
-                }
+				if ((sig = RantFunctionRegistry.GetFunction(functionName.Value, arguments.Count)) == null)
+				{
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-overload", functionName.Value, arguments.Count);
+					yield break;
+				}
 
-                actionCallback(new RstFunction(functionName.ToLocation(), sig, arguments));
-            }
-        }
+				actionCallback(new RstFunction(functionName.ToLocation(), sig, arguments));
+			}
+		}
 
-        private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader,
-            Action<RST> actionCallback)
-        {
-            // subroutine definition
-            if (reader.TakeLoose(R.LeftSquare, false))
-            {
-                if (reader.TakeLoose(R.Period))
-                {
-                    compiler.HasModule = true;
-                }
-                var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
-                var subroutine = new RstDefineSubroutine(subroutineName.ToLocation())
-                {
-                    Parameters = new Dictionary<string, SubroutineParameterType>(),
-                    Name = subroutineName.Value
-                };
+		private IEnumerator<Parser> ParseSubroutine(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
+		{
+			// subroutine definition
+			if (reader.TakeLoose(R.LeftSquare, false))
+			{
+				if (reader.TakeLoose(R.Period))
+				{
+					compiler.HasModule = true;
+				}
+				var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
+				var subroutine = new RstDefineSubroutine(subroutineName.ToLocation())
+				{
+					Parameters = new Dictionary<string, SubroutineParameterType>(),
+					Name = subroutineName.Value
+				};
 
-                if (reader.PeekLooseToken().Type == R.Colon)
-                {
-                    reader.ReadLooseToken();
+				if (reader.PeekLooseToken().Type == R.Colon)
+				{
+					reader.ReadLooseToken();
 
-                    do
-                    {
-                        var type = SubroutineParameterType.Greedy;
-                        if (reader.TakeLoose(R.At))
-                            type = SubroutineParameterType.Loose;
+					do
+					{
+						var type = SubroutineParameterType.Greedy;
+						if (reader.TakeLoose(R.At))
+							type = SubroutineParameterType.Loose;
 
-                        subroutine.Parameters[reader.ReadLoose(R.Text, "argument name").Value] = type;
-                    } while (reader.TakeLoose(R.Semicolon, false));
-                }
+						subroutine.Parameters[reader.ReadLoose(R.Text, "acc-arg-name").Value] = type;
+					} while (reader.TakeLoose(R.Semicolon, false));
+				}
 
-                reader.ReadLoose(R.RightSquare);
+				reader.ReadLoose(R.RightSquare);
 
-                var bodyStart = reader.ReadLoose(R.Colon);
+				var bodyStart = reader.ReadLoose(R.Colon);
 
-                var actions = new List<RST>();
-                Action<RST> bodyActionCallback = action => actions.Add(action);
+				var actions = new List<RST>();
+				Action<RST> bodyActionCallback = action => actions.Add(action);
 
-                compiler.AddContext(CompileContext.SubroutineBody);
-                compiler.SetNextActionCallback(bodyActionCallback);
-                yield return Get<SequenceParser>();
-                compiler.SetNextActionCallback(actionCallback);
+				compiler.AddContext(CompileContext.SubroutineBody);
+				compiler.SetNextActionCallback(bodyActionCallback);
+				yield return Get<SequenceParser>();
+				compiler.SetNextActionCallback(actionCallback);
+				if (actions.Count == 1)
+				{
+					subroutine.Body = actions[0];
+				}
+				else
+				{
+					subroutine.Body = new RstSequence(actions, bodyStart.ToLocation());
+				}				
+				actionCallback(subroutine);
+			}
+			else
+			{
+				// subroutine call
+				var subroutineName = reader.Read(R.Text, "acc-subroutine-name");
+				string moduleFunctionName = null;
 
-                subroutine.Body = new RstSequence(actions, bodyStart.ToLocation());
-                actionCallback(subroutine);
-            }
-            else
-            {
-                // subroutine call
-                var subroutineName = reader.Read(R.Text, "acc-subroutine-name");
-                string moduleFunctionName = null;
+				if (reader.TakeLoose(R.Period, false))
+					moduleFunctionName = reader.Read(R.Text, "module function name").Value;
 
-                if (reader.TakeLoose(R.Period, false))
-                    moduleFunctionName = reader.Read(R.Text, "module function name").Value;
+				var arguments = new List<RST>();
 
-                var arguments = new List<RST>();
+				if (reader.PeekType() == R.Colon)
+				{
+					reader.ReadToken();
 
-                if (reader.PeekType() == R.Colon)
-                {
-                    reader.ReadToken();
+					var iterator = ReadArguments(compiler, reader, arguments);
+					while (iterator.MoveNext())
+						yield return iterator.Current;
 
-                    var iterator = ReadArguments(compiler, reader, arguments);
-                    while (iterator.MoveNext())
-                        yield return iterator.Current;
+					compiler.SetNextActionCallback(actionCallback);
+				}
+				else
+				{
+					reader.Read(R.RightSquare);
+				}
 
-                    compiler.SetNextActionCallback(actionCallback);
-                }
-                else
-                    reader.Read(R.RightSquare);
+				var subroutine = new RstCallSubroutine(subroutineName.Value, subroutineName.ToLocation(), moduleFunctionName) { Arguments = arguments };
 
-                var subroutine = new RstCallSubroutine(subroutineName.Value, subroutineName.ToLocation(), moduleFunctionName) { Arguments = arguments };
+				actionCallback(subroutine);
+			}
+		}
 
-                actionCallback(subroutine);
-            }
-        }
+		private IEnumerator<Parser> ReadArguments(RantCompiler compiler, TokenReader reader, List<RST> arguments)
+		{
+			var actions = new List<RST>();
 
-        private IEnumerator<Parser> ReadArguments(RantCompiler compiler, TokenReader reader, List<RST> arguments)
-        {
-            var actions = new List<RST>();
+			Action<RST> argActionCallback = action => actions.Add(action);
+			compiler.SetNextActionCallback(argActionCallback);
+			compiler.AddContext(CompileContext.FunctionEndContext);
+			compiler.AddContext(CompileContext.ArgumentSequence);
 
-            Action<RST> argActionCallback = action => actions.Add(action);
-            compiler.SetNextActionCallback(argActionCallback);
-            compiler.AddContext(CompileContext.FunctionEndContext);
-            compiler.AddContext(CompileContext.ArgumentSequence);
+			while (compiler.NextContext == CompileContext.ArgumentSequence)
+			{
+				reader.SkipSpace();
+				var startToken = reader.PeekToken();
+				yield return Get<SequenceParser>();
 
-            while (compiler.NextContext == CompileContext.ArgumentSequence)
-            {
-                reader.SkipSpace();
-                var startToken = reader.PeekToken();
-                yield return Get<SequenceParser>();
-                arguments.Add(new RstSequence(actions, startToken.ToLocation()));
-                actions.Clear();
-            }
+				// Don't wrap single nodes in a sequence, it's unnecessary
+				if (actions.Count == 1)
+				{
+					arguments.Add(actions[0]);
+				}
+				else
+				{
+					arguments.Add(new RstSequence(actions, startToken.ToLocation()));
+				}
 
-            compiler.LeaveContext();
-        }
-    }
+				actions.Clear();
+			}
+
+			compiler.LeaveContext();
+		}
+	}
 }

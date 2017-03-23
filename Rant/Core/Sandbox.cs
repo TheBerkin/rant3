@@ -59,17 +59,12 @@ namespace Rant.Core
 			Format = engine.Format;
 			SizeLimit = new Limit(sizeLimit);
 			Pattern = pattern;
-			Objects = new ObjectStack(engine.Objects);
-			Blocks = new Stack<BlockState>();
-			RegexMatches = new Stack<Match>();
-			CarrierState = carrierState ?? new CarrierState();
-			SubroutineArgs = new Stack<Dictionary<string, RST>>();
-			SyncManager = new SyncManager(this);
 			PatternArgs = args;
 
 			// Private members
 			_blockManager = new BlockAttribManager();
 			_stopwatch = new Stopwatch();
+			_carrierState = carrierState;
 
 			// Output initialization
 			BaseOutput = new OutputWriter(this);

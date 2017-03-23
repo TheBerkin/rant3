@@ -90,70 +90,208 @@ namespace Rant.Core.Utilities
             return unchecked(objects.Select(o => o.GetHashCode()).Aggregate(17, (hash, next) => hash * 31 + next));
         }
 
-        public static bool ParseInt(string value, out int number)
-        {
-            if (int.TryParse(value, out number)) return true;
-            if (IsNullOrWhiteSpace(value)) return false;
-            value = value.Trim();
-            if (!char.IsLetter(value[value.Length - 1])) return false;
-            char power = value[value.Length - 1];
-            value = value.Substring(0, value.Length - 1);
-            if (IsNullOrWhiteSpace(value)) return false;
-            double n;
-            if (!double.TryParse(value, out n)) return false;
-            switch (power)
-            {
-                case 'k': // Thousand
-                    number = (int)(n * 1000);
-                    return true;
-                case 'M': // Million
-                    number = (int)(n * 1000000);
-                    return true;
-                case 'B': // Billion
-                    number = (int)(n * 1000000000);
-                    return true;
-                default:
-                    return false;
-            }
-        }
+		public static bool ParseInt(string str, out int number)
+		{
+			unchecked
+			{
+				int n = number = 0;
+				int l = str.Length - 1;
+				for (int i = l, x = 1; i >= 0; i--, x *= 10)
+				{
+					switch (str[i])
+					{
+						case '-':
+						if (i == 0)
+						{
+							number = -n;
+							return true;
+						}
+						return false;
 
-        public static bool ParseDouble(string value, out double number)
-        {
-            number = 0;
-            if (IsNullOrWhiteSpace(value)) return false;
-            value = value.Trim();
-            if (!char.IsLetter(value[value.Length - 1]))
-                return double.TryParse(value, out number);
-            char power = value[value.Length - 1];
-            value = value.Substring(0, value.Length - 1);
-            if (IsNullOrWhiteSpace(value)) return false;
-            double n;
-            if (!double.TryParse(value, out n)) return false;
-            switch (power)
-            {
-                case 'k': // Thousand
-                    number = (int)(n * 1000);
-                    return true;
-                case 'M': // Million
-                    number = (int)(n * 1000000);
-                    return true;
-                case 'B': // Billion
-                    number = (int)(n * 1000000000);
-                    return true;
-                default:
-                    return false;
-            }
-        }
+						case '0':
+						continue;
 
-        public static bool BooleanRep(string input)
+						case '1':
+						n += x;
+						break;
+
+						case '2':
+						n += 2 * x;
+						break;
+
+						case '3':
+						n += 3 * x;
+						break;
+
+						case '4':
+						n += 4 * x;
+						break;
+
+						case '5':
+						n += 5 * x;
+						break;
+
+						case '6':
+						n += 6 * x;
+						break;
+
+						case '7':
+						n += 7 * x;
+						break;
+
+						case '8':
+						n += 8 * x;
+						break;
+
+						case '9':
+						n += 9 * x;
+						break;
+
+						default:
+						return false;
+					}
+				}
+				number = n;
+				return true;
+			}
+		}
+
+		public static bool ParseDouble(string str, out double d)
+		{
+			unchecked
+			{
+				double num = d = 0.0;
+				if (str.Length == 0) return false;
+				int l = str.Length;
+				int ones = l - 1;
+				double x = 0.1;
+
+				for (int i = 0; i < l; i++)
+				{
+					if (str[i] == '.')
+					{
+						ones = i - 1;
+						for (i++; i < l; i++, x /= 10.0)
+						{
+							switch (str[i])
+							{
+								case '0':
+								continue;
+
+								case '1':
+								num += x;
+								break;
+
+								case '2':
+								num += x * 2;
+								break;
+
+								case '3':
+								num += x * 3;
+								break;
+
+								case '4':
+								num += x * 4;
+								break;
+
+								case '5':
+								num += x * 5;
+								break;
+
+								case '6':
+								num += x * 6;
+								break;
+
+								case '7':
+								num += x * 7;
+								break;
+
+								case '8':
+								num += x * 8;
+								break;
+
+								case '9':
+								num += x * 9;
+								break;
+
+								default:
+								return false;
+							}
+						}
+						break;
+					}
+				}
+
+				x = 1.0;
+				for (int i = ones; i >= 0; i--, x *= 10.0)
+				{
+					switch (str[i])
+					{
+						case '-':
+						if (i == 0)
+						{
+							d = -num;
+							return true;
+						}
+						return false;
+
+						case '0':
+						continue;
+
+						case '1':
+						num += x;
+						break;
+
+						case '2':
+						num += x * 2;
+						break;
+
+						case '3':
+						num += x * 3;
+						break;
+
+						case '4':
+						num += x * 4;
+						break;
+
+						case '5':
+						num += x * 5;
+						break;
+
+						case '6':
+						num += x * 6;
+						break;
+
+						case '7':
+						num += x * 7;
+						break;
+
+						case '8':
+						num += x * 8;
+						break;
+
+						case '9':
+						num += x * 9;
+						break;
+
+						default:
+						return false;
+					}
+				}
+
+				d = num;
+				return true;
+			}
+		}
+
+		public static bool BooleanRep(string input)
         {
             if (IsNullOrWhiteSpace(input)) return false;
-            string v = input.ToLower().Trim();
-            if (v == "false" || v == "0") return false;
-            if (v == "true") return true;
-            double d;
-            return double.TryParse(v, out d);
-        }
+            string v = input.Trim();
+            if (String.Equals(v, "false", StringComparison.InvariantCultureIgnoreCase) || v == "0") return false;
+            if (String.Equals(v, "true", StringComparison.InvariantCultureIgnoreCase)) return true;
+			return ParseDouble(v, out double d);
+		}
 
         public static string SnakeToCamel(string name)
         {
