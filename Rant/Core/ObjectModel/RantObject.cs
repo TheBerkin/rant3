@@ -35,7 +35,7 @@ namespace Rant.Core.ObjectModel
     /// <summary>
     /// Represents a Rant variable.
     /// </summary>
-    public class RantObject
+    public sealed class RantObject
     {
         /// <summary>
         /// Null
