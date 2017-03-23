@@ -292,6 +292,29 @@ namespace Rant.Core.ObjectModel
         }
 
         /// <summary>
+        /// Gets the boolean inverse of a RantObject.
+        /// </summary>
+        /// <param name="a">The object to invert from.</param>
+        /// <returns></returns>
+        public static RantObject operator !(RantObject a)
+        {
+            switch (a.Type)
+            {
+                case RantObjectType.Number:
+                    {
+                        switch (a.Type)
+                        {
+                            case RantObjectType.Boolean:
+                                return new RantObject(!a._boolean);
+                        }
+                        break;
+                    }
+            }
+
+            return Null;
+        }
+
+        /// <summary>
         /// Returns the sum of two RantObjects.
         /// </summary>
         /// <param name="a">The first object.</param>
@@ -408,6 +431,30 @@ namespace Rant.Core.ObjectModel
                     }
                     break;
                 }
+            }
+
+            return Null;
+        }
+
+        /// <summary>
+        /// Mods one RantObject by another.
+        /// </summary>
+        /// <param name="a">The object to mod.</param>
+        /// <param name="b">The object to mod by.</param>
+        /// <returns></returns>
+        public static RantObject operator %(RantObject a, RantObject b)
+        {
+            switch (a.Type)
+            {
+                case RantObjectType.Number:
+                    {
+                        switch (b.Type)
+                        {
+                            case RantObjectType.Number:
+                                return new RantObject(a._number % b._number);
+                        }
+                        break;
+                    }
             }
 
             return Null;

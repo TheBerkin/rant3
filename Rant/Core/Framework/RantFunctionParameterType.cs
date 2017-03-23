@@ -58,6 +58,11 @@ namespace Rant.Core.Framework
         /// <summary>
         /// Parameter is a RantObject.
         /// </summary>
-        RantObject
+        RantObject,
+
+        /// <summary>
+        /// Parameter is a boolean.
+        /// </summary>
+        Boolean
     }
 }

@@ -1038,41 +1038,188 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("add")]
-		private static void ValAdd(Sandbox sb, double a, double b)
+		private static void AddVal(Sandbox sb, double a, double b)
 		{
 			sb.Print(a + b);
 		}
 
-		[RantFunction("addval")]
-		private static void VarAddVal(Sandbox sb, string a, double b)
+		[RantFunction("vadd")]
+		private static void AddVar(Sandbox sb, string a, double b)
 		{
 			sb.Objects[a] += new RantObject(b);
 		}
 
-		[RantFunction("addvar")]
-		private static void VarAddVar(Sandbox sb, string a, string b)
-		{
-			sb.Objects[a] += sb.Objects[b];
-		}
-
 		[RantFunction("sub")]
-		private static void ValSub(Sandbox sb, double a, double b)
+		private static void SubVal(Sandbox sb, double a, double b)
 		{
 			sb.Print(a - b);
 		}
 
-		[RantFunction("subval")]
-		private static void VarSubVal(Sandbox sb, string a, double b)
+		[RantFunction("vsub")]
+		private static void SubVar(Sandbox sb, string a, double b)
 		{
 			sb.Objects[a] -= new RantObject(b);
 		}
 
-		[RantFunction("subvar")]
-		private static void VarSubVar(Sandbox sb, string a, string b)
-		{
-			sb.Objects[a] -= sb.Objects[b];
-		}
+        [RantFunction("mul")]
+        private static void MulVal(Sandbox sb, double a, double b)
+        {
+            sb.Print(a * b);
+        }
 
+        [RantFunction("vmul")]
+        private static void MulVar(Sandbox sb, string a, double b)
+        {
+            sb.Objects[a] *= new RantObject(b);
+        }
 
-	}
+        [RantFunction("div")]
+        private static void DivVal(Sandbox sb, double a, double b)
+        {
+            sb.Print(a / b);
+        }
+
+        [RantFunction("vdiv")]
+        private static void DivVar(Sandbox sb, string a, double b)
+        {
+            if (b == 0.0) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-div-by-zero");
+            sb.Objects[a] /= new RantObject(b);
+        }
+
+        [RantFunction("mod")]
+        private static void ModVal(Sandbox sb, double a, double b)
+        {
+            sb.Print(a % b);
+        }
+
+        [RantFunction("vmod")]
+        private static void ModVar(Sandbox sb, string a, double b)
+        {
+            if (b == 0.0) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-div-by-zero");
+            sb.Objects[a] %= new RantObject(b);
+        }
+
+        [RantFunction("swap")]
+        private static void Swap(Sandbox sb, string a, string b)
+        {
+            var temp = sb.Objects[a];
+            sb.Objects[a] = sb.Objects[b];
+            sb.Objects[b] = temp;
+        }
+
+        [RantFunction("veq")]
+        private static void CompEquals(Sandbox sb, RantObject a, RantObject b)
+	    {
+	        sb.Print(a.Value.Equals(b.Value) ? TRUE : FALSE);
+	    }
+
+        [RantFunction("eq")]
+        private static void CompEquals(Sandbox sb, string a, string b)
+        {
+            sb.Print(String.Equals(a, b, StringComparison.InvariantCulture) ? TRUE : FALSE);
+        }
+
+        [RantFunction("eqi")]
+        private static void CompEqualsIgnoreCase(Sandbox sb, string a, string b)
+        {
+            sb.Print(String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase) ? TRUE : FALSE);
+        }
+
+        [RantFunction("neq")]
+        private static void CompNotEquals(Sandbox sb, string a, string b)
+        {
+            sb.Print(String.Equals(a, b, StringComparison.InvariantCulture) ? FALSE : TRUE);
+        }
+
+        [RantFunction("neqi")]
+        private static void CompNotEqualsIgnoreCase(Sandbox sb, string a, string b)
+        {
+            sb.Print(String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase) ? FALSE : TRUE);
+        }
+
+        [RantFunction("gt")]
+        private static void CompGreater(Sandbox sb, double a, double b)
+        {
+            sb.Print(a > b ? TRUE : FALSE);
+        }
+
+        [RantFunction("ge")]
+        private static void CompGreaterEqual(Sandbox sb, double a, double b)
+        {
+            sb.Print(a >= b ? TRUE : FALSE);
+        }
+
+        [RantFunction("lt")]
+        private static void CompLess(Sandbox sb, double a, double b)
+        {
+            sb.Print(a < b ? TRUE : FALSE);
+        }
+
+        [RantFunction("le")]
+        private static void CompLessEqual(Sandbox sb, double a, double b)
+        {
+            sb.Print(a <= b ? TRUE : FALSE);
+        }
+
+        [RantFunction("not")]
+        private static void Not(Sandbox sb, bool a)
+        {
+            sb.Print(a ? FALSE : TRUE);
+        }
+
+        [RantFunction("vnot")]
+        private static void Not(Sandbox sb, string a)
+        {
+            var o = sb.Objects[a];
+            if (o == null)
+            {
+                throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-missing-var", a);
+            }
+            sb.Objects[a] = !o;
+        }
+
+        [RantFunction("maybe")]
+        private static void Maybe(Sandbox sb)
+        {
+            sb.Print(sb.RNG.NextBoolean() ? TRUE : FALSE);
+        }
+
+        [RantFunction("if")]
+	    private static IEnumerator<RST> If(Sandbox sb, bool condition, RST body)
+	    {
+	        if (condition) yield return body;
+	    }
+
+        [RantFunction("ifnot", "ifn")]
+        private static IEnumerator<RST> IfNot(Sandbox sb, bool condition, RST body)
+        {
+            if (!condition) yield return body;
+        }
+
+        [RantFunction("if")]
+        private static IEnumerator<RST> If(Sandbox sb, bool condition, RST body, RST elseBody)
+        {
+            if (condition)
+            {
+                yield return body;
+            }
+            else
+            {
+                yield return elseBody;
+            }
+        }
+
+        [RantFunction("ifnot", "ifn")]
+        private static IEnumerator<RST> IfNot(Sandbox sb, bool condition, RST body, RST elseBody)
+        {
+            if (!condition)
+            {
+                yield return body;
+            }
+            else
+            {
+                yield return elseBody;
+            }
+        }
+    }
 }

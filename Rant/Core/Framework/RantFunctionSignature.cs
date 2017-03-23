@@ -49,7 +49,7 @@ namespace Rant.Core.Framework
         {
             // Sanity checks
             if (method == null) throw new ArgumentNullException(nameof(method));
-            if (!method.IsStatic) throw new ArgumentException($"({method.Name}) Method is not static.");
+            if (!method.IsStatic) throw new ArgumentException($"({method.Name}) Method must be static.");
 
             RawMethod = method;
 
@@ -72,9 +72,13 @@ namespace Rant.Core.Framework
                     type = type.GetElementType();
 
                 if (type == typeof(RST) || type.IsSubclassOf(typeof(RST)))
+                {
                     rantType = RantFunctionParameterType.Pattern;
+                }
                 else if (type == typeof(string))
+                {
                     rantType = RantFunctionParameterType.String;
+                }
                 else if (type.IsEnum)
                 {
                     rantType = type.GetCustomAttributes(typeof(FlagsAttribute), false).Any()
@@ -82,13 +86,21 @@ namespace Rant.Core.Framework
                         : RantFunctionParameterType.Mode;
                 }
                 else if (IOUtil.IsNumericType(type))
+                {
                     rantType = RantFunctionParameterType.Number;
+                }
+                else if (type == typeof(bool))
+                {
+                    rantType = RantFunctionParameterType.Boolean;
+                }
                 else if (type == typeof(RantObject))
+                {
                     rantType = RantFunctionParameterType.RantObject;
+                }
                 else
                 {
                     throw new ArgumentException(
-                        $"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, or RantAction.");
+                        $"({method.Name}) Unsupported type '{type}' for parameter '{parameters[i].Name}'. Must be a string, number, enum, or RantAction.");
                 }
 
                 // If there is a [RantDescription] attribute on the parameter, retrieve its value. Default to empty string if there isn't one.

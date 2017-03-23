@@ -83,6 +83,13 @@ namespace Rant.Core.Compiler.Syntax
                         args[i] = sb.Return().Main;
                         break;
 
+                    // RantObjects are evaluated and fetched by name
+                    case RantFunctionParameterType.RantObject:
+                        sb.AddOutputWriter();
+                        yield return _args[i];
+                        args[i] = sb.Objects[sb.Return().Main];
+                        break;
+
                     // Numbers are evaluated, verified, and converted
                     case RantFunctionParameterType.Number:
                     {
@@ -102,6 +109,26 @@ namespace Rant.Core.Compiler.Syntax
 							}
 						}
                         args[i] = Convert.ChangeType(d, p.NativeType);
+                        break;
+                    }
+
+                    case RantFunctionParameterType.Boolean:
+                    {
+                        sb.AddOutputWriter();
+                        yield return _args[i];
+                        var val = sb.Return().Main;
+                        if (val.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            args[i] = true;
+                        }
+                        else if (val.Equals("false", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            args[i] = false;
+                        }
+                        else
+                        {
+                            throw new RantRuntimeException(sb, _args[i], "err-runtime-invalid-arg", val, p.Name, p.RantType.ToString().ToLower());
+                        }
                         break;
                     }
 
