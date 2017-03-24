@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rant.Tools</RootNamespace>
-    <AssemblyName>Rant</AssemblyName>
+    <AssemblyName>RCT</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -55,11 +55,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BuildCommand.cs" />
     <Compile Include="CmdLine.cs" />
-    <Compile Include="Help.cs" />
+    <Compile Include="CommandFlagAttribute.cs" />
+    <Compile Include="CommandNameAttribute.cs" />
+    <Compile Include="CommandParamAttribute.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="Packer\DependencyListConverter.cs" />
-    <Compile Include="Packer\PackGenerator.cs" />
     <Compile Include="Packer\PackInfo.cs" />
+    <Compile Include="Commands\PackCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rant</RootNamespace>
-    <AssemblyName>RantEngine</AssemblyName>
+    <AssemblyName>Rant</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
@@ -43,7 +43,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\MainBuild\RantEngine.xml</DocumentationFile>
+    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Install|AnyCPU' ">
