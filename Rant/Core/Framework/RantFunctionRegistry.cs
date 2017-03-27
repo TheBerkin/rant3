@@ -1143,6 +1143,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The divisor.")]
 			double b)
 		{
+			if (b == 0.0) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-div-by-zero");
 			sb.Print(a / b);
 		}
 

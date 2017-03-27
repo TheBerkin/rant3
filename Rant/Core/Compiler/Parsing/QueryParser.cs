@@ -30,6 +30,7 @@ using System.Text.RegularExpressions;
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Utilities;
 using Rant.Vocabulary.Querying;
+using System.Linq;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -95,7 +96,14 @@ namespace Rant.Core.Compiler.Parsing
                     // read class filter
                     case R.Hyphen:
                     {
-                        var classFilter = new ClassFilter();
+						ClassFilter classFilter;
+						if ((classFilter = query.GetClassFilters().FirstOrDefault()) == null)
+						{
+							classFilter = new ClassFilter();
+							query.AddFilter(classFilter);
+						}
+
+						var filterSwitches = new List<ClassFilterRule>();
                         do
                         {
                             reader.SkipSpace();
@@ -109,10 +117,11 @@ namespace Rant.Core.Compiler.Parsing
                             var classFilterName = reader.Read(R.Text, "acc-class-filter-rule");
                             if (classFilterName.Value == null) continue;
                             var rule = new ClassFilterRule(classFilterName.Value, !blacklist);
-                            classFilter.AddRule(rule);
+							filterSwitches.Add(rule);
+							
                         } while (reader.TakeLoose(R.Pipe)); //fyi: this feature is undocumented
-
-                        query.AddFilter(classFilter);
+							
+						classFilter.AddRuleSwitch(filterSwitches.ToArray());
                         break;
                     }
                     // read regex filter

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.IO;
+using System;
 
 namespace Rant.Vocabulary.Querying
 {
@@ -69,9 +70,12 @@ namespace Rant.Vocabulary.Querying
             _items.Add(items);
         }
 
-        public IEnumerable<ClassFilterRule> GenerateRequiredSet(RNG rng) => _items.Select(set => set[rng.Next(set.Length)]);
+		public IEnumerable<ClassFilterRule> GenerateRequiredSet(RNG rng)
+		{	
+			return _items.Select(set => set[rng.Next(set.Length)]);
+		}
 
-        public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query)
+		public override bool Test(RantDictionary dictionary, RantDictionaryTable table, RantDictionaryEntry entry, int termIndex, Query query)
         {
             bool match = query.Exclusive
                 ? _items.Any() == entry.GetClasses().Any()
