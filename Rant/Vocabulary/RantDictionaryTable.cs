@@ -46,26 +46,26 @@ namespace Rant.Vocabulary
         internal const string MissingTerm = "[?]";
         private readonly HashSet<RantDictionaryEntry> _entriesHash = new HashSet<RantDictionaryEntry>();
         private readonly List<RantDictionaryEntry> _entriesList = new List<RantDictionaryEntry>(); // TODO: Use for indexing / weighted selection
-		// entries that don't have any hidden classes
-		private readonly List<RantDictionaryEntry> _visibleEntriesList = new List<RantDictionaryEntry>();
         private readonly HashSet<string> _hidden = new HashSet<string>(new[] { NSFW });
         private readonly Dictionary<int, HashSet<string>> _subtypeIndexMap = new Dictionary<int, HashSet<string>>();
         private readonly Dictionary<string, int> _subtypes = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-        private ClassTree _classTree = new ClassTree(new RantDictionaryEntry[0]);
+        private readonly ClassCache _cache;
+        private bool _dirty = true;
         private SyllableBuckets[] _syllableBuckets;
 
-		/// <summary>
-		/// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
-		/// </summary>
-		/// <param name="name">The name of the table.</param>
-		/// <param name="termsPerEntry">The number of terms to store in each entry.</param>
-		/// <param name="hidden">Collection of hidden classes.</param>
-		public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
+        /// <summary>
+        /// Initializes a new instance of the RantDictionaryTable class with the specified name and term count.
+        /// </summary>
+        /// <param name="name">The name of the table.</param>
+        /// <param name="termsPerEntry">The number of terms to store in each entry.</param>
+        /// <param name="hidden">Collection of hidden classes.</param>
+        public RantDictionaryTable(string name, int termsPerEntry, HashSet<string> hidden = null)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (termsPerEntry <= 0) throw new ArgumentException(Txtres.GetString("err-bad-term-count"));
             if (!Util.ValidateName(name)) throw new ArgumentException(Txtres.GetString("err-invalid-tablename", name));
             if (hidden != null) _hidden = hidden;
+            _cache = new ClassCache();
             TermsPerEntry = termsPerEntry;
             Name = name;
 
@@ -75,6 +75,7 @@ namespace Rant.Vocabulary
         internal RantDictionaryTable()
         {
             // Used by serializer
+            _cache = new ClassCache();
         }
 
         /// <summary>
@@ -106,10 +107,7 @@ namespace Rant.Vocabulary
         /// Enumerates the entries stored in the table.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<RantDictionaryEntry> GetEntries()
-        {
-            foreach (var entry in _entriesHash) yield return entry;
-        }
+        public IEnumerable<RantDictionaryEntry> GetEntries() => _entriesHash.AsEnumerable();
 
         /// <summary>
         /// Enumerates the subtypes contained in the current table.
@@ -142,10 +140,17 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public bool UnhideClass(string className) => className != null && _hidden.Remove(className);
 
-		/// <summary>
-		/// Determines whether weights are enabled on this table.
-		/// </summary>
-		public bool EnableWeighting { get; set; } = false;
+        /// <summary>
+        /// Determines whether weights are enabled on this table.
+        /// </summary>
+        public bool EnableWeighting { get; set; } = false;
+
+        /// <summary>
+        /// Indicates whether the cache needs to be rebuilt.
+        /// </summary>
+        public bool CacheNeedsRebuild => _dirty;
+
+        internal HashSet<RantDictionaryEntry> EntriesHash => _entriesHash;
 
         /// <summary>
         /// Adds the specified entry to the table.
@@ -157,9 +162,8 @@ namespace Rant.Vocabulary
             if (entry == null) throw new ArgumentNullException(nameof(entry));
             if (entry.TermCount != TermsPerEntry) return false;
             if (!_entriesHash.Add(entry)) return false;
-			if (entry.GetClasses().All(c => !_hidden.Contains(c)))
-				_visibleEntriesList.Add(entry);
-			_entriesList.Add(entry);
+            _entriesList.Add(entry);
+            _dirty = true;
             return true;
         }
 
@@ -172,9 +176,8 @@ namespace Rant.Vocabulary
         {
             if (entry == null) throw new ArgumentNullException(nameof(entry));
             if (!_entriesHash.Remove(entry)) return false;
-			if(entry.GetClasses().All(c => !_hidden.Contains(c)))
-				_visibleEntriesList.Add(entry);
-			_entriesList.Remove(entry);
+            _entriesList.Remove(entry);
+            _dirty = true;
             return true;
         }
 
@@ -276,9 +279,9 @@ namespace Rant.Vocabulary
             if (other.Name != Name || other == this) return false;
             if (other.TermsPerEntry != TermsPerEntry) return false;
             _entriesHash.AddRange(other._entriesHash);
-			_visibleEntriesList.AddRange(other._visibleEntriesList);
-			_entriesList.AddRange(other._entriesHash);
-            Commit();
+            _entriesList.AddRange(other._entriesHash);
+            _dirty = true;
+            RebuildCache();
             return true;
         }
 
@@ -286,60 +289,42 @@ namespace Rant.Vocabulary
         /// Optimizes the table. Call this after writing items to the table or removing items from a table.
         /// If you're writing or removing multiple items, call this after all the actions have been performed.
         /// </summary>
-        public void Commit()
+        public void RebuildCache()
         {
-            _classTree = new ClassTree(_entriesHash);
+            if (!_dirty) return;
+            _cache.BuildCache(this);
             CreateSyllableBuckets();
             for (int i = 0; i < TermsPerEntry; i++)
                 _syllableBuckets[i] = new SyllableBuckets(i, _entriesList);
+            _dirty = false;
         }
 
         internal RantDictionaryTerm Query(RantDictionary dictionary, Sandbox sb, Query query, CarrierState syncState)
         {
+            RebuildCache();
+
             int index = !String.IsNullOrEmpty(query.PluralSubtype) && sb.TakePlural()
                 ? GetSubtypeIndex(query.PluralSubtype)
                 : GetSubtypeIndex(query.Subtype);
 
             if (index == -1) return null;
 
-            if (query.BareQuery) return _visibleEntriesList.PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
+            var filtersEnumerable = query.GetNonClassFilters();
+            var filters = filtersEnumerable as Filter[] ?? filtersEnumerable.ToArray();
 
-            // process simple class filters using class tree
-            var filters = query.GetFilters();
-            var classes = filters
-                .Where(f => f is ClassFilter)
-                .SelectMany(f => (f as ClassFilter).RequiredClasses);
+            IEnumerable<RantDictionaryEntry> pool
+                = _cache.Filter(query.GetClassFilters().SelectMany(cf => cf.GenerateRequiredSet(sb.RNG)).Distinct(), dictionary, this)?.ToList();
 
-            filters = filters.Where(f => !(f is ClassFilter) || !(f as ClassFilter).SimpleFilter);
+            if (pool == null) return null;
 
-            IEnumerable<RantDictionaryEntry> pool = _visibleEntriesList;
-            if (classes.Any())
-                pool = _classTree.Query(classes, new HashSet<string>(_hidden.Where(c => !classes.Contains(c))));
-
-            // if it's just the class filters, let's leave now
-            if (!filters.Any() && !query.HasCarrier)
-                return pool.ToList().PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
-
-			// process syllable count filters using syllable buckets
-			var rangeFilters = filters.OfType<RangeFilter>();
-            if (rangeFilters.Any())
-            {
-                CreateSyllableBuckets();
-
-                foreach (var filter in rangeFilters)
-                    pool = pool.Intersect(_syllableBuckets[index].Query(filter));
-
-                filters = filters.Where(f => !(f is RangeFilter));
-            }
-
-            if (filters.Any())
+            if (filters.Length > 0)
                 pool = pool.Where((e, i) => filters.OrderBy(f => f.Priority).All(f => f.Test(dictionary, this, e, index, query)));
 
             if (!pool.Any()) return null;
 
-			return query.HasCarrier
-				? syncState.GetEntry(query.Carrier, index, pool, sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index]
-				: pool.PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
+            return query.HasCarrier
+                ? syncState.GetEntry(query.Carrier, index, pool, sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index]
+                : pool.ToList().PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
         }
 
         internal override void DeserializeData(BsonItem data)
@@ -394,7 +379,7 @@ namespace Rant.Vocabulary
                 AddEntry(entry);
             }
 
-            Commit();
+            RebuildCache();
         }
 
         internal override BsonItem SerializeData()

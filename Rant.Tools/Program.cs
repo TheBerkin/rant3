@@ -17,7 +17,7 @@ namespace Rant.Tools
             if (CmdLine.Flag("version"))
             {
                 WriteLine($"Rant {typeof(RantEngine).Assembly.GetName().Version}");
-                return;
+                return; 
             }
 #if !DEBUG
             try

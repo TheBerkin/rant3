@@ -267,9 +267,8 @@
     <Compile Include="Core\IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Resources\RantPackage.cs" />
+    <Compile Include="Vocabulary\ClassCache.cs" />
     <Compile Include="Vocabulary\ClassTree.cs" />
-    <Compile Include="Vocabulary\Legacy\DicLexer.cs" />
-    <Compile Include="Vocabulary\Legacy\RantDictionaryTable.Loader.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />

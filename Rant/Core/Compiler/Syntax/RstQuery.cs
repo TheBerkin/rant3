@@ -50,7 +50,7 @@ namespace Rant.Core.Compiler.Syntax
 
         public override IEnumerator<RST> Run(Sandbox sb)
         {
-			return _query.Run(sb);
+            return _query.Run(sb);
         }
 
         protected override IEnumerator<RST> Serialize(EasyWriter output)
@@ -59,7 +59,7 @@ namespace Rant.Core.Compiler.Syntax
             output.Write(_query.Subtype);
             output.Write(_query.Exclusive);
             output.Write(_query.FilterCount);
-            foreach (var filter in _query.GetFilters())
+            foreach (var filter in _query.GetAllFilters())
                 filter.Serialize(output);
 
             // Carrier
@@ -105,9 +105,9 @@ namespace Rant.Core.Compiler.Syntax
             _query.Complement = complementRequest.Result;
         }
 
-		public override string ToString()
-		{
-			return $"<{_query.Name}...>";
-		}
-	}
+        public override string ToString()
+        {
+            return $"<{_query.Name}...>";
+        }
+    }
 }

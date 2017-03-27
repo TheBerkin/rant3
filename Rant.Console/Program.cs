@@ -24,7 +24,6 @@ namespace RantConsole
 #endif
         public static readonly string FILE = GetPaths().FirstOrDefault();
         public static readonly string PKG_DIR = Property("pkgdir");
-        public static readonly string LEGACY_DIC_PATH = Property("ldict");
         public static readonly long SEED;
         public static readonly bool USE_SEED;
 
@@ -44,15 +43,6 @@ namespace RantConsole
             try
             {
 #endif
-                if (!string.IsNullOrEmpty(LEGACY_DIC_PATH))
-                {
-                    var tables =
-                        Directory
-                            .GetFiles(LEGACY_DIC_PATH)
-                            .Where(f => Path.GetExtension(f) == ".dic")
-                            .Select(f => RantDictionaryTable.FromLegacyFile(f));
-                    rant.Dictionary = new RantDictionary(tables);
-                }
 
                 if (!string.IsNullOrEmpty(PKG_DIR))
                 {

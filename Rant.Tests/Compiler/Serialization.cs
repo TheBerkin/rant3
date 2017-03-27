@@ -26,7 +26,7 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"[`[aeiou]+[wy]?`:The quick brown fox jumps over the lazy dog.;ur]")]
 		[TestCase(@"[$[concat:a;b]:[arg:a][arg:b]][$concat:Hello\s;World!]")]
 		[TestCase(@"[$[runx2:@a]:[arg:a] [arg:a]][$runx2:[x:_;forward][xpin:_][after:[xstep:_]]{Hello|World!}]")]
-		[TestCase(@"<noun.plural-a|b|c-d|e|f ?`foo`i ?!`bar` :: !a =b &c>")]
+		[TestCase(@"<noun.plural(1-3) -a|b|c -d|e|f ? `foo`i ?! `bar` :: !a =b &c>")]
 		public void SerializeAndExecute(string pattern)
 		{
 			var ms = new MemoryStream();
