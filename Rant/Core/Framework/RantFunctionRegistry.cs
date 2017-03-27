@@ -1100,6 +1100,7 @@ namespace Rant.Core.Framework
         }
 
         [RantFunction("swap")]
+		[RantDescription("Swaps the values of the variables with the two specified names.")]
         private static void Swap(Sandbox sb, string a, string b)
         {
             var temp = sb.Objects[a];
@@ -1108,31 +1109,43 @@ namespace Rant.Core.Framework
         }
 
         [RantFunction("veq")]
-        private static void CompEquals(Sandbox sb, RantObject a, RantObject b)
+		[RantDescription("Prints a boolean value indicating whether the variables with the two specified names are equal to each other.")]
+		private static void CompEquals(Sandbox sb, RantObject a, RantObject b)
         {
             sb.Print(a.Value.Equals(b.Value) ? TRUE : FALSE);
         }
 
-        [RantFunction("eq")]
+		[RantFunction("vne")]
+		[RantDescription("Prints a boolean value indicating whether the variables with the two specified names are not equal to each other.")]
+		private static void CompNotEquals(Sandbox sb, RantObject a, RantObject b)
+		{
+			sb.Print(a.Value.Equals(b.Value) ? FALSE : TRUE);
+		}
+
+		[RantFunction("eq")]
+		[RantDescription("Prints a boolean value indicating whether the two values have equal string representations.")]
         private static void CompEquals(Sandbox sb, string a, string b)
         {
             sb.Print(String.Equals(a, b, StringComparison.InvariantCulture) ? TRUE : FALSE);
         }
 
         [RantFunction("eqi")]
-        private static void CompEqualsIgnoreCase(Sandbox sb, string a, string b)
+		[RantDescription("Prints a boolean value indicating whether the two values have equal string representations, ignoring case.")]
+		private static void CompEqualsIgnoreCase(Sandbox sb, string a, string b)
         {
             sb.Print(String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase) ? TRUE : FALSE);
         }
 
-        [RantFunction("neq")]
-        private static void CompNotEquals(Sandbox sb, string a, string b)
+        [RantFunction("ne")]
+		[RantDescription("Prints a boolean value indicating whether the two values do not have equal string representations.")]
+		private static void CompNotEquals(Sandbox sb, string a, string b)
         {
             sb.Print(String.Equals(a, b, StringComparison.InvariantCulture) ? FALSE : TRUE);
         }
 
-        [RantFunction("neqi")]
-        private static void CompNotEqualsIgnoreCase(Sandbox sb, string a, string b)
+        [RantFunction("nei")]
+		[RantDescription("Prints a boolean value indicating whether two values do not have equal string representations, ignoring case.")]
+		private static void CompNotEqualsIgnoreCase(Sandbox sb, string a, string b)
         {
             sb.Print(String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase) ? FALSE : TRUE);
         }

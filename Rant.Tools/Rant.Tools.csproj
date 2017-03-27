@@ -61,6 +61,7 @@
     <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="CommandParamAttribute.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="Commands\FuncDocsCommand.cs" />
     <Compile Include="Packer\DependencyListConverter.cs" />
     <Compile Include="Packer\PackInfo.cs" />
     <Compile Include="Commands\PackCommand.cs" />
