@@ -31,15 +31,19 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
+#if UNITY
+[assembly: AssemblyTitle("Rant for Unity")]
+#else
 [assembly: AssemblyTitle("Rant")]
+#endif
 [assembly: AssemblyDescription("Rant procedural text generation engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Rant")]
-[assembly: AssemblyCopyright("Copyright © 2016 Nicholas Fleck")]
+[assembly: AssemblyCopyright("Copyright © 2017 Nicholas Fleck")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: InternalsVisibleTo("Rave")]
+[assembly: InternalsVisibleTo("Rant.Tools")]
 [assembly: InternalsVisibleTo("Rant.Tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
