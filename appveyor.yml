@@ -4,7 +4,9 @@ branches:
   - master
   - dev-3.0
 image: Visual Studio 2017
-configuration: Release
+configuration: 
+  - Release
+  - Unity
 shallow_clone: true
 assembly_info:
   patch: true
