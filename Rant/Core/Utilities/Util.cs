@@ -77,11 +77,17 @@ namespace Rant.Core.Utilities
             return true;
         }
 
+        /// <summary>
+        /// Alternative implementation of String.IsNullOrWhitespace for Unity compatability.
+        /// </summary>
+        /// <param name="value">The string to check.</param>
+        /// <returns></returns>
 #if !UNITY
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public static bool IsNullOrWhiteSpace(string value)
         {
+            // ReSharper disable once ReplaceWithStringIsNullOrEmpty
             return value == null || value.Length == 0 || value.All(char.IsWhiteSpace);
         }
 
@@ -439,9 +445,8 @@ namespace Rant.Core.Utilities
             const uint lowSurrogateOffset = 0xDC00;
             const uint highSurrogateOffset = 0xD800;
             const uint minCodePoint = 0x10000;
-            uint codePoint;
 
-            if (!uint.TryParse(value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out codePoint))
+            if (!uint.TryParse(value, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out uint codePoint))
                 return false;
             if (codePoint < minCodePoint) return false;
 

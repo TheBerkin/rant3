@@ -902,7 +902,7 @@ namespace Rant.Core.Framework
 		{
 			foreach (var id in ids)
 			{
-				if (String.IsNullOrWhiteSpace(id)) continue;
+				if (Util.IsNullOrWhiteSpace(id)) continue;
 				sb.CarrierState.DeleteAssociation(id);
 				sb.CarrierState.DeleteMatch(id);
 				sb.CarrierState.DeleteRhyme(id);

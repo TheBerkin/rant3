@@ -158,7 +158,7 @@ namespace Rant.Core.ObjectModel
         /// <summary>
         /// The type of the object.
         /// </summary>
-        public RantObjectType Type { get; internal set; } = RantObjectType.Null;
+        public RantObjectType Type { get; private set; } = RantObjectType.Null;
 
         /// <summary>
         /// The value of the object.
@@ -185,6 +185,26 @@ namespace Rant.Core.ObjectModel
                         return _rst;
                 }
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the object at the specified index in the object.
+        /// Only works with list objects.
+        /// </summary>
+        /// <param name="index">The index of the item to access.</param>
+        /// <returns></returns>
+        public RantObject this[int index]
+        {
+            get
+            {
+                if (Type != RantObjectType.List) return null;
+                return index >= 0 && index < _list.Count ? _list[index] : null;
+            }
+            set
+            {
+                if (Type != RantObjectType.List) return;
+                if (index >= 0 && index < _list.Count) _list[index] = value;
             }
         }
 

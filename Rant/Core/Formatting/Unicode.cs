@@ -29,6 +29,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using Rant.Core.Utilities;
+
 namespace Rant.Core.Formatting
 {
     internal static class Unicode
@@ -47,7 +49,7 @@ namespace Rant.Core.Formatting
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    if (String.IsNullOrWhiteSpace(line)) continue;
+                    if (Util.IsNullOrWhiteSpace(line)) continue;
                     var entry = line.Split(',');
                     _unicodeCharacterMap[entry[0].Trim()] = Convert.ToUInt32(entry[1].Trim());
                 }
