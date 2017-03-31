@@ -504,7 +504,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
+		public RantOutput DoName(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
@@ -527,7 +527,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1,
+		public RantOutput DoName(string patternName, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
@@ -551,7 +551,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1,
+		public RantOutput DoName(string patternName, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))

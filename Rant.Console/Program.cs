@@ -34,7 +34,7 @@ namespace RantConsole
 
         private static void Main(string[] args)
         {
-            OutputEncoding = Encoding.Unicode;
+            OutputEncoding = Encoding.UTF8;
             Title = "Rant Console" + (Flag("nsfw") ? " [NSFW]" : "");
 
             var rant = new RantEngine();

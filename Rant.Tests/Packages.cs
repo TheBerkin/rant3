@@ -30,7 +30,7 @@ namespace Rant.Tests
             package = RantPackage.Load("TestPackage.rantpkg");
             rant.LoadPackage(package);
 
-            Assert.AreEqual("Banana 1, 2, 3, 4, 5", rant.DoPackaged("TestProgram").Main);
+            Assert.AreEqual("Banana 1, 2, 3, 4, 5", rant.DoName("TestProgram").Main);
             Assert.AreEqual("TestPackage", package.ID);
             Assert.AreEqual("This is a test.", package.Description);
             Assert.AreEqual("Test Package?!", package.Title);
