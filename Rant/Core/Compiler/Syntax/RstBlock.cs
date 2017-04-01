@@ -23,11 +23,13 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Constructs;
 using Rant.Core.IO;
+using Rant.Core.Utilities;
 
 using static Rant.Localization.Txtres;
 
@@ -91,6 +93,7 @@ namespace Rant.Core.Compiler.Syntax
 
 			if (_weighted && attribs.Sync == null)
 			{
+				if (_dynamicWeights != null)
 				foreach (var dw in _dynamicWeights)
 				{
 					sb.AddOutputWriter();
@@ -100,7 +103,7 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						_weights[dw.Item1] = 0.0;
 					}
-					else if (!double.TryParse(strWeight, out _weights[dw.Item1]))
+					else if (!Util.ParseDouble(strWeight, out _weights[dw.Item1]))
 					{
 						throw new RantRuntimeException(sb, dw.Item2.Location,
 							GetString("err-runtime-invalid-dynamic-weight", strWeight));
@@ -172,7 +175,9 @@ namespace Rant.Core.Compiler.Syntax
 						}
 					}
 					else
+					{
 						yield return attribs.Separator;
+					}
 				}
 				sb.Blocks.Push(block); // Now put it back
 
@@ -180,7 +185,7 @@ namespace Rant.Core.Compiler.Syntax
 				if (attribs.Before != null) yield return attribs.Before;
 
 				// Content
-				
+
 				// Redirect output if requested
 				if (attribs.Redirect != null)
 				{

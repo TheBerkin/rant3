@@ -25,8 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Parsing
 {
@@ -63,12 +65,14 @@ namespace Rant.Core.Compiler.Parsing
 					compiler.SetNextActionCallback(cb);
 					compiler.AddContext(CompileContext.BlockWeight);
 					yield return Get<SequenceParser>();
-
+					
 					// Constant
-					if (sequence.Count == 1 && sequence[0] is RstText txtNode)
+					if (sequence.TrueForAll(rst => rst is RstText))
 					{
-						string txt = txtNode.Text;
-						if (!double.TryParse(txt, out double doubleValue))
+						var sb = new StringBuilder();
+						foreach (var rst in sequence) sb.Append((rst as RstText).Text);
+						string txt = sb.ToString();
+						if (!Util.ParseDouble(txt, out double doubleValue))
 							compiler.SyntaxError(reader.PrevLooseToken, false, "err-compiler-invalid-constweight");
 						else
 							constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
