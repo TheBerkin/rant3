@@ -23,5 +23,22 @@ namespace Rant.Tests
 		{
 			Assert.AreEqual(reverse, rant.Do($"[revx:{original}]").Main);
 		}
+		
+		[TestCase(@"abc", 2, "c")]
+		[TestCase(@"abc", 1, "b")]
+		[TestCase(@"abc", 0, "a")]
+		public void StringAt(string full, int pos, string result)
+		{
+			Assert.AreEqual(result, rant.Do($"[at:{full};{pos}]").Main);
+		}
+
+		[TestCase]
+		public void StringAtException()
+		{
+			Assert.Throws<RantRuntimeException>(() =>
+			{
+				rant.Do("[at:abc;-1]");
+			});
+		}
 	}
 }

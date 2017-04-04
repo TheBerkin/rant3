@@ -73,6 +73,7 @@ err-runtime-missing-subroutine = "Das Unterprogramm '{0}' konnte nicht gefunden 
 err-runtime-subarg-mismatch = "Die angegebenen Argumenten passen an die Signatur des Unterprogramms [${0}] nicht an."
 err-runtime-unknown-flag = "Unbekannter Schalter: '{0}'"
 err-runtime-unknown-mode = "Unbekannter Modus: '{0}'"
+err-runtime-invalid-string-index = "Index in string ist nicht gültig: {0}"
 
 acc-carrier-name = "Anfragezustandspeichernamen"
 acc-table-name = "Tabellenamen"

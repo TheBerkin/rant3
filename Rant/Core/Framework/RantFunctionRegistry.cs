@@ -1379,5 +1379,16 @@ namespace Rant.Core.Framework
 				yield return elseBody;
 			}
 		}
+
+		[RantFunction("at")]
+		[RantDescription("Prints the character at the specified position in the input. Throws an exception if the position is outside of the string.")]
+		private static void At(Sandbox sb, 
+			[RantDescription("The input string.")] string input, 
+			[RantDescription("The position of the character to find.")] int pos)
+		{
+			if (pos < 0 || pos > input.Length)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-invalid-string-index", pos);
+			sb.Print(input.Substring(pos, 1));
+		}
 	}
 }

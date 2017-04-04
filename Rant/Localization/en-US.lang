@@ -79,6 +79,7 @@ err-runtime-missing-subroutine = "The subroutine '{0}' could not be found."
 err-runtime-subarg-mismatch = "The provided arguments do not match the signature of the subroutine [${0}]."
 err-runtime-unknown-flag = "Unknown flag name: '{0}'"
 err-runtime-unknown-mode = "Unknown mode name: '{0}'"
+err-runtime-invalid-string-index = "Index in string is not valid: {0}"
 
 acc-carrier-name = "carrier name"
 acc-table-name = "table name"
