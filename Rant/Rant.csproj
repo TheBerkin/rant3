@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rant</RootNamespace>
-    <AssemblyName>RantEngine</AssemblyName>
+    <AssemblyName>Rant</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
@@ -43,7 +43,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\MainBuild\RantEngine.xml</DocumentationFile>
+    <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Install|AnyCPU' ">
@@ -121,12 +121,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <AssemblyName>RantEngine-Unity</AssemblyName>
+    <AssemblyName>Rant.Unity</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|AnyCPU'">
     <OutputPath>..\bin\UnityBuild\</OutputPath>
     <DefineConstants>TRACE;UNITY</DefineConstants>
-    <DocumentationFile>..\bin\UnityBuild\RantEngine-Unity.xml</DocumentationFile>
+    <DocumentationFile>..\bin\UnityBuild\Rant.Unity.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -175,7 +175,7 @@
     <Compile Include="Core\Compiler\Token.cs" />
     <Compile Include="Core\Compiler\LineCol.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
-    <Compile Include="Core\Constructs\BlockManager.cs" />
+    <Compile Include="Core\Constructs\BlockAttribManager.cs" />
     <Compile Include="Core\Constructs\QueryBuilder.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
     <Compile Include="Core\Formatting\Accent.cs" />
@@ -250,7 +250,6 @@
     <Compile Include="RantCompilerMessageType.cs" />
     <Compile Include="RantInternalException.cs" />
     <Compile Include="Resources\RantDependencyResolver.cs" />
-    <Compile Include="Resources\RantModule.cs" />
     <Compile Include="RantOutputEntry.cs" />
     <Compile Include="Resources\RantPackageDependency.cs" />
     <Compile Include="Resources\RantPackageVersion.cs" />
@@ -268,9 +267,7 @@
     <Compile Include="Core\IO\IOUtil.cs" />
     <Compile Include="RantOutput.cs" />
     <Compile Include="Resources\RantPackage.cs" />
-    <Compile Include="Vocabulary\ClassTree.cs" />
-    <Compile Include="Vocabulary\Legacy\DicLexer.cs" />
-    <Compile Include="Vocabulary\Legacy\RantDictionaryTable.Loader.cs" />
+    <Compile Include="Vocabulary\ClassCache.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
     <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />

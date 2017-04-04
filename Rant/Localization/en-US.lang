@@ -1,6 +1,7 @@
 ﻿untitled-package = "Untitled Package"
 default-package-id = "Package"
 pattern = "Pattern"
+stack-trace = "Stack Trace"
 
 src-line-col = "({0}: Ln {1}, Col {2})"
 
@@ -30,10 +31,10 @@ err-invalid-weight = "Invalid entry weight value."
 err-bad-term-count = "Terms per entry must be greater than zero."
 err-bad-pattern-name = "Invalid pattern name: {0}"
 err-internal-error = "An internal error has occurred. This is often caused by a bug in Rant."
-err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant. Message: {0}."
+err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant.\nMessage: {0}"
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
-err-stack-overflow = "Exceeded the maximum stack size ({0})."
+err-stack-overflow = "Exceeded the maximum stack size."
 
 err-generic-runtime = "An unspecified runtime error was encountered."
 err-generic-compiler = "An unspecified compiler error was encountered."
@@ -73,6 +74,11 @@ err-table-argc-mismatch = "Argument count mismatch: {0} expects {1}, found {2}"
 
 err-runtime-invalid-dynamic-weight = "Dynamic weight pattern returned an invalid weight value: '{0}'"
 err-runtime-missing-var = "The variable '{0}' does not exist."
+err-runtime-invalid-arg = "The value '{0}' is not valid for the parameter '{1}' ({2} expected)."
+err-runtime-missing-subroutine = "The subroutine '{0}' could not be found."
+err-runtime-subarg-mismatch = "The provided arguments do not match the signature of the subroutine [${0}]."
+err-runtime-unknown-flag = "Unknown flag name: '{0}'"
+err-runtime-unknown-mode = "Unknown mode name: '{0}'"
 
 acc-carrier-name = "carrier name"
 acc-table-name = "table name"

@@ -23,46 +23,41 @@
 
 #endregion
 
-namespace Rant.Core.Framework
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Rant.Core.Compiler.Syntax;
+
+namespace Rant.Core.Constructs
 {
-    /// <summary>
-    /// Defines parameter types for Rant functions.
-    /// </summary>
-    public enum RantFunctionParameterType
+    internal class BlockAttribManager
     {
-        /// <summary>
-        /// Parameter is a static string.
-        /// </summary>
-        String,
+        private Stack<BlockAttribs> _attribStack;
 
-        /// <summary>
-        /// Parameter is a lazily evaluated pattern.
-        /// </summary>
-        Pattern,
+        public BlockAttribManager()
+        {
+			_attribStack = new Stack<BlockAttribs>();
+			_attribStack.Push(new BlockAttribs());
+        }
 
-        /// <summary>
-        /// Parameter is numeric.
-        /// </summary>
-        Number,
+		public BlockAttribs CurrentAttribs => _attribStack.Peek();
+		
+		public BlockAttribs TakeAttribs()
+		{
+			var attribs = _attribStack.Pop();
+			_attribStack.Push(new BlockAttribs());
+			return attribs;
+		}
 
-        /// <summary>
-        /// Parameter describes a mode, which is one of a specific set of allowed values.
-        /// </summary>
-        Mode,
+		public void AddLayer()
+		{
+			_attribStack.Push(new BlockAttribs());
+		}
 
-        /// <summary>
-        /// Parameter uses combinable flags.
-        /// </summary>
-        Flags,
-
-        /// <summary>
-        /// Parameter is a RantObject.
-        /// </summary>
-        RantObject,
-
-        /// <summary>
-        /// Parameter is a boolean.
-        /// </summary>
-        Boolean
+		public void RemoveLayer()
+		{
+			_attribStack.Pop();
+		}
     }
 }

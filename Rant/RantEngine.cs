@@ -60,7 +60,6 @@ namespace Rant
 		private RantFormat _format = RantFormat.English;
 		private bool _preserveCarrierState = false;
 		private RantDependencyResolver _resolver = new RantDependencyResolver();
-		internal Dictionary<string, RantModule> PackageModules = new Dictionary<string, RantModule>();
 
 		/// <summary>
 		/// Creates a new RantEngine object without a dictionary.
@@ -77,11 +76,6 @@ namespace Rant
 		{
 			_dictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
 		}
-
-		/// <summary>
-		/// User-defined Rant modules.
-		/// </summary>
-		public Dictionary<string, RantModule> Modules { get; } = new Dictionary<string, RantModule>();
 
 		/// <summary>
 		/// The current formatting settings for the engine.
@@ -224,7 +218,7 @@ namespace Rant
 
 		#region Static members
 
-		private static int _maxStackSize = 64;
+		private static int _maxStackSize = 128;
 		private static readonly RNG Seeds = new RNG();
 
 		static RantEngine()
@@ -255,8 +249,6 @@ namespace Rant
 #endif
 		private RantOutput RunVM(Sandbox vm, double timeout)
 		{
-			vm.UserModules = Modules;
-			vm.PackageModules = PackageModules;
 			if (_preserveCarrierState && _carrierState == null)
 				_carrierState = vm.CarrierState;
 			return vm.Run(timeout);
@@ -512,7 +504,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
+		public RantOutput DoName(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
 				throw new ArgumentException("Pattern doesn't exist.");
@@ -535,7 +527,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, long seed, int charLimit = 0, double timeout = -1,
+		public RantOutput DoName(string patternName, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
@@ -559,7 +551,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
-		public RantOutput DoPackaged(string patternName, RNG rng, int charLimit = 0, double timeout = -1,
+		public RantOutput DoName(string patternName, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))

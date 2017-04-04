@@ -299,7 +299,7 @@ namespace Rant.Vocabulary
             foreach (string hc in hidden)
                 table.HideClass(hc);
 
-            table.Commit();
+            table.RebuildCache();
 
             return table;
         }

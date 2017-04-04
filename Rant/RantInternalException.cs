@@ -35,8 +35,8 @@ namespace Rant
     /// </summary>
     public sealed class RantInternalException : Exception
     {
-        internal RantInternalException()
-            : base(Txtres.GetString("err-internal-error"))
+        internal RantInternalException(Exception inner)
+            : base(Txtres.GetString("err-internal-error"), inner)
         {
         }
 

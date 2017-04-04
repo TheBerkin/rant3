@@ -29,6 +29,7 @@ using Rant.Core.Compiler.Syntax;
 using Rant.Core;
 using Rant.Localization;
 using System;
+using System.Linq;
 
 namespace Rant.Vocabulary.Querying
 {
@@ -83,10 +84,26 @@ namespace Rant.Vocabulary.Querying
 
         public void AddFilter(Filter filter) => _filters.Add(filter);
 
-        public IEnumerable<Filter> GetFilters()
+        /// <summary>
+        /// Gets all non-class filters in the query.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Filter> GetNonClassFilters()
         {
-            foreach (var filter in _filters) yield return filter;
+            foreach (var filter in _filters.Where(f => !(f is ClassFilter))) yield return filter;
         }
+
+        /// <summary>
+        /// Gets all class filters in the query.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ClassFilter> GetClassFilters() => _filters.OfType<ClassFilter>();
+
+        /// <summary>
+        /// Gets all filters in the query.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Filter> GetAllFilters() => _filters.AsEnumerable();
 
 		internal IEnumerator<RST> Run(Sandbox sb)
 		{

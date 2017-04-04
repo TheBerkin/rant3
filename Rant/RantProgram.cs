@@ -61,7 +61,6 @@ namespace Rant
             Code = code;
             var compiler = new RantCompiler(name, code);
             SyntaxTree = compiler.Compile();
-            Module = compiler.HasModule ? compiler.Module : null;
         }
 
         internal RantProgram(string name, RantProgramOrigin type, RST rst)
@@ -70,7 +69,6 @@ namespace Rant
             Type = type;
             Code = null;
             SyntaxTree = rst;
-            Module = null;
         }
 
         internal RantProgram()
@@ -104,7 +102,6 @@ namespace Rant
         public string Code { get; }
 
         internal RST SyntaxTree { get; private set; }
-        internal RantModule Module { get; }
 
         /// <summary>
         /// Compiles a program from the specified pattern.
@@ -229,7 +226,6 @@ namespace Rant
         internal override void Load(RantEngine engine)
         {
             engine.CacheProgramInternal(this);
-            if (Module != null) engine.PackageModules[Name] = Module;
         }
     }
 }

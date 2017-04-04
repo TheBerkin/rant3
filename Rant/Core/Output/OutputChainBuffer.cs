@@ -180,15 +180,15 @@ namespace Rant.Core.Output
 		{
 			if (Util.IsNullOrWhiteSpace(value)) return;
 
-			switch(_charType)
+			switch (_charType)
 			{
 				case CharConversion.Fullwidth:
-					value = new string(value.Select(c => CharConverter.ToFullwidth(c)).ToArray());
+				value = new string(value.Select(c => CharConverter.ToFullwidth(c)).ToArray());
 				break;
 				case CharConversion.Cursive:
 				{
 					var sb = new StringBuilder();
-					foreach(char c in value)
+					foreach (char c in value)
 					{
 						sb.Append(CharConverter.ToScript(c));
 					}

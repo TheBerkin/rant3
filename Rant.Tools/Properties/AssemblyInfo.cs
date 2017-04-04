@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Rant Command Line Tools")]
-[assembly: AssemblyDescription("Command-line utilities for Rant")]
+[assembly: AssemblyTitle("Rant Command-Line Tools")]
+[assembly: AssemblyDescription("Command-line tools for building Rant resource files")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Rant Command Line Tools")]
-[assembly: AssemblyCopyright("Copyright © Nicholas Fleck 2015")]
+[assembly: AssemblyProduct("Rant Command-Line Tools")]
+[assembly: AssemblyCopyright("Copyright © Nicholas Fleck 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

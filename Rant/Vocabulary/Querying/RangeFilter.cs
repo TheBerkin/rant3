@@ -87,7 +87,7 @@ namespace Rant.Vocabulary.Querying
         /// </summary>
         public static RangeFilter Anything => new RangeFilter(null, null);
 
-        public override int Priority => 1;
+        public override int Priority => 90;
 
         /// <summary>
         /// Determines if the specified number is within the current range.

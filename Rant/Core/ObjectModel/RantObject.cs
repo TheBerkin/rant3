@@ -35,7 +35,7 @@ namespace Rant.Core.ObjectModel
     /// <summary>
     /// Represents a Rant variable.
     /// </summary>
-    public class RantObject
+    public sealed class RantObject
     {
         /// <summary>
         /// Null
@@ -158,7 +158,7 @@ namespace Rant.Core.ObjectModel
         /// <summary>
         /// The type of the object.
         /// </summary>
-        public RantObjectType Type { get; internal set; } = RantObjectType.Null;
+        public RantObjectType Type { get; private set; } = RantObjectType.Null;
 
         /// <summary>
         /// The value of the object.
@@ -185,6 +185,26 @@ namespace Rant.Core.ObjectModel
                         return _rst;
                 }
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the object at the specified index in the object.
+        /// Only works with list objects.
+        /// </summary>
+        /// <param name="index">The index of the item to access.</param>
+        /// <returns></returns>
+        public RantObject this[int index]
+        {
+            get
+            {
+                if (Type != RantObjectType.List) return null;
+                return index >= 0 && index < _list.Count ? _list[index] : null;
+            }
+            set
+            {
+                if (Type != RantObjectType.List) return;
+                if (index >= 0 && index < _list.Count) _list[index] = value;
             }
         }
 
@@ -238,9 +258,8 @@ namespace Rant.Core.ObjectModel
                             return new RantObject(_boolean ? 1 : 0);
                         case RantObjectType.String:
                         {
-                            double num;
-                            return double.TryParse(_string, out num) ? new RantObject(num) : Null;
-                        }
+							return double.TryParse(_string, out double num) ? new RantObject(num) : Null;
+						}
                     }
                     break;
                 }
@@ -290,6 +309,29 @@ namespace Rant.Core.ObjectModel
                 _rst = _rst,
                 Type = Type
             };
+        }
+
+        /// <summary>
+        /// Gets the boolean inverse of a RantObject.
+        /// </summary>
+        /// <param name="a">The object to invert from.</param>
+        /// <returns></returns>
+        public static RantObject operator !(RantObject a)
+        {
+            switch (a.Type)
+            {
+                case RantObjectType.Number:
+                    {
+                        switch (a.Type)
+                        {
+                            case RantObjectType.Boolean:
+                                return new RantObject(!a._boolean);
+                        }
+                        break;
+                    }
+            }
+
+            return Null;
         }
 
         /// <summary>
@@ -409,6 +451,30 @@ namespace Rant.Core.ObjectModel
                     }
                     break;
                 }
+            }
+
+            return Null;
+        }
+
+        /// <summary>
+        /// Mods one RantObject by another.
+        /// </summary>
+        /// <param name="a">The object to mod.</param>
+        /// <param name="b">The object to mod by.</param>
+        /// <returns></returns>
+        public static RantObject operator %(RantObject a, RantObject b)
+        {
+            switch (a.Type)
+            {
+                case RantObjectType.Number:
+                    {
+                        switch (b.Type)
+                        {
+                            case RantObjectType.Number:
+                                return new RantObject(a._number % b._number);
+                        }
+                        break;
+                    }
             }
 
             return Null;

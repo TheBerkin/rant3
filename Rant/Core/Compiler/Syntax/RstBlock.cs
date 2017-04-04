@@ -23,11 +23,13 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.Constructs;
 using Rant.Core.IO;
+using Rant.Core.Utilities;
 
 using static Rant.Localization.Txtres;
 
@@ -76,7 +78,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
-			var attribs = sb.NextAttribs(this);
+			var attribs = sb.AttribManager.TakeAttribs();
 
 			// Skip if chance doesn't fall within range
 			if (attribs.Chance < 100 && sb.RNG.NextDouble(0, 100) > attribs.Chance)
@@ -84,13 +86,14 @@ namespace Rant.Core.Compiler.Syntax
 
 			int next = -1;
 			int reps = attribs.RepEach ? _elements.Count : attribs.Repetitions;
-			var block = new BlockState(attribs.Repetitions);
+			var block = new BlockState(reps, attribs);
 			double weightSum = _constantWeightSum;
 
 			if (attribs.Start != null) yield return attribs.Start;
 
 			if (_weighted && attribs.Sync == null)
 			{
+				if (_dynamicWeights != null)
 				foreach (var dw in _dynamicWeights)
 				{
 					sb.AddOutputWriter();
@@ -100,9 +103,9 @@ namespace Rant.Core.Compiler.Syntax
 					{
 						_weights[dw.Item1] = 0.0;
 					}
-					else if (!double.TryParse(strWeight, out _weights[dw.Item1]))
+					else if (!Util.ParseDouble(strWeight, out _weights[dw.Item1]))
 					{
-						throw new RantRuntimeException(sb.Pattern, dw.Item2.Location,
+						throw new RantRuntimeException(sb, dw.Item2.Location,
 							GetString("err-runtime-invalid-dynamic-weight", strWeight));
 					}
 
@@ -172,7 +175,9 @@ namespace Rant.Core.Compiler.Syntax
 						}
 					}
 					else
+					{
 						yield return attribs.Separator;
+					}
 				}
 				sb.Blocks.Push(block); // Now put it back
 
@@ -180,7 +185,7 @@ namespace Rant.Core.Compiler.Syntax
 				if (attribs.Before != null) yield return attribs.Before;
 
 				// Content
-				
+
 				// Redirect output if requested
 				if (attribs.Redirect != null)
 				{
@@ -218,11 +223,12 @@ namespace Rant.Core.Compiler.Syntax
 				{
 					output.Write(true);
 					output.Write(_constantWeightSum);
-					for (int i = 0; i < _count; i++)
-						output.Write(_weights[i]);
+					for (int i = 0; i < _count; i++) output.Write(_weights[i]);
 				}
 				else
+				{
 					output.Write(false);
+				}
 
 				// Write dynamic weights
 				if (_dynamicWeights != null)
@@ -235,7 +241,9 @@ namespace Rant.Core.Compiler.Syntax
 					}
 				}
 				else
+				{
 					output.Write(0);
+				}
 			}
 
 			// Block elements
@@ -253,8 +261,7 @@ namespace Rant.Core.Compiler.Syntax
 				{
 					input.ReadDouble(out _constantWeightSum);
 					_weights = new double[_count];
-					for (int i = 0; i < _count; i++)
-						input.ReadDouble(out _weights[i]);
+					for (int i = 0; i < _count; i++) input.ReadDouble(out _weights[i]);
 				}
 
 				// Read dynamic weights
@@ -280,6 +287,11 @@ namespace Rant.Core.Compiler.Syntax
 				yield return request;
 				_elements.Add(request.Result);
 			}
+		}
+
+		public override string ToString()
+		{
+			return $"{{ {_count}... }}";
 		}
 	}
 }

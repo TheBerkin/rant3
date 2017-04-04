@@ -23,46 +23,36 @@
 
 #endregion
 
-namespace Rant.Core.Framework
+using System;
+using System.IO;
+
+namespace Rant.Tools.Commands
 {
-    /// <summary>
-    /// Defines parameter types for Rant functions.
-    /// </summary>
-    public enum RantFunctionParameterType
+    [CommandName("build", Description = "Compiles the specified Rant patterns into programs.", RequireFilePath = true)]
+    internal sealed class BuildCommand : Command
     {
-        /// <summary>
-        /// Parameter is a static string.
-        /// </summary>
-        String,
+        protected override void OnRun()
+        {
+            foreach (var path in CmdLine.GetPaths())
+            {
+                try
+                {
+                    Console.Write($"Building {path}...");
 
-        /// <summary>
-        /// Parameter is a lazily evaluated pattern.
-        /// </summary>
-        Pattern,
-
-        /// <summary>
-        /// Parameter is numeric.
-        /// </summary>
-        Number,
-
-        /// <summary>
-        /// Parameter describes a mode, which is one of a specific set of allowed values.
-        /// </summary>
-        Mode,
-
-        /// <summary>
-        /// Parameter uses combinable flags.
-        /// </summary>
-        Flags,
-
-        /// <summary>
-        /// Parameter is a RantObject.
-        /// </summary>
-        RantObject,
-
-        /// <summary>
-        /// Parameter is a boolean.
-        /// </summary>
-        Boolean
+                    var pgm = RantProgram.CompileFile(path);
+                    var pgmpath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".rantpgm");
+                    pgm.SaveToFile(pgmpath);
+                    Console.WriteLine("  Done.");
+                }
+                catch (RantCompilerException ex)
+                {
+                    throw new Exception($"Build failed for {path}.\n{ex.Message}\n");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error while building: {ex.Message}");
+                }
+            }
+        }
     }
 }

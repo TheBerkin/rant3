@@ -65,9 +65,8 @@ namespace Rant.Core.Compiler.Syntax
             // Convert arguments to their native types
             int paramc = _funcInfo.Parameters.Length;
             var args = new object[_argc];
-            double d;
-            RantFunctionParameter p;
-            for (int i = 0; i < _argc; i++)
+			RantFunctionParameter p;
+			for (int i = 0; i < _argc; i++)
             {
                 p = GetParameter(i);
                 switch (p.RantType)
@@ -84,19 +83,52 @@ namespace Rant.Core.Compiler.Syntax
                         args[i] = sb.Return().Main;
                         break;
 
+                    // RantObjects are evaluated and fetched by name
+                    case RantFunctionParameterType.RantObject:
+                        sb.AddOutputWriter();
+                        yield return _args[i];
+                        args[i] = sb.Objects[sb.Return().Main];
+                        break;
+
                     // Numbers are evaluated, verified, and converted
                     case RantFunctionParameterType.Number:
                     {
                         sb.AddOutputWriter();
                         yield return _args[i];
                         string strNum = sb.Return().Main;
-                        if (!double.TryParse(strNum, out d))
+                        if (!double.TryParse(strNum, out double d))
                         {
                             d = 0;
-                            int n;
-                            if (Util.ParseInt(strNum, out n)) d = n;
-                        }
+							if (Util.ParseInt(strNum, out int n))
+							{
+								d = n;
+							}
+							else
+							{
+								throw new RantRuntimeException(sb, _args[i], "err-runtime-invalid-arg", strNum, p.Name, p.RantType.ToString().ToLower());
+							}
+						}
                         args[i] = Convert.ChangeType(d, p.NativeType);
+                        break;
+                    }
+
+                    case RantFunctionParameterType.Boolean:
+                    {
+                        sb.AddOutputWriter();
+                        yield return _args[i];
+                        var val = sb.Return().Main;
+                        if (val.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            args[i] = true;
+                        }
+                        else if (val.Equals("false", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            args[i] = false;
+                        }
+                        else
+                        {
+                            throw new RantRuntimeException(sb, _args[i], "err-runtime-invalid-arg", val, p.Name, p.RantType.ToString().ToLower());
+                        }
                         break;
                     }
 
@@ -106,11 +138,9 @@ namespace Rant.Core.Compiler.Syntax
                         sb.AddOutputWriter();
                         yield return _args[i];
                         string strMode = sb.Return().Main;
-                        object value;
-                        if (!Util.TryParseEnum(p.NativeType, strMode, out value))
+                        if (!Util.TryParseEnum(p.NativeType, strMode, out object value))
                         {
-                            throw new RantRuntimeException(sb.Pattern, _args[i].Location,
-                                $"Unknown mode value '{strMode}'.");
+                            throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-mode", strMode);
                         }
                         args[i] = value;
                         break;
@@ -124,13 +154,11 @@ namespace Rant.Core.Compiler.Syntax
                         yield return _args[i];
                         long flags = 0;
                         string strFlags = sb.Return().Main;
-                        object value;
                         foreach (string flag in strFlags.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                         {
-                            if (!Util.TryParseEnum(enumType, flag, out value))
+                            if (!Util.TryParseEnum(enumType, flag, out object value))
                             {
-                                throw new RantRuntimeException(sb.Pattern, _args[i].Location,
-                                    $"Unknown flag value '{flag}'.");
+                                throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-flag", flag);
                             }
                             flags |= Convert.ToInt64(value);
                         }
@@ -177,5 +205,10 @@ namespace Rant.Core.Compiler.Syntax
                 _args.Add(request.Result);
             }
         }
-    }
+
+		public override string ToString()
+		{
+			return _funcInfo.ToString();
+		}
+	}
 }

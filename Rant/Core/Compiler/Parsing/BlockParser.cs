@@ -25,50 +25,54 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Utilities;
 
 namespace Rant.Core.Compiler.Parsing
 {
-    internal class BlockParser : Parser
-    {
-        public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
-            Action<RST> actionCallback)
-        {
-            var blockStartToken = reader.PrevLooseToken;
-            var items = new List<RST>();
-            var actions = new List<RST>();
+	internal class BlockParser : Parser
+	{
+		public override IEnumerator<Parser> Parse(RantCompiler compiler, CompileContext context, TokenReader reader,
+			Action<RST> actionCallback)
+		{
+			var blockStartToken = reader.PrevLooseToken;
+			var items = new List<RST>();
+			var actions = new List<RST>();
 
-            // "why are these not lists or arrays" i yell into the void, too lazy to find out why
-            List<_<int, double>> constantWeights = null;
-            List<_<int, RST>> dynamicWeights = null;
-            int blockNumber = 0;
-            Action<RST> itemCallback = action => actions.Add(action);
+			// "why are these not lists or arrays" i yell into the void, too lazy to find out why
+			List<_<int, double>> constantWeights = null;
+			List<_<int, RST>> dynamicWeights = null;
+			int blockNumber = 0;
+			Action<RST> itemCallback = action => actions.Add(action);
 
-            compiler.AddContext(CompileContext.BlockEndSequence);
-            compiler.AddContext(CompileContext.BlockSequence);
+			compiler.AddContext(CompileContext.BlockEndSequence);
+			compiler.AddContext(CompileContext.BlockSequence);
 
-            while (compiler.NextContext == CompileContext.BlockSequence)
-            {
-                // block weight
-                if (reader.PeekLooseToken().Type == R.LeftParen)
-                {
-                    constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
-                    dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RST>>());
+			while (compiler.NextContext == CompileContext.BlockSequence)
+			{
+				// block weight
+				if (reader.PeekLooseToken().Type == R.LeftParen)
+				{
+					constantWeights = constantWeights ?? (constantWeights = new List<_<int, double>>());
+					dynamicWeights = dynamicWeights ?? (dynamicWeights = new List<_<int, RST>>());
 
-                    var firstToken = reader.ReadLooseToken();
+					var firstToken = reader.ReadLooseToken();
 
 					List<RST> sequence = new List<RST>();
 					Action<RST> cb = rst => sequence.Add(rst);
 					compiler.SetNextActionCallback(cb);
 					compiler.AddContext(CompileContext.BlockWeight);
 					yield return Get<SequenceParser>();
-
+					
 					// Constant
-					if (sequence.Count == 1 && sequence[0] is RstText txtNode)
+					if (sequence.TrueForAll(rst => rst is RstText))
 					{
-						string txt = txtNode.Text;
-						if (!double.TryParse(txt, out double doubleValue))
+						var sb = new StringBuilder();
+						foreach (var rst in sequence) sb.Append((rst as RstText).Text);
+						string txt = sb.ToString();
+						if (!Util.ParseDouble(txt, out double doubleValue))
 							compiler.SyntaxError(reader.PrevLooseToken, false, "err-compiler-invalid-constweight");
 						else
 							constantWeights.Add(new _<int, double>(blockNumber, doubleValue));
@@ -81,20 +85,29 @@ namespace Rant.Core.Compiler.Parsing
 						else
 							dynamicWeights.Add(new _<int, RST>(blockNumber, new RstSequence(sequence, sequence[0].Location)));
 					}
-                }
+				}
 
-                compiler.SetNextActionCallback(itemCallback);
-                var startToken = reader.PeekToken();
-                yield return Get<SequenceParser>();
-                items.Add(new RstSequence(actions, startToken.ToLocation()));
-                actions.Clear();
-                blockNumber++;
-            }
+				compiler.SetNextActionCallback(itemCallback);
+				var startToken = reader.PeekToken();
+				yield return Get<SequenceParser>();
 
-            compiler.LeaveContext();
-            compiler.SetNextActionCallback(actionCallback);
+				// Don't wrap single nodes in a sequence, it's unnecessary
+				if (actions.Count == 1)
+				{
+					items.Add(actions[0]);
+				}
+				else
+				{
+					items.Add(new RstSequence(actions, startToken.ToLocation()));
+				}				
+				actions.Clear();
+				blockNumber++;
+			}
 
-            actionCallback(new RstBlock(blockStartToken.ToLocation(), items, dynamicWeights, constantWeights));
-        }
-    }
+			compiler.LeaveContext();
+			compiler.SetNextActionCallback(actionCallback);
+
+			actionCallback(new RstBlock(blockStartToken.ToLocation(), items, dynamicWeights, constantWeights));
+		}
+	}
 }

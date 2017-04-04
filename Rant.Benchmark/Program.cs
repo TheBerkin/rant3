@@ -11,7 +11,6 @@ namespace Rant.Benchmark
 {
 	class Program
 	{
-		public static readonly string LEGACY_DIC_PATH = Property("ldict");
 		public static readonly string PKG_PATH = Property("package");
 		public static readonly int ITERATIONS;
 
@@ -24,15 +23,6 @@ namespace Rant.Benchmark
 		static void Main(string[] args)
 		{
 			var rant = new RantEngine();
-			if (!string.IsNullOrEmpty(LEGACY_DIC_PATH))
-			{
-				var tables =
-					Directory
-						.GetFiles(LEGACY_DIC_PATH)
-						.Where(f => Path.GetExtension(f) == ".dic")
-						.Select(f => RantDictionaryTable.FromLegacyFile(f));
-				rant.Dictionary = new RantDictionary(tables);
-			}
 
 			if (!string.IsNullOrEmpty(PKG_PATH))
 			{

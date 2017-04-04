@@ -29,6 +29,8 @@ using Rant.Core.Compiler;
 using Rant.Core.Compiler.Syntax;
 
 using static Rant.Localization.Txtres;
+using Rant.Core;
+using Rant.Localization;
 
 namespace Rant
 {
@@ -37,29 +39,31 @@ namespace Rant
     /// </summary>
     public sealed class RantRuntimeException : Exception
     {
-        internal RantRuntimeException(RantProgram source, LineCol token, string errorMessageType = "err-generic-runtime",
+        internal RantRuntimeException(Sandbox sb, LineCol token, string errorMessageType = "err-generic-runtime",
             params object[] errorArgs)
             : base((token.Index != -1
-                       ? $"{GetString("src-line-col", source.Name, token.Line, token.Column)} "
-                       : $"({source.Name}) ") + GetString(errorMessageType, errorArgs))
+                       ? $"{GetString("src-line-col", sb.Pattern.Name, token.Line, token.Column)} "
+                       : $"({sb.Pattern.Name}) ") + GetString(errorMessageType, errorArgs))
         {
-            Code = source.Code;
+            Code = sb.Pattern.Code;
             Line = token.Line;
             Column = token.Column;
             Index = token.Index;
+			RantStackTrace = sb.GetStackTrace();
         }
 
-        internal RantRuntimeException(RantProgram source, RST rst, string errorMessageType = "err-generic-runtime",
+        internal RantRuntimeException(Sandbox sb, RST rst, string errorMessageType = "err-generic-runtime",
             params object[] errorArgs)
             : base(rst == null
-                ? $"({source.Name}) {GetString(errorMessageType, errorArgs)}"
-                : $"{GetString("src-line-col", source.Name, rst.Location.Line, rst.Location.Column)} {GetString(errorMessageType, errorArgs)}"
+                ? $"({sb.Pattern.Name}) {GetString(errorMessageType, errorArgs)}"
+                : $"{GetString("src-line-col", sb.Pattern.Name, rst.Location.Line, rst.Location.Column)} {GetString(errorMessageType, errorArgs)}"
             )
         {
-            Code = source.Code;
+            Code = sb.Pattern.Code;
             Line = rst?.Location.Line ?? 0;
             Column = rst?.Location.Column ?? 0;
             Index = rst?.Location.Index ?? -1;
+			RantStackTrace = sb.GetStackTrace();
         }
 
         /// <summary>
@@ -86,5 +90,19 @@ namespace Rant
         /// The source of the error.
         /// </summary>
         public string Code { get; }
-    }
+
+		/// <summary>
+		/// The stack trace from the pattern.
+		/// </summary>
+		public string RantStackTrace { get; }
+
+		/// <summary>
+		/// Returns a string representation of the runtime error, including the message and stack trace.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return $"{Message}\n\n{GetString("stack-trace")}:\n{RantStackTrace}";
+		}
+	}
 }

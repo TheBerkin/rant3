@@ -1,5 +1,4 @@
 ﻿#region License
-
 // https://github.com/TheBerkin/Rant
 // 
 // Copyright (c) 2017 Nicholas Fleck
@@ -20,49 +19,24 @@
 // HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 #endregion
 
-namespace Rant.Core.Framework
+using System;
+
+namespace Rant.Tools
 {
-    /// <summary>
-    /// Defines parameter types for Rant functions.
-    /// </summary>
-    public enum RantFunctionParameterType
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    internal sealed class CommandParamAttribute : Attribute
     {
-        /// <summary>
-        /// Parameter is a static string.
-        /// </summary>
-        String,
+        public string Name { get; }
+        public bool Required { get; }
+        public string Description { get; }
 
-        /// <summary>
-        /// Parameter is a lazily evaluated pattern.
-        /// </summary>
-        Pattern,
-
-        /// <summary>
-        /// Parameter is numeric.
-        /// </summary>
-        Number,
-
-        /// <summary>
-        /// Parameter describes a mode, which is one of a specific set of allowed values.
-        /// </summary>
-        Mode,
-
-        /// <summary>
-        /// Parameter uses combinable flags.
-        /// </summary>
-        Flags,
-
-        /// <summary>
-        /// Parameter is a RantObject.
-        /// </summary>
-        RantObject,
-
-        /// <summary>
-        /// Parameter is a boolean.
-        /// </summary>
-        Boolean
+        public CommandParamAttribute(string name, bool required, string description)
+        {
+            Name = name;
+            Required = required;
+            Description = description;
+        }
     }
 }

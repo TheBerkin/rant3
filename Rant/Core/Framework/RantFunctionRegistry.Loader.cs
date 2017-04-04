@@ -35,6 +35,9 @@ namespace Rant.Core.Framework
 {
     internal static partial class RantFunctionRegistry
     {
+        private const string TRUE = "true";
+        private const string FALSE = "false";
+
         private static bool _loaded = false;
 
         private static readonly Dictionary<string, RantFunction> FunctionTable =

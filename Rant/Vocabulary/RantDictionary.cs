@@ -123,7 +123,9 @@ namespace Rant.Vocabulary
                 oldTable.Merge(table);
             }
             else
+            {
                 _tables[table.Name] = table;
+            }
         }
 
         /// <summary>

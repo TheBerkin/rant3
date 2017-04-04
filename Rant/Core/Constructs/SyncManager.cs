@@ -58,14 +58,14 @@ namespace Rant.Core.Constructs
                         Pinned = _pinQueue.Remove(name)
                     };
             }
-            if (apply) _sb.CurrentBlockAttribs.Sync = sync;
+            if (apply) _sb.AttribManager.CurrentAttribs.Sync = sync;
         }
 
         public void Apply(string name)
         {
             Synchronizer sync;
             if (_syncTable.TryGetValue(name, out sync))
-                _sb.CurrentBlockAttribs.Sync = sync;
+                _sb.AttribManager.CurrentAttribs.Sync = sync;
         }
 
         public void SetPinned(string name, bool isPinned)

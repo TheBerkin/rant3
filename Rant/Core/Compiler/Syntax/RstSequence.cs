@@ -71,5 +71,10 @@ namespace Rant.Core.Compiler.Syntax
                 Actions.Add(request.Result);
             }
         }
-    }
+
+		public override string ToString()
+		{
+			return "Pattern";
+		}
+	}
 }
