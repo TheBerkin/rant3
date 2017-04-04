@@ -4,10 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 using Rant;
 using Rant.Vocabulary;
-
 using static System.Console;
 
 using static Rant.Common.CmdLine;
@@ -24,6 +24,7 @@ namespace RantConsole
 #endif
 		public static readonly string FILE = GetPaths().FirstOrDefault();
 		public static readonly string PKG_DIR = Property("pkgdir");
+		public static readonly IEnumerable<string> PKG_FILES = Properties("pkg");
 		public static readonly string LEGACY_DIC_PATH = Property("ldict");
 		public static readonly long SEED;
 		public static readonly bool USE_SEED;
@@ -54,7 +55,21 @@ namespace RantConsole
 					rant.Dictionary = new RantDictionary(tables);
 				}
 
-				if (!string.IsNullOrEmpty(PKG_DIR))
+			if (PKG_FILES.Any())
+			{
+#if DEBUG
+				Stopwatch timer = Stopwatch.StartNew();
+#endif
+				foreach (var pkg in PKG_FILES)
+				{
+						rant.LoadPackage(pkg);
+				}
+#if DEBUG
+				timer.Stop();
+				WriteLine($"Package loading: {timer.ElapsedMilliseconds}ms");
+#endif
+			}
+			else if (!string.IsNullOrEmpty(PKG_DIR))
 				{
 #if DEBUG
                     Stopwatch timer = Stopwatch.StartNew();
@@ -84,7 +99,7 @@ namespace RantConsole
 			}
 #endif
 			if (Flag("nsfw")) rant.Dictionary.IncludeHiddenClass("nsfw");
-
+			
 			if (!string.IsNullOrEmpty(FILE))
 			{
 #if !DEBUG

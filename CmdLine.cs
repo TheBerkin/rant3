@@ -6,7 +6,7 @@ namespace Rant.Common
 {
     internal static class CmdLine
     {
-        private static readonly Dictionary<string, string> Arguments = new Dictionary<string, string>();
+        private static readonly Dictionary<string, List<string>> Arguments = new Dictionary<string, List<string>>();
         private static readonly HashSet<string> Flags = new HashSet<string>();
         private static readonly List<string> Paths = new List<String>();
 
@@ -33,7 +33,14 @@ namespace Rant.Common
             {
                 if (isProperty)
                 {
-                    Arguments[args[i - 1].TrimStart('-')] = args[i];
+					var name = args[i - 1].TrimStart('-');
+					if (Arguments.ContainsKey(name))
+						Arguments[name].Add(args[i]);
+					else
+					{
+						Arguments[name] = new List<string>();
+						Arguments[name].Add(args[i]);
+					}
                     isProperty = false;
                 }
                 else if (args[i].StartsWith("--"))
@@ -55,19 +62,25 @@ namespace Rant.Common
 
         public static string Property(string name)
         {
-            string arg;
-            if (!Arguments.TryGetValue(name.ToLower(), out arg))
+            List<string> args;
+            if (!Arguments.TryGetValue(name.ToLower(), out args))
             {
-                arg = "";
+				return "";
             }
-            return arg;
+			return args.First();
         }
 
         public static string Property(string name, string defaultValue)
         {
-            string arg;
-            return !Arguments.TryGetValue(name.ToLower(), out arg) ? defaultValue : arg;
+            List<string> args;
+            return !Arguments.TryGetValue(name.ToLower(), out args) ? defaultValue : args.First();
         }
+
+		public static IEnumerable<string> Properties(string name)
+		{
+			List<string> args;
+			return Arguments.TryGetValue(name.ToLower(), out args) ? args : new List<string>();
+		}
 
         public static bool Flag(string name) => Flags.Contains(name);
     }
