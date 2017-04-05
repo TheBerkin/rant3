@@ -81,6 +81,13 @@ namespace Rant.Core.ObjectModel
 
 		public Dictionary<string, RantObject> CurrentLocals { get; } = new Dictionary<string, RantObject>();
 
+		public bool ContainsKey(string key)
+		{
+			if (!Util.ValidateName(key)) return false;
+			if (_table.Globals.ContainsKey(key)) return true;
+			return CurrentLocals.ContainsKey(key);
+		}
+
 		public void EnterScope()
 		{
 			if (++_level >= _scopes.Count)

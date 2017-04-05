@@ -32,13 +32,11 @@ namespace Rant.Tests
 			Assert.AreEqual(result, rant.Do($"[at:{full};{pos}]").Main);
 		}
 
-		[TestCase]
+		[Test]
+		[ExpectedException(typeof(RantRuntimeException))]
 		public void StringAtException()
 		{
-			Assert.Throws<RantRuntimeException>(() =>
-			{
-				rant.Do("[at:abc;-1]");
-			});
+			rant.Do("[at:abc;-1]");
 		}
 	}
 }

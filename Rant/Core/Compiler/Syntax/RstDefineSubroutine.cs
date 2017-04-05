@@ -24,6 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
@@ -37,12 +38,26 @@ namespace Rant.Core.Compiler.Syntax
 
         public RstDefineSubroutine(LineCol location) : base(location)
         {
-            // Used by serializer
-        }
-
-        public override IEnumerator<RST> Run(Sandbox sb)
+			// Used by serializer
+		}
+		
+		public override IEnumerator<RST> Run(Sandbox sb)
         {
-            sb.Objects[Name] = new RantObject(this);
+			if(sb.Objects.ContainsKey(Name))
+			{
+				var subroutines = sb.Objects[Name].Value as List<RantObject>;
+				if(subroutines.Any(s => (s.Value as RstDefineSubroutine).Parameters.Count == Parameters.Count))
+				{
+					subroutines.RemoveAll(s => (s.Value as RstDefineSubroutine).Parameters.Count == Parameters.Count);
+				}
+				subroutines.Add(new RantObject(this));
+			}
+			else
+			{
+				var list = new List<RantObject>();
+				list.Add(new RantObject(this));
+				sb.Objects[Name] = new RantObject(list);
+			}
             yield break;
         }
 
@@ -70,7 +85,7 @@ namespace Rant.Core.Compiler.Syntax
                 Parameters[key] = (SubroutineParameterType)input.ReadByte();
             }
         }
-    }
+	}
 
     internal enum SubroutineParameterType : byte
     {

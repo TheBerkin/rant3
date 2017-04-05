@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core.IO;
+using Rant.Core.ObjectModel;
 
 namespace Rant.Core.Compiler.Syntax
 {
@@ -55,8 +56,12 @@ namespace Rant.Core.Compiler.Syntax
         {
 			if (sb.Objects[Name] == null)
                 throw new RantRuntimeException(sb, this, "err-runtime-missing-subroutine", Name);
-            var sub = (RstDefineSubroutine)(sb.Objects[Name].Value);
-            if (sub.Parameters.Keys.Count != Arguments.Count)
+            var subs = (List<RantObject>)(sb.Objects[Name].Value);
+			var sub = subs
+				.Where(s => (s.Value as RstDefineSubroutine).Parameters.Count == Arguments.Count)
+				.Select(s => s.Value as RstDefineSubroutine)
+				.FirstOrDefault();
+            if (sub == default(RstDefineSubroutine))
                 throw new RantRuntimeException(sb, this, "err-runtime-subarg-mismatch", Name);
             var action = sub.Body;
             var args = new Dictionary<string, RST>();
