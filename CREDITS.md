@@ -11,7 +11,11 @@ Thank you.
 ### Localization
 - Tamme Schichler ([@Tamschi](https://github.com/Tamschi))
 
-## Patreon Supporters ($5 or more pledged)
+## Financial Support
+
+- [Michael Nielsen](https://twitter.com/Nosteme)
+
+### Patreon ($5 or more pledged)
 
 - [Pål Trefall](https://www.patreon.com/user/creators?u=4929142) ([@ptrefall](https://github.com/ptrefall))
 - [Key Wraith](https://www.patreon.com/user/creators?u=4336045)
