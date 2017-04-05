@@ -33,6 +33,7 @@ using Rant.Core.Framework;
 using Rant.Core.ObjectModel;
 using Rant.Core.Utilities;
 using Rant.Formats;
+using Rant.Localization;
 using Rant.Resources;
 using Rant.Vocabulary;
 using Rant.Vocabulary.Querying;
@@ -507,7 +508,7 @@ namespace Rant
 		public RantOutput DoName(string patternName, int charLimit = 0, double timeout = -1, RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
-				throw new ArgumentException("Pattern doesn't exist.");
+				throw new ArgumentException(GetString("err-missing-pattern", patternName));
 
 			return
 				RunVM(
@@ -531,7 +532,7 @@ namespace Rant
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
-				throw new ArgumentException("Pattern doesn't exist.");
+				throw new ArgumentException(GetString("err-missing-pattern", patternName));
 
 			return
 				RunVM(new Sandbox(this, _patternCache[patternName], new RNG(seed), charLimit, GetPreservedCarrierState(), args),
@@ -555,7 +556,7 @@ namespace Rant
 			RantProgramArgs args = null)
 		{
 			if (!ProgramNameLoaded(patternName))
-				throw new ArgumentException("Pattern doesn't exist.");
+				throw new ArgumentException(GetString("err-missing-pattern", patternName));
 
 			return RunVM(new Sandbox(this, _patternCache[patternName], rng, charLimit, GetPreservedCarrierState(), args), timeout);
 		}

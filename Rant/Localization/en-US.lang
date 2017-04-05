@@ -32,6 +32,7 @@ err-bad-term-count = "Terms per entry must be greater than zero."
 err-bad-pattern-name = "Invalid pattern name: {0}"
 err-internal-error = "An internal error has occurred. This is often caused by a bug in Rant."
 err-internal-error-msg = "An internal error has occurred. This is often caused by a bug in Rant.\nMessage: {0}"
+err-missing-pattern = "The pattern '{0}' does not exist."
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
 err-stack-overflow = "Exceeded the maximum stack size."
