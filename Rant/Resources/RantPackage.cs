@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using Rant.Core.IO;
 using Rant.Core.IO.Bson;
@@ -346,8 +347,7 @@ namespace Rant.Resources
                         });
                     }
                 }
-
-
+				
                 package._resources.AddRange(doc["resources"].Values.Select(RantResource.DeserializeResource).Where(res => res != null));
 
                 return package;

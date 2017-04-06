@@ -354,19 +354,21 @@ namespace Rant.Vocabulary
             {
                 var entryData = entries[i];
 
-                // Terms
-                var terms =
-                    from BsonItem termData in entryData["terms"].Values
-                    let value = (string)termData["value"]
-                    let pron = (string)termData["pron"]
-                    let valueSplit = (int)(termData["value-split"] ?? -1)
-                    let pronSplit = (int)(termData["pron-split"] ?? -1)
-                    select new RantDictionaryTerm(value, pron, valueSplit, pronSplit);
+	            var termsObject = entryData["terms"];
+				
+				var termArray = new RantDictionaryTerm[termsObject.Count];
+	            int j = 0;
+	            foreach (var termData in termsObject.Values)
+	            {
+		            var value = (string)termData["value"];
+		            var pron = (string)termData["pron"];
+		            var valueSplit = (int)(termData["value-split"] ?? -1);
+		            var pronSplit = (int)(termData["pron-split"] ?? -1);
+		            termArray[j++] = new RantDictionaryTerm(value, pron, valueSplit, pronSplit);
+	            }
 
                 var entryClasses = (string[])entryData["classes"];
-                var termArray = terms.ToArray();
                 var entry = new RantDictionaryEntry(termArray, entryClasses, entryData["weight"] ?? 1);
-
                 // Optional classes
                 foreach (var optionalClass in entryData["optional-classes"].Values)
                     entry.AddClass(optionalClass, true);

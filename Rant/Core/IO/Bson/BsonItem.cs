@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Rant.Core.IO.Bson
@@ -124,9 +125,7 @@ namespace Rant.Core.IO.Bson
         {
             get
             {
-                if (!HasKey(key))
-                    return null;
-                return _objectValues[key];
+	            return !HasKey(key) ? null : _objectValues[key];
             }
             set { _objectValues[key] = value; }
         }
@@ -138,8 +137,8 @@ namespace Rant.Core.IO.Bson
         /// <returns>The value of the specified key.</returns>
         public BsonItem this[int key]
         {
-            get { return _objectValues[key.ToString()]; }
-            set { _objectValues[key.ToString()] = value; }
+            get { return _objectValues[key.ToString(CultureInfo.InvariantCulture)]; }
+            set { _objectValues[key.ToString(CultureInfo.InvariantCulture)] = value; }
         }
 
         /// <summary>
@@ -171,7 +170,12 @@ namespace Rant.Core.IO.Bson
 
         public static explicit operator string[](BsonItem a)
         {
-            return a?.Values?.Select(i => (string)i).ToArray() ?? new string[] { };
+	        var values = a?.Values;
+	        if (values == null) return new string[0];
+	        var arr = new string[a.Count];
+	        int i = 0;
+	        foreach (var v in values) arr[i++] = v;
+	        return arr;
         }
 
         /// <summary>

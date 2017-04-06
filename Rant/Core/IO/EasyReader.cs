@@ -37,6 +37,7 @@ namespace Rant.Core.IO
     internal class EasyReader : IDisposable
     {
         private readonly byte[] _buffer = new byte[128];
+		private readonly StringBuilder _strBuffer = new StringBuilder(128);
         private readonly bool _leaveOpen;
 
         /// <summary>
@@ -501,11 +502,10 @@ namespace Rant.Core.IO
         /// <returns>The string that was read.</returns>
         public string ReadCString()
         {
-            var bytes = new List<byte>();
-            byte c;
-            while ((c = ReadByte()) != 0x00)
-                bytes.Add(c);
-            return Encoding.UTF8.GetString(bytes.ToArray());
+	        _strBuffer.Length = 0;
+	        int b;
+	        while ((b = BaseStream.ReadByte()) != 0) _strBuffer.Append((char)b);
+	        return _strBuffer.ToString();
         }
 
         /// <summary>

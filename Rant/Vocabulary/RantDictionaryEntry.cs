@@ -36,7 +36,7 @@ namespace Rant.Vocabulary
     {
         private const int INITIAL_METADATA_CAPACITY = 4;
         private readonly HashSet<string> _classes;
-        private readonly HashSet<string> _optionalClasses;
+        private HashSet<string> _optionalClasses;
         private readonly RantDictionaryTerm[] _terms;
         private Dictionary<string, object> _metadata;
 
@@ -51,7 +51,7 @@ namespace Rant.Vocabulary
             if (_terms.Length == 0) throw new ArgumentException("Term list is empty.");
             TermCount = _terms.Length;
             _classes = new HashSet<string>();
-            _optionalClasses = new HashSet<string>();
+	        _optionalClasses = null;
         }
 
         /// <summary>
@@ -74,17 +74,17 @@ namespace Rant.Vocabulary
         public RantDictionaryEntry(IEnumerable<RantDictionaryTerm> terms, IEnumerable<string> classes, float weight = 1.0f)
         {
             if (terms == null) throw new ArgumentNullException(nameof(terms));
-            _terms = terms.ToArray();
+            _terms = (terms as RantDictionaryTerm[]) ?? terms.ToArray();
             if (_terms.Length == 0) throw new ArgumentException("Term list is empty.");
             TermCount = _terms.Length;
             _classes = new HashSet<string>();
-            _optionalClasses = new HashSet<string>();
+	        _optionalClasses = null;
             foreach (string c in classes)
             {
                 if (c.EndsWith("?"))
                 {
                     string trimmed = string.Intern(c.Substring(0, c.Length - 1));
-                    _optionalClasses.Add(trimmed);
+                    (_optionalClasses ?? (_optionalClasses = new HashSet<string>())).Add(trimmed);
                     _classes.Add(trimmed);
                 }
                 else
@@ -151,6 +151,7 @@ namespace Rant.Vocabulary
         /// <returns></returns>
         public IEnumerable<string> GetOptionalClasses()
         {
+	        if (_optionalClasses == null) yield break;
             foreach (string className in _optionalClasses) yield return className;
         }
 
@@ -167,7 +168,7 @@ namespace Rant.Vocabulary
                 className = string.Intern(className.Trim().TrimEnd('?'));
             }
             _classes.Add(className);
-            if (optional) _optionalClasses.Add(className);
+            if (optional) (_optionalClasses ?? (_optionalClasses = new HashSet<string>())).Add(className);
         }
 
         /// <summary>
@@ -177,7 +178,7 @@ namespace Rant.Vocabulary
         public void RemoveClass(string className)
         {
             _classes.Remove(className);
-            _optionalClasses.Remove(className);
+            _optionalClasses?.Remove(className);
         }
 
         /// <summary>
@@ -245,7 +246,7 @@ namespace Rant.Vocabulary
         /// Returns a collection of required (non-optional) classes assigned to the current entry.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetRequiredClasses() => _classes.Except(_optionalClasses);
+        public IEnumerable<string> GetRequiredClasses() => _optionalClasses == null ? _classes : _classes.Except(_optionalClasses);
 
         /// <summary>
         /// Returns a string representation of the current <see cref="RantDictionaryEntry" /> instance.
