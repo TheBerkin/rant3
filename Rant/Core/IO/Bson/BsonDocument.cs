@@ -56,7 +56,7 @@ namespace Rant.Core.IO.Bson
         /// </summary>
         public BsonDocument(
             BsonStringTableMode mode = BsonStringTableMode.None,
-            Dictionary<int, string> reverseStringTable = null)
+            string[] reverseStringTable = null)
         {
             StringTableMode = mode;
             _stringTable = new Dictionary<string, int>();
@@ -76,7 +76,8 @@ namespace Rant.Core.IO.Bson
         }
 
         public BsonStringTableMode StringTableMode { get; } = BsonStringTableMode.None;
-        public Dictionary<int, string> ReverseStringTable { get; }
+
+        public string[] ReverseStringTable { get; }
 
         /// <summary>
         /// Returns this document encoded in BSON as a byte array.
@@ -269,22 +270,24 @@ namespace Rant.Core.IO.Bson
         internal static BsonDocument Read(EasyReader reader, BsonDocument parent = null, bool inArray = false)
         {
             var stringTableMode = BsonStringTableMode.None;
-            Dictionary<int, string> stringTable = null;
+            string[] stringTable = null;
             if (parent == null)
             {
                 bool includesStringTable = reader.ReadBoolean();
                 if (includesStringTable)
                 {
-                    stringTable = new Dictionary<int, string>();
                     stringTableMode = (BsonStringTableMode)reader.ReadByte();
                     byte version = reader.ReadByte();
                     if (version != STRING_TABLE_VERSION)
                         throw new InvalidDataException("Unsupported string table version: " + version);
                     int tableLength = reader.ReadInt32();
                     int tableEntries = reader.ReadInt32();
+					stringTable = new string[tableEntries];
                     for (int i = 0; i < tableEntries; i++)
                     {
                         int num = reader.ReadInt32();
+						if (num > tableEntries)
+							throw new InvalidDataException("Non-sequential string IDs currently not supported.");
                         string val = reader.ReadString(Encoding.UTF8);
                         stringTable[num] = val;
                     }
@@ -295,6 +298,7 @@ namespace Rant.Core.IO.Bson
                 stringTable = parent.ReverseStringTable;
                 stringTableMode = parent.StringTableMode;
             }
+
             var document = new BsonDocument(stringTableMode, stringTable);
 
             int length = reader.ReadInt32();
