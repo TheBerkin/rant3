@@ -45,7 +45,7 @@ namespace Rant.Core.Compiler.Parsing
 			List<_<int, double>> constantWeights = null;
 			List<_<int, RST>> dynamicWeights = null;
 			int blockNumber = 0;
-			Action<RST> itemCallback = action => actions.Add(action);
+			void itemCallback(RST action) => actions.Add(action);
 
 			compiler.AddContext(CompileContext.BlockEndSequence);
 			compiler.AddContext(CompileContext.BlockSequence);
@@ -60,9 +60,10 @@ namespace Rant.Core.Compiler.Parsing
 
 					var firstToken = reader.ReadLooseToken();
 
-					List<RST> sequence = new List<RST>();
-					Action<RST> cb = rst => sequence.Add(rst);
-					compiler.SetNextActionCallback(cb);
+					var sequence = new List<RST>();
+					void weightCallback(RST rst) => sequence.Add(rst);
+
+					compiler.SetNextActionCallback(weightCallback);
 					compiler.AddContext(CompileContext.BlockWeight);
 					yield return Get<SequenceParser>();
 					
@@ -87,19 +88,14 @@ namespace Rant.Core.Compiler.Parsing
 					}
 				}
 
+				reader.SkipSpace();
+
 				compiler.SetNextActionCallback(itemCallback);
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
 
 				// Don't wrap single nodes in a sequence, it's unnecessary
-				if (actions.Count == 1)
-				{
-					items.Add(actions[0]);
-				}
-				else
-				{
-					items.Add(new RstSequence(actions, startToken.ToLocation()));
-				}				
+				items.Add(actions.Count == 1 ? actions[0] : new RstSequence(actions, startToken.ToLocation()));
 				actions.Clear();
 				blockNumber++;
 			}

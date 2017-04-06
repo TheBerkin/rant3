@@ -24,7 +24,19 @@ namespace Rant.Tests
             Assert.AreEqual("ABCD", rant.Do("A\n  B\nC  \n  D  ").Main);
         }
 
-        [Test]
+	    [Test]
+	    public void BlackspaceInBlock()
+	    {
+		    Assert.AreEqual("A", rant.Do("{ A | (0) B}").Main);
+	    }
+
+	    [Test]
+	    public void BlackspaceInBlockEnd()
+	    {
+		    Assert.AreEqual("B", rant.Do("{ (0) A | B }").Main);
+	    }
+
+		[Test]
         public void Comments()
         {
             Assert.AreEqual("Hello world", rant.Do("#This is a comment.\nHello world # This is another comment.").Main);
@@ -120,10 +132,9 @@ namespace Rant.Tests
 	    }
 
 		[Test]
-		public void CommentWhitespace()
+		public void BlackspaceAfterComment()
 		{
-			Assert.AreEqual("c", rant.Do(@"{(0)a|#b
-			c}").Main);
+			Assert.AreEqual("c", rant.Do("{\n\t(0) a | # b\n\tc\n}").Main);
 		}
     }
 }
