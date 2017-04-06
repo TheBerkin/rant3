@@ -118,5 +118,12 @@ namespace Rant.Tests
 		    Assert.AreEqual("\U0001F602\U0001F4AF",
 				rant.Do(@"\U0001F602\U0001F4AF").Main);
 	    }
+
+		[Test]
+		public void CommentWhitespace()
+		{
+			Assert.AreEqual("c", rant.Do(@"{(0)a|#b
+			c}").Main);
+		}
     }
 }
