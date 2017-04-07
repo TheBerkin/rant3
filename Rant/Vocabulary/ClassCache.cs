@@ -31,75 +31,105 @@ namespace Rant.Vocabulary
 {
     internal sealed class ClassCache
     {
-        private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _cache = new Dictionary<string, HashSet<RantDictionaryEntry>>();
+	    private static readonly Stack<HashSet<RantDictionaryEntry>> _recycle = new Stack<HashSet<RantDictionaryEntry>>(24);
+		private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _cache = new Dictionary<string, HashSet<RantDictionaryEntry>>();
         private readonly Dictionary<string, HashSet<RantDictionaryEntry>> _invCache = new Dictionary<string, HashSet<RantDictionaryEntry>>();
+		private readonly HashSet<string> _allClasses = new HashSet<string>();
+	    
+	    private readonly object syncObject = new object();
+
+	    private void ClearAll()
+	    {
+		    foreach (var pair in _cache)
+		    {
+			    pair.Value.Clear();
+				_recycle.Push(pair.Value);
+		    }
+
+		    foreach (var pair in _invCache)
+		    {
+			    pair.Value.Clear();
+				_recycle.Push(pair.Value);
+		    }
+
+		    _allClasses.Clear();
+	    }
+
+	    private static HashSet<RantDictionaryEntry> Reclaim()
+	    {
+		    return _recycle.Count == 0 ? new HashSet<RantDictionaryEntry>() : _recycle.Pop();
+	    }
 
         public void BuildCache(RantDictionaryTable table)
         {
-            _cache.Clear();
-            _invCache.Clear();
-            var clSet = new HashSet<string>();
+	        lock (syncObject)
+	        {
+		        ClearAll();
 
-            foreach (var entry in table.GetEntries())
-            {
-                foreach (var cl in entry.GetClasses())
-                {
-                    HashSet<RantDictionaryEntry> set;
-                    clSet.Add(cl);
-                    if (!_cache.TryGetValue(cl, out set))
-                    {
-                        set = _cache[cl] = new HashSet<RantDictionaryEntry>();
-                    }
-                    set.Add(entry);
-                }
-            }
+		        foreach (var entry in table.GetEntries())
+		        {
+			        foreach (var cl in entry.GetClasses())
+			        {
+				        HashSet<RantDictionaryEntry> set;
+				        _allClasses.Add(cl);
+				        if (!_cache.TryGetValue(cl, out set))
+				        {
+					        set = _cache[cl] = Reclaim();
+				        }
+				        set.Add(entry);
+			        }
+		        }
 
-            foreach (var cl in clSet)
-            {
-                if (!_invCache.TryGetValue(cl, out HashSet<RantDictionaryEntry> set))
-                {
-                    set = _invCache[cl] = new HashSet<RantDictionaryEntry>();
-                }
-                foreach (var entry in table.GetEntries())
-                {
-                    if (!entry.ContainsClass(cl)) set.Add(entry);
-                }
-            }
+		        foreach (var cl in _allClasses)
+		        {
+			        if (!_invCache.TryGetValue(cl, out HashSet<RantDictionaryEntry> set))
+			        {
+				        set = _invCache[cl] = Reclaim();
+					}
+			        foreach (var entry in table.GetEntries())
+			        {
+				        if (!entry.ContainsClass(cl)) set.Add(entry);
+			        }
+		        }
+			}
         }
         
         public IEnumerable<RantDictionaryEntry> Filter(IEnumerable<ClassFilterRule> rules, RantDictionary dictionary, RantDictionaryTable table)
         {
-            var r = rules.ToArray();
-            if (r.Length == 0) return table.GetEntries();
-            HashSet<RantDictionaryEntry> setCached;
-            var set = new HashSet<RantDictionaryEntry>();
-            var hide = table.HiddenClasses
-                // Exclude overridden hidden classes
-                .Except(dictionary.IncludedHiddenClasses)
-                // Exclude hidden classes filtered for
-                .Where(cl => !r.Any(rule => rule.ShouldMatch && String.Equals(rule.Class, cl, StringComparison.InvariantCultureIgnoreCase))).ToArray();
+	        lock (syncObject)
+	        {
+				var r = rules.ToArray();
+		        if (r.Length == 0) return table.GetEntries();
+		        HashSet<RantDictionaryEntry> setCached;
+		        var set = new HashSet<RantDictionaryEntry>();
+		        var hide = table.HiddenClasses
+			        // Exclude overridden hidden classes
+			        .Except(dictionary.IncludedHiddenClasses)
+			        // Exclude hidden classes filtered for
+			        .Where(cl => !r.Any(rule => rule.ShouldMatch && String.Equals(rule.Class, cl, StringComparison.InvariantCultureIgnoreCase))).ToArray();
 
-            // Get initial pool
-            if (r[0].ShouldMatch)
-            {
-                if (!_cache.TryGetValue(r[0].Class, out setCached)) return null;
-            }
-            else
-            {
-                if (!_invCache.TryGetValue(r[0].Class, out setCached)) setCached = table.EntriesHash;
-            }
+		        // Get initial pool
+		        if (r[0].ShouldMatch)
+		        {
+			        if (!_cache.TryGetValue(r[0].Class, out setCached)) return null;
+		        }
+		        else
+		        {
+			        if (!_invCache.TryGetValue(r[0].Class, out setCached)) setCached = table.EntriesHash;
+		        }
 
-            foreach (var item in setCached)
-            {
-                if (hide.Length == 0 || !hide.Any(cl => item.ContainsClass(cl))) set.Add(item);
-            }
+		        foreach (var item in setCached)
+		        {
+			        if (hide.Length == 0 || !hide.Any(cl => item.ContainsClass(cl))) set.Add(item);
+		        }
 
-            for (int i = 1; i < r.Length; i++)
-            {
-                set.IntersectWith(r[i].ShouldMatch ? _cache[r[i].Class] : _invCache[r[i].Class]);
-            }
+		        for (int i = 1; i < r.Length; i++)
+		        {
+			        set.IntersectWith(r[i].ShouldMatch ? _cache[r[i].Class] : _invCache[r[i].Class]);
+		        }
 
-            return set;
+		        return set;
+			}
         }
     }
 }

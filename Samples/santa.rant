@@ -1,0 +1,75 @@
+{
+    [$[santa]:[branch:santa;<title> <name::@?santa>]]
+    [$[side]:{top|bottom|left|right|front|back|inside|tip}]
+    [case:sentence]
+    [rhyme:forced]
+    'Twas the <noun-timeofday::=time> before <noun-holiday::=holiday>, when all through the <noun-building>\n
+    Not a <noun-animal::!a> was <verb.ing-motion>, not even a <noun-animal::!a>;\n
+    The <noun.pl-clothing::=stocking> were <verb.pp-transitive> by the <noun> with care,\n
+    In hopes that [$santa] soon would be there;\n
+    \n
+    The <noun.pl-person> were nestled all <adj> in their <noun.pl-furniture>,\n
+    While visions of <noun.pl-food> <verb.ed-intransitive> in their heads;\n
+    And mamma in her <noun-clothing>, and I in my <noun-clothing>,\n
+    Had just settled down for a long winter's <verb.nom>,\n
+    \n
+    When out on the lawn there arose such a <noun-sound>,\n
+    I <verb.ed-motion> from the <noun-furniture> to see what was the matter.\n
+    Away to the window I <verb.ed-motion> like a <noun>,\n
+    <verb.ed-transitive-violent> open the <noun.pl> and <verb.ed-transitive-violent> {up|down|left|right|out|around|about} the <noun>.\n
+    \n
+    The <noun> on the <noun> of the new-<verb.pp-intransitive> <noun-uc>\n
+    Gave the <adj.ness> of <noun-timeofday> to <noun.pl> below,\n
+    When, what to my <adj> <noun.pl-body> should appear,\n
+    But a <adj-appearance> <noun-vehicle::=sleigh>, and eight <adj-appearance> <noun.pl-animal>,\n
+    \n
+    With a <adj-appearance> <adj-!appearance> <noun-job>, so <adj> and <adj>,\n
+    I knew in a moment it must be [$santa].\n
+    More <adj> than <noun.pl-animal> <pro.dposs::@?santa> <noun.pl> they came,\n
+    And he <verb.ed-intransitive>, and <verb.ed-intransitive>, and called them by name;\n
+    \n
+    [q:Now, <name::!d>! now, <name::!d>! now, <name::!d> and <name::!d>!\n
+    On, <name::!d>! on, <name::!d>! on, <name::!d> and <name::!d>!\n
+    To the [$side] of the <noun-place>! to the [$side] of the <noun-place>!\n
+    Now <verb-intransitive::=dash> away! <verb::=dash> away! <verb::=dash> away{\sall|(.1), you {<noun.pl-job>|<noun>-[pl:<verb.er>]}}!]\n
+    \n
+    As <adj-appearance> <noun.pl> that before the <adj> <adj> fly,\n
+    When they <verb-intransitive> with \a <noun>, <verb> to the sky.\n
+    So {up|over|out|away} to the <noun-building>-{top|side|interior|exterior|bottom} the <noun.pl-job> they flew,\n
+    With the <noun-vehicle::=sleigh> full of <noun.pl::=toy>, and [$santa] too.\n
+    \n
+    And then, in a <verb.nom-intransitive>, I heard on the roof\n
+    The <verb.nom-intransitive> and <verb.nom-intransitive> of each little <noun-body>.\n
+    As I drew in my head, and was turning around,\n
+    Down the <noun-hole::=chimney> [$santa] came with a bound.\n
+    \n
+    <pro::@?santa> was dressed all in <noun-uc>, from <pro.dposs::@?santa> <noun-body> to <pro.dposs::@?santa> <noun-body>,\n
+    And <pro.dposs::@?santa> clothes were all <verb.pp-transitive> with <noun-uc::!ash> and <noun-uc::!ash>.\n
+    A bundle of <noun.pl::=toy> he had flung on <pro.dposs::@?santa> back,\n
+    And he looked like a <noun-job>, just <verb.ing-transitive> <pro.dposs::@?santa> pack.\n
+    \n
+    <pro.dposs::@?santa> <noun.pl-body::!bodydesc>-how they <verb-visual>! <pro.dposs::@?santa> <noun.pl-body::!bodydesc> how <adj-!appearance>!\n
+    <pro.dposs::@?santa> <noun.pl-body::!bodydesc> were like <noun.pl>, <pro.dposs::@?santa> <noun-body::!bodydesc> like a <noun>!\n
+    <pro.dposs::@?santa> <adj-!appearance> <adj-appearance> <noun-body::!bodydesc> was <verb.pp-transitive> like a <noun>,\n
+    And the <noun-body::!bodydesc> of <pro.dposs::@?santa> <noun-body::!bodydesc> was as <adj-appearance> as the <noun-uc>.\n
+    \n
+    The <noun> of a <noun> <pro::@?santa> held tight in <pro.dposs::@?santa> teeth,\n
+    And the smoke it encircled <pro.dposs::@?santa> head like a wreath.\n
+    <pro::@?santa> had a <adj-appearance::!face> face and a <adj-appearance::!belly> <adj-appearance::!belly> <noun-body>,\n
+    That <verb.ed-motion-intransitive> when <pro::@?santa> laughed, like a <noun-container>ful of <noun-uc-liquid>!\n
+    \n
+    <pro::@?santa> was <adj-appearance> and plump, a right jolly old elf,\n
+    And I laughed when I saw <pro.acc::@?santa>, in spite of myself!\n
+    A wink of <pro.dposs::@?santa> eye and a {twist|spin|demonic 180-degree rotation} of <pro.dposs::@?santa> head,\n
+    Soon gave me to know I had {{almost\s|}nothing|everything} to dread.\n
+    \n
+    <pro::@?santa> spoke not a word, but went straight to <pro.dposs::@?santa> work,\n
+    And filled all the <noun.pl-clothing::=stocking>, then turned with a jerk.\n
+    And laying <pro.dposs::@?santa> finger aside of <pro.dposs::@?santa> nose,\n
+    And giving a nod, up the <noun-hole::=chimney> he rose!\n
+    \n
+    <pro::@?santa> sprang to <pro.dposs::@?santa> sleigh, to <pro.dposs::@?santa> team gave a <noun-sound>,\n
+    And away they all flew like the <noun> of a <noun>.\n
+    But I heard <pro.acc::@?santa> exclaim, ‘ere <pro::@?santa> drove out of sight,\n
+    [q:{Happy|<adj>} <noun::=holiday> to all, and to all a good-[`\s+`:<noun-timeofday::=time>;-]!]
+}

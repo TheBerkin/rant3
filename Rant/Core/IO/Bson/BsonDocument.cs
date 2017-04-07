@@ -49,27 +49,27 @@ namespace Rant.Core.IO.Bson
         /// The top item of this BSON document.
         /// </summary>
         public BsonItem Top;
+		
+	    /// <summary>
+	    /// Creates an empty BSON document.
+	    /// <param>Whether or not to generate and use a string table.</param>
+	    /// </summary>
+	    public BsonDocument(
+		    BsonStringTableMode mode = BsonStringTableMode.None,
+		    string[] reverseStringTable = null, Dictionary<string, int> stringTable = null)
+	    {
+		    StringTableMode = mode;
+		    _stringTable = stringTable ?? new Dictionary<string, int>();
+		    ReverseStringTable = reverseStringTable;
+		    Top = new BsonItem();
+	    }
 
-        /// <summary>
-        /// Creates an empty BSON document.
-        /// <param>Whether or not to generate and use a string table.</param>
-        /// </summary>
-        public BsonDocument(
-            BsonStringTableMode mode = BsonStringTableMode.None,
-            string[] reverseStringTable = null)
-        {
-            StringTableMode = mode;
-            _stringTable = new Dictionary<string, int>();
-            ReverseStringTable = reverseStringTable;
-            Top = new BsonItem();
-        }
-
-        /// <summary>
-        /// Retreives the value of the given key if it exists.
-        /// </summary>
-        /// <param name="key">The key to retrieve.</param>
-        /// <returns>The value of the given key, or null if it does not exist.</returns>
-        public BsonItem this[string key]
+		/// <summary>
+		/// Retreives the value of the given key if it exists.
+		/// </summary>
+		/// <param name="key">The key to retrieve.</param>
+		/// <returns>The value of the given key, or null if it does not exist.</returns>
+		public BsonItem this[string key]
         {
             get { return Top.HasKey(key) ? Top[key] : null; }
             set { Top[key] = value; }
@@ -299,7 +299,7 @@ namespace Rant.Core.IO.Bson
                 stringTableMode = parent.StringTableMode;
             }
 
-            var document = new BsonDocument(stringTableMode, stringTable);
+            var document = new BsonDocument(stringTableMode, stringTable, parent?._stringTable);
 
             int length = reader.ReadInt32();
             while (!reader.EndOfStream)

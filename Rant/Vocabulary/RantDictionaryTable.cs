@@ -380,8 +380,6 @@ namespace Rant.Vocabulary
 
                 AddEntry(entry);
             }
-
-            RebuildCache();
         }
 
         internal override BsonItem SerializeData()
