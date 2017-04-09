@@ -55,7 +55,7 @@ namespace Rant.Vocabulary
 		    _allClasses.Clear();
 	    }
 
-	    private static HashSet<RantDictionaryEntry> Reclaim()
+	    private static HashSet<RantDictionaryEntry> GetPool()
 	    {
 		    return _recycle.Count == 0 ? new HashSet<RantDictionaryEntry>() : _recycle.Pop();
 	    }
@@ -74,7 +74,7 @@ namespace Rant.Vocabulary
 				        _allClasses.Add(cl);
 				        if (!_cache.TryGetValue(cl, out set))
 				        {
-					        set = _cache[cl] = Reclaim();
+					        set = _cache[cl] = GetPool();
 				        }
 				        set.Add(entry);
 			        }
@@ -84,7 +84,7 @@ namespace Rant.Vocabulary
 		        {
 			        if (!_invCache.TryGetValue(cl, out HashSet<RantDictionaryEntry> set))
 			        {
-				        set = _invCache[cl] = Reclaim();
+				        set = _invCache[cl] = GetPool();
 					}
 			        foreach (var entry in table.GetEntries())
 			        {
@@ -98,34 +98,49 @@ namespace Rant.Vocabulary
         {
 	        lock (syncObject)
 	        {
-				var r = rules.ToArray();
-		        if (r.Length == 0) return table.GetEntries();
+		        int startIndex = 0;
+				var ruleArray = rules as ClassFilterRule[] ?? rules.ToArray();
 		        HashSet<RantDictionaryEntry> setCached;
-		        var set = new HashSet<RantDictionaryEntry>();
+		        var set = GetPool();
 		        var hide = table.HiddenClasses
 			        // Exclude overridden hidden classes
 			        .Except(dictionary.IncludedHiddenClasses)
 			        // Exclude hidden classes filtered for
-			        .Where(cl => !r.Any(rule => rule.ShouldMatch && String.Equals(rule.Class, cl, StringComparison.InvariantCultureIgnoreCase))).ToArray();
+			        .Where(cl => !ruleArray.Any(rule => rule.ShouldMatch && String.Equals(rule.Class, cl, StringComparison.InvariantCultureIgnoreCase))).ToArray();
 
 		        // Get initial pool
-		        if (r[0].ShouldMatch)
+				if (hide.Length > 0)
 		        {
-			        if (!_cache.TryGetValue(r[0].Class, out setCached)) return null;
+					// Retrieve the inverse pool of the first hidden class
+			        if (!_invCache.TryGetValue(hide[0], out setCached)) setCached = table.EntriesHash;
 		        }
-		        else
-		        {
-			        if (!_invCache.TryGetValue(r[0].Class, out setCached)) setCached = table.EntriesHash;
-		        }
-
+		        else if (ruleArray.Length > 0)
+				{
+					if (ruleArray[0].ShouldMatch)
+					{
+						if (!_cache.TryGetValue(ruleArray[0].Class, out setCached)) return null;
+					}
+					else
+					{
+						if (!_invCache.TryGetValue(ruleArray[0].Class, out setCached)) setCached = table.EntriesHash;
+					}
+					startIndex = 1;
+				}
+				else
+				{
+					setCached = table.EntriesHash;
+				}
+				
+				// Transfer items from cached pool to our new pool and exclude hidden classes
 		        foreach (var item in setCached)
 		        {
 			        if (hide.Length == 0 || !hide.Any(cl => item.ContainsClass(cl))) set.Add(item);
 		        }
 
-		        for (int i = 1; i < r.Length; i++)
+				// Apply filters by intersecting pools
+		        for (int i = startIndex; i < ruleArray.Length; i++)
 		        {
-			        set.IntersectWith(r[i].ShouldMatch ? _cache[r[i].Class] : _invCache[r[i].Class]);
+			        set.IntersectWith(ruleArray[i].ShouldMatch ? _cache[ruleArray[i].Class] : _invCache[ruleArray[i].Class]);
 		        }
 
 		        return set;

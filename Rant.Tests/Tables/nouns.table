@@ -15,3 +15,8 @@
 	- class yellow
 	- shape long, curved
 @endclass
+
+@class nsfw
+> butt, butts
+	- class unhidden_class
+@endclass

@@ -91,6 +91,9 @@
     <None Include="Tables\emoji.table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Tables\nsfw.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Tables\verbs.table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
