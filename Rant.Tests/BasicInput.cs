@@ -25,6 +25,12 @@ namespace Rant.Tests
         }
 
 	    [Test]
+	    public void BlackspaceInMultilineBlock()
+	    {
+		    Assert.AreEqual("AAAA", rant.Do("\t#test\n\t[r:4]\n\t#test\n\t{\n\t\tA\n\t}").Main);
+	    }
+
+		[Test]
 	    public void BlackspaceInBlock()
 	    {
 		    Assert.AreEqual("A", rant.Do("{ A | (0) B}").Main);

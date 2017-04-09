@@ -37,7 +37,6 @@ namespace Rant.Core.Compiler.Parsing
             Action<RST> actionCallback)
         {
             Token token;
-
             while (!reader.End)
             {
                 token = reader.ReadToken();

@@ -160,7 +160,7 @@ namespace Rant.Core.Compiler
                         }
                         // Just eat the line and ignore it
                         while (i < len && input[i] != '\n') i++;
-                        goto iterate;
+						continue;
 
                     // Escape sequence
                     case '\\':

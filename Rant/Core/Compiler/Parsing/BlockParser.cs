@@ -49,7 +49,7 @@ namespace Rant.Core.Compiler.Parsing
 
 			compiler.AddContext(CompileContext.BlockEndSequence);
 			compiler.AddContext(CompileContext.BlockSequence);
-
+			
 			while (compiler.NextContext == CompileContext.BlockSequence)
 			{
 				// block weight
@@ -93,7 +93,7 @@ namespace Rant.Core.Compiler.Parsing
 				compiler.SetNextActionCallback(itemCallback);
 				var startToken = reader.PeekToken();
 				yield return Get<SequenceParser>();
-
+				
 				// Don't wrap single nodes in a sequence, it's unnecessary
 				items.Add(actions.Count == 1 ? actions[0] : new RstSequence(actions, startToken.ToLocation()));
 				actions.Clear();
