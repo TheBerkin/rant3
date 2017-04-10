@@ -81,6 +81,9 @@ err-runtime-subarg-mismatch = "The provided arguments do not match the signature
 err-runtime-unknown-flag = "Unknown flag name: '{0}'"
 err-runtime-unknown-mode = "Unknown mode name: '{0}'. Valid values for this parameter are: {1}"
 err-runtime-invalid-string-index = "Index in string is not valid: {0}"
+err-runtime-unexpected-type = "Unexpected variable type: Expected {0}, got {1}."
+err-runtime-index-out-of-range = "The provided index '{1}' was outside the allowed range: [0, {0}]."
+err-runtime-div-by-zero = "Attempted to divide by zero."
 
 acc-carrier-name = "carrier name"
 acc-table-name = "table name"

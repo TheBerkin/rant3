@@ -75,6 +75,9 @@ err-runtime-subarg-mismatch = "Die angegebenen Argumenten passen an die Signatur
 err-runtime-unknown-flag = "Unbekannter Schalter: '{0}'"
 err-runtime-unknown-mode = "Unbekannter Modus: '{0}'. Gültige Werte für diesen Parameter: {1}"
 err-runtime-invalid-string-index = "Der angegebene Index '{0}' liegt außerhalb der Zeichenkette."
+err-runtime-unexpected-type = "Unerwarteter Variablentyp: {0} erwartet, aber {1} angegeben."
+err-runtime-index-out-of-range = "Der angegebene Index '{1}' liegt außerhalb des Indexbereichs [0, {0}]."
+err-runtime-div-by-zero = "Nulldivision versucht."
 
 acc-carrier-name = "Anfragezustandspeichernamen"
 acc-table-name = "Tabellenamen"
