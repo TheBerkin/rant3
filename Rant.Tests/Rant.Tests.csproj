@@ -82,6 +82,7 @@
     <Compile Include="Tables.cs" />
     <Compile Include="Targets.cs" />
     <Compile Include="Misc\Utilities.cs" />
+    <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexTestFile.bson">

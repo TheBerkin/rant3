@@ -188,6 +188,26 @@ namespace Rant.Core.ObjectModel
             }
         }
 
+	    internal object PrintableValue
+	    {
+		    get
+		    {
+				switch (Type)
+			    {
+				    case RantObjectType.Null:
+					    return null;
+				    case RantObjectType.Boolean:
+					    return _boolean;
+				    case RantObjectType.Number:
+					    return _number;
+				    case RantObjectType.String:
+					    return _string;
+					default:
+						return ToString();
+			    }
+			}
+	    }
+
         /// <summary>
         /// Gets or sets the object at the specified index in the object.
         /// Only works with list objects.
