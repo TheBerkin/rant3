@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
 using Rant.Core.Constructs;
@@ -1039,31 +1040,61 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("query", "q")]
+		[RantDescription("Runs the last-accessed constructed query.")]
 		private static IEnumerator<RST> QueryRun(Sandbox sb)
 		{
 			return sb.QueryBuilder.CurrentQuery?.Run(sb);
 		}
 
 		[RantFunction("query", "q")]
-		private static IEnumerator<RST> QueryRun(Sandbox sb, string id)
+		[RantDescription("Runs the constructed query with the specified identifier.")]
+		private static IEnumerator<RST> QueryRun(Sandbox sb, 
+			[RantDescription("The ID string for the constructed query.")]
+			string id)
 		{
 			return sb.QueryBuilder.RunQuery(sb, id);
 		}
 
 		[RantFunction("qname")]
-		private static void QueryName(Sandbox sb, string id, string name)
+		[RantDescription("Sets the table name for a constructed query.")]
+		private static void QueryName(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The name of the table.")]
+			string name)
 		{
 			sb.QueryBuilder.GetQuery(id).Name = name;
 		}
 
 		[RantFunction("qsub")]
-		private static void QuerySubtype(Sandbox sb, string id, string name)
+		[RantDescription("Sets the subtype for a constructed query.")]
+		private static void QuerySubtype(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The subtype of the term to select from the returned entry.")]
+			string subtype)
 		{
-			sb.QueryBuilder.GetQuery(id).Subtype = name;
+			sb.QueryBuilder.GetQuery(id).Subtype = subtype;
+		}
+
+		[RantFunction("qsubp")]
+		[RantDescription("Sets the plural subtype for a constructed query.")]
+		private static void QueryPluralSubtype(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The subtype of the term to select from the returned entry, if the plural flag is set.")]
+			string pluralSubtype)
+		{
+			sb.QueryBuilder.GetQuery(id).PluralSubtype = pluralSubtype;
 		}
 
 		[RantFunction("qcf")]
-		private static void QueryClassFilterPositive(Sandbox sb, string id, params string[] classes)
+		[RantDescription("Adds positive class filters to a constructed query.")]
+		private static void QueryClassFilterPositive(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The names of the classes that the returned entry must belong to.")]
+			params string[] classes)
 		{
 			Query q;
 			ClassFilter cf;
@@ -1076,7 +1107,12 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("qcfn")]
-		private static void QueryClassFilterNegative(Sandbox sb, string id, params string[] classes)
+		[RantDescription("Adds negative class filters to a constructed query.")]
+		private static void QueryClassFilterNegative(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The names of the classes that the returned entry must not belong to.")]
+			params string[] classes)
 		{
 			Query q;
 			var cf = (q = sb.QueryBuilder.GetQuery(id)).GetNonClassFilters().FirstOrDefault(f => f is ClassFilter) as ClassFilter;
@@ -1088,7 +1124,14 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("qcc")]
-		private static void QueryCarrierComponent(Sandbox sb, string id, string componentId, CarrierComponentType componentType)
+		[RantDescription("Adds a carrier component to a constructed query.")]
+		private static void QueryCarrierComponent(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The ID to assign to the carrier component.")]
+			string componentId, 
+			[RantDescription("The component type.")]
+			CarrierComponentType componentType)
 		{
 			if (!Util.ValidateName(componentId)) throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-ccid", componentId);
 			var q = sb.QueryBuilder.GetQuery(id);
@@ -1096,9 +1139,79 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("qreset")]
-		private static void QueryDelete(Sandbox sb, string id)
+		[RantDescription("Removes all stored data associated with the specified constructed query ID.")]
+		private static void QueryDelete(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id)
 		{
 			sb.QueryBuilder.ResetQuery(id);
+		}
+
+		[RantFunction("qregf")]
+		[RantDescription("Adds a positive regex filter to a constructed query.")]
+		private static void QueryRegexFilter(Sandbox sb, string id, string regexPattern, string options)
+		{
+			Regex regex;
+			try
+			{
+				regex = new Regex(regexPattern, Util.GetRegexOptionsFromString(options));
+			}
+			catch (Exception ex)
+			{
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-invalid-regex", ex.Message);
+			}
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RegexFilter(regex, true));
+		}
+
+		[RantFunction("qregfn")]
+		[RantDescription("Adds a positive regex filter to a constructed query.")]
+		private static void QueryNegativeRegexFilter(Sandbox sb, string id, string regexPattern, string options)
+		{
+			Regex regex;
+			try
+			{
+				regex = new Regex(regexPattern, Util.GetRegexOptionsFromString(options));
+			}
+			catch (Exception ex)
+			{
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-invalid-regex", ex.Message);
+			}
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RegexFilter(regex, false));
+		}
+
+		[RantFunction("qsylf")]
+		[RantDescription("Adds an syllable count range filter to a constructed query that defines an absolute syllable count.")]
+		private static void QuerySyllableFilterAbsolute(Sandbox sb, string id, int syllables)
+		{
+			if (syllables < 1) throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-abs", syllables);
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(syllables, syllables));
+		}
+
+		[RantFunction("qsylf")]
+		[RantDescription("Adds a syllable count range filter to a constructed query.")]
+		private static void QuerySyllableFilterRange(Sandbox sb, string id, int minSyllables, int maxSyllables)
+		{
+			if (minSyllables < 1 || maxSyllables < 1 || minSyllables > maxSyllables)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-range", minSyllables, maxSyllables);
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(minSyllables, maxSyllables));
+		}
+
+		[RantFunction("qsylminf")]
+		[RantDescription("Adds a syllable count range filter to a constructed query that defines only a minimum bound.")]
+		private static void QuerySyllableFilterMin(Sandbox sb, string id, int minSyllables)
+		{
+			if (minSyllables < 1)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-min", minSyllables);
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(minSyllables, null));
+		}
+
+		[RantFunction("qsylmaxf")]
+		[RantDescription("Adds a syllable count range filter to a constructed query that defines only a maximum bound.")]
+		private static void QuerySyllableFilterMax(Sandbox sb, string id, int maxSyllables)
+		{
+			if (maxSyllables < 1)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-max", maxSyllables);
+			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(null, maxSyllables));
 		}
 
 		#endregion

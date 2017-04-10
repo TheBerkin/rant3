@@ -140,7 +140,7 @@ namespace Rant.Core.Compiler.Syntax
                         string strMode = sb.Return().Main;
                         if (!Util.TryParseEnum(p.NativeType, strMode, out object value))
                         {
-                            throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-mode", strMode);
+                            throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-mode", strMode, Util.GetEnumListString(p.NativeType));
                         }
                         args[i] = value;
                         break;
@@ -158,7 +158,7 @@ namespace Rant.Core.Compiler.Syntax
                         {
                             if (!Util.TryParseEnum(enumType, flag, out object value))
                             {
-                                throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-flag", flag);
+                                throw new RantRuntimeException(sb, _args[i].Location, "err-runtime-unknown-flag", flag, Util.GetEnumListString(enumType));
                             }
                             flags |= Convert.ToInt64(value);
                         }

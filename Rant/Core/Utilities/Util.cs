@@ -336,24 +336,24 @@ namespace Rant.Core.Utilities
             return sb.ToString();
         }
 
-        public static Regex ParseRegex(string regexLiteral)
-        {
-            if (string.IsNullOrEmpty(regexLiteral))
-                throw new ArgumentException($"Argument '{nameof(regexLiteral)}' cannot be null nor empty.");
-            bool noCase = regexLiteral.EndsWith("i");
-            string literal = regexLiteral.TrimEnd('i');
-            if (!literal.StartsWith("`") || !literal.EndsWith("`"))
-                throw new FormatException("Regex literal was not in the correct format.");
-
-            return new Regex(literal.Substring(1, literal.Length - 2),
-                (noCase ? RegexOptions.IgnoreCase : RegexOptions.None) | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
-        }
+	    public static string GetEnumListString(Type enumType)
+	    {
+		    if (!enumType.IsEnum) return String.Empty;
+			var sb = new StringBuilder();
+		    foreach (var name in Enum.GetNames(enumType).OrderBy(str => str).Select(CamelToSnake))
+		    {
+			    if (sb.Length > 0) sb.Append(", ");
+			    sb.Append(name);
+		    }
+		    return sb.ToString();
+	    }
 
 #if !UNITY
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public static bool ValidateName(string input)
         {
+	        // ReSharper disable once ReplaceWithStringIsNullOrEmpty
             return input != null && input.Length > 0 && input.All(c => char.IsLetterOrDigit(c) || c == '_');
         }
 
@@ -456,5 +456,24 @@ namespace Rant.Core.Utilities
 
             return true;
         }
+
+	    public static RegexOptions GetRegexOptionsFromString(string optionsString)
+	    {   
+		    RegexOptions options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture;
+		    if (IsNullOrWhiteSpace(optionsString)) return options;
+			for (int i = 0; i < optionsString.Length; i++)
+		    {
+			    switch (optionsString[i])
+			    {
+					case 'i':
+						options |= RegexOptions.IgnoreCase;
+						break;
+					case 'm':
+						options |= RegexOptions.Multiline;
+						break;
+			    }
+		    }
+		    return options;
+	    }
     }
 }

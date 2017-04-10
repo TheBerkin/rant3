@@ -39,7 +39,7 @@ err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten."
 
 err-generic-runtime = "Ein unspezifizierter Laufzeitfehler ist aufgetreten."
 err-generic-compiler = "Ein unspezifizierter Erstellungsfehler ist aufgetreten."
-err-unknown-flag = "Unbekannter Flagwert gefunden: '{0}'"
+err-unknown-flag = "Unbekannter Flagwert gefunden: '{0}'. Gültige Werte für diesen Parameter: {1}"
 
 compiler-errors-found = "{0} Erstellungsfehler sind aufgetreten:"
 compiler-errors-also-found = "{0} weitere Erstellungsfehler sind aufgetreten:"
@@ -73,7 +73,7 @@ err-runtime-invalid-arg = "Der Wert '{0}' ist für den Parameter '{1}' ungültig
 err-runtime-missing-subroutine = "Das Unterprogramm '{0}' konnte nicht gefunden werden."
 err-runtime-subarg-mismatch = "Die angegebenen Argumenten passen an die Signatur des Unterprogramms [${0}] nicht an."
 err-runtime-unknown-flag = "Unbekannter Schalter: '{0}'"
-err-runtime-unknown-mode = "Unbekannter Modus: '{0}'"
+err-runtime-unknown-mode = "Unbekannter Modus: '{0}'. Gültige Werte für diesen Parameter: {1}"
 err-runtime-invalid-string-index = "Der angegebene Index '{0}' liegt außerhalb der Zeichenkette."
 
 acc-carrier-name = "Anfragezustandspeichernamen"
