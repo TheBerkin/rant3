@@ -28,7 +28,7 @@
     More <adj> than <noun.pl-animal> <pro.dposs::@?santa> <noun.pl> they came,\n
     And he <verb.ed-intransitive>, and <verb.ed-intransitive>, and called them by name;\n
     \n
-    [q:Now, <name::!d>! now, <name::!d>! now, <name::!d> and <name::!d>!\n
+    [quot:Now, <name::!d>! now, <name::!d>! now, <name::!d> and <name::!d>!\n
     On, <name::!d>! on, <name::!d>! on, <name::!d> and <name::!d>!\n
     To the [$side] of the <noun-place>! to the [$side] of the <noun-place>!\n
     Now <verb-intransitive::=dash> away! <verb::=dash> away! <verb::=dash> away{\sall|(.1), you {<noun.pl-job>|<noun>-[pl:<verb.er>]}}!]\n
@@ -71,5 +71,5 @@
     <pro::@?santa> sprang to <pro.dposs::@?santa> sleigh, to <pro.dposs::@?santa> team gave a <noun-sound>,\n
     And away they all flew like the <noun> of a <noun>.\n
     But I heard <pro.acc::@?santa> exclaim, ‘ere <pro::@?santa> drove out of sight,\n
-    [q:{Happy|<adj>} <noun::=holiday> to all, and to all a good-[`\s+`:<noun-timeofday::=time>;-]!]
+    [quot:{Happy|<adj>} <noun::=holiday> to all, and to all a good-[`\s+`:<noun-timeofday::=time>;-]!]
 }

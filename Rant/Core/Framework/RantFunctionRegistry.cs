@@ -500,7 +500,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Infers and prints the plural form of the specified word.")]
 		private static void Plural(Sandbox sb, string word) => sb.Print(sb.Format.Pluralizer.Pluralize(word));
 
-		[RantFunction("quote", "q")]
+		[RantFunction("quote", "quot")]
 		[RantDescription(
 			"Surrounds the specified pattern in quotes. Nested quotes use the secondary quotes defined in the format settings.")]
 		private static IEnumerator<RST> Quote(Sandbox sb,
@@ -1038,10 +1038,16 @@ namespace Rant.Core.Framework
 			}
 		}
 
-		[RantFunction("query")]
+		[RantFunction("query", "q")]
 		private static IEnumerator<RST> QueryRun(Sandbox sb)
 		{
 			return sb.QueryBuilder.CurrentQuery?.Run(sb);
+		}
+
+		[RantFunction("query", "q")]
+		private static IEnumerator<RST> QueryRun(Sandbox sb, string id)
+		{
+			return sb.QueryBuilder.RunQuery(sb, id);
 		}
 
 		[RantFunction("qname")]
@@ -1073,13 +1079,26 @@ namespace Rant.Core.Framework
 		private static void QueryClassFilterNegative(Sandbox sb, string id, params string[] classes)
 		{
 			Query q;
-			ClassFilter cf;
-			cf = (q = sb.QueryBuilder.GetQuery(id)).GetNonClassFilters().FirstOrDefault(f => f is ClassFilter) as ClassFilter;
+			var cf = (q = sb.QueryBuilder.GetQuery(id)).GetNonClassFilters().FirstOrDefault(f => f is ClassFilter) as ClassFilter;
 			if (cf == null) q.AddFilter(cf = new ClassFilter());
 			foreach (string cl in classes)
 			{
 				cf.AddRule(new ClassFilterRule(cl, false));
 			}
+		}
+
+		[RantFunction("qcc")]
+		private static void QueryCarrierComponent(Sandbox sb, string id, string componentId, CarrierComponentType componentType)
+		{
+			if (!Util.ValidateName(componentId)) throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-ccid", componentId);
+			var q = sb.QueryBuilder.GetQuery(id);
+			(q.Carrier ?? (q.Carrier = new Carrier())).AddComponent(componentType, componentId);
+		}
+
+		[RantFunction("qreset")]
+		private static void QueryDelete(Sandbox sb, string id)
+		{
+			sb.QueryBuilder.ResetQuery(id);
 		}
 
 		#endregion

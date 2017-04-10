@@ -1,5 +1,8 @@
 ﻿using Rant.Vocabulary.Querying;
 using System.Collections.Generic;
+using System.Linq;
+
+using Rant.Core.Compiler.Syntax;
 
 namespace Rant.Core.Constructs
 {
@@ -22,6 +25,18 @@ namespace Rant.Core.Constructs
 				q = _queries[name] = new Query();
 			}
 			return _activeQuery = q;
+		}
+
+		public void ResetQuery(string name)
+		{
+			_queries.Remove(name);
+		}
+
+		public IEnumerator<RST> RunQuery(Sandbox sb, string id)
+		{
+			if (!_queries.TryGetValue(id, out Query q)) yield break;
+			var action = q.Run(sb);
+			while (action.MoveNext()) yield return action.Current;
 		}
 	}
 }

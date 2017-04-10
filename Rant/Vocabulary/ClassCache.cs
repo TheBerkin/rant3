@@ -140,7 +140,24 @@ namespace Rant.Vocabulary
 				// Apply filters by intersecting pools
 		        for (int i = startIndex; i < ruleArray.Length; i++)
 		        {
-			        set.IntersectWith(ruleArray[i].ShouldMatch ? _cache[ruleArray[i].Class] : _invCache[ruleArray[i].Class]);
+			        if (ruleArray[i].ShouldMatch)
+			        {
+				        if (_cache.TryGetValue(ruleArray[i].Class, out setCached))
+				        {
+							set.IntersectWith(setCached);
+				        }
+				        else
+				        {
+					        return null;
+				        }
+			        }
+			        else
+			        {
+				        if (_invCache.TryGetValue(ruleArray[i].Class, out setCached))
+				        {
+					        set.IntersectWith(setCached);
+				        }
+			        }
 		        }
 
 		        return set;
