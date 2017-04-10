@@ -41,11 +41,6 @@ namespace Rant.Core.ObjectModel
         String,
 
         /// <summary>
-        /// Represents a compiled Rant pattern.
-        /// </summary>
-        Pattern,
-
-        /// <summary>
         /// Represents a boolean value.
         /// </summary>
         Boolean,

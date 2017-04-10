@@ -1218,6 +1218,295 @@ namespace Rant.Core.Framework
 
 		#region Variables
 
+		[RantFunction("vexists")]
+		[RantDescription("Prints a boolean value indicating whether a variable with the specified name exists.")]
+		private static void VarExists(Sandbox sb, 
+			[RantDescription("The name of the variable to check.")]
+			string name)
+		{
+			sb.Print(sb.Objects[name] == null ? FALSE : TRUE);
+		}
+
+		[RantFunction("vl")]
+		[RantDescription("Creates a new list.")]
+		private static void VariableList(Sandbox sb, 
+			[RantDescription("The name of the list.")]
+			string name)
+		{
+			sb.Objects[name] = new RantObject(new List<RantObject>());
+		}
+
+		[RantFunction("vl")]
+		[RantDescription("Creates a new list with a specified length.")]
+		private static void VariableList(Sandbox sb, 
+			[RantDescription("The name of the list.")]
+			string name, 
+			[RantDescription("The length of the list.")]
+			int length)
+		{
+			if (length < 0) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-invalid-length", length);
+			sb.Objects[name] = new RantObject(Enumerable.Repeat<RantObject>(null, length).ToList());
+		}
+
+		[RantFunction("ladd", "ladds")]
+		[RantDescription("Adds a string to a list.")]
+		private static void ListAdd(Sandbox sb, 
+			[RantDescription("The list to add to.")]
+			RantObject listObj, 
+			[RantDescription("The string to add.")]
+			string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Add(new RantObject(value));
+		}
+
+		[RantFunction("laddn")]
+		[RantDescription("Adds a number to a list.")]
+		private static void ListAddNumber(Sandbox sb,
+			[RantDescription("The list to add to.")]
+			RantObject listObj, 
+			[RantDescription("The number to add.")]
+			double value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Add(new RantObject(value));
+		}
+
+		[RantFunction("laddp")]
+		[RantDescription("Adds a pattern to a list.")]
+		private static void ListAddPattern(Sandbox sb,
+			[RantDescription("The list to add to.")]
+			RantObject listObj, 
+			[RantDescription("The pattern to add.")]
+			RST value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Add(new RantObject(value));
+		}
+
+		[RantFunction("laddv")]
+		[RantDescription("Adds a variable to a list.")]
+		private static void ListAddPattern(Sandbox sb,
+			[RantDescription("The list to add to.")]
+			RantObject listObj,
+			[RantDescription("The variable to add.")]
+			RantObject value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Add(value);
+		}
+
+		[RantFunction("lpre", "lpres")]
+		[RantDescription("Prepends a string to a list.")]
+		private static void ListPrepend(Sandbox sb, RantObject listObj, string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Insert(0, new RantObject(value));
+		}
+
+		[RantFunction("lpren")]
+		[RantDescription("Prepends a number to a list.")]
+		private static void ListPrependNumber(Sandbox sb, RantObject listObj, double value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Insert(0, new RantObject(value));
+		}
+
+		[RantFunction("lprep")]
+		[RantDescription("Prepends a pattern to a list.")]
+		private static void ListPrependPattern(Sandbox sb, RantObject listObj, RST value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Insert(0, new RantObject(value));
+		}
+
+		[RantFunction("lget")]
+		[RantDescription("Prints a list item from the specified index.")]
+		private static void ListGet(Sandbox sb, RantObject listObj, int index)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			sb.Print(list[index].PrintableValue);
+		}
+
+		[RantFunction("lset")]
+		[RantDescription("Sets the item at a specified index in a list.")]
+		private static void ListSet(Sandbox sb, RantObject listObj, int index, string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list[index] = new RantObject(value);
+		}
+
+		[RantFunction("lsetn")]
+		[RantDescription("Sets the item at a specified index in a list to a number.")]
+		private static void ListSetNumber(Sandbox sb, RantObject listObj, int index, double value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list[index] = new RantObject(value);
+		}
+
+		[RantFunction("lsetp")]
+		[RantDescription("Sets the item at a specified index in a list to a pattern.")]
+		private static void ListSetPattern(Sandbox sb, RantObject listObj, int index, RST value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list[index] = new RantObject(value);
+		}
+
+		[RantFunction("lsetv")]
+		[RantDescription("Sets the item at a specified index in a list to a variable.")]
+		private static void ListSetVar(Sandbox sb, RantObject listObj, int index, RantObject value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list[index] = value;
+		}
+
+		[RantFunction("lins")]
+		[RantDescription("Inserts a string at the specified index in a list.")]
+		private static void ListInsert(Sandbox sb, RantObject listObj, int index, string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list.Insert(index, new RantObject(value));
+		}
+
+		[RantFunction("linsn")]
+		[RantDescription("Inserts a number at the specified index in a list.")]
+		private static void ListInsert(Sandbox sb, RantObject listObj, int index, double value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list.Insert(index, new RantObject(value));
+		}
+
+		[RantFunction("linsp")]
+		[RantDescription("Inserts a pattern at the specified index in a list.")]
+		private static void ListInsertPattern(Sandbox sb, RantObject listObj, int index, RST value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list.Insert(index, new RantObject(value));
+		}
+
+		[RantFunction("linv")]
+		[RantDescription("Inserts a variable at the specified index in a list.")]
+		private static void ListInsertVar(Sandbox sb, RantObject listObj, int index, RantObject value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			list.Insert(index, value);
+		}
+
+		[RantFunction("lfind")]
+		[RantDescription("Searches a list for the specified value and prints the index if found. Otherwise, prints -1.")]
+		private static void ListFind(Sandbox sb, RantObject listObj, string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (String.Equals(list[i].PrintableValue.ToString(), value, StringComparison.Ordinal))
+				{
+					sb.Print(i);
+					return;
+				}
+			}
+			sb.Print(-1);
+		}
+
+		[RantFunction("lfindv")]
+		[RantDescription("Searches a list for the specified variable and prints the index if found. Otherwise, prints -1.")]
+		private static void ListFind(Sandbox sb, RantObject listObj, RantObject value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (list[i] == value)
+				{
+					sb.Print(i);
+					return;
+				}
+			}
+			sb.Print(-1);
+		}
+
+		[RantFunction("lfindi")]
+		[RantDescription("Searches a list for the specified value, ignoring case, and prints the index if found. Otherwise, prints -1.")]
+		private static void ListFindIgnoreCase(Sandbox sb, RantObject listObj, string value)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (String.Equals(list[i].PrintableValue.ToString(), value, StringComparison.OrdinalIgnoreCase))
+				{
+					sb.Print(i);
+					return;
+				}
+			}
+			sb.Print(-1);
+		}
+
+		[RantFunction("lclr")]
+		[RantDescription("Clears the specified list.")]
+		private static void ListClear(Sandbox sb, RantObject listObj)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			list.Clear();
+		}
+
+		[RantFunction("lpop")]
+		[RantDescription("Removes the last item from a list.")]
+		private static void ListPop(Sandbox sb, RantObject listObj)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (list.Count == 0) return;
+			list.RemoveAt(list.Count - 1);
+		}
+
+		[RantFunction("lpopf")]
+		[RantDescription("Removes the first item from a list.")]
+		private static void ListPopStart(Sandbox sb, RantObject listObj)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (list.Count == 0) return;
+			list.RemoveAt(0);
+		}
+
+		[RantFunction("lcpy")]
+		[RantDescription("Copies an item from a list into a variable.")]
+		private static void ListCopyItemToVar(Sandbox sb, RantObject listObj, int index, string variable)
+		{
+			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			if (index < 0 || index >= list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
+			sb.Objects[variable] = list[index];
+		}
+
+		[RantFunction("lclone")]
+		[RantDescription("Clones a list to another variable.")]
+		private static void ListCopy(Sandbox sb, RantObject listObj, string variable)
+		{
+			if (listObj.Type != RantObjectType.List)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			sb.Objects[variable] = listObj.Clone();
+		}
+
+		[RantFunction("vlen")]
+		[RantDescription("Gets the length of the specified variable.")]
+		private static void VariableLength(Sandbox sb, RantObject obj)
+		{
+			sb.Print(obj.Length);
+		}
+
+		[RantFunction("typeof")]
+		[RantDescription("Gets the type of the specified variable.")]
+		private static void GetVariableType(Sandbox sb, string name)
+		{
+			sb.Print(Util.CamelToSnake(sb.Objects[name]?.Type.ToString() ?? "???"));
+		}
+
 		[RantFunction("rvr")]
 		[RantDescription("Rotates the values of a list of variables once to the right.")]
 		private static void RotateVariablesRight(Sandbox sb,
@@ -1261,7 +1550,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The name of the variable.")] string name,
 			[RantDescription("The value of the variable.")] bool value)
 		{
-			sb.Objects[name] = new RantObject(value);
+			sb.Objects[name] = value ? RantObject.True : RantObject.False;
 		}
 
 		[RantFunction("vn")]

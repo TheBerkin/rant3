@@ -69,22 +69,17 @@ namespace Rant
         /// <summary>
         /// The line on which the error occurred.
         /// </summary>
-        public int Line { get; private set; }
+        public int Line { get; }
 
         /// <summary>
         /// The column on which the error occurred.
         /// </summary>
-        public int Column { get; private set; }
+        public int Column { get; }
 
         /// <summary>
         /// The character index on which the error occurred.
         /// </summary>
-        public int Index { get; private set; }
-
-        /// <summary>
-        /// The length of the substring in which the error occurred.
-        /// </summary>
-        public int Length { get; private set; }
+        public int Index { get; }
 
         /// <summary>
         /// The source of the error.

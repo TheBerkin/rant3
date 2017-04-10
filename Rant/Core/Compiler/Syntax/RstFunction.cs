@@ -85,12 +85,15 @@ namespace Rant.Core.Compiler.Syntax
 
                     // RantObjects are evaluated and fetched by name
                     case RantFunctionParameterType.RantObject:
-                        sb.AddOutputWriter();
-                        yield return _args[i];
-                        args[i] = sb.Objects[sb.Return().Main];
-                        break;
+	                {
+		                sb.AddOutputWriter();
+		                yield return _args[i];
+		                var name = sb.Return().Main;
+		                args[i] = sb.Objects[name] ?? throw new RantRuntimeException(sb, _args[i], "err-runtime-missing-var", name);
+		                break;
+	                }
 
-                    // Numbers are evaluated, verified, and converted
+	                // Numbers are evaluated, verified, and converted
                     case RantFunctionParameterType.Number:
                     {
                         sb.AddOutputWriter();

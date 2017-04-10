@@ -353,8 +353,9 @@ namespace Rant.Core.Utilities
 #endif
         public static bool ValidateName(string input)
         {
-	        // ReSharper disable once ReplaceWithStringIsNullOrEmpty
+	        // ReSharper disable ReplaceWithStringIsNullOrEmpty
             return input != null && input.Length > 0 && input.All(c => char.IsLetterOrDigit(c) || c == '_');
+	        // ReSharper restore ReplaceWithStringIsNullOrEmpty
         }
 
         public static string Alt(string input, string alternate)
