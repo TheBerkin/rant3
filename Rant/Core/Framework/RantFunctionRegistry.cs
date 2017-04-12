@@ -1147,9 +1147,15 @@ namespace Rant.Core.Framework
 			sb.QueryBuilder.ResetQuery(id);
 		}
 
-		[RantFunction("qregf")]
+		[RantFunction("qhas")]
 		[RantDescription("Adds a positive regex filter to a constructed query.")]
-		private static void QueryRegexFilter(Sandbox sb, string id, string regexPattern, string options)
+		private static void QueryRegexFilter(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The regex pattern for the filter.")]
+			string regexPattern, 
+			[RantDescription("The regex option string for the filter.")]
+			string options)
 		{
 			Regex regex;
 			try
@@ -1163,9 +1169,15 @@ namespace Rant.Core.Framework
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RegexFilter(regex, true));
 		}
 
-		[RantFunction("qregfn")]
+		[RantFunction("qhasno")]
 		[RantDescription("Adds a positive regex filter to a constructed query.")]
-		private static void QueryNegativeRegexFilter(Sandbox sb, string id, string regexPattern, string options)
+		private static void QueryNegativeRegexFilter(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id,
+			[RantDescription("The regex pattern for the filter.")]
+			string regexPattern,
+			[RantDescription("The regex option string for the filter.")]
+			string options)
 		{
 			Regex regex;
 			try
@@ -1179,39 +1191,68 @@ namespace Rant.Core.Framework
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RegexFilter(regex, false));
 		}
 
-		[RantFunction("qsylf")]
+		[RantFunction("qsyl")]
 		[RantDescription("Adds an syllable count range filter to a constructed query that defines an absolute syllable count.")]
-		private static void QuerySyllableFilterAbsolute(Sandbox sb, string id, int syllables)
+		private static void QuerySyllableFilterAbsolute(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The number of syllables.")]
+			int syllables)
 		{
 			if (syllables < 1) throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-abs", syllables);
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(syllables, syllables));
 		}
 
-		[RantFunction("qsylf")]
+		[RantFunction("qsyl")]
 		[RantDescription("Adds a syllable count range filter to a constructed query.")]
-		private static void QuerySyllableFilterRange(Sandbox sb, string id, int minSyllables, int maxSyllables)
+		private static void QuerySyllableFilterRange(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The minimum syllable count.")]
+			int minSyllables, 
+			[RantDescription("The maximum syllable count.")]
+			int maxSyllables)
 		{
 			if (minSyllables < 1 || maxSyllables < 1 || minSyllables > maxSyllables)
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-range", minSyllables, maxSyllables);
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(minSyllables, maxSyllables));
 		}
 
-		[RantFunction("qsylminf")]
+		[RantFunction("qsylmin")]
 		[RantDescription("Adds a syllable count range filter to a constructed query that defines only a minimum bound.")]
-		private static void QuerySyllableFilterMin(Sandbox sb, string id, int minSyllables)
+		private static void QuerySyllableFilterMin(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id,
+			[RantDescription("The minimum syllable count.")]
+			int minSyllables)
 		{
 			if (minSyllables < 1)
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-min", minSyllables);
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(minSyllables, null));
 		}
 
-		[RantFunction("qsylmaxf")]
+		[RantFunction("qsylmax")]
 		[RantDescription("Adds a syllable count range filter to a constructed query that defines only a maximum bound.")]
-		private static void QuerySyllableFilterMax(Sandbox sb, string id, int maxSyllables)
+		private static void QuerySyllableFilterMax(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id,
+			[RantDescription("The maximum syllable count.")]
+			int maxSyllables)
 		{
 			if (maxSyllables < 1)
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-invalid-syllables-max", maxSyllables);
 			sb.QueryBuilder.GetQuery(id).AddFilter(new RangeFilter(null, maxSyllables));
+		}
+
+		[RantFunction("qphr")]
+		[RantDescription("Adds a phrasal complement to a constructed query.")]
+		private static void QueryPhrasalComplement(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id, 
+			[RantDescription("The phrasal complement pattern.")]
+			RST complement)
+		{
+			sb.QueryBuilder.GetQuery(id).Complement = complement;
 		}
 
 		#endregion

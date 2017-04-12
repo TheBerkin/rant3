@@ -1,14 +1,16 @@
 # A perhaps vastly overengineered fantasy country name generator.
 [vl:consonants][ladd:consonants;b;c;d;f;g;h;j;k;l;m;n;p;q;r;s;t;v;w;x;y;z]
+[$[randacc]:{acute|grave|circumflex|tilde|ring|diaeresis|caron|macron}]
 [$[cons]: [lrand:consonants]]
 [$[vow]: {a|e|i|o|u}]
-[$[suffix]: {an|[$vow]stan|ia|[$vow]ba|[$vow]na|ica|ican|en|esia|burg|bourg|ania|[$vow]rea|ey|ary}]
+[$[suffix]: {an|[$vow]stan|ia|[$vow]ba|[$vow]na|ica|ican|en|esia|burg|bourg|ania|ika|ara|[$vow]nka|olia|[$vow]roa|kka|[$vow]rea|ey|ary}]
 [$[mid]: {han|hin|uxem|ap|uin|ung|eng|ngl|rae|indo|nes|ait}]
 [$[rmid]: [rep:[n:1;2]]{[$mid]}]
 
 [$[dedup_consonants:t]: [`[bcdfghjklmnpqrstvxzwy]{3}`:[arg:t];[at:[match];0]]]
 [$[dedup_vowels:t]: [`(a+|e+|i+|o+|u+)`:[arg:t];[at:[match];0]]]
 [$[remove_strange:t]: [`(h+|x+|jm)`:[arg:t];[at:[match];0]]]
+[$[add_accents:t]: [`[aeiou]`i:[arg:t];{(10)[match]|[accent:[match];[$randacc]]}]]
 [$[no_spaces:t]:[`\s`:[arg:t];]]
 
 # is consonant
@@ -28,10 +30,17 @@
 # get rid of undesirable character sequences
 [$[process:t]:
 	[$no_spaces:
-		[$remove_strange:
-			[$dedup_vowels:
-				[$dedup_consonants:
-					[arg:t]]]]]]
+		[$add_accents:
+			[$remove_strange:
+				[$dedup_vowels:
+					[$dedup_consonants:
+						[arg:t]
+					]
+				]
+			]
+		]
+	]
+]
 
 [$[country_i]: [case:lower]{
 	[$vow][$mid][$suffix] |
