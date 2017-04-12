@@ -43,7 +43,7 @@ namespace Rant.Core.Compiler.Syntax
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
-			if (sb.Objects.ContainsKey(Name))
+			if (sb.Objects.ContainsKey(Name) && CheckIfSubroutineList(sb.Objects[Name]))
 			{
 				var subroutines = sb.Objects[Name].Value as List<RantObject>;
 				if (subroutines.Any(s => (s.Value as RstDefineSubroutine).Parameters.Count == Parameters.Count))
@@ -84,6 +84,13 @@ namespace Rant.Core.Compiler.Syntax
 				string key = input.ReadString();
 				Parameters[key] = (SubroutineParameterType)input.ReadByte();
 			}
+		}
+
+		private bool CheckIfSubroutineList(RantObject obj)
+		{
+			if (obj.Type != RantObjectType.List) return false;
+			var list = obj.Value as List<RantObject>;
+			return list.All(a => a.Value is RstDefineSubroutine);
 		}
 	}
 
