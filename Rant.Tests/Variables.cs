@@ -92,5 +92,13 @@ namespace Rant.Tests
 				[lmap:test;a;[v:a][v:a]][v:test]").Main;
 			Assert.AreEqual("(11, 22, 33, 44)", result);
 		}
+
+		[Test]
+		public void StringSplit()
+		{
+			var rant = new RantEngine();
+			var result = rant.Do("[split:a;,;\"a,b,c,d\"][v:a]").Main;
+			Assert.AreEqual("(a, b, c, d)", result);
+		}
 	}
 }

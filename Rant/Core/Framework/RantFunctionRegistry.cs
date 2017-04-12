@@ -1590,6 +1590,32 @@ namespace Rant.Core.Framework
 			return ListMap(sb, listName, listName, varname, body);
 		}
 
+		[RantFunction("split")]
+		[RantDescription("Splits the specified string by the given delimiter.")]
+		private static void StringSplit(Sandbox sb,
+			[RantDescription("The name of the variable that will contain the output list.")]
+			string listName,
+			[RantDescription("The delimiter.")]
+			string delimiter,
+			[RantDescription("The string to split.")]
+			string input)
+		{
+			var results = input.Split(new[] { delimiter }, StringSplitOptions.None);
+			sb.Objects[listName] = new RantObject(results.Select(r => new RantObject(r)).ToList());
+		}
+
+		[RantFunction("split")]
+		[RantDescription("Splits the specified string into a list of chars.")]
+		private static void StringSplit(Sandbox sb,
+			[RantDescription("The name of the variable that will contain the output list.")]
+			string listName,
+			[RantDescription("The string to split.")]
+			string input)
+		{
+			var chars = input.ToCharArray();
+			sb.Objects[listName] = new RantObject(chars.Select(c => new RantObject(c)).ToList());
+		}
+
 		[RantFunction("vlen")]
 		[RantDescription("Gets the length of the specified variable.")]
 		private static void VariableLength(Sandbox sb, RantObject obj)
