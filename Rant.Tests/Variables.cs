@@ -72,5 +72,25 @@ namespace Rant.Tests
 			Assert.AreEqual(rant["a"].Value, 5);
 			Assert.AreEqual(rant["b"].Value, 3);
 		}
+
+		[Test]
+		public void ListFilter()
+		{
+			var rant = new RantEngine();
+			var result = rant.Do(@"
+				[vl:test][laddn:test;1][laddn:test;2][laddn:test;3][laddn:test;4]
+				[lfilter:test;a;[gt:[v:a];2]][v:test]").Main;
+			Assert.AreEqual("(3, 4)", result);
+		}
+
+		[Test]
+		public void ListMap()
+		{
+			var rant = new RantEngine();
+			var result = rant.Do(@"
+				[vl:test][laddn:test;1][laddn:test;2][laddn:test;3][laddn:test;4]
+				[lmap:test;a;[v:a][v:a]][v:test]").Main;
+			Assert.AreEqual("(11, 22, 33, 44)", result);
+		}
 	}
 }

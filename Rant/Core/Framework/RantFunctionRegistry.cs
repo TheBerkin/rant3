@@ -1493,6 +1493,103 @@ namespace Rant.Core.Framework
 			sb.Objects[variable] = listObj.Clone();
 		}
 
+		[RantFunction("lfilter")]
+		[RantDescription("Filters out elements of a list when the condition returns false. Creates new list with results.")]
+		private static IEnumerator<RST> ListFilter(Sandbox sb,
+			[RantDescription("The name of the list object to filter.")]
+			string listName,
+			[RantDescription("The name of the list that will contain the filtered result.")]
+			string outputListName,
+			[RantDescription("The name of the variable that will contain the current item within the condition.")]
+			string varname,
+			[RantDescription("The condition that will be checked for each item.")]
+			RST condition)
+		{
+			var listObj = sb.Objects[listName];
+			if (listObj == null)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-missing-var", listName);
+			if (listObj.Type != RantObjectType.List)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			var list = listObj.Value as List<RantObject>;
+			var newList = new List<RantObject>(list.Count);
+			foreach(var val in list)
+			{
+				sb.Objects.EnterScope();
+				sb.Objects[varname] = val;
+				sb.AddOutputWriter();
+				yield return condition;
+				var output = sb.Return();
+				sb.Objects.ExitScope();
+
+				if(output == TRUE)
+					newList.Add(val);
+				else if (output != FALSE) // if output is neither, it's not a boolean
+					throw new RantRuntimeException(sb, condition, "err-runtime-unexpected-type", RantObjectType.Boolean, RantObjectType.String);
+			}
+
+			sb.Objects[outputListName] = new RantObject(newList);
+		}
+
+		[RantFunction("lfilter")]
+		[RantDescription("Filters out elements of a list when the condition returns false. Mutates list.")]
+		private static IEnumerator<RST> ListFilter(Sandbox sb,
+			[RantDescription("The name of the list object to filter.")]
+			string listName,
+			[RantDescription("The name of the variable that will contain the current item within the condition.")]
+			string varname,
+			[RantDescription("The condition that will be checked for each item.")]
+			RST condition)
+		{
+			return ListFilter(sb, listName, listName, varname, condition);
+		}
+
+		[RantFunction("lmap")]
+		[RantDescription("Runs each item in the input list through the body and adds results to output list.")]
+		private static IEnumerator<RST> ListMap(Sandbox sb,
+			[RantDescription("The name of the list object to map.")]
+			string listName,
+			[RantDescription("The name of the list that will contain the mapped result.")]
+			string outputListName,
+			[RantDescription("The name of the variable that will contain the current item within the body.")]
+			string varname,
+			[RantDescription("The body that will be run for each item.")]
+			RST body)
+		{
+			var listObj = sb.Objects[listName];
+			if (listObj == null)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-missing-var", listName);
+			if (listObj.Type != RantObjectType.List)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			var list = listObj.Value as List<RantObject>;
+			var newList = new List<RantObject>(list.Count);
+			foreach (var val in list)
+			{
+				sb.Objects.EnterScope();
+				sb.Objects[varname] = val;
+				sb.AddOutputWriter();
+				yield return body;
+				var output = sb.Return();
+				sb.Objects.ExitScope();
+
+				newList.Add(new RantObject(output));
+			}
+
+			sb.Objects[outputListName] = new RantObject(newList);
+		}
+
+		[RantFunction("lmap")]
+		[RantDescription("Replaces each item in the input list with its value when run through body.")]
+		private static IEnumerator<RST> ListMap(Sandbox sb,
+			[RantDescription("The name of the list object to map.")]
+			string listName,
+			[RantDescription("The name of the variable that will contain the current item within the body.")]
+			string varname,
+			[RantDescription("The body that will be run for each item.")]
+			RST body)
+		{
+			return ListMap(sb, listName, listName, varname, body);
+		}
+
 		[RantFunction("vlen")]
 		[RantDescription("Gets the length of the specified variable.")]
 		private static void VariableLength(Sandbox sb, RantObject obj)
