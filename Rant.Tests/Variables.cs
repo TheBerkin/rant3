@@ -100,5 +100,13 @@ namespace Rant.Tests
 			var result = rant.Do("[split:a;,;\"a,b,c,d\"][v:a]").Main;
 			Assert.AreEqual("(a, b, c, d)", result);
 		}
+
+		[Test]
+		public void Loop()
+		{
+			var rant = new RantEngine();
+			var result = rant.Do("[vn:a;10][while:[gt:[v:a];0];[vsub:a;1]a]").Main;
+			Assert.AreEqual(result, "aaaaaaaaaa");
+		}
 	}
 }

@@ -1629,7 +1629,7 @@ namespace Rant.Core.Framework
 			string input)
 		{
 			var chars = input.ToCharArray();
-			sb.Objects[listName] = new RantObject(chars.Select(c => new RantObject(c)).ToList());
+			sb.Objects[listName] = new RantObject(chars.Select(c => new RantObject(c.ToString())).ToList());
 		}
 
 		[RantFunction("join")]
@@ -2050,6 +2050,29 @@ namespace Rant.Core.Framework
 		private static IEnumerator<RST> IfNot(Sandbox sb, bool condition, RST body, RST elseBody)
 		{
 			yield return !condition ? body : elseBody;
+		}
+
+		[RantFunction("while", "loop")]
+		[RantDescription("Runs the body over and over while condition remains true.")]
+		private static IEnumerator<RST> WhileLoop(Sandbox sb,
+			[RantDescription("The condition to check each iteration.")]
+			RST condition,
+			[RantDescription("The body of the loop.")]
+			RST body)
+		{
+			while(true)
+			{
+				sb.AddOutputWriter();
+				yield return condition;
+				var output = sb.Return();
+
+				if (output == FALSE)
+					break;
+				else if (output == TRUE)
+					yield return body;
+				else
+					throw new RantRuntimeException(sb, condition, "err-runtime-unexpected-type", RantObjectType.Boolean, RantObjectType.String);
+			}
 		}
 
 		#endregion
