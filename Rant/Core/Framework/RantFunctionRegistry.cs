@@ -407,6 +407,27 @@ namespace Rant.Core.Framework
 
 		#region Text Formatting and Analysis
 
+		[RantFunction("abbr")]
+		[RantDescription("Abbreviates the specified string.")]
+		private static void Abbreviate(Sandbox sb, 
+			[RantDescription("The string to abbreviate.")]
+			string value)
+		{
+			var words = value.Split(new[] { ' ', '-', '/', '.' }, StringSplitOptions.RemoveEmptyEntries);
+			if (words.Length < 3)
+			{
+				sb.Print(words.Aggregate((c, n) => c + Char.ToUpperInvariant(n[0]).ToString()));
+				return;
+			}
+			var buffer = new StringBuilder();
+			for(int i = 0; i < words.Length; i++)
+			{
+				if (i > 0 && sb.Engine.Format.Excludes(words[i])) continue;
+				buffer.Append(Char.ToUpperInvariant(words[i][0]));
+			}
+			sb.Print(buffer.ToString());
+		}
+
 		[RantFunction("at")]
 		[RantDescription("Prints the character at the specified position in the input. Throws an exception if the position is outside of the string.")]
 		private static void At(Sandbox sb,
@@ -418,9 +439,18 @@ namespace Rant.Core.Framework
 			sb.Print(input.Substring(pos, 1));
 		}
 
-		[RantFunction]
+		[RantFunction("len")]
+		[RantDescription("Gets the length of the specified string.")]
+		private static void StringLength(Sandbox sb, 
+			[RantDescription("The string to measure.")]
+			string str)
+		{
+			sb.Print(str.Length);
+		}
+
+		[RantFunction("chlen")]
 		[RantDescription("Prints the current length of the specified channel, in characters.")]
-		private static void Len(Sandbox sb,
+		private static void ChannelLength(Sandbox sb,
 			[RantDescription("The channel for which to retrieve the length.")] string channelName) => sb.Print(sb.Output.GetChannelLength(channelName));
 
 		[RantFunction("rev")]
@@ -773,6 +803,11 @@ namespace Rant.Core.Framework
 		#endregion
 
 		#region Synchronizer
+
+		[RantFunction("xdel")]
+		[RantDescription("Deletes a synchronizer.")]
+		private static void SyncDelete(Sandbox sb, 
+			[RantDescription("The name of the synchronizer to delete.")] string name) => sb.SyncManager.Delete(name);
 
 		[RantFunction("xpin")]
 		[RantDescription("Pins a synchronizer.")]

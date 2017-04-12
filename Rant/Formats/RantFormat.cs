@@ -96,7 +96,7 @@ namespace Rant.Formats
 			{
 				"a", "an", "the", "that", "where", "when", "for", "any", "or", "and",
 				"of", "in", "at", "as", "into", "if", "are", "you", "why", "from",
-				"with", "these", "those"
+				"with", "these", "those", "to"
 			},
 			StringComparer.InvariantCultureIgnoreCase);
 

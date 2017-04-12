@@ -40,12 +40,11 @@ namespace Rant.Core.Constructs
             _sb = sb;
         }
 
-        public Synchronizer this[string name]
-        {
-            get { return _syncTable[name]; }
-        }
+        public Synchronizer this[string name] => _syncTable[name];
 
-        public bool SynchronizerExists(string name) => _syncTable.ContainsKey(name);
+	    public bool SynchronizerExists(string name) => _syncTable.ContainsKey(name);
+
+	    public void Delete(string name) => _syncTable.Remove(name);
 
         public void Create(string name, SyncType type, bool apply)
         {
