@@ -38,7 +38,7 @@ namespace Rant.Tests
 		public void QuotedSentence()
 		{
 			Assert.AreEqual("“This is a sentence. This is another sentence.”", 
-				rant.Do(@"[q:[caps:sentence]this is a sentence. this is another sentence.]").Main);
+				rant.Do(@"[quot:[caps:sentence]this is a sentence. this is another sentence.]").Main);
 		}
 
 		[Test]
