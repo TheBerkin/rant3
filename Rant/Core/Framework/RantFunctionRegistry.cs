@@ -1590,6 +1590,22 @@ namespace Rant.Core.Framework
 			return ListMap(sb, listName, listName, varname, body);
 		}
 
+		[RantFunction("lrand")]
+		[RantDescription("Returns a random value from the specified list.")]
+		private static IEnumerator<RST> ListRandom(Sandbox sb,
+			[RantDescription("The list to pick from.")]
+			RantObject obj)
+		{
+			if (obj.Type != RantObjectType.List)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, obj.Type);
+			var list = obj.Value as List<RantObject>;
+			var item = list[sb.RNG.Next(list.Count)];
+			if (item.Type == RantObjectType.Action)
+				yield return item.Value as RST;
+			else
+				sb.Print(item.PrintableValue);
+		}
+
 		[RantFunction("split")]
 		[RantDescription("Splits the specified string by the given delimiter.")]
 		private static void StringSplit(Sandbox sb,
@@ -1614,6 +1630,30 @@ namespace Rant.Core.Framework
 		{
 			var chars = input.ToCharArray();
 			sb.Objects[listName] = new RantObject(chars.Select(c => new RantObject(c)).ToList());
+		}
+
+		[RantFunction("join")]
+		[RantDescription("Joins the specified list into a string seperated by the delimiter and returns it.")]
+		private static void StringJoin(Sandbox sb,
+			[RantDescription("The list to join.")]
+			RantObject listObj,
+			[RantDescription("The delimiter.")]
+			string delimiter)
+		{
+			if (listObj.Type != RantObjectType.List)
+				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+			var list = listObj.Value as List<RantObject>;
+			var result = string.Join(delimiter, list.Select(a => a.PrintableValue));
+			sb.Print(result);
+		}
+
+		[RantFunction("join")]
+		[RantDescription("Joins the specified list into a string.")]
+		private static void StringJoin(Sandbox sb,
+			[RantDescription("The list to join.")]
+			RantObject listObj)
+		{
+			StringJoin(sb, listObj, "");
 		}
 
 		[RantFunction("vlen")]
