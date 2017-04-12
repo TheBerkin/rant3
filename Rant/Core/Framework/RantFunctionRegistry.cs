@@ -1249,51 +1249,51 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("ladd", "ladds")]
-		[RantDescription("Adds a string to a list.")]
+		[RantDescription("Adds one or more strings to a list.")]
 		private static void ListAdd(Sandbox sb, 
 			[RantDescription("The list to add to.")]
 			RantObject listObj, 
-			[RantDescription("The string to add.")]
-			string value)
+			[RantDescription("The strings to add.")]
+			params string[] values)
 		{
 			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
-			list.Add(new RantObject(value));
+			list.AddRange(values.Select(s => new RantObject(s)).ToList());
 		}
 
 		[RantFunction("laddn")]
-		[RantDescription("Adds a number to a list.")]
+		[RantDescription("Adds one or more numbers to a list.")]
 		private static void ListAddNumber(Sandbox sb,
 			[RantDescription("The list to add to.")]
 			RantObject listObj, 
-			[RantDescription("The number to add.")]
-			double value)
+			[RantDescription("The numbers to add.")]
+			params double[] values)
 		{
 			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
-			list.Add(new RantObject(value));
+			list.AddRange(values.Select(s => new RantObject(s)).ToList());
 		}
 
 		[RantFunction("laddp")]
-		[RantDescription("Adds a pattern to a list.")]
+		[RantDescription("Adds one or more patterns to a list.")]
 		private static void ListAddPattern(Sandbox sb,
 			[RantDescription("The list to add to.")]
 			RantObject listObj, 
-			[RantDescription("The pattern to add.")]
-			RST value)
+			[RantDescription("The patterns to add.")]
+			params RST[] values)
 		{
 			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
-			list.Add(new RantObject(value));
+			list.AddRange(values.Select(s => new RantObject(s)).ToList());
 		}
 
 		[RantFunction("laddv")]
-		[RantDescription("Adds a variable to a list.")]
+		[RantDescription("Adds one or more variables to a list.")]
 		private static void ListAddPattern(Sandbox sb,
 			[RantDescription("The list to add to.")]
 			RantObject listObj,
-			[RantDescription("The variable to add.")]
-			RantObject value)
+			[RantDescription("The variables to add.")]
+			params RantObject[] values)
 		{
 			var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
-			list.Add(value);
+			list.AddRange(values.Select(s => new RantObject(s)).ToList());
 		}
 
 		[RantFunction("lpre", "lpres")]
