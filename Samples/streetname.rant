@@ -1,14 +1,11 @@
 [case:word]
 [rs:25;\n]
 {
-    {
-        [`[^aeiou\-\s]`:
-            {{(10)|{[numfmt:verbal;[n:1;10]]|<verb.pp-transitive>}\s}<noun..pl-place|animal|person|tool?!`\s`>|<adj-appearance?!`\s`>|<surname?!`\s`>}
+    [`[^aeiou\-\s]`:
+        {{(10)|{[numfmt:verbal;[n:1;10]]|<verb.pp-transitive>}\s}<noun..pl-place|animal|person|tool?!`\s`>|<adj-appearance?!`\s`>|<surname?!`\s`>}
         ;
-            {(10)[match]|[capsinfer:[match]]{b|t|c|n|m|l|k|g|w|cc|ll|dd|gg|(.1)x}[case:word]}
-        ]
-        
-        {(5)|\s{creek|lake|river|rock}|{wood|way}}
-    }\s
+        {(10)[match]|[capsinfer:[match]]{b|t|c|n|m|l|k|g|w|cc|ll|dd|gg|(.1)x}[case:word]}
+    ]
+    {(5)|\s{creek|lake|river|rock}|{wood|way}}\s
     {road|street|avenue|boulevard|lane|drive|way|court|trail|parkway|view|cove|crossing|alley|circle|drive}
 }
