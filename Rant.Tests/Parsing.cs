@@ -1,5 +1,4 @@
 ﻿#region License
-
 // https://github.com/TheBerkin/Rant
 // 
 // Copyright (c) 2017 Nicholas Fleck
@@ -20,51 +19,23 @@
 // HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 #endregion
-
-using System;
+using NUnit.Framework;
 
 using Rant.Core.Utilities;
 
-namespace Rant.Core.Constructs
+namespace Rant.Tests
 {
-    internal class Comparison
-    {
-        public Comparison(string a, string b)
-        {
-            A = a;
-            B = b;
-            double na, nb;
-            if (!double.TryParse(a, out na)) na = double.NaN;
-            if (!double.TryParse(b, out nb)) nb = double.NaN;
-            bool ba = Util.BooleanRep(a);
-            bool bb = Util.BooleanRep(b);
-
-            Result |= a == b ? ComparisonResult.Equal : ComparisonResult.NotEqual;
-
-            Result |= ba && bb ? ComparisonResult.All : ba || bb ? ComparisonResult.Any : ComparisonResult.None;
-            if (ba != bb) Result |= ComparisonResult.One;
-            if (na < nb) Result |= ComparisonResult.Less;
-            if (na > nb) Result |= ComparisonResult.Greater;
-        }
-
-        public ComparisonResult Result { get; }
-        public string A { get; }
-        public string B { get; }
-    }
-
-    [Flags]
-    internal enum ComparisonResult
-    {
-        NotEqual = 0x01,
-        Different = NotEqual,
-        Equal = 0x02,
-        Less = 0x04,
-        Greater = 0x08,
-        All = 0x10,
-        Any = 0x20,
-        One = 0x40,
-        None = 0x80
-    }
+	[TestFixture]
+	public class Parsing
+	{
+		[Test]
+		public void DoubleParse()
+		{
+			Util.ParseDouble("0.5", out double d);
+			Assert.AreEqual(0.5, d);
+			Util.ParseDouble("1.5", out d);
+			Assert.AreEqual(1.5, d);
+		}
+	}
 }

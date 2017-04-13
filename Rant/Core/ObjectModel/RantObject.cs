@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Utilities;
 
 namespace Rant.Core.ObjectModel
 {
@@ -300,7 +301,7 @@ namespace Rant.Core.ObjectModel
 								return new RantObject(_boolean ? 1 : 0);
 							case RantObjectType.String:
 								{
-									return double.TryParse(_string, out double num) ? new RantObject(num) : Null;
+									return Util.ParseDouble(_string, out double num) ? new RantObject(num) : Null;
 								}
 						}
 						break;

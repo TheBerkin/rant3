@@ -129,7 +129,7 @@ namespace Rant.Vocabulary
                                         throw new RantTableLoadException(origin, line, dPos + 1, "err-table-subtype-args");
 
                                     // If the first argument is a number, use it as the subtype index.
-                                    if (int.TryParse(args[0].Value, out int termIndex))
+                                    if (Util.ParseInt(args[0].Value, out int termIndex))
                                     {
                                         // Disallow negative term indices
                                         if (termIndex < 0)

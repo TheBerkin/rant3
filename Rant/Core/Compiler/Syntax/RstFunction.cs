@@ -99,7 +99,7 @@ namespace Rant.Core.Compiler.Syntax
                         sb.AddOutputWriter();
                         yield return _args[i];
                         string strNum = sb.Return().Main;
-                        if (!double.TryParse(strNum, out double d))
+                        if (!Util.ParseDouble(strNum, out double d))
                         {
                             d = 0;
 							if (Util.ParseInt(strNum, out int n))

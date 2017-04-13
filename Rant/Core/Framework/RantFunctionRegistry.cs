@@ -163,7 +163,7 @@ namespace Rant.Core.Framework
 		private static void Number(Sandbox sb,
 			[RantDescription("The string to convert into a number.")] string input)
 		{
-			sb.Print(double.TryParse(input, out double number) ? number : 0);
+			sb.Print(Util.ParseDouble(input, out double number) ? number : 0);
 		}
 
 		[RantFunction("numfmt")]

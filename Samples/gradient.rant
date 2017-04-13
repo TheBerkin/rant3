@@ -1,0 +1,12 @@
+# Prints a "gradient" out of shaded box characters
+
+[rs:50;\n]
+{
+    [r:100]
+    {
+        ([div:[re];3])\u2591|
+        ([div:[re];2])\u2592|
+        ([re])\u2593|
+        ([rr])\s
+    }
+}

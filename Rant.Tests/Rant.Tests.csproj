@@ -69,6 +69,7 @@
     <Compile Include="Misc\Bson.cs" />
     <Compile Include="Packages.cs" />
     <Compile Include="PackageVersions.cs" />
+    <Compile Include="Parsing.cs" />
     <Compile Include="PatternArgs.cs" />
     <Compile Include="Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

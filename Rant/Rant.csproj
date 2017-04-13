@@ -13,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -35,6 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -45,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\MainBuild\Rant.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Install|AnyCPU' ">
     <OutputPath>C:\rant\</OutputPath>
@@ -56,6 +60,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Install|x86' ">
     <OutputPath>C:\rant\x86\</OutputPath>
@@ -132,6 +137,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|x86'">
     <OutputPath>..\bin\UnityBuild\x86\</OutputPath>
@@ -185,8 +191,14 @@
     <Compile Include="Core\Sandbox.State.cs" />
     <Compile Include="Formats\EnglishNumberVerbalizer.cs" />
     <Compile Include="Formats\GermanNumberVerbalizer.cs" />
+    <Compile Include="Formats\Grammar\Aspect.cs" />
+    <Compile Include="Formats\Grammar\EnglishInflection.cs" />
+    <Compile Include="Formats\Grammar\Gender.cs" />
     <Compile Include="Formats\NumberVerbalizer.cs" />
     <Compile Include="Formats\QuotationMarks.cs" />
+    <Compile Include="Formats\Grammar\Inflection.cs" />
+    <Compile Include="Formats\Grammar\Person.cs" />
+    <Compile Include="Formats\Grammar\Tense.cs" />
     <Compile Include="Formats\WritingSystem.cs" />
     <Compile Include="Localization\Txtres.cs" />
     <Compile Include="Metadata\IRantFunction.cs" />
@@ -269,7 +281,6 @@
     <Compile Include="Resources\RantPackage.cs" />
     <Compile Include="Vocabulary\ClassCache.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
-    <Compile Include="Core\Constructs\Comparison.cs" />
     <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
     <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
