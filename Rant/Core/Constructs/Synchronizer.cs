@@ -100,6 +100,7 @@ namespace Rant.Core.Constructs
                         break;
                 }
             }
+			// [xstep] will set force to true, allowing a pinned synchronizer to iterate
             if (Pinned && !force) return _state[Index];
 
             switch (Type)
@@ -107,6 +108,11 @@ namespace Rant.Core.Constructs
                 case SyncType.Ping:
                 case SyncType.Pong:
                     return _bounce ? _state[_state.Length - 1 - Index++] : _state[Index++];
+	            case SyncType.NoRepeat:
+	            {
+		            Index = _state.Length > 1 ? (Index + _rng.Next(1, _state.Length)) % _state.Length : 0;
+		            return _state[Index];
+	            }
                 default:
                     return _state[Index++];
             }
@@ -118,9 +124,11 @@ namespace Rant.Core.Constructs
             {
                 case SyncType.Forward:
                 case SyncType.Ping:
+				case SyncType.NoRepeat:
                     for (int i = 0; i < _state.Length; _state[i] = i++)
                     {
                     }
+	                if (Type == SyncType.NoRepeat) Index = _rng.Next(_state.Length);
                     break;
                 case SyncType.Reverse:
                 case SyncType.Pong:

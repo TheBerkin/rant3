@@ -423,6 +423,11 @@ namespace Rant.Core.Framework
 			for(int i = 0; i < words.Length; i++)
 			{
 				if (i > 0 && sb.Engine.Format.Excludes(words[i])) continue;
+				if (words[i].All(Char.IsDigit))
+				{
+					buffer.Append(words[i]);
+					continue;
+				}
 				buffer.Append(Char.ToUpperInvariant(words[i][0]));
 			}
 			sb.Print(buffer.ToString());
