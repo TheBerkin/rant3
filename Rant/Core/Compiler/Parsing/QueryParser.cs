@@ -131,7 +131,7 @@ namespace Rant.Core.Compiler.Parsing
                         reader.SkipSpace();
                         bool blacklist = token.Type == R.Without;
 
-                        var regexFilter = reader.Read(R.Regex, "regex filter rule");
+                        var regexFilter = reader.Read(R.Regex, "acc-regex-filter-rule");
                         var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
                         if (reader.IsNext(R.RegexFlags))
                         {

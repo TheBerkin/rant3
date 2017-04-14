@@ -268,6 +268,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of Do() that accepts a RantProgram instead of a string.")]
 		public RantOutput Do(string input, int charLimit = 0, double timeout = -1, RantProgramArgs args = null) =>
 			RunVM(
 				new Sandbox(this, RantProgram.CompileString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(),
@@ -284,6 +285,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of Do() that accepts a RantProgram instead of a string.")]
 		public RantOutput DoFile(string path, int charLimit = 0, double timeout = -1, RantProgramArgs args = null) =>
 			RunVM(
 				new Sandbox(this, RantProgram.CompileFile(path), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(), args),
@@ -301,6 +303,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of Do() that accepts a RantProgram instead of a string.")]
 		public RantOutput Do(string input, long seed, int charLimit = 0, double timeout = -1, RantProgramArgs args = null) =>
 			RunVM(new Sandbox(this, RantProgram.CompileString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args),
 				timeout);
@@ -334,6 +337,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of Do() that accepts a RantProgram instead of a string.")]
 		public RantOutput Do(string input, RNG rng, int charLimit = 0, double timeout = -1, RantProgramArgs args = null) =>
 			RunVM(new Sandbox(this, RantProgram.CompileString(input), rng, charLimit, GetPreservedCarrierState(), args), timeout);
 
@@ -456,6 +460,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of DoSerial() that accepts a RantProgram instead of a string.")]
 		public IEnumerable<RantOutput> DoSerial(string input, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
 			new Sandbox(this, RantProgram.CompileString(input), new RNG(Seeds.NextRaw()), charLimit, GetPreservedCarrierState(),
@@ -473,6 +478,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of DoSerial() that accepts a RantProgram instead of a string.")]
 		public IEnumerable<RantOutput> DoSerial(string input, long seed, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
 			new Sandbox(this, RantProgram.CompileString(input), new RNG(seed), charLimit, GetPreservedCarrierState(), args)
@@ -490,6 +496,7 @@ namespace Rant
 		/// <param name="timeout">The maximum number of seconds that the pattern will execute for.</param>
 		/// <param name="args">The arguments to pass to the pattern.</param>
 		/// <returns></returns>
+		[Obsolete("Use an overload of DoSerial() that accepts a RantProgram instead of a string.")]
 		public IEnumerable<RantOutput> DoSerial(string input, RNG rng, int charLimit = 0, double timeout = -1,
 			RantProgramArgs args = null) =>
 			new Sandbox(this, RantProgram.CompileString(input), rng, charLimit, GetPreservedCarrierState(), args).RunSerial(timeout);
