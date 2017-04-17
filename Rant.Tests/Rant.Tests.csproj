@@ -66,7 +66,6 @@
     <Compile Include="Compiler\Serialization.cs" />
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Flags.cs" />
-    <Compile Include="Misc\Bson.cs" />
     <Compile Include="Packages.cs" />
     <Compile Include="PackageVersions.cs" />
     <Compile Include="Parsing.cs" />

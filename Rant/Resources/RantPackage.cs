@@ -28,26 +28,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 
 using Rant.Core.IO;
-using Rant.Core.IO.Bson;
-using Rant.Core.IO.Compression;
 using Rant.Core.Utilities;
 
 using static Rant.Localization.Txtres;
-using Rant.Localization;
+using System.IO.Compression;
 
 namespace Rant.Resources
 {
-    /// <summary>
-    /// Represents a collection of patterns and tables that can be exported to an archive file.
-    /// </summary>
-    public sealed class RantPackage
+	/// <summary>
+	/// Represents a collection of patterns and tables that can be exported to an archive file.
+	/// </summary>
+	public sealed class RantPackage
     {
-        private const string MAGIC = "RPKG";
+        private const string MAGIC = "NFRP";
         internal const string EXTENSION = ".rantpkg";
-        private const ushort PACKAGE_VERSION = 3;
+        private const ushort PACKAGE_FORMAT_VERSION = 3;
         private readonly HashSet<RantPackageDependency> _dependencies = new HashSet<RantPackageDependency>();
         private readonly HashSet<RantResource> _resources = new HashSet<RantResource>();
         private string _id = GetString("default-package-id");
@@ -240,52 +237,56 @@ namespace Rant.Resources
         /// </summary>
         /// <param name="path">The path to the file to create.</param>
         /// <param name="compress">Specifies whether to compress the package contents.</param>
-        /// <param name="stringTableMode">Specifies string table behavior for the package.</param>
         public void Save(
             string path,
-            bool compress = true,
-            BsonStringTableMode stringTableMode = BsonStringTableMode.None)
+            bool compress = true)
         {
             if (string.IsNullOrEmpty(Path.GetExtension(path)))
                 path += EXTENSION;
-
+			
             using (var writer = new EasyWriter(File.Create(path)))
             {
-                var doc = new BsonDocument(stringTableMode)
-                {
-                    Top =
-                    {
-                        ["info"] = new BsonItem
-                        {
-                            ["title"] = new BsonItem(_title),
-                            ["id"] = new BsonItem(_id),
-                            ["description"] = new BsonItem(Description),
-                            ["tags"] = new BsonItem(Tags),
-                            ["version"] = new BsonItem(Version.ToString()),
-                            ["authors"] = new BsonItem(Authors),
-                            ["dependencies"] = new BsonItem(_dependencies.Select(dep =>
-                            {
-                                var depObj = new BsonItem
-                                {
-                                    ["id"] = dep.ID,
-                                    ["version"] = dep.Version.ToString(),
-                                    ["allow-newer"] = dep.AllowNewer
-                                };
-                                return depObj;
-                            }).ToArray())
-                        },
-                        ["resources"] = new BsonItem(_resources.Select(RantResource.SerializeResource).ToList())
-                    }
-                };
+				writer.Write(Encoding.ASCII.GetBytes(MAGIC));
+				writer.Write(PACKAGE_FORMAT_VERSION);
+				writer.Write(compress);
+				writer.Write(_title);
+				writer.Write(_id);
+				writer.Write(Description);
+				writer.Write(Tags);
+				writer.Write(Authors);
+				writer.Write(Version.Major);
+				writer.Write(Version.Minor);
+				writer.Write(Version.Revision);
+				writer.Write(_dependencies.Count);
+				foreach(var dep in _dependencies)
+				{
+					writer.Write(dep.ID);
+					writer.Write(dep.Version.Major);
+					writer.Write(dep.Version.Minor);
+					writer.Write(dep.Version.Revision);
+					writer.Write(dep.AllowNewer);
+				}
+				writer.Write(_resources.Count);
 
-                var data = doc.ToByteArray(stringTableMode != BsonStringTableMode.None);
-                if (compress)
-                    data = EasyCompressor.Compress(data);
-                writer.Write(Encoding.ASCII.GetBytes(MAGIC));
-                writer.Write(PACKAGE_VERSION);
-                writer.Write(compress);
-                writer.Write(data.Length);
-                writer.Write(data);
+				if (compress)
+				{
+					using (var compressStream = new DeflateStream(writer.BaseStream, CompressionMode.Compress, true))
+					{
+						foreach (var res in _resources)
+						{
+							RantResource.SerializeResource(res, new EasyWriter(compressStream, leaveOpen: true));
+						}
+						compressStream.Flush();
+					}	
+				}
+				else
+				{
+					foreach (var res in _resources)
+					{
+						RantResource.SerializeResource(res, writer);
+					}
+				}
+				writer.BaseStream.Flush();
             }
         }
 
@@ -312,46 +313,57 @@ namespace Rant.Resources
                 string magic = Encoding.ASCII.GetString(reader.ReadBytes(4));
                 if (magic != MAGIC)
                     throw new InvalidDataException(GetString("err-file-corrupt"));
-                var package = new RantPackage();
                 ushort version = reader.ReadUInt16();
-                if (version != PACKAGE_VERSION)
+                if (version != PACKAGE_FORMAT_VERSION)
                     throw new InvalidDataException(GetString("err-invalid-package-version", version));
                 bool compress = reader.ReadBoolean();
-                int size = reader.ReadInt32();
-                var data = reader.ReadBytes(size);
-                if (compress) data = EasyCompressor.Decompress(data);
-                var doc = BsonDocument.Read(data);
 
-                var info = doc["info"];
-                if (info == null)
-                    throw new InvalidDataException(GetString("err-missing-package-meta"));
+				var package = new RantPackage();
 
-                package.Title = info["title"];
-                package.ID = info["id"];
-                package.Version = RantPackageVersion.Parse(info["version"]);
-                package.Description = info["description"];
-                package.Authors = (string[])info["authors"];
-                package.Tags = (string[])info["tags"];
+				package.Title = reader.ReadString();
+				package.ID = reader.ReadString();
+				package.Description = reader.ReadString();
+				package.Tags = reader.ReadStringArray();
+				package.Authors = reader.ReadStringArray();
+				int vmaj = reader.ReadInt32();
+				int vmin = reader.ReadInt32();
+				int vrev = reader.ReadInt32();
+				package.Version = new RantPackageVersion(vmaj, vmin, vrev);
+				int depCount = reader.ReadInt32();
+				for(int i = 0; i < depCount; i++)
+				{
+					var depId = reader.ReadString();
+					int depVerMaj = reader.ReadInt32();
+					int depVerMin = reader.ReadInt32();
+					int depVerRev = reader.ReadInt32();
+					bool depAllowNewer = reader.ReadBoolean();
+					package.AddDependency(new RantPackageDependency(depId, new RantPackageVersion(depVerMaj, depVerMin, depVerRev))
+					{
+						AllowNewer = depAllowNewer
+					});
+				}
 
-                var deps = info["dependencies"];
-                if (deps != null && deps.IsArray)
-                {
-                    for (int i = 0; i < deps.Count; i++)
-                    {
-                        var dep = deps[i];
-                        var depId = dep["id"].Value;
-                        var depVersion = dep["version"].Value;
-                        bool depAllowNewer = (bool)dep["allow-newer"].Value;
-                        package.AddDependency(new RantPackageDependency(depId.ToString(), depVersion.ToString())
-                        {
-                            AllowNewer = depAllowNewer
-                        });
-                    }
-                }
-				
-                package._resources.AddRange(doc["resources"].Values.Select(RantResource.DeserializeResource).Where(res => res != null));
+				int resCount = reader.ReadInt32();
 
-                return package;
+				if (compress)
+				{
+					using (var decompressStream = new DeflateStream(reader.BaseStream, CompressionMode.Decompress, true))
+					{
+						for (int i = 0; i < resCount; i++)
+						{
+							package._resources.Add(RantResource.DeserializeResource(new EasyReader(decompressStream, true)));
+						}
+					}
+				}
+				else
+				{
+					for(int i = 0; i < resCount; i++)
+					{
+						package._resources.Add(RantResource.DeserializeResource(reader));
+					}
+				}
+
+				return package;
             }
         }
 

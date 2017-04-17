@@ -28,12 +28,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Rant.Core;
-using Rant.Core.IO.Bson;
+using Rant.Core.IO;
 using Rant.Core.Utilities;
 using Rant.Localization;
 using Rant.Resources;
 using Rant.Vocabulary.Querying;
 using Rant.Vocabulary.Utilities;
+using System.Collections;
 
 namespace Rant.Vocabulary
 {
@@ -327,110 +328,115 @@ namespace Rant.Vocabulary
 				: pool.ToList().PickEntry(sb.RNG, dictionary.EnableWeighting && this.EnableWeighting)?[index];
 		}
 
-		internal override void DeserializeData(BsonItem data)
+		internal override void SerializeData(EasyWriter writer)
 		{
-			// General data
-			Name = data["name"];
-			TermsPerEntry = data["termc"];
-			Language = data["lang"];
-
-			// Subtypes
-			var subs = data["subs"].Values;
-			int si = 0;
-			foreach (var subList in subs)
+			writer.Write(Name);
+			writer.Write(Language);
+			writer.Write(TermsPerEntry);
+			for(int i = 0; i < TermsPerEntry; i++)
 			{
-				foreach (var sub in subList.Values) AddSubtype(sub, si);
-				si++;
+				writer.Write(GetSubtypesForIndex(i).ToArray());
 			}
+			writer.Write(_hidden.ToArray());
 
-			// Hidden classes
-			foreach (var hiddenClass in data["hidden-classes"].Values) _hidden.Add(hiddenClass);
-
-			var entries = data["entries"];
-			int count = entries.Count;
-
-			// Entries
-			for (int i = 0; i < count; i++)
+			writer.Write(_entriesList.Count);
+			for(int i = 0; i < _entriesList.Count; i++)
 			{
-				var entryData = entries[i];
-
-				var termsObject = entryData["terms"];
-
-				var termArray = new RantDictionaryTerm[termsObject.Count];
-				int j = 0;
-				foreach (var termData in termsObject.Values)
+				var entry = _entriesList[i];
+				for(int j = 0; j < TermsPerEntry; j++)
 				{
-					var value = (string)termData["value"];
-					var pron = (string)termData["pron"];
-					var valueSplit = (int)(termData["value-split"] ?? -1);
-					var pronSplit = (int)(termData["pron-split"] ?? -1);
-					termArray[j++] = new RantDictionaryTerm(value, pron, valueSplit, pronSplit);
+					var term = entry[j];
+					writer.Write(term.Value);
+					writer.Write(term.Pronunciation);
+					writer.Write(term.ValueSplitIndex);
+					writer.Write(term.PronunciationSplitIndex);
+				}
+				writer.Write(entry.Weight);
+				writer.Write(entry.GetRequiredClasses().ToArray());
+				writer.Write(entry.GetOptionalClasses().ToArray());
+				var metaKeys = entry.GetMetadataKeys().ToArray();
+				writer.Write(metaKeys.Length);
+				for(int j = 0; j < metaKeys.Length; j++)
+				{
+					var metaObj = entry.GetMetadata(metaKeys[j]);
+					var metaArray = metaObj as IEnumerable;
+					writer.Write(metaArray != null);
+					writer.Write(metaKeys[i]);
+					if (metaArray != null)
+					{
+						writer.Write(metaArray.OfType<object>().Select(m => m.ToString()).ToArray());
+					}
+					else
+					{
+						writer.Write(metaObj.ToString());
+					}
+				}
+			}
+		}
+
+		internal override void DeserializeData(EasyReader reader)
+		{
+			this.Name = reader.ReadString();
+			this.Language = reader.ReadString();
+			this.TermsPerEntry = reader.ReadInt32();
+			for(int i = 0; i < TermsPerEntry; i++)
+			{
+				foreach(var subtype in reader.ReadStringArray())
+				{
+					AddSubtype(subtype, i);
+				}
+			}
+			_hidden.AddRange(reader.ReadStringArray());
+
+			int numEntries = reader.ReadInt32();
+
+			for(int i = 0; i < numEntries; i++)
+			{
+				var terms = new RantDictionaryTerm[TermsPerEntry];
+				for(int j = 0; j < TermsPerEntry; j++)
+				{
+					var value = reader.ReadString();
+					var pron = reader.ReadString();
+					int valueSplit = reader.ReadInt32();
+					int pronSplit = reader.ReadInt32();
+					terms[j] = new RantDictionaryTerm(value, pron, valueSplit, pronSplit);
+				}
+				float weight = reader.ReadSingle();
+				var entry = new RantDictionaryEntry(terms)
+				{
+					Weight = weight
+				};
+
+				foreach(var reqClass in reader.ReadStringArray())
+				{
+					entry.AddClass(reqClass, false);
 				}
 
-				var entryClasses = (string[])entryData["classes"];
-				var entry = new RantDictionaryEntry(termArray, entryClasses, entryData["weight"] ?? 1);
-				// Optional classes
-				foreach (var optionalClass in entryData["optional-classes"].Values)
-					entry.AddClass(optionalClass, true);
+				foreach (var optClass in reader.ReadStringArray())
+				{
+					entry.AddClass(optClass, true);
+				}
 
-				// Metadata
-				var meta = entryData["metadata"];
-				foreach (string metaKey in meta.Keys)
-					entry.SetMetadata(metaKey, meta[metaKey].Value);
+				int metaCount = reader.ReadInt32();
+
+				for(int j = 0; j < metaCount; j++)
+				{
+					bool isArray = reader.ReadBoolean();
+					var key = reader.ReadString();
+					if (isArray)
+					{
+						entry.SetMetadata(key, reader.ReadStringArray());
+					}
+					else
+					{
+						entry.SetMetadata(key, reader.ReadString());
+					}
+				}
 
 				AddEntry(entry);
 			}
 		}
-
-		internal override BsonItem SerializeData()
-		{
-			var data = new BsonItem
-			{
-				["name"] = Name,
-				["lang"] = Language,
-				["termc"] = TermsPerEntry
-			};
-
-			var subs = new BsonItem[TermsPerEntry];
-			for (int i = 0; i < TermsPerEntry; i++)
-				subs[i] = new BsonItem(GetSubtypesForIndex(i).ToArray());
-			data["subs"] = new BsonItem(subs);
-
-			data["hidden-classes"] = new BsonItem(_hidden.ToArray());
-
-			var entries = new BsonItem[_entriesList.Count];
-			for (int i = 0; i < _entriesList.Count; i++)
-			{
-				var entry = _entriesList[i];
-				var entryData = new BsonItem();
-				var termData = new BsonItem[TermsPerEntry];
-
-				for (int j = 0; j < TermsPerEntry; j++)
-				{
-					termData[j] = new BsonItem
-					{
-						["value"] = entry[j].Value,
-						["pron"] = entry[j].Pronunciation,
-						["value-split"] = entry[j].ValueSplitIndex,
-						["pron-split"] = entry[j].PronunciationSplitIndex
-					};
-				}
-				entryData["terms"] = new BsonItem(termData);
-
-				entryData["classes"] = new BsonItem(entry.GetRequiredClasses().ToArray());
-				entryData["optional-classes"] = new BsonItem(entry.GetOptionalClasses().ToArray());
-
-				var metaData = new BsonItem();
-				foreach (string metaKey in entry.GetMetadataKeys())
-					metaData[metaKey] = new BsonItem(entry.GetMetadata(metaKey));
-				entryData["metadata"] = metaData;
-				entries[i] = entryData;
-			}
-
-			data["entries"] = new BsonItem(entries);
-
-			return data;
-		}
+		
 
 		internal override void Load(RantEngine engine)
 		{

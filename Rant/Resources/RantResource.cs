@@ -27,8 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Rant.Core.IO.Bson;
 using Rant.Vocabulary;
+using Rant.Core.IO;
+using System.Text;
+using System.IO;
 
 namespace Rant.Resources
 {
@@ -53,34 +55,31 @@ namespace Rant.Resources
             _resourceIdRegistry[typeof(T)] = id;
         }
 
-        internal static RantResource DeserializeResource(BsonItem dataHeader)
+        internal static RantResource DeserializeResource(EasyReader reader)
         {
-            Type type;
-            BsonItem dataItem;
-            if (!_resourceTypeRegistry.TryGetValue(dataHeader["type"], out type) || (dataItem = dataHeader["data"]) == null)
-                return null;
+			var typeCode = Encoding.ASCII.GetString(reader.ReadBytes(4));
+
+			if (!_resourceTypeRegistry.TryGetValue(typeCode, out Type type))
+				throw new InvalidDataException($"Unrecognized resource type: '{typeCode}'");
 
             var resource = Activator.CreateInstance(type, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[0], null) as RantResource;
 
-            resource?.DeserializeData(dataItem);
+			resource?.DeserializeData(reader);
 
-            return resource;
+			return resource;
         }
 
-        internal static BsonItem SerializeResource(RantResource resource)
+        internal static void SerializeResource(RantResource resource, EasyWriter writer)
         {
-            string rstr;
-            if (!_resourceIdRegistry.TryGetValue(resource.GetType(), out rstr)) return null;
-            var res = new BsonItem
-            {
-                ["type"] = rstr,
-                ["data"] = resource.SerializeData()
-            };
-            return res;
+			if (!_resourceIdRegistry.TryGetValue(resource.GetType(), out string rstr))
+				throw new ArgumentException($"Resource type '{resource.GetType()}' is not registered.");
+
+			writer.WriteBytes(Encoding.ASCII.GetBytes(rstr));
+			resource.SerializeData(writer);
         }
 
-        internal abstract void DeserializeData(BsonItem data);
-        internal abstract BsonItem SerializeData();
+        internal abstract void DeserializeData(EasyReader reader);
+        internal abstract void SerializeData(EasyWriter writer);
         internal abstract void Load(RantEngine engine);
     }
 }

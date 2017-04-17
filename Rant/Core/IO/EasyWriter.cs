@@ -77,6 +77,11 @@ namespace Rant.Core.IO
             _leaveOpen = false;
         }
 
+		/// <summary>
+		/// The character encoding for the stream.
+		/// </summary>
+		public Encoding Encoding { get; set; } = Encoding.UTF8;
+
         /// <summary>
         /// The underlying stream for this instance.
         /// </summary>
@@ -281,7 +286,7 @@ namespace Rant.Core.IO
                 Write(-1);
                 return this;
             }
-            var bytes = Encoding.Unicode.GetBytes(value);
+            var bytes = Encoding.GetBytes(value);
             if (!nullTerminated)
                 Write(bytes.Length);
             BaseStream.Write(bytes, 0, bytes.Length);

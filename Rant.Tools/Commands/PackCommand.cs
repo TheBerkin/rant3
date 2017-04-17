@@ -30,7 +30,6 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-using Rant.Core.IO.Bson;
 using Rant.Resources;
 using Rant.Tools.Packer;
 using Rant.Vocabulary;
@@ -53,18 +52,7 @@ namespace Rant.Tools.Commands
             var pkg = new RantPackage();
             var paths = CmdLine.GetPaths();
             bool compress = !CmdLine.Flag("no-compress");
-            int stringTableMode = int.Parse(CmdLine.Property("string-table", "1"));
-
-            if (stringTableMode < 0 || stringTableMode > 2)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid string table mode.");
-                Console.ResetColor();
-                return;
-            }
-
-            var modeEnum = (BsonStringTableMode)stringTableMode;
-
+			
             Console.WriteLine("Packing...");
 
             string contentDir = Path.GetFullPath(paths.Length == 0 ? Environment.CurrentDirectory : paths[0]);
@@ -106,12 +94,11 @@ namespace Rant.Tools.Commands
             {
                 outputPath = Path.Combine(Directory.GetParent(contentDir).FullName, $"{pkg.ID}-{pkg.Version}.rantpkg");
             }
-
-            Console.WriteLine($"String table mode: {modeEnum}");
+			
             Console.WriteLine($"Compression: {(compress ? "yes" : "no")}");
 
             Console.WriteLine(compress ? "Compressing and saving..." : "Saving...");
-            pkg.Save(outputPath, compress, modeEnum);
+            pkg.Save(outputPath, compress);
 
             Console.WriteLine("\nPackage saved to " + outputPath.Replace('\\', '/'));
 

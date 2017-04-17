@@ -94,6 +94,11 @@ namespace Rant.Core.IO
             Endianness = defaultEndianness;
         }
 
+		/// <summary>
+		/// The character encoding for the stream.
+		/// </summary>
+		public Encoding Encoding { get; set; } = Encoding.UTF8;
+
         /// <summary>
         /// Gets or sets the endianness in which data is read by the stream.
         /// </summary>
@@ -446,7 +451,7 @@ namespace Rant.Core.IO
         {
             int bytes = ReadInt32();
             if (bytes < 0) return null;
-            return Encoding.Unicode.GetString(ReadBytes(bytes));
+            return Encoding.GetString(ReadBytes(bytes));
         }
 
         /// <summary>
@@ -462,7 +467,7 @@ namespace Rant.Core.IO
                 value = null;
                 return this;
             }
-            value = Encoding.Unicode.GetString(ReadBytes(bytes));
+            value = Encoding.GetString(ReadBytes(bytes));
             return this;
         }
 
