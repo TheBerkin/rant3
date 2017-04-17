@@ -1,7 +1,7 @@
 {
     [$[x]:[x:__gender;locked]]
     [chan:first-name;public;[$x]{<name-male>|<name-female>}]\s
-    [chan:middle-name;public;{[$x]{<name-male>|<name-female>}|(.05)[q:[case:title]<noun>-<verb.er-transitive-violent>[case:none]]}]\s
+    [chan:middle-name;public;{[$x]{<name-male>|<name-female>}|(.1)[quot:[case:title]<noun>-<verb.er-transitive-violent>[case:none]]}]\s
     [chan:last-name;public;<surname::!ln>{(30)|-<surname::!ln>}]
     [chan:age;private;
         {

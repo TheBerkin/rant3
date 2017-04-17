@@ -361,7 +361,7 @@ namespace Rant.Vocabulary
 					var metaObj = entry.GetMetadata(metaKeys[j]);
 					var metaArray = metaObj as IEnumerable;
 					writer.Write(metaArray != null);
-					writer.Write(metaKeys[i]);
+					writer.Write(metaKeys[j]);
 					if (metaArray != null)
 					{
 						writer.Write(metaArray.OfType<object>().Select(m => m.ToString()).ToArray());
