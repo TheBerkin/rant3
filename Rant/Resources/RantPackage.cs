@@ -36,6 +36,7 @@ using Rant.Core.IO.Compression;
 using Rant.Core.Utilities;
 
 using static Rant.Localization.Txtres;
+using Rant.Localization;
 
 namespace Rant.Resources
 {
@@ -61,7 +62,7 @@ namespace Rant.Resources
             get { return _title; }
             set
             {
-                if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException("Title cannot be empty.");
+                if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException(GetString("err-empty-pkg-title"));
                 _title = value;
             }
         }
@@ -74,7 +75,7 @@ namespace Rant.Resources
             get { return _id; }
             set
             {
-                if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException("ID cannot be empty.");
+                if (Util.IsNullOrWhiteSpace(value)) throw new ArgumentException(GetString("err-empty-pkg-id"));
                 _id = value;
             }
         }
