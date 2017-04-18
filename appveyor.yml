@@ -26,8 +26,6 @@ artifacts:
 - path: Rant\*.nupkg
   name: RantNuGet
   type: WebDeployPackage
-- path: bin\UnityBuild
-  name: Rant (Unity Build)
 deploy:
 - provider: NuGet
   api_key:
