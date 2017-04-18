@@ -1,0 +1,50 @@
+[rs:20;\n]
+{
+    [case:first]
+    {
+        # Variant 1
+        (20)        
+        [`[aeiou]+`i:
+            [r:{(4)2|3}][x:__name;deck]
+            {
+                {
+                    fas|fa|tac|pro|neo|fast|sp{eed|ede}|good|man|you|fan|tast|iso|lai|us|quik|lite|bri{ght|te}|up|king|mega|at|site|in|sum|bar|exo|smart|clev|levi|vox|
+                    tek|tech|com|cell|mob|tele|phon|fon|handy|serv|done|big|right|rite|two|three|four|five|real|tru|true|min|max|jack|re{ad|dd}y|gold|silver|ruby|mirror|
+                    glass|clear|easy
+                }|
+                {
+                    {g|b|r|f|l}{a|i|o|u|e}{[r:{1|2}]{b|d|z|r|l|n|t}|st|th|rt|rth}{|{o|a|i}}
+                }
+            }
+            [xdel:__name]
+        ;
+        {
+            (5)[match]
+            |
+            [capsinfer:[match]]
+            [r:[len:[match]]]{a|e|i|o|u}
+            [case:none]
+        }]
+
+        |
+
+        # Variant 2
+        <surname> & <surname>
+        
+    }
+    [case:title]
+    {(2)|\s
+        {
+            {(10)|{<noun>|<verb.nom>}\s}{Solutions|Innovations}|
+            Enterprises|
+            Corporation|
+            International|
+            Law{|\sFirm}|
+            Laboratories|
+            Research|
+            Group|
+            Studios|
+            {<noun.pl>|<verb.nom>}
+        }
+    }
+}

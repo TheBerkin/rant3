@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 
 using Rant.Core.Utilities;
 
@@ -6,37 +31,27 @@ namespace Rant.Core.Constructs
 {
     internal class Synchronizer
     {
-        private SyncType _type;
-        private int _index;
-        private int[] _state;
-        private bool _pinned;
         private readonly RNG _rng;
+        private bool _bounce;
+        private int[] _state;
 
         public Synchronizer(SyncType type, long seed)
         {
-            _type = type;
+            Type = type;
             _rng = new RNG(seed);
-            _index = 0;
+            Index = 0;
             _state = null;
-            _pinned = false;
+            Pinned = false;
         }
 
-        public bool Pinned
-        {
-            get { return _pinned; }
-            set { _pinned = value; }
-        }
-
-        public SyncType Type
-        {
-            get { return _type; }
-            set { _type = value; }
-        }
+        public bool Pinned { get; set; }
+        public SyncType Type { get; set; }
+        public int Index { get; set; }
 
         public void Reset()
         {
             _rng.Reset();
-            _index = 0;
+            Index = 0;
             if (_state == null) return;
             FillSlots();
         }
@@ -44,7 +59,7 @@ namespace Rant.Core.Constructs
         public void Reseed(string id)
         {
             _rng.Reset(id.Hash());
-            _index = 0;
+            Index = 0;
             if (_state == null) return;
             FillSlots();
         }
@@ -67,29 +82,69 @@ namespace Rant.Core.Constructs
 
         public int Step(bool force)
         {
-            if (_type == SyncType.Locked) return _state[0];
-            if (_index >= _state.Length)
+            if (Type == SyncType.Locked) return _state[0];
+            if (Index >= _state.Length)
             {
-                _index = 0;
-                if (_type == SyncType.Deck) ScrambleSlots();
+                switch (Type)
+                {
+                    case SyncType.Deck:
+                        ScrambleSlots();
+                        goto default;
+                    case SyncType.Ping:
+                    case SyncType.Pong:
+                        _bounce = !_bounce;
+                        Index = 1;
+                        break;
+                    default:
+                        Index = 0;
+                        break;
+                }
             }
-            if (_pinned && !force) return _state[_index];
+			// [xstep] will set force to true, allowing a pinned synchronizer to iterate
+            if (Pinned && !force) return _state[Index];
 
-            return _state[_index++];
+            switch (Type)
+            {
+                case SyncType.Ping:
+                case SyncType.Pong:
+                    return _bounce ? _state[_state.Length - 1 - Index++] : _state[Index++];
+	            case SyncType.NoRepeat:
+	            {
+		            Index = _state.Length > 1 ? (Index + _rng.Next(1, _state.Length)) % _state.Length : 0;
+		            return _state[Index];
+	            }
+                default:
+                    return _state[Index++];
+            }
         }
 
         private void FillSlots()
         {
-            if (Type != SyncType.Reverse)
+            switch (Type)
             {
-                for (int i = 0; i < _state.Length; _state[i] = i++) { }
+                case SyncType.Forward:
+                case SyncType.Ping:
+				case SyncType.NoRepeat:
+                    for (int i = 0; i < _state.Length; _state[i] = i++)
+                    {
+                    }
+	                if (Type == SyncType.NoRepeat) Index = _rng.Next(_state.Length);
+                    break;
+                case SyncType.Reverse:
+                case SyncType.Pong:
+                    for (int i = 0; i < _state.Length; _state[_state.Length - 1 - i] = i++)
+                    {
+                    }
+                    break;
+                case SyncType.Locked:
+                case SyncType.Deck:
+                case SyncType.Cdeck:
+                    for (int i = 0; i < _state.Length; _state[i] = i++)
+                    {
+                    }
+                    ScrambleSlots();
+                    break;
             }
-            else
-            {
-                for (int i = 0; i < _state.Length; _state[(_state.Length - 1) - i] = i++) { }
-            }
-
-            if (Type != SyncType.Ordered && Type != SyncType.Reverse) ScrambleSlots();
         }
 
         private void ScrambleSlots()

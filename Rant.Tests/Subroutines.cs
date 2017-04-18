@@ -65,5 +65,17 @@ namespace Rant.Tests
 		{
 			new RantEngine().Do(@"[$[_]:[$_]][$_]");
 		}
+
+		[Test]
+		public void Overloading()
+		{
+			Assert.AreEqual("12", new RantEngine().Do(@"[$[test:a;b]:1][$[test:a]:2][$test:1;2][$test:0]").Main);
+		}
+
+		[Test]
+		public void SubroutineVariableCollision()
+		{
+			new RantEngine().Do("[vl:a][ladd:a;1;2][$[a]:o]");
+		}
 	}
 }

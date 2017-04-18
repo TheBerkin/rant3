@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,29 +31,52 @@ using System.Reflection;
 namespace Rant.Core.Utilities
 {
     internal delegate TResult XFunc<out TResult>();
+
     internal delegate TResult XFunc<in A, out TResult>(A a);
+
     internal delegate TResult XFunc<in A, in B, out TResult>(A a, B b);
+
     internal delegate TResult XFunc<in A, in B, in C, out TResult>(A a, B b, C c);
+
     internal delegate TResult XFunc<in A, in B, in C, in D, out TResult>(A a, B b, C c, D d);
+
     internal delegate TResult XFunc<in A, in B, in C, in D, in E, out TResult>(A a, B b, C c, D d, E e);
+
     internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, out TResult>(A a, B b, C c, D d, E e, F f);
-    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(A a, B b, C c, D d, E e, F f, G g);
-    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h);
-    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, out TResult>(
+        A a, B b, C c, D d, E e, F f, G g);
+
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, out TResult>(
+        A a, B b, C c, D d, E e, F f, G g, H h);
+
+    internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(
+        A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
     internal delegate void XAction();
+
     internal delegate void XAction<in A>(A a);
+
     internal delegate void XAction<in A, in B>(A a, B b);
+
     internal delegate void XAction<in A, in B, in C>(A a, B b, C c);
+
     internal delegate void XAction<in A, in B, in C, in D>(A a, B b, C c, D d);
+
     internal delegate void XAction<in A, in B, in C, in D, in E>(A a, B b, C c, D d, E e);
+
     internal delegate void XAction<in A, in B, in C, in D, in E, in F>(A a, B b, C c, D d, E e, F f);
+
     internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G>(A a, B b, C c, D d, E e, F f, G g);
+
     internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H>(A a, B b, C c, D d, E e, F f, G g, H h);
-    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(A a, B b, C c, D d, E e, F f, G g, H h, I i);
+
+    internal delegate void XAction<in A, in B, in C, in D, in E, in F, in G, in H, in I>(
+        A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
     /// <summary>
-    /// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed arguments.
+    /// Allows creation of Rant function delegates from reflected methods that can be invoked using a series of boxed
+    /// arguments.
     /// </summary>
     internal abstract class Witchcraft
     {
@@ -43,13 +91,9 @@ namespace Rant.Core.Utilities
             foreach (var type in ass.GetTypes().Where(t => t.IsSubclassOf(typeof(Witchcraft)) && t.IsGenericTypeDefinition))
             {
                 if (type.IsSubclassOf(typeof(WitchcraftVoid)))
-                {
                     lstVoidTypes.Add(type);
-                }
                 else
-                {
                     lstFuncTypes.Add(type);
-                }
             }
 
             _funcTypes = lstFuncTypes.OrderBy(t => t.GetGenericArguments().Length).ToArray();
@@ -70,16 +114,11 @@ namespace Rant.Core.Utilities
             if (argTypes.Length == 0)
             {
                 if (isVoid)
-                {
                     return new WitchcraftNoParamsVoid(methodInfo);
-                }
-                else
-                {
-                    return new WitchcraftNoParams(methodInfo);
-                }
+                return new WitchcraftNoParams(methodInfo);
             }
 
-            Type type = isVoid
+            var type = isVoid
                 ? _voidTypes[argTypes.Length - 1].MakeGenericType(argTypes)
                 : _funcTypes[argTypes.Length - 1].MakeGenericType(argTypes);
 

@@ -1,0 +1,27 @@
+﻿@name 	verb
+
+# If the first @sub argument is a number, apply the subtypes to that specific term index.
+# Otherwise, apply them to the term matching the position of the directive.
+# Emit a warning if any term index has no subtypes assigned.
+@sub 0,	present, imperative
+@sub 1,	simple_past, ed
+@sub 2,	gerund, ing
+@sub 3,	third_person, third_person_present, s
+@sub 4,	agent, er
+@sub 5,	past_participle, pp
+@sub 6,	nominalization, nom
+@sub 7,	plural_nominalization, noms
+
+@id dig
+@dummy
+> dig, dug, digging, digs, digger, dug, dig, digs
+	- class movement, physical
+
+@using dig
+> [] + up, [] + up, [] + up, [] + up, [], [] + up, [], []
+
+@using dig
+> [] + through, [] + through, [] + through, [] + through, [], [] + through, [], []
+
+> piss + off, pissed + off, pissing + off, pisses + off, piss-offer, pissed-off, pissing-off, pissing-offs
+	- class phrasal_test

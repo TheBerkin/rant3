@@ -1,0 +1,22 @@
+﻿@name noun
+
+@sub singular, s
+@sub plural, p
+
+# This is a comment
+@class fruit, food
+> apple, apples
+	- class red
+	- shape round
+> orange, oranges
+	- class orange
+	- shape round
+> banana, bananas
+	- class yellow
+	- shape long, curved
+@endclass
+
+@class nsfw
+> butt, butts
+	- class unhidden_class
+@endclass

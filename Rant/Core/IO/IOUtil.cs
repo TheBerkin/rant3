@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -15,7 +40,8 @@ namespace Rant.Core.IO
 
         public static bool EndianConvertNeeded(Endian endianness)
         {
-            return (BitConverter.IsLittleEndian && endianness == Endian.Big) || (!BitConverter.IsLittleEndian && endianness == Endian.Little);
+            return BitConverter.IsLittleEndian && endianness == Endian.Big ||
+                   !BitConverter.IsLittleEndian && endianness == Endian.Little;
         }
 
         public static bool IsNumericType(Type t)
@@ -40,32 +66,28 @@ namespace Rant.Core.IO
         }
 
         /// <summary>
-        /// Converts the endianness of a series of bytes according to the endianness of the data. This process works both for system-side and data-side conversions.
+        /// Converts the endianness of a series of bytes according to the endianness of the data. This process works both for
+        /// system-side and data-side conversions.
         /// </summary>
         /// <param name="data">The data to convert.</param>
         /// <param name="dataEndianness">The endianness to convert to or from.</param>
         public static void ConvertEndian(byte[] data, Endian dataEndianness)
         {
             if (BitConverter.IsLittleEndian != (dataEndianness == Endian.Little))
-            {
                 Array.Reverse(data);
-            }
         }
 
         public static void ConvertStructEndians<TStruct>(ref TStruct o)
         {
             if (!typeof(TStruct).IsValueType)
-            {
                 throw new ArgumentException("TStruct must be a value type.");
-            }
             object boxed = o;
-            foreach (var field in typeof(TStruct).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+            foreach (var field in typeof(TStruct).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+            )
             {
-                Type ftype = field.FieldType;
-                if (!IOUtil.IsNumericType(ftype))
-                {
+                var ftype = field.FieldType;
+                if (!IsNumericType(ftype))
                     continue;
-                }
 
                 var attrs = field.GetCustomAttributes(true);
                 foreach (var attr in attrs)
@@ -77,16 +99,16 @@ namespace Rant.Core.IO
                         {
                             // Get the field size, allocate a pointer and a buffer for flipping bytes.
                             int length = Marshal.SizeOf(ftype);
-                            IntPtr vptr = Marshal.AllocHGlobal(length);
-                            byte[] vData = new byte[length];
+                            var vptr = Marshal.AllocHGlobal(length);
+                            var vData = new byte[length];
 
                             // Fetch the field value and store it.
-                            object value = field.GetValue(boxed);
+                            var value = field.GetValue(boxed);
 
                             // Transfer the field value to the pointer and copy it to the array.
                             Marshal.StructureToPtr(value, vptr, false);
                             Marshal.Copy(vptr, vData, 0, length);
-                            
+
                             // Reverse.
                             Array.Reverse(vData);
 

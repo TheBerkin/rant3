@@ -17,6 +17,7 @@ namespace Rant.Tests
 		}
 
 		[TestCase("2.2.1", "2.2.4", true)]
+		[TestCase("3.2.1", "2.1.4", false)]
 		[TestCase("0.2.3", "0.2.4", true)]
 		[TestCase("1.3.0", "0.5.4", false)]
 		public void VersionLessThan(string v1, string v2, bool expectedResult)

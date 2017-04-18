@@ -1,21 +1,47 @@
-﻿namespace Rant.Core.Utilities
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+namespace Rant.Core.Utilities
 {
     internal sealed class Limit
     {
-	    private readonly int _max;
-	    private int _value;
+        private long _value;
 
-	    public int Maximum => _max;
+        public Limit(long max)
+        {
+            Maximum = max;
+            _value = 0;
+        }
 
-	    public Limit(int max)
-	    {
-		    _max = max;
-		    _value = 0;
-	    }
+        public long Maximum { get; }
 
-	    public bool Accumulate(int value)
-	    {
-		    return _max > 0 && (_value += value) > _max;
-	    }
+		public long Value => _value;
+
+        public bool Accumulate(int value)
+        {
+            return (_value += value) > Maximum && Maximum > 0;
+        }
     }
 }

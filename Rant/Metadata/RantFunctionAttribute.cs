@@ -1,32 +1,54 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 
 namespace Rant.Metadata
 {
-	/// <summary>
-	/// Indicates to the Rant engine that a method should be registered as a Rant function.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Method)]
-	internal sealed class RantFunctionAttribute : Attribute
-	{
-		private readonly string[] _aliases;
+    /// <summary>
+    /// Indicates to the Rant engine that a method should be registered as a Rant function.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    internal sealed class RantFunctionAttribute : Attribute
+    {
+        public RantFunctionAttribute(params string[] aliases)
+        {
+            Aliases = aliases;
+        }
 
-		public RantFunctionAttribute(params string[] aliases)
-		{
-			_aliases = aliases;
-		}
+        public RantFunctionAttribute(string name)
+        {
+            Aliases = new[] { name };
+        }
 
-		public RantFunctionAttribute(string name)
-		{
-			_aliases = new[] { name };
-		}
+        public RantFunctionAttribute()
+        {
+            Aliases = new[] { string.Empty };
+        }
 
-		public RantFunctionAttribute()
-		{
-			_aliases = new[] { String.Empty };
-		}
-
-		public string Name => Aliases[0];
-
-		public string[] Aliases => _aliases;
-	}
+        public string Name => Aliases[0];
+        public string[] Aliases { get; }
+    }
 }

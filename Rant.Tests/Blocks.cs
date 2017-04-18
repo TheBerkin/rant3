@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -53,7 +55,11 @@ namespace Rant.Tests
 		[Test]
 		public void LockedSynchronizer()
 		{
-			Assert.IsTrue(rant.Do(@"[r:10k][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}").Main.Distinct().Count() == 1);
+			var output =
+				rant.Do(@"[r:1000][x:_;locked]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|1|2|3|4|5|6|7|8|9|0}", seed: 0)
+					.Main;
+			Console.WriteLine(output);
+			Assert.IsTrue(output.Distinct().Count() == 1);
 		}
 
 		[Test]
@@ -68,6 +74,39 @@ namespace Rant.Tests
 		{
 			Assert.AreEqual("dogs, dogs, dogs, and dogs",
 				rant.Do(@"[r:4][s:,;,;and]{dogs}").Main);
+		}
+
+		[Test]
+		public void FormattedOxfordSeries()
+		{
+			Assert.AreEqual("Dogs, dogs, dogs, dogs, and dogs. Cats are also pretty neat.",
+				rant.Do(@"[case:sentence][r:5][s:,;,;and]{dogs}. cats are also pretty neat.").Main);
+		}
+
+		[Test]
+		public void EnumerateItems()
+		{
+			Assert.AreEqual("ABCDEFGH", 
+				rant.Do(@"[repeach][x:_;forward]{A|B|C|D|E|F|G|H}").Main);
+		}
+
+		[TestCase("forward", 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+		[TestCase("reverse", 26, "ZYXWVUTSRQPONMLKJIHGFEDCBA")]
+		[TestCase("ping", 51, "ABCDEFGHIJKLMNOPQRSTUVWXYZYXWVUTSRQPONMLKJIHGFEDCBA")]
+		[TestCase("pong", 51, "ZYXWVUTSRQPONMLKJIHGFEDCBABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+		public void LinearSynchronizers(string mode, int reps, string expected)
+		{
+			Assert.AreEqual(expected, rant.Do($"[x:_;{mode}][r:{reps}]{{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z}}", seed: 0).Main);
+		}
+
+		[Test]
+		public void DeckSynchronizer()
+		{
+			var results = new HashSet<char>();
+			foreach (char c in rant.Do(@"[repeach][x:_;deck]{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|0|1|2|3|4|5|6|7|8|9}", seed: 0).Main)
+			{
+				if (!results.Add(c)) Assert.Fail("Duplicate item found.");
+			}
 		}
     }
 }

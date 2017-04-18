@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -11,9 +36,9 @@ namespace Rant.Core.IO
     /// </summary>
     internal class EasyReader : IDisposable
     {
-        private readonly Stream _stream;
+        private readonly byte[] _buffer = new byte[128];
+		private readonly StringBuilder _strBuffer = new StringBuilder(128);
         private readonly bool _leaveOpen;
-        private Endian _endian;
 
         /// <summary>
         /// Creates a new instance of the Rant.IO.EasyReader class from the specified stream.
@@ -22,8 +47,8 @@ namespace Rant.Core.IO
         /// <param name="defaultEndianness">The endianness of the data to be read.</param>
         public EasyReader(Stream stream, Endian defaultEndianness = Endian.Little)
         {
-            _stream = stream;
-            _endian = defaultEndianness;
+            BaseStream = stream;
+            Endianness = defaultEndianness;
             _leaveOpen = false;
         }
 
@@ -35,8 +60,8 @@ namespace Rant.Core.IO
         /// <param name="defaultEndianness">The endianness of the data to be read.</param>
         public EasyReader(Stream stream, bool leaveOpen, Endian defaultEndianness = Endian.Little)
         {
-            _stream = stream;
-            _endian = defaultEndianness;
+            BaseStream = stream;
+            Endianness = defaultEndianness;
             _leaveOpen = leaveOpen;
         }
 
@@ -47,11 +72,12 @@ namespace Rant.Core.IO
         /// <param name="mode">Speficies how the operating system should open the file.</param>
         /// <param name="startIndex">The index at which to start reading.</param>
         /// <param name="defaultEndianness">The endianness of the data to be read.</param>
-        public EasyReader(string path, FileMode mode = FileMode.Open, int startIndex = 0, Endian defaultEndianness = Endian.Little)
+        public EasyReader(string path, FileMode mode = FileMode.Open, int startIndex = 0,
+            Endian defaultEndianness = Endian.Little)
         {
-            _stream = File.Open(path, mode);
-            _stream.Position = startIndex;
-            _endian = defaultEndianness;
+            BaseStream = File.Open(path, mode);
+            BaseStream.Position = startIndex;
+            Endianness = defaultEndianness;
             _leaveOpen = false;
         }
 
@@ -63,40 +89,49 @@ namespace Rant.Core.IO
         /// <param name="defaultEndianness">The endianness of the data to be read.</param>
         public EasyReader(byte[] data, int startIndex = 0, Endian defaultEndianness = Endian.Little)
         {
-            _stream = new MemoryStream(data);
-            _stream.Position = startIndex;
-            _endian = defaultEndianness;
+            BaseStream = new MemoryStream(data);
+            BaseStream.Position = startIndex;
+            Endianness = defaultEndianness;
         }
+
+		/// <summary>
+		/// The character encoding for the stream.
+		/// </summary>
+		public Encoding Encoding { get; set; } = Encoding.UTF8;
 
         /// <summary>
         /// Gets or sets the endianness in which data is read by the stream.
         /// </summary>
-        public Endian Endianness
-        {
-            get { return _endian; }
-            set { _endian = value; }
-        }
+        public Endian Endianness { get; set; }
 
         /// <summary>
         /// Returns true if the stream has reached its end.
         /// </summary>
-        public bool EndOfStream => _stream.Position == _stream.Length;
+        public bool EndOfStream => BaseStream.Position == BaseStream.Length;
 
         /// <summary>
         /// The amount of bytes that are remaining to be read.
         /// </summary>
-        public long Remaining => _stream.Length - _stream.Position;
+        public long Remaining => BaseStream.Length - BaseStream.Position;
 
         /// <summary>
         /// The length of the stream in bytes.
         /// </summary>
-        public long Length => _stream.Length;
+        public long Length => BaseStream.Length;
 
         /// <summary>
         /// The underlying stream for this instance.
         /// </summary>
-        public Stream BaseStream => _stream;
+        public Stream BaseStream { get; }
 
+        /// <summary>
+        /// Releases all resources used by the current instance of the Rant.IO.EasyReader class.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            if (!_leaveOpen)
+                BaseStream.Dispose();
+        }
 
         /// <summary>
         /// Returns the next available byte but does not consume it.
@@ -104,8 +139,8 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public int Peek()
         {
-            int c = _stream.ReadByte();
-            _stream.Position--;
+            int c = BaseStream.ReadByte();
+            BaseStream.Position--;
             return c;
         }
 
@@ -115,7 +150,7 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public byte ReadByte()
         {
-            return (byte)_stream.ReadByte();
+            return (byte)BaseStream.ReadByte();
         }
 
         /// <summary>
@@ -125,7 +160,7 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public EasyReader ReadByte(out byte value)
         {
-            value = (byte)_stream.ReadByte();
+            value = (byte)BaseStream.ReadByte();
             return this;
         }
 
@@ -136,8 +171,8 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public byte[] ReadBytes(int count)
         {
-            byte[] buffer = new byte[count];
-            _stream.Read(buffer, 0, count);
+            var buffer = new byte[count];
+            BaseStream.Read(buffer, 0, count);
             return buffer;
         }
 
@@ -150,7 +185,7 @@ namespace Rant.Core.IO
         public EasyReader ReadBytes(int count, out byte[] value)
         {
             value = new byte[count];
-            _stream.Read(value, 0, count);
+            BaseStream.Read(value, 0, count);
             return this;
         }
 
@@ -160,8 +195,8 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public byte[] ReadAllBytes()
         {
-            byte[] buffer = new byte[_stream.Length];
-            _stream.Read(buffer, 0, buffer.Length);
+            var buffer = new byte[BaseStream.Length];
+            BaseStream.Read(buffer, 0, buffer.Length);
             return buffer;
         }
 
@@ -171,8 +206,8 @@ namespace Rant.Core.IO
         /// <param name="value">The bytes from the stream.</param>
         public void ReadAllBytes(out byte[] value)
         {
-            value = new byte[_stream.Length];
-            _stream.Read(value, 0, value.Length);            
+            value = new byte[BaseStream.Length];
+            BaseStream.Read(value, 0, value.Length);
         }
 
         /// <summary>
@@ -181,9 +216,9 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public sbyte ReadSByte()
         {
-            IntermediateByte ib = new IntermediateByte();
-            ib.U = (byte)_stream.ReadByte();
-            return ib.S;            
+            var ib = new IntermediateByte();
+            ib.U = (byte)BaseStream.ReadByte();
+            return ib.S;
         }
 
         /// <summary>
@@ -193,19 +228,10 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public EasyReader ReadSByte(out sbyte value)
         {
-            IntermediateByte ib = new IntermediateByte();
-            ib.U = (byte)_stream.ReadByte();
+            var ib = new IntermediateByte();
+            ib.U = (byte)BaseStream.ReadByte();
             value = ib.S;
             return this;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct IntermediateByte
-        {
-            [FieldOffset(0)]
-            public byte U;
-            [FieldOffset(0)]
-            public sbyte S;
         }
 
         /// <summary>
@@ -216,7 +242,6 @@ namespace Rant.Core.IO
         {
             return BitConverter.ToChar(ReadAndFormat(2), 0);
         }
-
 
         /// <summary>
         /// Reads a Unicode character.
@@ -425,7 +450,8 @@ namespace Rant.Core.IO
         public string ReadString()
         {
             int bytes = ReadInt32();
-            return Encoding.Unicode.GetString(ReadBytes(bytes));
+            if (bytes < 0) return null;
+            return Encoding.GetString(ReadBytes(bytes));
         }
 
         /// <summary>
@@ -436,7 +462,12 @@ namespace Rant.Core.IO
         public EasyReader ReadString(out string value)
         {
             int bytes = ReadInt32();
-            value = Encoding.Unicode.GetString(ReadBytes(bytes));
+            if (bytes < 0)
+            {
+                value = null;
+                return this;
+            }
+            value = Encoding.GetString(ReadBytes(bytes));
             return this;
         }
 
@@ -448,6 +479,7 @@ namespace Rant.Core.IO
         public string ReadString(Encoding encoding)
         {
             int bytes = ReadInt32();
+            if (bytes < 0) return null;
             return encoding.GetString(ReadBytes(bytes));
         }
 
@@ -460,6 +492,11 @@ namespace Rant.Core.IO
         public EasyReader ReadString(Encoding encoding, out string value)
         {
             int bytes = ReadInt32();
+            if (bytes < 0)
+            {
+                value = null;
+                return this;
+            }
             value = encoding.GetString(ReadBytes(bytes));
             return this;
         }
@@ -470,11 +507,10 @@ namespace Rant.Core.IO
         /// <returns>The string that was read.</returns>
         public string ReadCString()
         {
-            var bytes = new List<byte>();
-            byte c;
-            while((c = ReadByte()) != 0x00)
-                bytes.Add(c);
-            return Encoding.UTF8.GetString(bytes.ToArray());
+	        _strBuffer.Length = 0;
+	        int b;
+	        while ((b = BaseStream.ReadByte()) != 0) _strBuffer.Append((char)b);
+	        return _strBuffer.ToString();
         }
 
         /// <summary>
@@ -484,11 +520,9 @@ namespace Rant.Core.IO
         public string[] ReadStringArray()
         {
             int length = ReadInt32();
-            string[] array = new string[length];
-            for(int i = 0; i < length; i++)
-            {
+            var array = new string[length];
+            for (int i = 0; i < length; i++)
                 array[i] = ReadString();
-            }
             return array;
         }
 
@@ -500,11 +534,9 @@ namespace Rant.Core.IO
         public EasyReader ReadStringArray(out string[] value)
         {
             int length = ReadInt32();
-            string[] array = new string[length];
+            var array = new string[length];
             for (int i = 0; i < length; i++)
-            {
                 array[i] = ReadString();
-            }
             value = array;
             return this;
         }
@@ -517,11 +549,9 @@ namespace Rant.Core.IO
         public string[] ReadStringArray(Encoding encoding)
         {
             int length = ReadInt32();
-            string[] array = new string[length];
-            for(int i = 0; i < length; i++)
-            {
+            var array = new string[length];
+            for (int i = 0; i < length; i++)
                 array[i] = ReadString(encoding);
-            }
             return array;
         }
 
@@ -534,11 +564,9 @@ namespace Rant.Core.IO
         public EasyReader ReadStringArray(Encoding encoding, out string[] value)
         {
             int length = ReadInt32();
-            string[] array = new string[length];
+            var array = new string[length];
             for (int i = 0; i < length; i++)
-            {
                 array[i] = ReadString(encoding);
-            }
             value = array;
             return this;
         }
@@ -552,12 +580,10 @@ namespace Rant.Core.IO
         public T[] ReadArray<T>(bool use64bit = false) where T : struct
         {
             bool isNumeric = IOUtil.IsNumericType(typeof(T));
-            long count = use64bit ? ReadInt64() : ReadInt32();            
-            T[] array = new T[count];
-            for(int i = 0; i < count; i++)
-            {
+            long count = use64bit ? ReadInt64() : ReadInt32();
+            var array = new T[count];
+            for (int i = 0; i < count; i++)
                 array[i] = ReadStruct<T>(isNumeric);
-            }
             return array;
         }
 
@@ -572,11 +598,9 @@ namespace Rant.Core.IO
         {
             bool isNumeric = IOUtil.IsNumericType(typeof(T));
             long count = use64bit ? ReadInt64() : ReadInt32();
-            T[] array = new T[count];
+            var array = new T[count];
             for (int i = 0; i < count; i++)
-            {
                 array[i] = ReadStruct<T>(isNumeric);
-            }
             value = array;
             return this;
         }
@@ -590,11 +614,9 @@ namespace Rant.Core.IO
         public T[] ReadArray<T>(int length) where T : struct
         {
             bool isNumeric = IOUtil.IsNumericType(typeof(T));
-            T[] array = new T[length];
+            var array = new T[length];
             for (int i = 0; i < length; i++)
-            {
                 array[i] = ReadStruct<T>(isNumeric);
-            }            
             return array;
         }
 
@@ -608,11 +630,9 @@ namespace Rant.Core.IO
         public EasyReader ReadArray<T>(int length, out T[] value) where T : struct
         {
             bool isNumeric = IOUtil.IsNumericType(typeof(T));
-            T[] array = new T[length];
+            var array = new T[length];
             for (int i = 0; i < length; i++)
-            {
                 array[i] = ReadStruct<T>(isNumeric);
-            }
             value = array;
             return this;
         }
@@ -623,23 +643,19 @@ namespace Rant.Core.IO
         /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
         /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <returns></returns>
-        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>() 
+        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>()
             where TKey : IConvertible
             where TValue : IConvertible
         {
             var ktype = typeof(TKey);
-            bool kIsString = ktype == typeof(String);
+            bool kIsString = ktype == typeof(string);
             var vtype = typeof(TValue);
-            bool vIsString = vtype == typeof(String);
+            bool vIsString = vtype == typeof(string);
 
             if (!ktype.IsValueType && !kIsString)
-            {
                 throw new ArgumentException("TKey must be either a value type or System.String.");
-            }
-            else if (!vtype.IsValueType && !vIsString)
-            {
+            if (!vtype.IsValueType && !vIsString)
                 throw new ArgumentException("TValue must be either a value type or System.String.");
-            }
 
             bool isKNumeric = IOUtil.IsNumericType(typeof(TKey));
             bool isVNumeric = IOUtil.IsNumericType(typeof(TValue));
@@ -647,25 +663,17 @@ namespace Rant.Core.IO
             var dict = new Dictionary<TKey, TValue>(count);
             TKey key;
             TValue value;
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (kIsString)
-                {
-                    key = (TKey)((object)ReadString());
-                }
+                    key = (TKey)(object)ReadString();
                 else
-                {
                     key = ReadStruct<TKey>(isKNumeric);
-                }
-                
+
                 if (vIsString)
-                {
-                    value = (TValue)((object)ReadString());
-                }
+                    value = (TValue)(object)ReadString();
                 else
-                {
                     value = ReadStruct<TValue>(isVNumeric);
-                }
 
                 dict.Add(key, value);
             }
@@ -679,7 +687,7 @@ namespace Rant.Core.IO
         /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="value">The dictionary that was read.</param>
         /// <returns></returns>
-        public EasyReader ReadDictionary<TKey, TValue>(out Dictionary<TKey, TValue> value) 
+        public EasyReader ReadDictionary<TKey, TValue>(out Dictionary<TKey, TValue> value)
             where TKey : IConvertible
             where TValue : IConvertible
         {
@@ -695,11 +703,9 @@ namespace Rant.Core.IO
         public TEnum ReadEnum<TEnum>() where TEnum : struct, IConvertible
         {
             if (!typeof(TEnum).IsEnum)
-            {
                 throw new ArgumentException("T must be an enumerated type.");
-            }
             byte size = (byte)Marshal.SizeOf(Enum.GetUnderlyingType(typeof(TEnum)));
-            byte[] data = ReadAndFormat(size);
+            var data = ReadAndFormat(size);
             Array.Resize(ref data, 8);
             return (TEnum)Enum.ToObject(typeof(TEnum), BitConverter.ToInt64(data, 0));
         }
@@ -725,20 +731,16 @@ namespace Rant.Core.IO
         public TStruct ReadStruct<TStruct>(bool convertEndian = true)
         {
             if (!typeof(TStruct).IsValueType)
-            {
                 throw new ArgumentException("TStruct must be a value type.");
-            }
             int size = Marshal.SizeOf(typeof(TStruct));
             bool numeric = IOUtil.IsNumericType(typeof(TStruct));
-            byte[] data = numeric ? ReadAndFormat(size) : ReadBytes(size);
-            IntPtr ptr = Marshal.AllocHGlobal(size);
+            var data = numeric ? ReadAndFormat(size) : ReadBytes(size);
+            var ptr = Marshal.AllocHGlobal(size);
             Marshal.Copy(data, 0, ptr, size);
-            TStruct i = (TStruct)Marshal.PtrToStructure(ptr, typeof(TStruct));
+            var i = (TStruct)Marshal.PtrToStructure(ptr, typeof(TStruct));
 
             if (convertEndian)
-            {
-                IOUtil.ConvertStructEndians<TStruct>(ref i);
-            }
+                IOUtil.ConvertStructEndians(ref i);
 
             Marshal.FreeHGlobal(ptr);
             return i;
@@ -748,7 +750,10 @@ namespace Rant.Core.IO
         /// Reads a struct of the specified type.
         /// </summary>
         /// <typeparam name="TStruct">The struct to read.</typeparam>
-        /// <param name="convertEndian">Specifies if struct members marked with the [Endianness(Endian)] attribute should have their endianness converted as necessary.</param>
+        /// <param name="convertEndian">
+        /// Specifies if struct members marked with the [Endianness(Endian)] attribute should have
+        /// their endianness converted as necessary.
+        /// </param>
         /// <param name="value">The struct that was read.</param>
         /// <returns></returns>
         public EasyReader ReadStruct<TStruct>(out TStruct value, bool convertEndian = true)
@@ -768,9 +773,7 @@ namespace Rant.Core.IO
             T? value = null;
             bool hasValue = ReadBoolean();
             if (hasValue)
-            {
                 value = ReadStruct<T>();
-            }
             return value;
         }
 
@@ -785,9 +788,7 @@ namespace Rant.Core.IO
             value = null;
             bool hasValue = ReadBoolean();
             if (hasValue)
-            {
                 value = ReadStruct<T>();
-            }
             return this;
         }
 
@@ -798,8 +799,8 @@ namespace Rant.Core.IO
         /// <returns></returns>
         public BitField ReadBitField(int sizeInBytes)
         {
-            BitField bf = new BitField(new byte[sizeInBytes]);
-            _stream.Read(bf._field, 0, sizeInBytes);
+            var bf = new BitField(new byte[sizeInBytes]);
+            BaseStream.Read(bf._field, 0, sizeInBytes);
             return bf;
         }
 
@@ -812,25 +813,19 @@ namespace Rant.Core.IO
         public EasyReader ReadBitField(int sizeInBytes, out BitField value)
         {
             value = new BitField(new byte[sizeInBytes]);
-            _stream.Read(value._field, 0, sizeInBytes);
+            BaseStream.Read(value._field, 0, sizeInBytes);
             return this;
         }
 
-        private readonly byte[] _buffer = new byte[128];
-
         private byte[] ReadAndFormat(int count)
         {
-            if (BitConverter.IsLittleEndian != (_endian == Endian.Little))
+            if (BitConverter.IsLittleEndian != (Endianness == Endian.Little))
             {
                 for (int i = 0; i < count; i++)
-                {
-                    _stream.Read(_buffer, count - i - 1, 1);
-                }
+                    BaseStream.Read(_buffer, count - i - 1, 1);
             }
             else
-            {
-                _stream.Read(_buffer, 0, count);
-            }
+                BaseStream.Read(_buffer, 0, count);
 
             return _buffer;
         }
@@ -840,18 +835,17 @@ namespace Rant.Core.IO
         /// </summary>
         public void Close()
         {
-            _stream.Close();
+            BaseStream.Close();
         }
 
-        /// <summary>
-        /// Releases all resources used by the current instance of the Rant.IO.EasyReader class.
-        /// </summary>
-        void IDisposable.Dispose()
+        [StructLayout(LayoutKind.Explicit)]
+        private struct IntermediateByte
         {
-            if (!_leaveOpen)
-            {
-                _stream.Dispose();
-            }
+            [FieldOffset(0)]
+            public byte U;
+
+            [FieldOffset(0)]
+            public readonly sbyte S;
         }
     }
 }

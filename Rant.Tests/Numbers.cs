@@ -24,7 +24,7 @@ namespace Rant.Tests
 		public void Verbal()
         {
             Assert.AreEqual("one, two, three, four, five, six, seven, eight, nine, ten", 
-                rant.Do(@"[r:10][s:,\s][numfmt:verbal-en]{[rn]}").Main);
+                rant.Do(@"[r:10][s:,\s][numfmt:verbal]{[rn]}").Main);
         }
 
         [Test]

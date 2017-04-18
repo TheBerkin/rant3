@@ -50,10 +50,6 @@
       <HintPath>..\packages\NUnitTestAdapter.1.2\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnmanagedExports.1.2.7\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -67,11 +63,12 @@
     <Compile Include="Capitalization.cs" />
     <Compile Include="Channels.cs" />
     <Compile Include="Compiler\Invalid.cs" />
+    <Compile Include="Compiler\Serialization.cs" />
     <Compile Include="Compiler\Valid.cs" />
     <Compile Include="Flags.cs" />
-    <Compile Include="Misc\Bson.cs" />
-    <Compile Include="Modules.cs" />
+    <Compile Include="Packages.cs" />
     <Compile Include="PackageVersions.cs" />
+    <Compile Include="Parsing.cs" />
     <Compile Include="PatternArgs.cs" />
     <Compile Include="Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,15 +76,31 @@
     <Compile Include="Blocks.cs" />
     <Compile Include="Replacers.cs" />
     <Compile Include="Serial.cs" />
+    <Compile Include="StringLocalization.cs" />
+    <Compile Include="StringOps.cs" />
     <Compile Include="Subroutines.cs" />
+    <Compile Include="Tables.cs" />
     <Compile Include="Targets.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="Misc\Utilities.cs" />
+    <Compile Include="Variables.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexTestFile.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Tables\emoji.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tables\nsfw.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tables\verbs.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tables\nouns.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestFile.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -102,7 +115,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

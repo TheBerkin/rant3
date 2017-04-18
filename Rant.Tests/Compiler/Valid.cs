@@ -10,7 +10,7 @@ namespace Rant.Tests.Compiler
 		[Test]
 		public void Plaintext()
 		{
-			RantPattern.FromString(@"just some text");
+			RantProgram.CompileString(@"just some text");
 		}
 
 		[TestCase(@"{}")]
@@ -21,13 +21,13 @@ namespace Rant.Tests.Compiler
 		[TestCase(@"{Item 1|Item 2|Item 3}")]
 		public void Blocks(string pattern)
 		{
-			RantPattern.FromString(pattern);
+			RantProgram.CompileString(pattern);
 		}
 
 		[Test]
 		public void SubroutineNoParams()
 		{
-			RantPattern.FromString(@"[$[test]:{A|B|C|D}]");
+			RantProgram.CompileString(@"[$[test]:{A|B|C|D}]");
 		}
 
 		[TestCase("arg1")]
@@ -38,34 +38,40 @@ namespace Rant.Tests.Compiler
 		[TestCase("@arg1;@arg2;@arg3")]
 		public void SubroutineParams(string args)
 		{
-			RantPattern.FromString($"[$[test:{args}]:{{A|B|C|D}}]");
+			RantProgram.CompileString($"[$[test:{args}]:{{A|B|C|D}}]");
 		}
 
-		[TestCase("<noun>")]
-		[TestCase("<noun.plural>")]
-		[TestCase("<noun-class>")]
-		[TestCase("<noun - class>")]
-		[TestCase("<noun-class1-class2>")]
-		[TestCase("<noun-class1-!class2>")]
-		[TestCase("<noun-!class-!class2>")]
-		[TestCase("<noun-class1|class2>")]
-		[TestCase("<noun-class1 | class2>")]
-		[TestCase("<noun-!class1|!class2>")]
-		[TestCase("<noun-class1|class2-class3|class4>")]
-		[TestCase("<noun-!class1|!class2-!class3|!class4>")]
-		[TestCase("<noun$-class.plural>")]
-		[TestCase("<noun$-class .plural>")]
-		[TestCase("<noun$-class>")]
-		[TestCase("<noun$>")]
-		[TestCase("<noun ? `regex`>")]
-		[TestCase("<noun ?! `regex`>")]
-		[TestCase("<noun ? `regex` ?! `regex`>")]
-		[TestCase("<noun::=a>")]
-		[TestCase("<noun :: =a>")]
-		[TestCase("<noun :: =a @b>")]
+		[TestCase(@"<noun>")]
+		[TestCase(@"< noun >")]
+		[TestCase(@"< noun.plural >")]
+		[TestCase(@"<noun.plural>")]
+		[TestCase(@"<noun-class>")]
+		[TestCase(@"<noun - class>")]
+		[TestCase(@"<noun-class1-class2>")]
+		[TestCase(@"<noun-class1-!class2>")]
+		[TestCase(@"<noun-!class-!class2>")]
+		[TestCase(@"<noun-class1|class2>")]
+		[TestCase(@"<noun-class1 | class2>")]
+		[TestCase(@"<noun-!class1|!class2>")]
+		[TestCase(@"<noun-class1|class2-class3|class4>")]
+		[TestCase(@"<noun-!class1|!class2-!class3|!class4>")]
+		[TestCase(@"<noun$-class.plural>")]
+		[TestCase(@"<noun$-class .plural>")]
+		[TestCase(@"<noun$-class>")]
+		[TestCase(@"<noun$>")]
+		[TestCase(@"<noun ? `regex`>")]
+		[TestCase(@"<noun ?! `regex`>")]
+		[TestCase(@"<noun ? `regex` ?! `regex`>")]
+		[TestCase(@"<noun::=a>")]
+		[TestCase(@"<noun :: =a>")]
+		[TestCase(@"<noun :: =a @b>")]
+		[TestCase(@"<verb[a duck]>")]
+		[TestCase(@"<verb[\a <adj> duck]>")]
+		[TestCase(@"<verb.ing[\a <adj> <noun>]>")]
+		[TestCase(@"<verb[the <noun> <verb.ing[the <noun>] -transitive>] -transitive>")]
 		public void Queries(string query)
 		{
-			RantPattern.FromString(query);
+			RantProgram.CompileString(query);
 		}
 	}
 }

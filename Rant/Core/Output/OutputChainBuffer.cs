@@ -1,33 +1,93 @@
-﻿using System;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Rant.Core.Formatting;
 using Rant.Core.IO;
 using Rant.Core.Utilities;
+using Rant.Formats;
 
 namespace Rant.Core.Output
 {
 	internal class OutputChainBuffer
 	{
-		private const int InitialCapacity = 256;
-		private static readonly HashSet<char> wordSepChars
-			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '"', '/', '-' });
-		private static readonly HashSet<char> sentenceTerminators
+		private const int InitialCapacity = 128;
+
+		private static readonly HashSet<char> _wordSepChars
+			= new HashSet<char>(new[] { ' ', '\r', '\n', '\t', '\f', '\v', '\'', '\"', '/', '-' });
+
+		private static readonly HashSet<char> _sentenceTerminators
 			= new HashSet<char>(new[] { '.', '?', '!' });
 
-		private readonly Sandbox sandbox;
 		protected readonly StringBuilder _buffer;
-		private readonly OutputChainBuffer _prevItem;
-		private OutputChainBuffer _nextItem;
-
-		private readonly bool _isTarget = false;
-		private readonly NumberFormatter _numberFormatter = new NumberFormatter();
+		private readonly Sandbox _sandbox;
 		private Capitalization _caps = Capitalization.None;
+		private CharConversion _charType = CharConversion.None;
 		// Determines if a print took place after capitalization was changed
-		private bool _printedSinceCapsChange = false;
 		// Size of the buffer before the last print
 		private int oldSize;
+
+		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev)
+		{
+			NumberFormatter = new NumberFormatter(sb);
+			Prev = prev;
+
+			if (prev != null)
+			{
+				if (prev.Next != null) prev.Next.Prev = this;
+				prev.Next = this;
+				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
+				NumberFormatter.BinaryFormat = prev.NumberFormatter.BinaryFormat;
+				NumberFormatter.BinaryFormatDigits = prev.NumberFormatter.BinaryFormatDigits;
+				NumberFormatter.Endianness = prev.NumberFormatter.Endianness;
+				NumberFormatter.NumberFormat = prev.NumberFormatter.NumberFormat;
+			}
+
+			IsTarget = true;
+			_buffer = new StringBuilder(InitialCapacity);
+			_sandbox = sb;
+		}
+
+		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin)
+		{
+			NumberFormatter = new NumberFormatter(sb);
+			Prev = prev;
+
+			if (prev != null)
+			{
+				prev.Next = this;
+				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
+			}
+
+			_buffer = targetOrigin._buffer;
+			_sandbox = sb;
+		}
 
 		public StringBuilder Buffer => _buffer;
 
@@ -36,58 +96,24 @@ namespace Rant.Core.Output
 			get { return _caps; }
 			set
 			{
-				_printedSinceCapsChange = false;
+				PrintedSinceCapsChange = false;
 				_caps = value;
 			}
 		}
 
-		public bool IsTarget => _isTarget;
-
-		protected bool PrintedSinceCapsChange => _printedSinceCapsChange;
-
-		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev)
+		public CharConversion Conversion
 		{
-			_prevItem = prev;
-
-			if (prev != null)
-			{
-				prev._nextItem = this;
-				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
-				_numberFormatter.BinaryFormat = prev.NumberFormatter.BinaryFormat;
-				_numberFormatter.BinaryFormatDigits = prev.NumberFormatter.BinaryFormatDigits;
-				_numberFormatter.Endianness = prev.NumberFormatter.Endianness;
-				_numberFormatter.NumberFormat = prev.NumberFormatter.NumberFormat;
-			}
-
-			_isTarget = true;
-			_buffer = new StringBuilder(InitialCapacity);
-			sandbox = sb;
+			get { return _charType; }
+			set { _charType = value; }
 		}
 
-		public OutputChainBuffer(Sandbox sb, OutputChainBuffer prev, OutputChainBuffer targetOrigin)
-		{
-			_prevItem = prev;
-
-			if (prev != null)
-			{
-				prev._nextItem = this;
-				_caps = prev is OutputChainArticleBuffer && prev.Caps == Capitalization.First ? Capitalization.None : prev._caps;
-			}
-
-			_buffer = targetOrigin._buffer;
-			sandbox = sb;
-		}
-
-		public NumberFormatter NumberFormatter => _numberFormatter;
-
-		public OutputChainBuffer Next => _nextItem;
-
-		public OutputChainBuffer Prev => _prevItem;
-
+		public bool IsTarget { get; } = false;
+		protected bool PrintedSinceCapsChange { get; private set; } = false;
+		public NumberFormatter NumberFormatter { get; }
+		public OutputChainBuffer Next { get; private set; }
+		public OutputChainBuffer Prev { get; private set; }
 		public char LastChar => _buffer.Length > 0 ? _buffer[_buffer.Length - 1] : '\0';
-
 		public char FirstChar => _buffer.Length > 0 ? _buffer[0] : '\0';
-
 		public int Length => _buffer.Length;
 
 		protected virtual void OnPrevBufferChange()
@@ -100,35 +126,40 @@ namespace Rant.Core.Output
 
 		public void Print(string value)
 		{
-			if (String.IsNullOrEmpty(value)) return;
+			if (string.IsNullOrEmpty(value)) return;
 			Format(ref value);
 			_buffer.Append(value);
-			_printedSinceCapsChange = true;
-			_prevItem?.OnNextBufferChange();
-			_nextItem?.OnPrevBufferChange();
+			PrintedSinceCapsChange = true;
+			Prev?.OnNextBufferChange();
+			Next?.OnPrevBufferChange();
 			UpdateSize();
 		}
 
 		public void Print(object value)
 		{
+			string str;
 			if (IOUtil.IsNumericType(value.GetType()))
 			{
-				_buffer.Append(_numberFormatter.FormatNumber(Convert.ToDouble(value)));
-				return;
+				double num = Convert.ToDouble(value);
+				str = NumberFormatter.FormatNumber(num);
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				_sandbox.SetPlural(num != 1.0);
 			}
-			var str = value.ToString();
+			else
+				str = value.ToString();
+
 			Format(ref str);
 			_buffer.Append(str);
-			_printedSinceCapsChange = true;
-			_prevItem?.OnNextBufferChange();
-			_nextItem?.OnPrevBufferChange();
+			PrintedSinceCapsChange = true;
+			Prev?.OnNextBufferChange();
+			Next?.OnPrevBufferChange();
 			UpdateSize();
 		}
 
 		private void UpdateSize()
 		{
-			if (sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
-				throw new InvalidOperationException($"Exceeded character limit ({sandbox.SizeLimit.Maximum})");
+			if (_sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
+				throw new InvalidOperationException($"Exceeded character limit ({_sandbox.SizeLimit.Maximum})");
 			oldSize = _buffer.Length;
 		}
 
@@ -139,7 +170,7 @@ namespace Rant.Core.Output
 #else
 			_buffer.Clear();
 #endif
-			sandbox.SizeLimit.Accumulate(-oldSize);
+			_sandbox.SizeLimit.Accumulate(-oldSize);
 			oldSize = 0;
 		}
 
@@ -149,80 +180,99 @@ namespace Rant.Core.Output
 		{
 			if (Util.IsNullOrWhiteSpace(value)) return;
 
+			switch (_charType)
+			{
+				case CharConversion.Fullwidth:
+				value = new string(value.Select(c => CharConverter.ToFullwidth(c)).ToArray());
+				break;
+				case CharConversion.Cursive:
+				{
+					var sb = new StringBuilder();
+					foreach (char c in value)
+					{
+						sb.Append(CharConverter.ToScript(c));
+					}
+					value = sb.ToString();
+					break;
+				}
+				case CharConversion.BoldCursive:
+				{
+					var sb = new StringBuilder();
+					foreach (char c in value)
+					{
+						sb.Append(CharConverter.ToBoldScript(c));
+					}
+					value = sb.ToString();
+					break;
+				}
+
+			}
+
 			switch (_caps)
 			{
 				case Capitalization.Upper:
-					value = value.ToUpperInvariant();
-					break;
+				value = value.ToUpperInvariant();
+				break;
 				case Capitalization.Lower:
-					value = value.ToLowerInvariant();
-					break;
+				value = value.ToLowerInvariant();
+				break;
 				case Capitalization.Word:
-					{
-						char lastChar = _buffer.Length > 0
-							? _buffer[_buffer.Length - 1]
-							: _prevItem?.LastChar ?? '\0';
-						if (Char.IsWhiteSpace(lastChar) || wordSepChars.Contains(lastChar) || lastChar == '\0')
-						{
-							CapitalizeFirstLetter(ref value);
-						}
-					}
-					break;
+				{
+					char lastChar = _buffer.Length > 0
+						? _buffer[_buffer.Length - 1]
+						: Prev?.LastChar ?? '\0';
+					if (char.IsWhiteSpace(lastChar) || _wordSepChars.Contains(lastChar) || lastChar == '\0')
+						CapitalizeFirstLetter(ref value);
+				}
+				break;
 				case Capitalization.Sentence:
+				{
+					var b = _buffer;
+
+					// Capitalize sentences in input value
+					CapitalizeSentences(ref value);
+
+					// If the buffer's empty, check previous buffer
+					if (_buffer.Length == 0)
 					{
-						var b = _buffer;
-
-						// Capitalize sentences in input value
-						CapitalizeSentences(ref value);
-
-						// If the buffer's empty, check previous buffer
-						if (_buffer.Length == 0)
+						// Check if we're at the start
+						if (Prev == null || Prev.Prev == null && Prev.Length == 0)
 						{
-							// Check if we're at the start
-							if (_prevItem == null || (_prevItem.Prev == null && _prevItem.Length == 0))
-							{
-								CapitalizeFirstLetter(ref value);
-								break;
-							}
-
-							// If there is a previous buffer, scan the end.
-							b = _prevItem._buffer;
-						}
-
-						// Scan buffer end to determine if capitalization is needed
-						for (int i = b.Length - 1; i >= 0; i--)
-						{
-							if (Char.IsLetterOrDigit(b[i])) break;
-							if (!sentenceTerminators.Contains(b[i])) continue;
 							CapitalizeFirstLetter(ref value);
 							break;
 						}
+						// If there is a previous buffer, scan the end.
+						b = Prev._buffer;
 					}
-					break;
-				case Capitalization.Title:
+					else if (Prev == null || Prev.Length == 0)
 					{
-						char lastChar = _buffer.Length > 0
-								? _buffer[_buffer.Length - 1]
-								: _prevItem?.LastChar ?? '\0';
-						bool boundary = Char.IsWhiteSpace(lastChar)
-							|| Char.IsSeparator(lastChar)
-							|| lastChar == '\0';
-
-						// This ensures that the first title word is always capitalized
-						if (!_printedSinceCapsChange)
+						for (int i = b.Length - 1; i >= 0; i--)
 						{
-							CapitalizeFirstLetter(ref value);
-							return;
+							if (char.IsLetterOrDigit(b[i])) break;
+							if (_sentenceTerminators.Contains(b[i])) break;
+							if (i == 0)
+								CapitalizeFirstLetter(ref value);
 						}
-						// If it's not capitalizable in a title, skip it.
-						if (sandbox.Format.Excludes(value) && boundary) return;
-
-						CapitalizeFirstLetter(ref value);
 					}
-					break;
+
+					// Scan buffer end to determine if capitalization is needed
+					for (int i = b.Length - 1; i >= 0; i--)
+					{
+						if (char.IsLetterOrDigit(b[i])) break;
+						if (!_sentenceTerminators.Contains(b[i])) continue;
+						CapitalizeFirstLetter(ref value);
+						break;
+					}
+				}
+				break;
+				case Capitalization.Title:
+				{
+					CapitalizeTitleString(ref value, _sandbox.Format, !PrintedSinceCapsChange);
+				}
+				break;
 				case Capitalization.First:
-					if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
-					break;
+				if (CapitalizeFirstLetter(ref value) && !(this is OutputChainArticleBuffer)) _caps = Capitalization.None;
+				break;
 			}
 		}
 
@@ -232,14 +282,14 @@ namespace Rant.Core.Output
 			bool capitalize = false;
 			foreach (char c in value)
 			{
-				if (capitalize && Char.IsLetter(c))
+				if (capitalize && char.IsLetter(c))
 				{
-					sb.Append(Char.ToUpperInvariant(c));
+					sb.Append(char.ToUpperInvariant(c));
 					capitalize = false;
 				}
 				else
 				{
-					if (sentenceTerminators.Contains(c)) capitalize = true;
+					if (_sentenceTerminators.Contains(c)) capitalize = true;
 					sb.Append(c);
 				}
 			}
@@ -250,15 +300,50 @@ namespace Rant.Core.Output
 		{
 			for (int i = 0; i < value.Length; i++)
 			{
-				if (!Char.IsLetter(value[i])) continue;
+				if (!char.IsLetter(value[i])) continue;
 				var sb = new StringBuilder();
 				sb.Append(value.Substring(0, i));
-				sb.Append(Char.ToUpperInvariant(value[i]));
+				sb.Append(char.ToUpperInvariant(value[i]));
 				sb.Append(value.Substring(i + 1));
 				value = sb.ToString();
 				return true;
 			}
 			return false;
+		}
+
+		protected static bool CapitalizeTitleString(ref string value, RantFormat format, bool capitalizeFirstLetter)
+		{
+			if (Util.IsNullOrWhiteSpace(value)) return false;
+			var wordBuffer = new StringBuilder(32);
+			var titleBuffer = new StringBuilder(value.Length);
+			bool first = true;
+			foreach (char c in value)
+			{
+				if (char.IsWhiteSpace(c))
+				{
+					if (wordBuffer.Length > 0)
+					{
+						if (first && capitalizeFirstLetter || !format.Excludes(wordBuffer.ToString()))
+							wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
+						first = false;
+						titleBuffer.Append(wordBuffer);
+						wordBuffer.Length = 0;
+					}
+					titleBuffer.Append(c);
+				}
+				else
+				{
+					wordBuffer.Append(c);
+				}
+			}
+			if (wordBuffer.Length > 0)
+			{
+				if (first && capitalizeFirstLetter || !format.Excludes(wordBuffer.ToString()))
+					wordBuffer[0] = char.ToUpperInvariant(wordBuffer[0]);
+				titleBuffer.Append(wordBuffer);
+			}
+			value = titleBuffer.ToString();
+			return true;
 		}
 	}
 }

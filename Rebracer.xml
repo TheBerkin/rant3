@@ -9,19 +9,22 @@
   <ToolsOptions>
     <ToolsOptionsCategory name="TextEditor">
       <ToolsOptionsSubCategory name="CSharp-Specific">
+        <PropertyValue name="AddImport_SuggestForTypesInNuGetPackages">0</PropertyValue>
+        <PropertyValue name="AddImport_SuggestForTypesInReferenceAssemblies">0</PropertyValue>
         <PropertyValue name="AutoComment">1</PropertyValue>
+        <PropertyValue name="AutoInsertAsteriskForNewLinesOfBlockComments">1</PropertyValue>
         <PropertyValue name="CSharpClosedFileDiagnostics">0</PropertyValue>
         <PropertyValue name="ClosedFileDiagnostics">0</PropertyValue>
         <PropertyValue name="DisplayLineSeparators">0</PropertyValue>
         <PropertyValue name="EnableHighlightRelatedKeywords">1</PropertyValue>
         <PropertyValue name="ExtractMethod_AllowMovingDeclaration">0</PropertyValue>
         <PropertyValue name="ExtractMethod_DoNotPutOutOrRefOnStruct">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnBlockCompletion">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnPaste">1</PropertyValue>
-        <PropertyValue name="Formatting_TriggerOnStatementCompletion">1</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnBlockCompletion">0</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnPaste">0</PropertyValue>
+        <PropertyValue name="Formatting_TriggerOnStatementCompletion">0</PropertyValue>
         <PropertyValue name="Indent_BlockContents">1</PropertyValue>
         <PropertyValue name="Indent_Braces">0</PropertyValue>
-        <PropertyValue name="Indent_CaseContents">1</PropertyValue>
+        <PropertyValue name="Indent_CaseContents">0</PropertyValue>
         <PropertyValue name="Indent_CaseLabels">1</PropertyValue>
         <PropertyValue name="Indent_FlushLabelsLeft">0</PropertyValue>
         <PropertyValue name="Indent_UnindentLabels">2</PropertyValue>
@@ -69,7 +72,7 @@
         <PropertyValue name="Style_PreferIntrinsicPredefinedTypeKeywordInMemberAccess">1</PropertyValue>
         <PropertyValue name="Style_QualifyMemberAccessWithThisOrMe">0</PropertyValue>
         <PropertyValue name="Style_UseVarWhenDeclaringLocals">1</PropertyValue>
-        <PropertyValue name="WarnOnBuildErrors">1</PropertyValue>
+        <PropertyValue name="WarnOnBuildErrors">0</PropertyValue>
         <PropertyValue name="Wrapping_IgnoreSpacesAroundBinaryOperators">0</PropertyValue>
         <PropertyValue name="Wrapping_IgnoreSpacesAroundVariableDeclaration">0</PropertyValue>
         <PropertyValue name="Wrapping_KeepStatementsOnSingleLine">1</PropertyValue>

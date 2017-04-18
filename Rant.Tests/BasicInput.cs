@@ -24,7 +24,25 @@ namespace Rant.Tests
             Assert.AreEqual("ABCD", rant.Do("A\n  B\nC  \n  D  ").Main);
         }
 
-        [Test]
+	    [Test]
+	    public void BlackspaceInMultilineBlock()
+	    {
+		    Assert.AreEqual("AAAA", rant.Do("\t#test\n\t[r:4]\n\t#test\n\t{\n\t\tA\n\t}").Main);
+	    }
+
+		[Test]
+	    public void BlackspaceInBlock()
+	    {
+		    Assert.AreEqual("A", rant.Do("{ A | (0) B}").Main);
+	    }
+
+	    [Test]
+	    public void BlackspaceInBlockEnd()
+	    {
+		    Assert.AreEqual("B", rant.Do("{ (0) A | B }").Main);
+	    }
+
+		[Test]
         public void Comments()
         {
             Assert.AreEqual("Hello world", rant.Do("#This is a comment.\nHello world # This is another comment.").Main);
@@ -41,6 +59,12 @@ namespace Rant.Tests
         {
             Assert.AreEqual("[Lorem ipsum]", rant.Do(@"\[Lorem ipsum\]").Main);
         }
+
+	    [Test]
+	    public void EscapedSpaces()
+	    {
+		    Assert.AreEqual("    ", rant.Do(@"\s\s\s\s").Main);
+	    }
 
 		[Test]
 	    public void UnicodeCharacters()
@@ -60,11 +84,16 @@ namespace Rant.Tests
             Assert.AreEqual("========================", rant.Do(@"\24,=").Main);
         }
 
-        [Test]
-        public void Whitespace()
+		[TestCase("   ", @"\s \s")]
+        [TestCase("        ", @"\s \s \4,s")]
+        [TestCase("        ", @"{\s\s\6,s}")]
+        [TestCase("        ", @"{\s \s \4,s}")]
+        [TestCase("        ", @"  { \s \s \4,s}   ")]
+        [TestCase("        ", @"  { \s \s \4,s  }   ")]
+        public void Whitespace(string expected, string pattern)
         {
-            Assert.AreEqual("        ", rant.Do(@"  { \s \s \4,s  }   ").Main);
-        }
+			Assert.AreEqual(expected, rant.Do(pattern).Main);
+		}
 
         [Test]
         public void SymbolFunctions()
@@ -87,5 +116,31 @@ namespace Rant.Tests
 		    Assert.AreEqual("a universe, an honor, a one, an apple, an X, a U, an 8",
 				rant.Do(@"\a universe, \a honor, \a one, \a apple, \a X, \a U, \a 8").Main);
 	    }
+
+	    [Test]
+	    public void VerbatimString()
+	    {
+		    Assert.AreEqual("This\nText\nIs\nOn\nMultiple\nLines",
+				rant.Do("\"This\nText\nIs\nOn\nMultiple\nLines\"").Main);
+	    }
+
+		[Test]
+	    public void EmptyVerbatimString()
+	    {
+		    Assert.AreEqual("", rant.Do("\"\"").Main);
+	    }
+
+		[Test]
+	    public void SurrogatePairs()
+	    {
+		    Assert.AreEqual("\U0001F602\U0001F4AF",
+				rant.Do(@"\U0001F602\U0001F4AF").Main);
+	    }
+
+		[Test]
+		public void BlackspaceAfterComment()
+		{
+			Assert.AreEqual("c", rant.Do("{\n\t(0) a | # b\n\tc\n}").Main);
+		}
     }
 }

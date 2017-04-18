@@ -1,0 +1,14 @@
+# Prints a "gradient" out of shaded box characters
+[rs:50;\n] # 50 rows
+{
+    [r:100] # 100 cols
+    {
+        {
+            # Print box with probability decreasing with inner repeater iteration
+            ([rr]){\u2591|(2)\u2592|(4)\u2593}|
+            # Print space with probability increasing with inner repeater iteration
+            ([mul:[re];1.5])\s
+        }
+    }
+}
+# Note: Delete the braces on lines 6 and 11 and see what happens!

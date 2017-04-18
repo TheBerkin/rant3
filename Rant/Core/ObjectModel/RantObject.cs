@@ -1,72 +1,75 @@
-﻿using System.Collections.Generic;
+﻿#region License
+
+// https://github.com/TheBerkin/Rant
+// 
+// Copyright (c) 2017 Nicholas Fleck
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in the
+// Software without restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Utilities;
 
 namespace Rant.Core.ObjectModel
 {
 	/// <summary>
 	/// Represents a Rant variable.
 	/// </summary>
-	public class RantObject
+	public sealed class RantObject
 	{
 		/// <summary>
-		/// No
+		/// Null
 		/// </summary>
-		public static readonly RantObject No = new RantObject();
+		public static readonly RantObject Null = new RantObject();
 
-		private double _number = 0;
-		private string _string = null;
-		private List<RantObject> _list = null;
+		/// <summary>
+		/// True
+		/// </summary>
+		public static readonly RantObject True = new RantObject(true);
+
+		/// <summary>
+		/// False
+		/// </summary>
+		public static readonly RantObject False = new RantObject(false);
+
 		private bool _boolean = false;
-		private RantPattern _pattern = null;
-		private RantAction _action = null;
+		private List<RantObject> _list = null;
+		private double _number = 0;
+		private RST _rst = null;
+		private string _string = null;
 
 		/// <summary>
-		/// The type of the object.
-		/// </summary>
-		public RantObjectType Type { get; internal set; } = RantObjectType.No;
-
-		/// <summary>
-		/// The value of the object.
-		/// </summary>
-		public object Value
-		{
-			get
-			{
-				switch (Type)
-				{
-					case RantObjectType.No:
-						return null;
-					case RantObjectType.Boolean:
-						return _boolean;
-					case RantObjectType.Number:
-						return _number;
-					case RantObjectType.Pattern:
-						return _pattern;
-					case RantObjectType.String:
-						return _string;
-					case RantObjectType.List:
-						return _list;
-					case RantObjectType.Action:
-						return _action;
-				}
-				return null;
-			}
-		}
-
-		/// <summary>
-		/// Creates a No object.
+		/// Creates a null object.
 		/// </summary>
 		public RantObject()
 		{
 		}
 
-        /// <summary>
-        /// Creates a new RantObject instance with a list value.
-        /// </summary>
-        /// <param name="list">The list to assign to the object.</param>
+		/// <summary>
+		/// Creates a new RantObject instance with a list value.
+		/// </summary>
+		/// <param name="list">The list to assign to the object.</param>
 		public RantObject(List<RantObject> list)
 		{
 			if (list == null) return;
@@ -74,20 +77,20 @@ namespace Rant.Core.ObjectModel
 			_list = list;
 		}
 
-        /// <summary>
-        /// Creates a new RantObject instance with a boolean value.
-        /// </summary>
-        /// <param name="boolean">The boolean value to assign to the object.</param>
+		/// <summary>
+		/// Creates a new RantObject instance with a boolean value.
+		/// </summary>
+		/// <param name="boolean">The boolean value to assign to the object.</param>
 		public RantObject(bool boolean)
 		{
 			Type = RantObjectType.Boolean;
 			_boolean = boolean;
 		}
 
-        /// <summary>
-        /// Creates a new RantObject instance with a string value.
-        /// </summary>
-        /// <param name="str">The string to assign to the object.</param>
+		/// <summary>
+		/// Creates a new RantObject instance with a string value.
+		/// </summary>
+		/// <param name="str">The string to assign to the object.</param>
 		public RantObject(string str)
 		{
 			if (str == null) return;
@@ -95,26 +98,26 @@ namespace Rant.Core.ObjectModel
 			_string = str;
 		}
 
-        /// <summary>
-        /// Creates a new RantObject instance with a decimal number value.
-        /// </summary>
-        /// <param name="num">The number to assign to the object.</param>
+		/// <summary>
+		/// Creates a new RantObject instance with a decimal number value.
+		/// </summary>
+		/// <param name="num">The number to assign to the object.</param>
 		public RantObject(double num)
 		{
 			Type = RantObjectType.Number;
 			_number = num;
 		}
 
-		internal RantObject(RantAction action)
+		internal RantObject(RST rst)
 		{
 			Type = RantObjectType.Action;
-			_action = action;
+			_rst = rst;
 		}
 
-        /// <summary>
-        /// Creates a new RantObject instance from the specified object.
-        /// </summary>
-        /// <param name="obj">The value to assign to the object.</param>
+		/// <summary>
+		/// Creates a new RantObject instance from the specified object.
+		/// </summary>
+		/// <param name="obj">The value to assign to the object.</param>
 		public RantObject(object obj)
 		{
 			if (obj == null) return;
@@ -144,27 +147,117 @@ namespace Rant.Core.ObjectModel
 				_list = ((object[])obj).Select(o => new RantObject(o)).ToList();
 				Type = RantObjectType.List;
 			}
-			else if (obj is RantPattern)
+			else if (obj is RST)
 			{
-				_pattern = (RantPattern)obj;
-			}
-			else if (obj is RantAction)
-			{
-				_action = (RantAction)obj;
+				_rst = (RST)obj;
 				Type = RantObjectType.Action;
 			}
 		}
 
-        public RantObject(RantObjectType type)
-        {
-            Type = type;
-        }
+		/// <summary>
+		/// Creates a new RantObject with the specified object type and a default value.
+		/// </summary>
+		/// <param name="type">The type of object to create.</param>
+		public RantObject(RantObjectType type)
+		{
+			Type = type;
+		}
 
-        /// <summary>
-        /// Converts the current object to a RantObject of the specified type and returns it.
-        /// </summary>
-        /// <param name="type">The object type to convert to.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// The type of the object.
+		/// </summary>
+		public RantObjectType Type { get; private set; } = RantObjectType.Null;
+
+		/// <summary>
+		/// The value of the object.
+		/// </summary>
+		public object Value
+		{
+			get
+			{
+				switch (Type)
+				{
+					case RantObjectType.Null:
+						return null;
+					case RantObjectType.Boolean:
+						return _boolean;
+					case RantObjectType.Number:
+						return _number;
+					case RantObjectType.String:
+						return _string;
+					case RantObjectType.List:
+						return _list;
+					case RantObjectType.Action:
+						return _rst;
+				}
+				return null;
+			}
+		}
+
+		internal object PrintableValue
+		{
+			get
+			{
+				switch (Type)
+				{
+					case RantObjectType.Null:
+						return null;
+					case RantObjectType.Boolean:
+						return _boolean;
+					case RantObjectType.Number:
+						return _number;
+					case RantObjectType.String:
+						return _string;
+					default:
+						return ToString();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the length of the object. For strings, this is the character count. For lists, this is the item count. For all other types, -1 is returned.
+		/// </summary>
+		public int Length
+		{
+			get
+			{
+				switch (Type)
+				{
+					case RantObjectType.List:
+						return _list.Count;
+					case RantObjectType.String:
+						return _string.Length;
+					default:
+						return -1;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the object at the specified index in the object.
+		/// Only works with list objects.
+		/// </summary>
+		/// <param name="index">The index of the item to access.</param>
+		/// <returns></returns>
+		public RantObject this[int index]
+		{
+			get
+			{
+				if (Type != RantObjectType.List) return null;
+				return index >= 0 && index < _list.Count ? _list[index] : null;
+			}
+			set
+			{
+				if (Type != RantObjectType.List) return;
+				if (index >= 0 && index < _list.Count) _list[index] = value;
+			}
+		}
+
+		/// <summary>
+		/// Converts the current object to a RantObject of the specified type and returns it.
+		/// </summary>
+		/// <param name="type">The object type to convert to.</param>
+		/// <returns></returns>
 		public RantObject ConvertTo(RantObjectType type)
 		{
 			if (Type == type) return Clone();
@@ -178,9 +271,7 @@ namespace Rant.Core.ObjectModel
 							case RantObjectType.Boolean:
 								return new RantObject(_boolean.ToString());
 							case RantObjectType.Number:
-								return new RantObject(_number.ToString());
-							case RantObjectType.Pattern:
-								return new RantObject(_pattern.Code);
+								return new RantObject(_number.ToString(CultureInfo.InvariantCulture));
 							case RantObjectType.List:
 								{
 									var sb = new StringBuilder();
@@ -210,8 +301,7 @@ namespace Rant.Core.ObjectModel
 								return new RantObject(_boolean ? 1 : 0);
 							case RantObjectType.String:
 								{
-									double num;
-									return double.TryParse(_string, out num) ? new RantObject(num) : No;
+									return Util.ParseDouble(_string, out double num) ? new RantObject(num) : Null;
 								}
 						}
 						break;
@@ -224,7 +314,7 @@ namespace Rant.Core.ObjectModel
 								return new RantObject(_number != 0);
 							case RantObjectType.String:
 								{
-									var bstr = _string.ToLower().Trim();
+									string bstr = _string.ToLower().Trim();
 									switch (bstr)
 									{
 										case "true":
@@ -243,13 +333,13 @@ namespace Rant.Core.ObjectModel
 					}
 			}
 
-			return No;
+			return Null;
 		}
 
-        /// <summary>
-        /// Returns another RantObject instance with the exact same value as the current instance.
-        /// </summary>
-        /// <returns></returns>
+		/// <summary>
+		/// Returns another RantObject instance with the exact same value as the current instance.
+		/// </summary>
+		/// <returns></returns>
 		public RantObject Clone()
 		{
 			return new RantObject
@@ -257,22 +347,46 @@ namespace Rant.Core.ObjectModel
 				_boolean = _boolean,
 				_list = _list?.ToList(), // Create a copy of the list
 				_number = _number,
-				_pattern = _pattern,
 				_string = _string,
-				_action = _action,
+				_rst = _rst,
 				Type = Type
 			};
 		}
 
-        /// <summary>
-        /// Returns the sum of two RantObjects.
-        /// </summary>
-        /// <param name="a">The first object.</param>
-        /// <param name="b">The second object.</param>
-        /// <returns></returns>
+		#region Operators
+
+		/// <summary>
+		/// Gets the boolean inverse of a RantObject.
+		/// </summary>
+		/// <param name="a">The object to invert from.</param>
+		/// <returns></returns>
+		public static RantObject operator !(RantObject a)
+		{
+			switch (a.Type)
+			{
+				case RantObjectType.Number:
+					{
+						switch (a.Type)
+						{
+							case RantObjectType.Boolean:
+								return new RantObject(!a._boolean);
+						}
+						break;
+					}
+			}
+
+			return Null;
+		}
+
+		/// <summary>
+		/// Returns the sum of two RantObjects.
+		/// </summary>
+		/// <param name="a">The first object.</param>
+		/// <param name="b">The second object.</param>
+		/// <returns></returns>
 		public static RantObject operator +(RantObject a, RantObject b)
 		{
-			switch (a.Type)	// TODO: Cover all cases
+			switch (a.Type) // TODO: Cover all cases
 			{
 				case RantObjectType.Number:
 					{
@@ -296,15 +410,15 @@ namespace Rant.Core.ObjectModel
 					}
 			}
 
-			return No;
+			return Null;
 		}
 
-        /// <summary>
-        /// Subtracts a RantObject from another.
-        /// </summary>
-        /// <param name="a">The object to subtract from.</param>
-        /// <param name="b">The object to subtract.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Subtracts a RantObject from another.
+		/// </summary>
+		/// <param name="a">The object to subtract from.</param>
+		/// <param name="b">The object to subtract.</param>
+		/// <returns></returns>
 		public static RantObject operator -(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -320,15 +434,15 @@ namespace Rant.Core.ObjectModel
 					}
 			}
 
-			return No;
+			return Null;
 		}
 
-        /// <summary>
-        /// Returns the product of two RantObjects.
-        /// </summary>
-        /// <param name="a">The first object.</param>
-        /// <param name="b">The second object.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Returns the product of two RantObjects.
+		/// </summary>
+		/// <param name="a">The first object.</param>
+		/// <param name="b">The second object.</param>
+		/// <returns></returns>
 		public static RantObject operator *(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -343,33 +457,31 @@ namespace Rant.Core.ObjectModel
 						break;
 					}
 				case RantObjectType.String:
-				{
-					switch (b.Type)
 					{
-						case RantObjectType.Number:
+						switch (b.Type)
 						{
-							var sb = new StringBuilder();
-							int c = (int)b._number;
-							for (int i = 0; i < c; i++)
-							{
-								sb.Append(a._string);
-							}
-							return new RantObject(sb.ToString());
+							case RantObjectType.Number:
+								{
+									var sb = new StringBuilder();
+									int c = (int)b._number;
+									for (int i = 0; i < c; i++)
+										sb.Append(a._string);
+									return new RantObject(sb.ToString());
+								}
 						}
+						break;
 					}
-					break;
-				}
 			}
 
-			return No;
+			return Null;
 		}
 
-        /// <summary>
-        /// Divides one RantObject by another.
-        /// </summary>
-        /// <param name="a">The object to divide.</param>
-        /// <param name="b">The object to divide by.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Divides one RantObject by another.
+		/// </summary>
+		/// <param name="a">The object to divide.</param>
+		/// <param name="b">The object to divide by.</param>
+		/// <returns></returns>
 		public static RantObject operator /(RantObject a, RantObject b)
 		{
 			switch (a.Type)
@@ -385,13 +497,39 @@ namespace Rant.Core.ObjectModel
 					}
 			}
 
-			return No;
+			return Null;
 		}
 
-        /// <summary>
-        /// Returns a string representation of the current RantObject.
-        /// </summary>
-        /// <returns></returns>
+		/// <summary>
+		/// Mods one RantObject by another.
+		/// </summary>
+		/// <param name="a">The object to mod.</param>
+		/// <param name="b">The object to mod by.</param>
+		/// <returns></returns>
+		public static RantObject operator %(RantObject a, RantObject b)
+		{
+			switch (a.Type)
+			{
+				case RantObjectType.Number:
+					{
+						switch (b.Type)
+						{
+							case RantObjectType.Number:
+								return new RantObject(a._number % b._number);
+						}
+						break;
+					}
+			}
+
+			return Null;
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Returns a string representation of the current RantObject.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			switch (Type)
@@ -400,28 +538,26 @@ namespace Rant.Core.ObjectModel
 					return _boolean ? "true" : "false";
 				case RantObjectType.String:
 					return _string;
-				case RantObjectType.No:
-					return "no";
-                case RantObjectType.Undefined:
-                    return "???";
+				case RantObjectType.Null:
+					return "null";
+				case RantObjectType.Undefined:
+					return "???";
 				case RantObjectType.Number:
-					return _number.ToString();
-				case RantObjectType.Pattern:
-					return $"$\"{_pattern.Code}\"";
+					return _number.ToString(CultureInfo.InvariantCulture);
 				case RantObjectType.List:
+				{
+					var sb = new StringBuilder();
+					bool first = true;
+					sb.Append("(");
+					foreach (var rantObject in _list)
 					{
-						var sb = new StringBuilder();
-						bool first = true;
-						sb.Append("(");
-						foreach (var rantObject in _list)
-						{
-							if (!first) sb.Append(", ");
-							first = false;
-							sb.Append(rantObject);
-						}
-						sb.Append(")");
-						return sb.ToString();
+						if (!first) sb.Append(", ");
+						first = false;
+						sb.Append(rantObject);
 					}
+					sb.Append(")");
+					return sb.ToString();
+				}
 			}
 			return Value.ToString();
 		}
@@ -429,16 +565,16 @@ namespace Rant.Core.ObjectModel
 		private static bool IsNumber(object value)
 		{
 			return value is sbyte
-					|| value is byte
-					|| value is short
-					|| value is ushort
-					|| value is int
-					|| value is uint
-					|| value is long
-					|| value is ulong
-					|| value is float
-					|| value is double
-					|| value is decimal;
+				   || value is byte
+				   || value is short
+				   || value is ushort
+				   || value is int
+				   || value is uint
+				   || value is long
+				   || value is ulong
+				   || value is float
+				   || value is double
+				   || value is decimal;
 		}
 	}
 }

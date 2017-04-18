@@ -1,0 +1,18 @@
+{
+	# Set verbalization mode to spell out numbers
+	[numfmt:verbal]
+	# Creates state variables
+	[vn:a;0][vn:b;1]
+	# Set repeater to cycle 50x on separate lines
+	[rs:50;\n]
+	# Capitalize the first letter of each line
+	[before:[case:first]]
+	{
+		# Print a
+		[v:a]
+		# t = a, a = b
+		[vcpy:a;t][vcpy:b;a]
+		# Add t to b
+		[vadd:b;[v:t]]
+	}
+}
