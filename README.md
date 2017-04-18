@@ -22,7 +22,7 @@ to automate repetitive writing tasks with a high degree of creative freedom.
 * Loops, conditional statements, and subroutines
 * Fully-functional object model
 * Import/Export resources easily with the .rantpkg format
-* Fully-compatible with Unity3D
+* Compatible with Unity 2017
 * *And much, much, much more...*
 
 ## Examples
