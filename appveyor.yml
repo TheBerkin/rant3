@@ -21,7 +21,7 @@ before_build:
 after_build:
 - ps: "$pkgVersion = $env:APPVEYOR_BUILD_VERSION\n\nif ($env:APPVEYOR_REPO_BRANCH -like \"dev*\")\n    \n{\n    $pkgVersion += \"-dev\"\n}\n\nnuget pack Rant/Rant.csproj -Version $pkgVersion -OutputDirectory Rant"
 artifacts:
-- path: bin\MainBuild
+- path: bin\Release
   name: Rant
 - path: Rant\*.nupkg
   name: RantNuGet
