@@ -1,0 +1,35 @@
+[rs:20;\n]
+{
+    [protect:
+        [case:title]
+        {(5)|{
+            [rs:[n:1;[protect:{(10)1|2|3}]];\s][x:__q;deck]
+            {ultra|hyper|mega|super|supreme|special|enhanced|uber|extreme|turbo}[xdel:__q]|
+            {(20)double|{triple|quad|penta|six|seven|octo}}-barreled|
+            [rs:[n:1;[protect:{(10)1|2|3}]];\s][x:__q;deck]
+            {incendiary|explosive|armor-piercing|classic|lever-action|automatic|semi-auto|guided|electrified|leather|supersonic}[xdel:__q]
+        }\s}
+
+        {
+            {[r:[n:1;2]]{\C}-|<surname>\s}[n:1;1000]|
+            {\C\d{|\d}{|\d}|(.3){\3,W|{\C&\C|\3,C}}|\4,W-[r:[n:1;3]]{\d}}|
+            (.1)
+            [qname:_wname;verb]
+            [qsub:_wname;er]
+            [qcf:_wname;{violent|destructive};transitive]
+            [q]|
+            (.1)
+            {grenade|rocket|slug|bullet|bomb|<noun-long>|flame}-{launcher|shooter|slinger|ejector|thrower}|
+            (.1)
+            machine-{pistol|gun|shotgun|<noun-weapon>}
+        }
+
+        {(5)|\s{
+            \D[r:[n:1;3]]{0}|
+            [numfmt:roman-upper;[n:1;{10|100|(.1)3000}]]
+        }}
+        {(7)|\s{
+            with {grenade launcher|bayonet|{heat|(.05)<noun>} vision|grip|flamethrower|suppressor|silencer}
+        }}
+    ]
+}
