@@ -3,11 +3,11 @@
     [case:first]
     {
         is{o|a}|
-        l{e|i}{v|t|m}{i|o|a}|
+        {l|r}{e|i|o}{v|t|m}{i|o|a}|
         ox{y|i|o}|
         n{e|i}x|
         ins{u|o}|
-        {z|s}{e|i}t{i|o|y|a}|
+        {z|s}{e|i}{t|d}{i|o|y|a}|
         ne{o|a}|
         ep{o|i|a}|
         {t|p}r{u|o|a}|
@@ -16,20 +16,36 @@
         r{i|a}{t|v|d|n|m}|
         sy{n|m}|
         pr{e|i}|
-        d{i|e}x|
-        se{n|m{|i}}
-        av{o|i|o{l|n|m|r}}
-        b{e|a|i}n
+        d{i{a|o|}|e}x|
+        se{n|m{|i}}|
+        av{o|i|o{l|n|m|r}}|
+        b{e|a|i}n|
+        fl{o|i|am}
     }
-    {c|t|x|th|z}
     {
-        or|ia|il|
-        {r|l}
+        {c|t|x|th|z}
         {
-            a|o|
-            {o|i|a}{x|x{y|i|a}{l|m|lt}}
+            or|ia|il|
+            {r|l}
+            {
+                a|o|
+                {o|i|a}{x|x{y|i|a}{l|m|lt}}
+            }|
+            i{u|a}m|tin|fi{b|m|l{|um}}|
+            {ai}d{e|{o|a}l}
         }|
-        i{u|a}m|tin|fi{b|m|l{|um}}
+        {(10)|{c|k}}l
+        {
+            {i|a}{s{t|{i|e}d}}|
+            ox{or|{i|y}l|{i|a}c}|
+            a{m|n}
+        }|
+        v
+        {
+            o{r|n}|ia|
+            {a|e|i}{x|z}
+        }
     }
-    {|{fin|la|pra|min|ya|se|ide|gen|ci{a|um}}}
+    {|{f{in|y}|la|pra|min|ya|se|i{d|n}e|gen|ci{a|um}}}
+    [reg]
 }
