@@ -1,4 +1,4 @@
-[rs:20;\n]
+[chan:name;public;
 {
     [case:first]
     {
@@ -48,4 +48,21 @@
     }
     {|{f{in|y}|la|pra|min|ya|se|i{d|n}e|gen|ci{a|um}}}
     [reg]
-}
+}]
+
+[chan:side-effects;private;
+    [r:[n:1;[n:1;[n:5;20]]]][s:,;,;and][x:__sideeffects;deck]
+    {
+        dizziness|nausea|heartburn|headache|{projectile\s|(10)}diarrhea|runny nose|fever|joint pain|muscle soreness|{high|low} blood pressure|blurry vision|
+        irritability|weakened immune system|dry mouth|vomiting|drowsiness|constipation|acne|infertility|{loss of|increased} appetite|weight gain|
+        weight loss|abormal growths on the <noun-body>|swelling|dark urine|frequent urination|confusion|nervousness|indigestion|liver problems|
+        rash|itching|hives|headache|insomnia|anxiety|restlessness|fatigue|chest pain|trouble swallowing|ringing of the ears|massive stools|
+        trouble urinating|{in|}frequent erections|bruising|skin discoloration|bloodshot eyes|hair loss|hoarse voice|swollen <noun-body>|
+        sensitive <noun-body>|muscle spasms|numbness|birth defects|uncontrollable gas|uncontrollable laughing|projectile vomiting|sensitivity to light|
+        {burning|tingling|pulsing} sensation in <noun-body>|abnormal hair growth|abnormal nail growth|{(10)|massively\s}{de|in}creased sex drive|
+        sweating|tooth loss|dry skin|flaky skin|breast growth|breast tenderness|muscle tenderness|{projectile\s|(10)}lactation|memory loss|mood swings|
+        dilated pupils|abnormal clotting|{inability|decreased ability} to clot|impaired judgement|trouble breathing|hallucinations|{hearing loss|sensitive hearing}|
+        drooling|internal bleeding|{thick|strong-smelling|cloudy|(.1)delicious} urine|broken heart
+    }
+    [xdel:__sideeffects]
+]
