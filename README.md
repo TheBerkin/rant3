@@ -87,6 +87,7 @@ If there is something you want fixed, added, or changed, feel free to submit an 
 * [Rant Homepage](http://berkin.me/rant)
 * [Rant Documentation](http://berkin.me/rantdocs)
 * [Rantionary - Rant Standard Dictionary](https://github.com/TheBerkin/Rantionary)
+* [Online Pattern Tester](http://lett.at/rantbox/)
 
 ## Build Status
 
