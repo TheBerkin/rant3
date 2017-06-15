@@ -75,7 +75,7 @@ Here is a breakdown of the types of content we are able to accept:
 * Stylistic changes to code format, phrasing, etc.
 * Unapproved new features -- Submit a feature request first!
 
-## Contributors
+## Maintainers
 
 These are the current maintainers of the project:
 
