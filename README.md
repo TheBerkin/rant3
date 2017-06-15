@@ -83,6 +83,8 @@ Rant is provided under [The MIT License](https://github.com/TheBerkin/Rant/blob/
 ## Improve Rant
 If there is something you want fixed, added, or changed, feel free to submit an issue/pull request; I will try to get back to you within a day. If you would like to translate Rant into your native language, simply write a .lang file for it [like this one here](https://github.com/TheBerkin/Rant/blob/dev-3.0/Rant/Localization/en-US.lang).
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for a full guide on how you can help.
+
 ## Rant Resources
 * [Rant Homepage](http://berkin.me/rant)
 * [Rant Documentation](http://berkin.me/rantdocs)
