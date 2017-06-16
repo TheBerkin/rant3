@@ -64,12 +64,16 @@ namespace Rant
 #if UNITY
 					if ((attrName = prop.GetCustomAttributes(typeof(RantArgAttribute), true).Cast<RantArgAttribute>().FirstOrDefault()) != null)
 #else
-                    if ((attrName = prop.GetCustomAttributes<RantArgAttribute>().FirstOrDefault()) != null)
+	                if ((attrName = prop.GetCustomAttributes<RantArgAttribute>().FirstOrDefault()) != null)
 #endif
 
-                        map[attrName.Name] = prop;
-                    else
-                        map[prop.Name] = prop;
+	                {
+		                map[attrName.Name] = prop;
+	                }
+	                else
+	                {
+		                map[prop.Name] = prop;
+	                }
                 }
             }
 
@@ -95,9 +99,8 @@ namespace Rant
             get
             {
                 if (Util.IsNullOrWhiteSpace(key)) return string.Empty;
-                string val;
-                return _args.TryGetValue(key, out val) ? val ?? string.Empty : string.Empty;
-            }
+				return _args.TryGetValue(key, out string val) ? val ?? string.Empty : string.Empty;
+			}
             set
             {
                 if (key == null || string.IsNullOrEmpty(value)) return;
@@ -113,7 +116,7 @@ namespace Rant
         /// <returns></returns>
         public static RantProgramArgs CreateFrom(object value)
         {
-            if (value is RantProgramArgs) return value as RantProgramArgs;
+            if (value is RantProgramArgs args) return args;
             return new RantProgramArgs(value);
         }
 

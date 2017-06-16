@@ -354,54 +354,7 @@ namespace Rant.Core.Framework
 			if (sb.Blocks.Peek().Iteration == 1) yield return action;
 		}
 
-		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
-		private static IEnumerator<RST> NotFirst(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")] RST action)
-		{
-			if (!sb.Blocks.Any()) yield break;
-			if (sb.Blocks.Peek().Iteration > 1) yield return action;
-		}
-
-		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is the last.")]
-		private static IEnumerator<RST> Last(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")] RST action)
-		{
-			if (!sb.Blocks.Any()) yield break;
-			var block = sb.Blocks.Peek();
-			if (block.Iteration == block.Repetitions) yield return action;
-		}
-
-		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
-		private static IEnumerator<RST> NotLast(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")] RST action)
-		{
-			if (!sb.Blocks.Any()) yield break;
-			var block = sb.Blocks.Peek();
-			if (block.Iteration < block.Repetitions) yield return action;
-		}
-
-		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
-		private static IEnumerator<RST> Middle(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")] RST action)
-		{
-			if (!sb.Blocks.Any()) yield break;
-			var block = sb.Blocks.Peek();
-			if (block.Iteration > 1 && block.Iteration < block.Repetitions) yield return action;
-		}
-
-		[RantFunction]
-		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
-		private static IEnumerator<RST> Ends(Sandbox sb,
-			[RantDescription("The pattern to run when the condition is met.")] RST action)
-		{
-			if (!sb.Blocks.Any()) yield break;
-			var block = sb.Blocks.Peek();
-			if (block.Iteration == 1 || block.Iteration == block.Repetitions) yield return action;
-		}
+		
 
 		#endregion
 
@@ -782,6 +735,55 @@ namespace Rant.Core.Framework
 		{
 			if (!sb.Blocks.Any()) yield break;
 			if (sb.Blocks.Peek().Iteration % 2 == 0) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not the first.")]
+		private static IEnumerator<RST> NotFirst(Sandbox sb,
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			if (sb.Blocks.Peek().Iteration > 1) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is the last.")]
+		private static IEnumerator<RST> Last(Sandbox sb,
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration == block.Repetitions) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is not the last.")]
+		private static IEnumerator<RST> NotLast(Sandbox sb,
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration < block.Repetitions) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is neither the first nor last.")]
+		private static IEnumerator<RST> Middle(Sandbox sb,
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration > 1 && block.Iteration < block.Repetitions) yield return action;
+		}
+
+		[RantFunction]
+		[RantDescription("Runs a pattern if the current block iteration is either the first or last.")]
+		private static IEnumerator<RST> Ends(Sandbox sb,
+			[RantDescription("The pattern to run when the condition is met.")] RST action)
+		{
+			if (!sb.Blocks.Any()) yield break;
+			var block = sb.Blocks.Peek();
+			if (block.Iteration == 1 || block.Iteration == block.Repetitions) yield return action;
 		}
 
 		#endregion
@@ -1178,13 +1180,22 @@ namespace Rant.Core.Framework
 			(q.Carrier ?? (q.Carrier = new Carrier())).AddComponent(componentType, componentId);
 		}
 
-		[RantFunction("qreset")]
+		[RantFunction("qdel")]
 		[RantDescription("Removes all stored data associated with the specified constructed query ID.")]
 		private static void QueryDelete(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
 			string id)
 		{
 			sb.QueryBuilder.ResetQuery(id);
+		}
+
+		[RantFunction("qexists")]
+		[RantDescription("Prints a boolean value indicating whether a constructed query with the specified ID exists.")]
+		private static void QueryExists(Sandbox sb,
+			[RantDescription("The ID string for the constructed query.")]
+			string id)
+		{
+			sb.Print(sb.QueryBuilder.QueryExists(id) ? TRUE : FALSE);
 		}
 
 		[RantFunction("qhas")]
@@ -1454,7 +1465,7 @@ namespace Rant.Core.Framework
 			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
 			list.Insert(index, new RantObject(value));
 		}
-
+	
 		[RantFunction("linsn")]
 		[RantDescription("Inserts a number at the specified index in a list.")]
 		private static void ListInsert(Sandbox sb, RantObject listObj, int index, double value)
@@ -1473,7 +1484,7 @@ namespace Rant.Core.Framework
 			list.Insert(index, new RantObject(value));
 		}
 
-		[RantFunction("linv")]
+		[RantFunction("linsv")]
 		[RantDescription("Inserts a variable at the specified index in a list.")]
 		private static void ListInsertVar(Sandbox sb, RantObject listObj, int index, RantObject value)
 		{

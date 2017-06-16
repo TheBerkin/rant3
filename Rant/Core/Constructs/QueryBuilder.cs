@@ -32,6 +32,8 @@ namespace Rant.Core.Constructs
 			_queries.Remove(name);
 		}
 
+		public bool QueryExists(string name) => _queries.ContainsKey(name);
+
 		public IEnumerator<RST> RunQuery(Sandbox sb, string id)
 		{
 			if (!_queries.TryGetValue(id, out Query q)) yield break;
