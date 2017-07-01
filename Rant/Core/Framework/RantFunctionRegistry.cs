@@ -68,7 +68,8 @@ namespace Rant.Core.Framework
 
 		[RantFunction]
 		[RantDescription("Opens a channel for writing and executes the specified pattern inside of it.")]
-		private static IEnumerator<RST> Chan(Sandbox sb, string channelName, ChannelVisibility visibility, RST pattern)
+		private static IEnumerator<RST> Chan(Sandbox sb,
+						     [RantDescription("The name of the channel.")] string channelName, ChannelVisibility visibility, RST pattern)
 		{
 			sb.Output.OpenChannel(channelName, visibility);
 			yield return pattern;
@@ -130,7 +131,10 @@ namespace Rant.Core.Framework
 		#region Conditions
 
 		[RantFunction("switch")]
-		private static IEnumerator<RST> Switch(Sandbox sb, string input, params RST[] casePairs)
+		[RantDescription("Tests input for equality against the case pairs.")]
+		private static IEnumerator<RST> Switch(Sandbox sb, 
+						       [RantDescription("The string for which to find.")] string input,
+						       [RantDescription("The case pairs against which to test the input.")] params RST[] casePairs)
 		{
 			if (casePairs.Length % 2 != 0)
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-switch-incomplete-pair");
@@ -848,13 +852,13 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Appends a string to the specified target's contents.")]
 		private static void Send(Sandbox sb,
-			[RantDescription("The name of the target to send to.")] string targetName,
+			[RantDescription("The name of the target to which to send.")] string targetName,
 			[RantDescription("The string to send to the target.")] string value) => sb.Output.PrintToTarget(targetName, value);
 
 		[RantFunction]
 		[RantDescription("Overwrites the specified target's contents with the provided value.")]
 		private static void SendOver(Sandbox sb,
-			[RantDescription("The name of the target to send to.")] string targetName,
+			[RantDescription("The name of the target to to which to send.")] string targetName,
 			[RantDescription("The string to send to the target.")] string value)
 		{
 			sb.Output.Do(chain => chain.ClearTarget(targetName));
@@ -2006,24 +2010,28 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("gt")]
+		[RantDescription("Prints a boolean value indicating whether the number value of 'a' is greater than the number value of 'b'.")]
 		private static void CompGreater(Sandbox sb, double a, double b)
 		{
 			sb.Print(a > b ? TRUE : FALSE);
 		}
 
 		[RantFunction("ge")]
+		[RantDescription("Prints a boolean value indicating whether the number value of 'a' is greater than or equal to the number value of 'b'.")]
 		private static void CompGreaterEqual(Sandbox sb, double a, double b)
 		{
 			sb.Print(a >= b ? TRUE : FALSE);
 		}
 
 		[RantFunction("lt")]
+		[RantDescription("Prints a boolean value indicating whether the number value of 'a' is lesser than the number value of 'b'.")]
 		private static void CompLess(Sandbox sb, double a, double b)
 		{
 			sb.Print(a < b ? TRUE : FALSE);
 		}
 
 		[RantFunction("le")]
+		[RantDescription("Prints a boolean value indicating whether the number value of 'a' is lesser than or equal to the number value of 'b'.")]
 		private static void CompLessEqual(Sandbox sb, double a, double b)
 		{
 			sb.Print(a <= b ? TRUE : FALSE);
@@ -2047,7 +2055,10 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("and")]
-		private static void And(Sandbox sb, bool a, params bool[] b)
+		[RantDescription("Prints a boolean value indicating whether both of the boolean values 'a' and 'b' are true.")]
+		private static void And(Sandbox sb, 
+					[RantDescription("Boolean value to compare.")] bool a,
+					[RantDescription("Boolean value to compare.")] params bool[] b)
 		{
 			bool result = a;
 			if (!a)
@@ -2079,6 +2090,7 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("or")]
+		[RantDescription("Prints a boolean value indicating whether the boolean 'a' is true or the boolean value 'b' is true.")]
 		private static void Or(Sandbox sb, bool a, params bool[] b)
 		{
 			if (a)
@@ -2096,6 +2108,7 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("xor")]
+		[RantDescription("Prints a boolean value only when the inputs are different from each other.")]
 		private static void Xor(Sandbox sb, bool a, params bool[] b)
 		{
 			bool x = a;
