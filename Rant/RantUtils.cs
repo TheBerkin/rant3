@@ -26,6 +26,7 @@
 using System.Collections.Generic;
 
 using Rant.Core.Framework;
+using Rant.Core.Utilities;
 using Rant.Metadata;
 
 namespace Rant
@@ -87,5 +88,22 @@ namespace Rant
         /// <returns></returns>
         public static IEnumerable<string> GetFunctionAliases(string functionName)
             => RantFunctionRegistry.GetAliases(functionName);
+
+	    internal static string GetClosestFunctionName(string specifiedName)
+	    {
+		    string closestName = null;
+		    int smallestDistance = -1;
+		    foreach (var name in GetFunctionNamesAndAliases())
+		    {
+			    int ld = Util.LevensteinDistance(specifiedName, name);
+
+				if (smallestDistance == -1 || ld < smallestDistance)
+			    {
+				    closestName = name;
+				    smallestDistance = ld;
+			    }
+		    }
+		    return closestName;
+	    }
     }
 }

@@ -130,7 +130,7 @@ namespace Rant.Core.Compiler.Parsing
 			{
 				if (!RantFunctionRegistry.FunctionExists(functionName.Value))
 				{
-					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value);
+					compiler.SyntaxError(functionName, false, "err-compiler-nonexistent-function", functionName.Value, RantUtils.GetClosestFunctionName(functionName.Value));
 					yield break;
 				}
 
