@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Constructs;
 using Rant.Core.Framework;
 
 namespace Rant.Core.Compiler.Parsing
@@ -45,60 +46,60 @@ namespace Rant.Core.Compiler.Parsing
 			switch (nextType)
 			{
 				case R.Regex:
-				{
-					var regex = reader.Read(R.Regex, "acc-replacer-regex");
-					var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
-					if (reader.IsNext(R.RegexFlags))
 					{
-						var flagsToken = reader.ReadToken();
-						foreach (char flag in flagsToken.Value)
+						var regex = reader.Read(R.Regex, "acc-replacer-regex");
+						var options = RegexOptions.Compiled | RegexOptions.ExplicitCapture;
+						if (reader.IsNext(R.RegexFlags))
 						{
-							switch (flag)
+							var flagsToken = reader.ReadToken();
+							foreach (char flag in flagsToken.Value)
 							{
-								case 'i':
-								options |= RegexOptions.IgnoreCase;
-								break;
-								case 'm':
-								options |= RegexOptions.Multiline;
-								break;
+								switch (flag)
+								{
+									case 'i':
+										options |= RegexOptions.IgnoreCase;
+										break;
+									case 'm':
+										options |= RegexOptions.Multiline;
+										break;
+								}
 							}
 						}
+
+						reader.Read(R.Colon);
+
+						var arguments = new List<RST>();
+
+						var iterator = ReadArguments(compiler, reader, arguments);
+						while (iterator.MoveNext())
+							yield return iterator.Current;
+
+						compiler.SetNextActionCallback(actionCallback);
+
+						if (arguments.Count != 2)
+						{
+							compiler.SyntaxError(tagStart, reader.PrevToken, false, "err-compiler-replacer-argcount");
+							yield break;
+						}
+
+						actionCallback(new RstReplacer(regex.ToLocation(), new Regex(regex.Value, options), arguments[0], arguments[1]));
 					}
-
-					reader.Read(R.Colon);
-
-					var arguments = new List<RST>();
-
-					var iterator = ReadArguments(compiler, reader, arguments);
-					while (iterator.MoveNext())
-						yield return iterator.Current;
-
-					compiler.SetNextActionCallback(actionCallback);
-
-					if (arguments.Count != 2)
-					{
-						compiler.SyntaxError(tagStart, reader.PrevToken, false, "err-compiler-replacer-argcount");
-						yield break;
-					}
-
-					actionCallback(new RstReplacer(regex.ToLocation(), new Regex(regex.Value, options), arguments[0], arguments[1]));
-				}
-				break;
+					break;
 				case R.Dollar:
-				{
-					reader.ReadToken();
-					var e = ParseSubroutine(compiler, context, reader, actionCallback);
-					while (e.MoveNext())
-						yield return e.Current;
-				}
-				break;
+					{
+						reader.ReadToken();
+						var e = ParseSubroutine(compiler, context, reader, actionCallback);
+						while (e.MoveNext())
+							yield return e.Current;
+					}
+					break;
 				default:
-				{
-					var e = ParseFunction(compiler, context, reader, actionCallback);
-					while (e.MoveNext())
-						yield return e.Current;
-				}
-				break;
+					{
+						var e = ParseFunction(compiler, context, reader, actionCallback);
+						while (e.MoveNext())
+							yield return e.Current;
+					}
+					break;
 			}
 		}
 
@@ -157,21 +158,20 @@ namespace Rant.Core.Compiler.Parsing
 				var subroutineName = reader.ReadLoose(R.Text, "acc-subroutine-name");
 				var subroutine = new RstDefineSubroutine(subroutineName.ToLocation())
 				{
-					Parameters = new Dictionary<string, SubroutineParameterType>(),
+					Parameters = new List<SubroutineParameter>(),
 					Name = subroutineName.Value
 				};
 
 				if (reader.PeekLooseToken().Type == R.Colon)
 				{
 					reader.ReadLooseToken();
-
 					do
 					{
 						var type = SubroutineParameterType.Greedy;
 						if (reader.TakeLoose(R.At))
 							type = SubroutineParameterType.Loose;
 
-						subroutine.Parameters[reader.ReadLoose(R.Text, "acc-arg-name").Value] = type;
+						subroutine.Parameters.Add(new SubroutineParameter(reader.ReadLoose(R.Text, "acc-arg-name").Value, type));
 					} while (reader.TakeLoose(R.Semicolon, false));
 				}
 
@@ -180,30 +180,18 @@ namespace Rant.Core.Compiler.Parsing
 				var bodyStart = reader.ReadLoose(R.Colon);
 
 				var actions = new List<RST>();
-				Action<RST> bodyActionCallback = action => actions.Add(action);
 
 				compiler.AddContext(CompileContext.SubroutineBody);
-				compiler.SetNextActionCallback(bodyActionCallback);
+				compiler.SetNextActionCallback(action => actions.Add(action));
 				yield return Get<SequenceParser>();
 				compiler.SetNextActionCallback(actionCallback);
-				if (actions.Count == 1)
-				{
-					subroutine.Body = actions[0];
-				}
-				else
-				{
-					subroutine.Body = new RstSequence(actions, bodyStart.ToLocation());
-				}				
+				subroutine.Body = actions.Count == 1 ? actions[0] : new RstSequence(actions, bodyStart.ToLocation());
 				actionCallback(subroutine);
 			}
 			else
 			{
 				// subroutine call
 				var subroutineName = reader.Read(R.Text, "acc-subroutine-name");
-				string moduleFunctionName = null;
-
-				if (reader.TakeLoose(R.Period, false))
-					moduleFunctionName = reader.Read(R.Text, "module function name").Value;
 
 				var arguments = new List<RST>();
 
@@ -222,7 +210,7 @@ namespace Rant.Core.Compiler.Parsing
 					reader.Read(R.RightSquare);
 				}
 
-				var subroutine = new RstCallSubroutine(subroutineName.Value, subroutineName.ToLocation(), moduleFunctionName) { Arguments = arguments };
+				var subroutine = new RstCallSubroutine(subroutineName.Value, subroutineName.ToLocation()) { Arguments = arguments };
 
 				actionCallback(subroutine);
 			}
@@ -232,8 +220,7 @@ namespace Rant.Core.Compiler.Parsing
 		{
 			var actions = new List<RST>();
 
-			Action<RST> argActionCallback = action => actions.Add(action);
-			compiler.SetNextActionCallback(argActionCallback);
+			compiler.SetNextActionCallback(action => actions.Add(action));
 			compiler.AddContext(CompileContext.FunctionEndContext);
 			compiler.AddContext(CompileContext.ArgumentSequence);
 
@@ -244,14 +231,7 @@ namespace Rant.Core.Compiler.Parsing
 				yield return Get<SequenceParser>();
 
 				// Don't wrap single nodes in a sequence, it's unnecessary
-				if (actions.Count == 1)
-				{
-					arguments.Add(actions[0]);
-				}
-				else
-				{
-					arguments.Add(new RstSequence(actions, startToken.ToLocation()));
-				}
+				arguments.Add(actions.Count == 1 ? actions[0] : new RstSequence(actions, startToken.ToLocation()));
 
 				actions.Clear();
 			}

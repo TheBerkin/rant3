@@ -26,90 +26,87 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.Constructs;
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
 
 namespace Rant.Core.Compiler.Syntax
 {
-    [RST("csub")]
-    internal class RstCallSubroutine : RstSubroutineBase
-    {
-        private bool _inModule = false;
-        private string _moduleFunctionName = null;
-        public List<RST> Arguments;
+	[RST("csub")]
+	internal class RstCallSubroutine : RstSubroutineBase
+	{
+		private bool _inModule = false;
+		private string _moduleFunctionName = null;
+		public List<RST> Arguments;
 
-        public RstCallSubroutine(string name, LineCol location, string moduleFunctionName = null)
-            : base(location)
-        {
-            if (moduleFunctionName != null)
-                _inModule = true;
-            _moduleFunctionName = moduleFunctionName;
-            Name = name;
-        }
+		public RstCallSubroutine(string name, LineCol location)
+			: base(location)
+		{
+			_inModule = true;
+			_moduleFunctionName = null;
+			Name = name;
+		}
 
-        public RstCallSubroutine(LineCol location) : base(location)
-        {
-            // Used by serializer
-        }
+		public RstCallSubroutine(LineCol location) : base(location)
+		{
+			// Used by serializer
+		}
 
-        public override IEnumerator<RST> Run(Sandbox sb)
-        {
-			if (sb.Objects[Name] == null)
-                throw new RantRuntimeException(sb, this, "err-runtime-missing-subroutine", Name);
-            var subs = (List<RantObject>)(sb.Objects[Name].Value);
-			var sub = subs
-				.Where(s => (s.Value as RstDefineSubroutine).Parameters.Count == Arguments.Count)
-				.Select(s => s.Value as RstDefineSubroutine)
-				.FirstOrDefault();
-            if (sub == default(RstDefineSubroutine))
-                throw new RantRuntimeException(sb, this, "err-runtime-subarg-mismatch", Name);
-            var action = sub.Body;
-            var args = new Dictionary<string, RST>();
-            var parameters = sub.Parameters.Keys.ToArray();
-            for (int i = 0; i < Arguments.Count; i++)
-            {
-                if (sub.Parameters[parameters[i]] == SubroutineParameterType.Greedy)
-                {
-                    sb.AddOutputWriter();
-                    yield return Arguments[i];
-                    var output = sb.Return();
-                    args[parameters[i]] = new RstText(Location, output.Main);
-                }
-                else
-                {
-                    args[parameters[i]] = Arguments[i];
-                }
-            }
-            sb.SubroutineArgs.Push(args);
-            yield return action;
-            sb.SubroutineArgs.Pop();
-        }
+		public override IEnumerator<RST> Run(Sandbox sb)
+		{
+			if (!(sb.Objects[Name]?.Value is Subroutine sub))
+				throw new RantRuntimeException(sb, this, "err-runtime-missing-subroutine", Name);
 
-        protected override IEnumerator<RST> Serialize(EasyWriter output)
-        {
-            var iterMain = base.Serialize(output);
-            while (iterMain.MoveNext()) yield return iterMain.Current;
-            output.Write(_inModule);
-            output.Write(_moduleFunctionName);
-            output.Write(Arguments.Count);
-            foreach (var arg in Arguments) yield return arg;
-        }
+			var ol = sub.GetOverload(Arguments.Count);
+			if (ol == null)
+				sb.RuntimeError("err-runtime-subarg-mismatch", Name);
+			var action = ol.Body;
+			var args = new Dictionary<string, RST>();
+			for (int i = 0; i < Arguments.Count; i++)
+			{
+				switch (ol.Params[i].Type)
+				{
+					case SubroutineParameterType.Greedy:
+						sb.AddOutputWriter();
+						yield return Arguments[i];
+						var output = sb.Return();
+						args[ol.Params[i].Name] = new RstText(Location, output.Main);
+						break;
+					default:
+						args[ol.Params[i].Name] = Arguments[i];
+						break;
+				}
+			}
+			sb.SubroutineArgs.Push(args);
+			yield return action;
+			sb.SubroutineArgs.Pop();
+		}
 
-        protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
-        {
-            var iterMain = base.Deserialize(input);
-            while (iterMain.MoveNext()) yield return iterMain.Current;
-            input.ReadBoolean(out _inModule);
-            input.ReadString(out _moduleFunctionName);
-            int argc = input.ReadInt32();
-            if (Arguments == null) Arguments = new List<RST>(argc);
-            for (int i = 0; i < argc; i++)
-            {
-                var request = new DeserializeRequest();
-                yield return request;
-                Arguments.Add(request.Result);
-            }
-        }
+		protected override IEnumerator<RST> Serialize(EasyWriter output)
+		{
+			var iterMain = base.Serialize(output);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			output.Write(_inModule);
+			output.Write(_moduleFunctionName);
+			output.Write(Arguments.Count);
+			foreach (var arg in Arguments) yield return arg;
+		}
+
+		protected override IEnumerator<DeserializeRequest> Deserialize(EasyReader input)
+		{
+			var iterMain = base.Deserialize(input);
+			while (iterMain.MoveNext()) yield return iterMain.Current;
+			input.ReadBoolean(out _inModule);
+			input.ReadString(out _moduleFunctionName);
+			int argc = input.ReadInt32();
+			if (Arguments == null) Arguments = new List<RST>(argc);
+			for (int i = 0; i < argc; i++)
+			{
+				var request = new DeserializeRequest();
+				yield return request;
+				Arguments.Add(request.Result);
+			}
+		}
 
 		public override string ToString()
 		{

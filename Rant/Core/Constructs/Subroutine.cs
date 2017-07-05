@@ -1,5 +1,4 @@
 ﻿#region License
-
 // https://github.com/TheBerkin/Rant
 // 
 // Copyright (c) 2017 Nicholas Fleck
@@ -20,54 +19,56 @@
 // HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 #endregion
 
-namespace Rant.Core.ObjectModel
+using System.Collections.Generic;
+using System.Linq;
+
+using Rant.Core.Compiler.Syntax;
+
+namespace Rant.Core.Constructs
 {
-    /// <summary>
-    /// Defines object types used by Rant.
-    /// </summary>
-    public enum RantObjectType
-    {
-        /// <summary>
-        /// Represents a decimal number.
-        /// </summary>
-        Number,
+	internal sealed class Subroutine
+	{
+		public string Name { get; }
+		private readonly Dictionary<int, Overload> _overloads;
 
-        /// <summary>
-        /// Represents a series of Unicode characters.
-        /// </summary>
-        String,
+		public Subroutine(string name)
+		{
+			Name = name;
+			_overloads = new Dictionary<int, Overload>();
+		}
 
-        /// <summary>
-        /// Represents a boolean value.
-        /// </summary>
-        Boolean,
+		public void DefineOverload(IEnumerable<SubroutineParameter> parameters, RST body)
+		{
+			var pArray = parameters.ToArray();
+			_overloads[pArray.Length] = new Overload(pArray, body);
+		}
 
-        /// <summary>
-        /// Represents a resizable set of values.
-        /// </summary>
-        List,
+		public Overload GetOverload(int paramCount) => _overloads.TryGetValue(paramCount, out Overload ol) ? ol : null;
 
-        /// <summary>
-        /// Represents a VM action.
-        /// </summary>
-        Action,
+		internal class Overload
+		{
+			public RST Body { get; }
 
-		/// <summary>
-		/// Represents a subroutine.
-		/// </summary>
-		Subroutine,
+			public SubroutineParameter[] Params { get; }
 
-        /// <summary>
-        /// Represents a lack of a value.
-        /// </summary>
-        Null,
+			public int ParamCount => Params.Length;
 
-        /// <summary>
-        /// Represents a lack of any variable at all.
-        /// </summary>
-        Undefined
-    }
+			public Overload(SubroutineParameter[] parameters, RST body)
+			{
+				Params = parameters;
+				Body = body;
+			}
+
+			public int GetParamIndex(string name)
+			{
+				for (int i = 0; i < Params.Length; i++)
+				{
+					if (Params[i].Name == name) return i;
+				}
+				return -1;
+			}
+		}
+	}
 }

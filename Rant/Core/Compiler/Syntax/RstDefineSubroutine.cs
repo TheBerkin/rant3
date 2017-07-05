@@ -26,6 +26,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Rant.Core.Constructs;
 using Rant.Core.IO;
 using Rant.Core.ObjectModel;
 
@@ -34,7 +35,7 @@ namespace Rant.Core.Compiler.Syntax
 	[RST("dsub")]
 	internal class RstDefineSubroutine : RstSubroutineBase
 	{
-		public Dictionary<string, SubroutineParameterType> Parameters;
+		public List<SubroutineParameter> Parameters;
 
 		public RstDefineSubroutine(LineCol location) : base(location)
 		{
@@ -43,20 +44,15 @@ namespace Rant.Core.Compiler.Syntax
 
 		public override IEnumerator<RST> Run(Sandbox sb)
 		{
-			if (sb.Objects.ContainsKey(Name) && CheckIfSubroutineList(sb.Objects[Name]))
+			if (sb.Objects[Name]?.Value is Subroutine sub) // Subroutine exists, simply add overload
 			{
-				var subroutines = sb.Objects[Name].Value as List<RantObject>;
-				if (subroutines.Any(s => (s.Value as RstDefineSubroutine).Parameters.Count == Parameters.Count))
-				{
-					subroutines.RemoveAll(s => (s.Value as RstDefineSubroutine).Parameters.Count == Parameters.Count);
-				}
-				subroutines.Add(new RantObject(this));
+				sub.DefineOverload(Parameters, Body);
 			}
-			else
+			else // Create new subroutine object and add overload
 			{
-				var list = new List<RantObject>();
-				list.Add(new RantObject(this));
-				sb.Objects[Name] = new RantObject(list);
+				var s = new Subroutine(Name);
+				sb.Objects[Name] = new RantObject(s);
+				s.DefineOverload(Parameters, Body);
 			}
 			yield break;
 		}
@@ -66,10 +62,10 @@ namespace Rant.Core.Compiler.Syntax
 			var iterMain = base.Serialize(output);
 			while (iterMain.MoveNext()) yield return iterMain.Current;
 			output.Write(Parameters.Count);
-			foreach (var kv in Parameters)
+			foreach (var subParam in Parameters)
 			{
-				output.Write(kv.Key);
-				output.Write((byte)kv.Value);
+				output.Write(subParam.Name);
+				output.Write((byte)subParam.Type);
 			}
 		}
 
@@ -78,25 +74,13 @@ namespace Rant.Core.Compiler.Syntax
 			var iterMain = base.Deserialize(input);
 			while (iterMain.MoveNext()) yield return iterMain.Current;
 			int pCount = input.ReadInt32();
-			if (Parameters == null) Parameters = new Dictionary<string, SubroutineParameterType>(pCount);
+			if (Parameters == null) Parameters = new List<SubroutineParameter>();
 			for (int i = 0; i < pCount; i++)
 			{
-				string key = input.ReadString();
-				Parameters[key] = (SubroutineParameterType)input.ReadByte();
+				string paramName = input.ReadString();
+				var paramType = (SubroutineParameterType)input.ReadByte();
+				Parameters.Add(new SubroutineParameter(paramName, paramType));
 			}
 		}
-
-		private bool CheckIfSubroutineList(RantObject obj)
-		{
-			if (obj.Type != RantObjectType.List) return false;
-			var list = obj.Value as List<RantObject>;
-			return list.All(a => a.Value is RstDefineSubroutine);
-		}
-	}
-
-	internal enum SubroutineParameterType : byte
-	{
-		Loose,
-		Greedy
 	}
 }

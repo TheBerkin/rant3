@@ -1,5 +1,4 @@
 ﻿#region License
-
 // https://github.com/TheBerkin/Rant
 // 
 // Copyright (c) 2017 Nicholas Fleck
@@ -20,54 +19,18 @@
 // HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 #endregion
-
-namespace Rant.Core.ObjectModel
+namespace Rant.Core.Constructs
 {
-    /// <summary>
-    /// Defines object types used by Rant.
-    /// </summary>
-    public enum RantObjectType
-    {
-        /// <summary>
-        /// Represents a decimal number.
-        /// </summary>
-        Number,
+	internal sealed class SubroutineParameter
+	{
+		public string Name { get; }
+		public SubroutineParameterType Type { get; }
 
-        /// <summary>
-        /// Represents a series of Unicode characters.
-        /// </summary>
-        String,
-
-        /// <summary>
-        /// Represents a boolean value.
-        /// </summary>
-        Boolean,
-
-        /// <summary>
-        /// Represents a resizable set of values.
-        /// </summary>
-        List,
-
-        /// <summary>
-        /// Represents a VM action.
-        /// </summary>
-        Action,
-
-		/// <summary>
-		/// Represents a subroutine.
-		/// </summary>
-		Subroutine,
-
-        /// <summary>
-        /// Represents a lack of a value.
-        /// </summary>
-        Null,
-
-        /// <summary>
-        /// Represents a lack of any variable at all.
-        /// </summary>
-        Undefined
-    }
+		public SubroutineParameter(string name, SubroutineParameterType type)
+		{
+			Name = name;
+			Type = type;
+		}
+	}
 }

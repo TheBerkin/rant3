@@ -23,12 +23,14 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
 using Rant.Core.Compiler.Syntax;
+using Rant.Core.Constructs;
 using Rant.Core.Utilities;
 
 namespace Rant.Core.ObjectModel
@@ -53,11 +55,7 @@ namespace Rant.Core.ObjectModel
 		/// </summary>
 		public static readonly RantObject False = new RantObject(false);
 
-		private bool _boolean = false;
-		private List<RantObject> _list = null;
-		private double _number = 0;
-		private RST _rst = null;
-		private string _string = null;
+		private object _value;
 
 		/// <summary>
 		/// Creates a null object.
@@ -67,90 +65,58 @@ namespace Rant.Core.ObjectModel
 		}
 
 		/// <summary>
-		/// Creates a new RantObject instance with a list value.
+		/// Initializes a new instance of the <see cref="RantObject"/> class from the specified object.
 		/// </summary>
-		/// <param name="list">The list to assign to the object.</param>
-		public RantObject(List<RantObject> list)
+		/// <param name="o">The object to store in the <see cref="RantObject"/> instance.</param>
+		public RantObject(object o)
 		{
-			if (list == null) return;
-			Type = RantObjectType.List;
-			_list = list;
-		}
 
-		/// <summary>
-		/// Creates a new RantObject instance with a boolean value.
-		/// </summary>
-		/// <param name="boolean">The boolean value to assign to the object.</param>
-		public RantObject(bool boolean)
-		{
-			Type = RantObjectType.Boolean;
-			_boolean = boolean;
-		}
-
-		/// <summary>
-		/// Creates a new RantObject instance with a string value.
-		/// </summary>
-		/// <param name="str">The string to assign to the object.</param>
-		public RantObject(string str)
-		{
-			if (str == null) return;
-			Type = RantObjectType.String;
-			_string = str;
-		}
-
-		/// <summary>
-		/// Creates a new RantObject instance with a decimal number value.
-		/// </summary>
-		/// <param name="num">The number to assign to the object.</param>
-		public RantObject(double num)
-		{
-			Type = RantObjectType.Number;
-			_number = num;
-		}
-
-		internal RantObject(RST rst)
-		{
-			Type = RantObjectType.Action;
-			_rst = rst;
-		}
-
-		/// <summary>
-		/// Creates a new RantObject instance from the specified object.
-		/// </summary>
-		/// <param name="obj">The value to assign to the object.</param>
-		public RantObject(object obj)
-		{
-			if (obj == null) return;
-
-			if (obj is string)
+			switch (o)
 			{
-				_string = obj.ToString();
-				Type = RantObjectType.String;
-			}
-			else if (obj is bool)
-			{
-				_boolean = (bool)obj;
-				Type = RantObjectType.Boolean;
-			}
-			else if (IsNumber(obj))
-			{
-				_number = (double)obj;
-				Type = RantObjectType.Number;
-			}
-			else if (obj is List<RantObject>)
-			{
-				_list = (List<RantObject>)obj;
-				Type = RantObjectType.List;
-			}
-			else if (obj.GetType().IsArray)
-			{
-				_list = ((object[])obj).Select(o => new RantObject(o)).ToList();
-				Type = RantObjectType.List;
-			}
-			else if (obj is RST)
-			{
-				_rst = (RST)obj;
-				Type = RantObjectType.Action;
+				case null:
+					Type = RantObjectType.Null;
+					break;
+				case List<RantObject> list:
+					_value = list;
+					Type = RantObjectType.List;
+					break;
+				case bool b:
+					_value = b;
+					Type = RantObjectType.Boolean;
+					break;
+				case string str:
+					_value = str;
+					Type = RantObjectType.String;
+					break;
+				case byte _:
+				case sbyte _:
+				case short _:
+				case ushort _:
+				case int _:
+				case uint _:
+				case long _:
+				case ulong _:
+				case float _:
+				case double _:
+				case decimal _:
+					_value = Convert.ChangeType(o, typeof(double));
+					Type = RantObjectType.Number;
+					break;
+				case RST rst:
+					_value = rst;
+					Type = RantObjectType.Action;
+					break;
+				case Subroutine sub:
+					_value = sub;
+					Type = RantObjectType.Subroutine;
+					break;
+				case Array arr:
+					_value = arr.OfType<object>().Select(obj => new RantObject(obj)).ToList();
+					Type = RantObjectType.List;
+					break;
+				default:
+					Type = RantObjectType.Undefined;
+					break;
 			}
 		}
 
@@ -171,28 +137,7 @@ namespace Rant.Core.ObjectModel
 		/// <summary>
 		/// The value of the object.
 		/// </summary>
-		public object Value
-		{
-			get
-			{
-				switch (Type)
-				{
-					case RantObjectType.Null:
-						return null;
-					case RantObjectType.Boolean:
-						return _boolean;
-					case RantObjectType.Number:
-						return _number;
-					case RantObjectType.String:
-						return _string;
-					case RantObjectType.List:
-						return _list;
-					case RantObjectType.Action:
-						return _rst;
-				}
-				return null;
-			}
-		}
+		public object Value => _value;
 
 		internal object PrintableValue
 		{
@@ -203,11 +148,9 @@ namespace Rant.Core.ObjectModel
 					case RantObjectType.Null:
 						return null;
 					case RantObjectType.Boolean:
-						return _boolean;
 					case RantObjectType.Number:
-						return _number;
 					case RantObjectType.String:
-						return _string;
+						return _value;
 					default:
 						return ToString();
 				}
@@ -221,12 +164,12 @@ namespace Rant.Core.ObjectModel
 		{
 			get
 			{
-				switch (Type)
+				switch (_value)
 				{
-					case RantObjectType.List:
-						return _list.Count;
-					case RantObjectType.String:
-						return _string.Length;
+					case List<RantObject> lst:
+						return lst.Count;
+					case string str:
+						return str.Length;
 					default:
 						return -1;
 				}
@@ -244,40 +187,42 @@ namespace Rant.Core.ObjectModel
 			get
 			{
 				if (Type != RantObjectType.List) return null;
-				return index >= 0 && index < _list.Count ? _list[index] : null;
+				var list = _value as List<RantObject>;
+				return index >= 0 && index < list.Count ? list[index] : null;
 			}
 			set
 			{
 				if (Type != RantObjectType.List) return;
-				if (index >= 0 && index < _list.Count) _list[index] = value;
+				var list = _value as List<RantObject>;
+				if (index >= 0 && index < list.Count) list[index] = value;
 			}
 		}
 
 		/// <summary>
 		/// Converts the current object to a RantObject of the specified type and returns it.
 		/// </summary>
-		/// <param name="type">The object type to convert to.</param>
+		/// <param name="targetType">The object type to convert to.</param>
 		/// <returns></returns>
-		public RantObject ConvertTo(RantObjectType type)
+		public RantObject ConvertTo(RantObjectType targetType)
 		{
-			if (Type == type) return Clone();
+			if (Type == targetType) return Clone();
 
-			switch (type)
+			switch (targetType)
 			{
 				case RantObjectType.String:
 					{
-						switch (Type)
+						switch (_value)
 						{
-							case RantObjectType.Boolean:
-								return new RantObject(_boolean.ToString());
-							case RantObjectType.Number:
-								return new RantObject(_number.ToString(CultureInfo.InvariantCulture));
-							case RantObjectType.List:
+							case bool b:
+								return new RantObject(b.ToString());
+							case double d:
+								return new RantObject(d.ToString(CultureInfo.InvariantCulture));
+							case List<RantObject> lst:
 								{
 									var sb = new StringBuilder();
 									bool first = true;
 									sb.Append("(");
-									foreach (var rantObject in _list)
+									foreach (var rantObject in lst)
 									{
 										if (first)
 										{
@@ -295,35 +240,35 @@ namespace Rant.Core.ObjectModel
 					}
 				case RantObjectType.Number:
 					{
-						switch (Type)
+						switch (_value)
 						{
-							case RantObjectType.Boolean:
-								return new RantObject(_boolean ? 1 : 0);
-							case RantObjectType.String:
+							case bool b:
+								return new RantObject(b ? 1 : 0);
+							case string str:
 								{
-									return Util.ParseDouble(_string, out double num) ? new RantObject(num) : Null;
+									return Util.ParseDouble(str, out double num) ? new RantObject(num) : Null;
 								}
 						}
 						break;
 					}
 				case RantObjectType.Boolean:
 					{
-						switch (Type)
+						switch (_value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(_number != 0);
-							case RantObjectType.String:
+							case string s:
 								{
-									string bstr = _string.ToLower().Trim();
-									switch (bstr)
+									switch (s)
 									{
-										case "true":
+										case "True":
 											return new RantObject(true);
-										case "false":
+										case "False":
 											return new RantObject(false);
 									}
 									break;
 								}
+							case double d:
+								// ReSharper disable once CompareOfFloatsByEqualityOperator
+								return new RantObject(d != 0.0);
 						}
 						break;
 					}
@@ -342,13 +287,20 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public RantObject Clone()
 		{
+			object clonedValue;
+			switch (_value)
+			{
+				case List<RantObject> list:
+					clonedValue = list.ToList();
+					break;
+				default:
+					clonedValue = _value;
+					break;
+			}
+
 			return new RantObject
 			{
-				_boolean = _boolean,
-				_list = _list?.ToList(), // Create a copy of the list
-				_number = _number,
-				_string = _string,
-				_rst = _rst,
+				_value = clonedValue,
 				Type = Type
 			};
 		}
@@ -362,17 +314,10 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator !(RantObject a)
 		{
-			switch (a.Type)
+			switch (a._value)
 			{
-				case RantObjectType.Number:
-					{
-						switch (a.Type)
-						{
-							case RantObjectType.Boolean:
-								return new RantObject(!a._boolean);
-						}
-						break;
-					}
+				case bool b:
+					return new RantObject(!b);
 			}
 
 			return Null;
@@ -386,25 +331,25 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator +(RantObject a, RantObject b)
 		{
-			switch (a.Type) // TODO: Cover all cases
+			switch (a._value) // TODO: Cover all cases
 			{
-				case RantObjectType.Number:
+				case double numA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._number + b._number);
+							case double numB:
+								return new RantObject(numA + numB);
 						}
 						break;
 					}
-				case RantObjectType.String:
+				case string strA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._string + b._number);
-							case RantObjectType.String:
-								return new RantObject(a._string + b._string);
+							case double numB:
+								return new RantObject(strA + numB.ToString(CultureInfo.InvariantCulture));
+							case string strB:
+								return new RantObject(strA + strB);
 						}
 						break;
 					}
@@ -421,14 +366,14 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator -(RantObject a, RantObject b)
 		{
-			switch (a.Type)
+			switch (a._value)
 			{
-				case RantObjectType.Number:
+				case double numA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._number - b._number);
+							case double numB:
+								return new RantObject(numA - numB);
 						}
 						break;
 					}
@@ -445,27 +390,27 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator *(RantObject a, RantObject b)
 		{
-			switch (a.Type)
+			switch (a._value)
 			{
-				case RantObjectType.Number:
+				case double numA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._number * b._number);
+							case double numB:
+								return new RantObject(numA * numB);
 						}
 						break;
 					}
-				case RantObjectType.String:
+				case string strA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
+							case double numB:
 								{
 									var sb = new StringBuilder();
-									int c = (int)b._number;
+									int c = (int)numB;
 									for (int i = 0; i < c; i++)
-										sb.Append(a._string);
+										sb.Append(strA);
 									return new RantObject(sb.ToString());
 								}
 						}
@@ -484,14 +429,14 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator /(RantObject a, RantObject b)
 		{
-			switch (a.Type)
+			switch (a._value)
 			{
-				case RantObjectType.Number:
+				case double numA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._number / b._number);
+							case double numB:
+								return new RantObject(numA / numB);
 						}
 						break;
 					}
@@ -508,14 +453,14 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public static RantObject operator %(RantObject a, RantObject b)
 		{
-			switch (a.Type)
+			switch (a._value)
 			{
-				case RantObjectType.Number:
+				case double numA:
 					{
-						switch (b.Type)
+						switch (b._value)
 						{
-							case RantObjectType.Number:
-								return new RantObject(a._number % b._number);
+							case double numB:
+								return new RantObject(numA % numB);
 						}
 						break;
 					}
@@ -532,49 +477,37 @@ namespace Rant.Core.ObjectModel
 		/// <returns></returns>
 		public override string ToString()
 		{
-			switch (Type)
-			{
-				case RantObjectType.Boolean:
-					return _boolean ? "true" : "false";
-				case RantObjectType.String:
-					return _string;
-				case RantObjectType.Null:
-					return "null";
-				case RantObjectType.Undefined:
-					return "???";
-				case RantObjectType.Number:
-					return _number.ToString(CultureInfo.InvariantCulture);
-				case RantObjectType.List:
-				{
-					var sb = new StringBuilder();
-					bool first = true;
-					sb.Append("(");
-					foreach (var rantObject in _list)
-					{
-						if (!first) sb.Append(", ");
-						first = false;
-						sb.Append(rantObject);
-					}
-					sb.Append(")");
-					return sb.ToString();
-				}
-			}
-			return Value.ToString();
-		}
+			if (Type == RantObjectType.Undefined) return "???";
 
-		private static bool IsNumber(object value)
-		{
-			return value is sbyte
-				   || value is byte
-				   || value is short
-				   || value is ushort
-				   || value is int
-				   || value is uint
-				   || value is long
-				   || value is ulong
-				   || value is float
-				   || value is double
-				   || value is decimal;
+			switch (_value)
+			{
+				case bool b:
+					return b ? "true" : "false";
+				case string str:
+					return str;
+				case null:
+					return "null";
+				case double d:
+					return d.ToString(CultureInfo.InvariantCulture);
+				case List<RantObject> list:
+					{
+						var sb = new StringBuilder();
+						bool first = true;
+						sb.Append("(");
+						foreach (var rantObject in list)
+						{
+							if (!first) sb.Append(", ");
+							first = false;
+							sb.Append(rantObject);
+						}
+						sb.Append(")");
+						return sb.ToString();
+					}
+				case Subroutine sub:
+					return sub.Name;
+			}
+
+			return Value.ToString();
 		}
 	}
 }

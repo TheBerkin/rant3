@@ -30,9 +30,7 @@ using System.Reflection;
 
 namespace Rant.Core.Utilities
 {
-    internal delegate TResult XFunc<out TResult>();
-
-    internal delegate TResult XFunc<in A, out TResult>(A a);
+	internal delegate TResult XFunc<in A, out TResult>(A a);
 
     internal delegate TResult XFunc<in A, in B, out TResult>(A a, B b);
 
@@ -53,9 +51,7 @@ namespace Rant.Core.Utilities
     internal delegate TResult XFunc<in A, in B, in C, in D, in E, in F, in G, in H, in I, out TResult>(
         A a, B b, C c, D d, E e, F f, G g, H h, I i);
 
-    internal delegate void XAction();
-
-    internal delegate void XAction<in A>(A a);
+	internal delegate void XAction<in A>(A a);
 
     internal delegate void XAction<in A, in B>(A a, B b);
 
@@ -128,41 +124,7 @@ namespace Rant.Core.Utilities
         public abstract object Invoke(Sandbox sb, object[] args);
     }
 
-    internal abstract class WitchcraftVoid : Witchcraft
-    {
-    }
-
-    internal class WitchcraftNoParams : Witchcraft
-    {
-        private readonly XFunc<Sandbox, object> _func;
-
-        public WitchcraftNoParams(MethodInfo methodInfo)
-        {
-            _func = (XFunc<Sandbox, object>)Delegate.CreateDelegate(
-                typeof(XFunc<Sandbox, object>), methodInfo);
-        }
-
-        public override object Invoke(Sandbox sb, object[] args) => _func(sb);
-    }
-
-    internal class WitchcraftNoParamsVoid : WitchcraftVoid
-    {
-        private readonly XAction<Sandbox> _func;
-
-        public WitchcraftNoParamsVoid(MethodInfo methodInfo)
-        {
-            _func = (XAction<Sandbox>)Delegate.CreateDelegate(
-                typeof(XAction<Sandbox>), methodInfo);
-        }
-
-        public override object Invoke(Sandbox sb, object[] args)
-        {
-            _func(sb);
-            return null;
-        }
-    }
-
-    internal class Witchcraft<A> : Witchcraft
+	internal class Witchcraft<A> : Witchcraft
     {
         private readonly XFunc<Sandbox, A, object> _func;
 

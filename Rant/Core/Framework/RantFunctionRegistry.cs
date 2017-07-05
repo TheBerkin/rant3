@@ -1667,7 +1667,7 @@ namespace Rant.Core.Framework
 				var output = sb.Return();
 				sb.Objects.ExitScope();
 
-				newList.Add(new RantObject(output));
+				newList.Add(new RantObject(output.Main));
 			}
 
 			sb.Objects[outputListName] = new RantObject(newList);

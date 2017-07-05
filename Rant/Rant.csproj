@@ -177,17 +177,25 @@
     <Compile Include="Core\Compiler\RantLexer.cs" />
     <Compile Include="Core\Compiler\Syntax\DeserializeRequest.cs" />
     <Compile Include="Core\Compiler\Syntax\RSTAttribute.cs" />
+    <Compile Include="Core\Constructs\SubroutineParameter.cs" />
+    <Compile Include="Core\Constructs\SubroutineParameterType.cs" />
     <Compile Include="Core\Compiler\Token.cs" />
     <Compile Include="Core\Compiler\LineCol.cs" />
     <Compile Include="Core\Constructs\AttribPersistence.cs" />
     <Compile Include="Core\Constructs\BlockAttribManager.cs" />
     <Compile Include="Core\Constructs\QueryBuilder.cs" />
+    <Compile Include="Core\Constructs\Subroutine.cs" />
     <Compile Include="Core\Constructs\SyncManager.cs" />
     <Compile Include="Core\Formatting\Accent.cs" />
     <Compile Include="Core\Formatting\CharConverter.cs" />
     <Compile Include="Core\Formatting\CharConversion.cs" />
     <Compile Include="Core\Formatting\Unicode.cs" />
     <Compile Include="Core\Sandbox.State.cs" />
+    <Compile Include="Core\Utilities\WitchcraftNoParams.cs" />
+    <Compile Include="Core\Utilities\WitchcraftNoParamsVoid.cs" />
+    <Compile Include="Core\Utilities\WitchcraftVoid.cs" />
+    <Compile Include="Core\Utilities\XAction.cs" />
+    <Compile Include="Core\Utilities\XFunc.cs" />
     <Compile Include="Formats\EnglishNumberVerbalizer.cs" />
     <Compile Include="Formats\GermanNumberVerbalizer.cs" />
     <Compile Include="Formats\Grammar\Aspect.cs" />
@@ -231,7 +239,7 @@
     <Compile Include="Core\Compiler\Syntax\RstSubroutineBase.cs" />
     <Compile Include="Core\Compiler\Syntax\RstText.cs" />
     <Compile Include="Core\Formatting\Endianness.cs" />
-    <Compile Include="Core\Formatting\HexFormat.cs" />
+    <Compile Include="Core\Formatting\BinaryFormat.cs" />
     <Compile Include="Core\Formatting\NumberFormatter.cs" />
     <Compile Include="Core\ObjectModel\ObjectTable.cs" />
     <Compile Include="Core\ObjectModel\RantObject.cs" />
@@ -264,7 +272,7 @@
     <Compile Include="Resources\RantPackage.cs" />
     <Compile Include="Vocabulary\ClassCache.cs" />
     <Compile Include="Vocabulary\Querying\Carrier.cs" />
-    <Compile Include="Vocabulary\Querying\CarrierComponent.cs" />
+    <Compile Include="Vocabulary\Querying\CarrierComponentType.cs" />
     <Compile Include="Vocabulary\Querying\CarrierState.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilter.cs" />
     <Compile Include="Vocabulary\Querying\ClassFilterRule.cs" />
@@ -273,7 +281,7 @@
     <Compile Include="Vocabulary\RantDictionaryTable.Importer.cs" />
     <Compile Include="Vocabulary\SyllableBuckets.cs" />
     <Compile Include="Vocabulary\Utilities\Diff.cs" />
-    <Compile Include="Vocabulary\Utilities\DoubleMetaphone.cs" />
+    <Compile Include="Vocabulary\Utilities\DoubleMetaphoneStringExtension.cs" />
     <Compile Include="Core\Formatting\Emoji.cs" />
     <Compile Include="Vocabulary\Querying\RangeFilter.cs" />
     <Compile Include="Vocabulary\RantTableLoadException.cs" />
@@ -300,8 +308,10 @@
     <Compile Include="Vocabulary\RantDictionary.cs" />
     <Compile Include="Vocabulary\RantDictionaryTable.cs" />
     <Compile Include="Vocabulary\RantDictionaryTerm.cs" />
+    <Compile Include="Vocabulary\Utilities\RhymeFlags.cs" />
     <Compile Include="Vocabulary\Utilities\Rhymer.cs" />
     <Compile Include="Vocabulary\Utilities\VocabUtils.cs" />
+    <Compile Include="_.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Rant License.txt">

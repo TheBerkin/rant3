@@ -150,6 +150,11 @@ namespace Rant.Core
 			return sb.ToString();
 		}
 
+		public void RuntimeError(string messageType, params object[] messageObjects)
+		{
+			throw new RantRuntimeException(this, CurrentAction, messageType, messageObjects);
+		}
+
 		public RantOutput Run(double timeout, RantProgram pattern = null)
 		{
 #if !DEBUG

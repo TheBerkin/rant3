@@ -179,8 +179,7 @@ namespace Rant
 
 			foreach (var dependency in package.GetDependencies())
 			{
-				RantPackage pkg;
-				if (!_resolver.TryResolvePackage(dependency, out pkg))
+				if (!_resolver.TryResolvePackage(dependency, out RantPackage pkg))
 					throw new FileNotFoundException(GetString("err-unresolvable-package", package, dependency));
 				LoadPackage(pkg);
 			}
