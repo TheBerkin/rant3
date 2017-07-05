@@ -11,6 +11,14 @@ code templating, automatic formatting, and more.
 
 The goal of the project is to enable developers of all kinds
 to automate repetitive writing tasks with a high degree of creative freedom.
+<p align="center">
+<a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
+  </a>
+  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
+    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
+  </a>
+</p>
 
 ## Features
 
@@ -94,16 +102,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for a full guide on how you can help.
 * [Online Pattern Tester](http://lett.at/rantbox/)
 
 **Need help? Join our [Discord server](https://discord.gg/qsMYFwh).**
-
-## Build Status
-
- <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/master/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/master?svg=true&passingText=Master%20Build%20Passing&pendingText=Master%20Build%20Pending&failingText=Master%20Build%20Failing" alt="Build status" />
-  </a>
-  <br/>
-  <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
-    <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
-  </a>
 
 ## Support My Projects
 <br/>
