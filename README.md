@@ -18,6 +18,8 @@ to automate repetitive writing tasks with a high degree of creative freedom.
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
   </a>
+  <br/>
+  <b>Join us on the official <a href="https://discord.gg/qsMYFwh">Discord server</a>!</b>
 </p>
 
 ## Features
@@ -100,8 +102,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for a full guide on how you can help.
 * [Rant Demos](https://github.com/TheBerkin/Rant.Demos)
 * [Rant Standard Dictionary](https://github.com/TheBerkin/Rantionary)
 * [Online Pattern Tester](http://lett.at/rantbox/)
-
-**Need help? Join our [Discord server](https://discord.gg/qsMYFwh).**
 
 ## Support My Projects
 <br/>
