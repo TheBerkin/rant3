@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rant.Tools.Commands
 {
-	[CommandName("tdocs", Description = "Generates a Markdown documentation file all table files in the current directory.")]
+	[CommandName("tdocs", Description = "Generates a Markdown documentation file all table files in the specified directory.")]
 	[CommandParam("out", false, "Specifies the output path for the generated file. (Default: ./dictionary.md)")]
 	internal class DicDocsCommand : Command
 	{
@@ -19,7 +19,14 @@ namespace Rant.Tools.Commands
 			var outputPath = CmdLine.Property("out", Path.Combine(workingDir, "dictionary.md"));
 			var tables = Directory.GetFiles(workingDir, "*.table", SearchOption.AllDirectories)
 				.Select(dir => RantDictionaryTable.FromStream(dir, File.Open(dir, FileMode.Open)))
-				.OrderBy(table => table.Name);
+				.OrderBy(table => table.Name)
+				.ToList();
+
+			if (tables.Count == 0)
+			{
+				Console.WriteLine("No tables found.");
+				return;
+			}
 
 			using (var writer = new StreamWriter(outputPath))
 			{
