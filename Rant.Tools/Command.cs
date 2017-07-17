@@ -77,6 +77,7 @@ namespace Rant.Tools
             if (!_cmdMap.TryGetValue(cmdname, out Command cmd))
             {
                 Console.WriteLine($"Command '{cmdname}' does not exist.");
+				return;
             }
 
             if (CmdLine.Flag("h") || CmdLine.Flag("help"))
