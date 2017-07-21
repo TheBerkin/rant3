@@ -60,6 +60,8 @@ namespace Rant.Vocabulary
 		    return _recycle.Count == 0 ? new HashSet<RantDictionaryEntry>() : _recycle.Pop();
 	    }
 
+	    public bool ClassExists(string cl) => _allClasses.Contains(cl);
+
         public void BuildCache(RantDictionaryTable table)
         {
 	        lock (syncObject)

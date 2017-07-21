@@ -146,7 +146,9 @@ namespace Rant.Core.Output
 				_sandbox.SetPlural(num != 1.0);
 			}
 			else
+			{
 				str = value.ToString();
+			}
 
 			Format(ref str);
 			_buffer.Append(str);
@@ -159,17 +161,13 @@ namespace Rant.Core.Output
 		private void UpdateSize()
 		{
 			if (_sandbox.SizeLimit.Accumulate(_buffer.Length - oldSize))
-				throw new InvalidOperationException($"Exceeded character limit ({_sandbox.SizeLimit.Maximum})");
+				_sandbox.RuntimeError("err-too-many-chars");
 			oldSize = _buffer.Length;
 		}
 
 		public void Clear()
 		{
-#if UNITY
-			_buffer.Length = 0;
-#else
 			_buffer.Clear();
-#endif
 			_sandbox.SizeLimit.Accumulate(-oldSize);
 			oldSize = 0;
 		}
@@ -183,7 +181,7 @@ namespace Rant.Core.Output
 			switch (_charType)
 			{
 				case CharConversion.Fullwidth:
-				value = new string(value.Select(c => CharConverter.ToFullwidth(c)).ToArray());
+				value = new string(value.Select(CharConverter.ToFullwidth).ToArray());
 				break;
 				case CharConversion.Cursive:
 				{

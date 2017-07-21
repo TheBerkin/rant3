@@ -1070,6 +1070,22 @@ namespace Rant.Core.Framework
 
 		#region Query Building
 
+		[RantFunction("hasclass")]
+		[RantDescription("Determines whether the specified class exists in the specified table and prints a boolean value indicating the result of the search.")]
+		private static void ClassExists(Sandbox sb, string table, string clName)
+		{
+			bool b = sb.Engine.Dictionary?[table]?.ContainsClass(clName) ?? false;
+			sb.Print(b ? TRUE : FALSE);
+		}
+
+		[RantFunction("hastable")]
+		[RantDescription("Determines whether the specified table exists and prints a boolean value indicating the result of the search.")]
+		private static void TableExists(Sandbox sb, string table)
+		{
+			bool b = sb.Engine.Dictionary?[table] != null;
+			sb.Print(b ? TRUE : FALSE);
+		}
+
 		[RantFunction("rcc")]
 		[RantDescription("Resets the specified carrier components.")]
 		private static void ResetCarrier(Sandbox sb,

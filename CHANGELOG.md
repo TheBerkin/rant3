@@ -1,5 +1,17 @@
 # Rant Changelog
 
+## v3.0.4 - 21 July, 2017
+
+### Features
+- Add indexer to `RantDictionaryTable` to allow entries to be directly accessed by index
+- Add `[hastable]` function to determine if a table exists by name
+- Add `[hasclass]` function to determine if a table has a specific class
+
+
+### Improvements
+- Add missing German localization for "exceeded character limit" message
+
+
 ## v3.0.3 - 5 July, 2017
 
 ### Bugfixes

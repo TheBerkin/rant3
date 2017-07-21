@@ -111,6 +111,13 @@ namespace Rant.Vocabulary
 		public IEnumerable<RantDictionaryEntry> GetEntries() => _entriesHash.AsEnumerable();
 
 		/// <summary>
+		/// Gets the entry at the specified index in the current <see cref="RantDictionaryTable"/> object.
+		/// </summary>
+		/// <param name="index">The index of the entry to retrieve.</param>
+		/// <returns></returns>
+		public RantDictionaryEntry this[int index] => _entriesList[index];
+
+		/// <summary>
 		/// Enumerates the subtypes contained in the current table.
 		/// </summary>
 		/// <returns></returns>
@@ -203,6 +210,13 @@ namespace Rant.Vocabulary
 			foreach (string c in _entriesHash.SelectMany(e => e.GetClasses()))
 				if (lstClasses.Add(c)) yield return c;
 		}
+
+		/// <summary>
+		/// Returns a boolean value indicating whether the current <see cref="RantDictionaryTable"/> instance contains one or more entries containing the specified class name.
+		/// </summary>
+		/// <param name="clName">The class name to search for.</param>
+		/// <returns></returns>
+		public bool ContainsClass(string clName) => _cache.ClassExists(clName);
 
 		/// <summary>
 		/// Adds a subtype of the specified name to the table.
@@ -333,17 +347,17 @@ namespace Rant.Vocabulary
 			writer.Write(Name);
 			writer.Write(Language);
 			writer.Write(TermsPerEntry);
-			for(int i = 0; i < TermsPerEntry; i++)
+			for (int i = 0; i < TermsPerEntry; i++)
 			{
 				writer.Write(GetSubtypesForIndex(i).ToArray());
 			}
 			writer.Write(_hidden.ToArray());
 
 			writer.Write(_entriesList.Count);
-			for(int i = 0; i < _entriesList.Count; i++)
+			for (int i = 0; i < _entriesList.Count; i++)
 			{
 				var entry = _entriesList[i];
-				for(int j = 0; j < TermsPerEntry; j++)
+				for (int j = 0; j < TermsPerEntry; j++)
 				{
 					var term = entry[j];
 					writer.Write(term.Value);
@@ -356,7 +370,7 @@ namespace Rant.Vocabulary
 				writer.Write(entry.GetOptionalClasses().ToArray());
 				var metaKeys = entry.GetMetadataKeys().ToArray();
 				writer.Write(metaKeys.Length);
-				for(int j = 0; j < metaKeys.Length; j++)
+				for (int j = 0; j < metaKeys.Length; j++)
 				{
 					var metaObj = entry.GetMetadata(metaKeys[j]);
 					var metaArray = metaObj as IEnumerable;
@@ -379,9 +393,9 @@ namespace Rant.Vocabulary
 			this.Name = reader.ReadString();
 			this.Language = reader.ReadString();
 			this.TermsPerEntry = reader.ReadInt32();
-			for(int i = 0; i < TermsPerEntry; i++)
+			for (int i = 0; i < TermsPerEntry; i++)
 			{
-				foreach(var subtype in reader.ReadStringArray())
+				foreach (var subtype in reader.ReadStringArray())
 				{
 					AddSubtype(subtype, i);
 				}
@@ -390,10 +404,10 @@ namespace Rant.Vocabulary
 
 			int numEntries = reader.ReadInt32();
 
-			for(int i = 0; i < numEntries; i++)
+			for (int i = 0; i < numEntries; i++)
 			{
 				var terms = new RantDictionaryTerm[TermsPerEntry];
-				for(int j = 0; j < TermsPerEntry; j++)
+				for (int j = 0; j < TermsPerEntry; j++)
 				{
 					var value = reader.ReadString();
 					var pron = reader.ReadString();
@@ -407,7 +421,7 @@ namespace Rant.Vocabulary
 					Weight = weight
 				};
 
-				foreach(var reqClass in reader.ReadStringArray())
+				foreach (var reqClass in reader.ReadStringArray())
 				{
 					entry.AddClass(reqClass, false);
 				}
@@ -419,7 +433,7 @@ namespace Rant.Vocabulary
 
 				int metaCount = reader.ReadInt32();
 
-				for(int j = 0; j < metaCount; j++)
+				for (int j = 0; j < metaCount; j++)
 				{
 					bool isArray = reader.ReadBoolean();
 					var key = reader.ReadString();
@@ -436,7 +450,7 @@ namespace Rant.Vocabulary
 				AddEntry(entry);
 			}
 		}
-		
+
 
 		internal override void Load(RantEngine engine)
 		{

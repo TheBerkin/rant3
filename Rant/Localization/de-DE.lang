@@ -36,6 +36,7 @@ err-missing-pattern = "Die Vorlage '{0}' existiert nicht."
 
 err-pattern-timeout = "Der Ausführungszeitraum ist abgelaufen ({0} Sekunden)."
 err-stack-overflow = "Ein Stapelüberlauf ist aufgetreten."
+err-too-many-chars = "Die Zeichenbegrenzung wurde überschritten."
 
 err-generic-runtime = "Ein unspezifizierter Laufzeitfehler ist aufgetreten."
 err-generic-compiler = "Ein unspezifizierter Erstellungsfehler ist aufgetreten."

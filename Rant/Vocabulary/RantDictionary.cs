@@ -67,6 +67,13 @@ namespace Rant.Vocabulary
             }
         }
 
+		/// <summary>
+		/// Gets the table with the specified name.
+		/// </summary>
+		/// <param name="name">The name of the table to retrieve.</param>
+		/// <returns></returns>
+	    public RantDictionaryTable this[string name] => _tables.TryGetValue(name, out RantDictionaryTable table) ? table : null;
+
         /// <summary>
         /// Gets all currently exposed hidden classes.
         /// </summary>

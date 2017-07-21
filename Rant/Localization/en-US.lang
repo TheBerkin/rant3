@@ -36,6 +36,7 @@ err-missing-pattern = "The pattern '{0}' does not exist."
 
 err-pattern-timeout = "The pattern execution timed out ({0} seconds)."
 err-stack-overflow = "Exceeded the maximum stack size."
+err-too-many-chars = "Exceeded character limit."
 
 err-generic-runtime = "An unspecified runtime error was encountered."
 err-generic-compiler = "An unspecified compiler error was encountered."
