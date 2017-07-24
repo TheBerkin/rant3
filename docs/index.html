@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+
+        <meta property="og:title" content="Rant - Procedural Text Engine" />
+		<meta property="og:type" content="website" />
+		<meta property="og:description" content="Rant is a procedural text generation engine written in C#. It supports a wide range of functions such as branching, synchronization, dictionary queries, and automatic formatting." />
+		<meta property="og:url" content="http://berkin.me/rant" />
+		<meta property="og:image" content="http://berkin.me/static/img/rant-logo-opaque.png" />
+
+        <title>Rant - Procedural Text Engine</title>
+        
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/common.css" />
+        <link rel="stylesheet" type="text/css" href="/static/css/rant.css" />
+        <link rel="stylesheet" type="text/css" href="/static/css/prism.css" />
+
+        <link rel="icon" type="image/png" href="/favicon.png" />
+    </head>
+    <body>
+        <div id="mainsection">
+            <img id="mainbg" src="/static/img/console.png"/>
+            <div class="container">
+                    <div id="titlecard">
+                        <img id="logo" src="/static/img/rant-logo.png"/>
+                    </div>
+                    <h1>Text generation for everything.</h1>
+                    <div class="module" id="description">
+                        <b>Rant</b> is a free, all-purpose procedural text generation language developed for .NET.
+                        It has been refined over several years of development to include a dizzying array of features designed 
+                        to handle everything from the most rudimentary of string generation tasks to dynamic game dialogue
+                        generation, code templating, automatic formatting, poetry, and much more.               
+                    </div>
+                    <div class="btnbox">
+                            <a class="button" href="https://github.com/TheBerkin/Rant" target="_blank">GitHub Project</a>
+                            <a class="main button" href="https://ci.appveyor.com/api/projects/TheBerkin/Rant/artifacts/bin/Rant.zip?branch=master">Download Rant 3</a>
+                            <a class="button" href="/rantdocs" target="_blank">Documentation</a>
+                    </div>
+                    <div class="separator"></div>
+                </div>
+        </div>
+        <div class="container">
+            <h1 class="no-bottom-margin">So many features</h1>
+            <div class="module rows">
+                <div class="feature">
+                    <h3><i class="fa fa-code"></i>Simple API</h3>
+                    Rant's API is designed to be friendly and straightforward.
+                    Get started generating text in just a few lines of code.
+                    <p/>
+                    No external dependencies.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-arrows-alt"></i>Blocks</h3>
+                    Blocks allow patterns to make nested, branching choices. It can pick randomly,
+                    or be configured with any of the numerous selection techniques provided. Branches
+                    can have uniform or weighted probabilities.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-paragraph"></i>Auto-formatting</h3>
+                    Rant has a robust and powerful set of functions for automating several kinds of formatting, 
+                    including capitalization, English indefinite articles, series commas (normal/Oxford style), numbers, and more.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-repeat"></i>Repeaters</h3>
+                    Rant can loop over a block multiple times, enabling a large variety of behaviors like
+                    shuffling, counting, printing lists, and more.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-book"></i>Queries</h3>
+                    Search external dictionaries for words according to sets of filters, then insert them
+                    directly into your output. Synchronize outputs between specific queries, or have them totally random;
+                    it's up to you.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-list-ol"></i>Multiple outputs</h3>
+                    You're not restricted to just returning a single output! 
+                    You can return multiple outputs using channels, and even multiple sets of channels 
+                    using the serial pattern mode.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-link"></i>Subroutines</h3>
+                    Create custom functions and even entire libraries. Decrease the complexity of patterns
+                    significantly by taking advantage of Rant's subroutine system to reuse code.
+                </div>
+                <div class="feature">
+                    <h3><i class="fa fa-bath"></i>Variables</h3>
+                    Use scoped variables for even more control over pattern behavior.
+                    Rant has all the standard functions for basic arithmetic, boolean logic, and conditional statements.
+                    Global variables can also be manipulated via the Rant API.
+                </div>
+            </div>
+            <h1 class="no-bottom-margin">Get started</h1>
+            <div class="module">
+                <h2>NuGet</h2>
+                Rant has a NuGet package for easy installation. Just type this command into your package manager console:
+                <div class="nuget">
+                    PM&gt; Install-Package Rant
+                </div>
+                <h2>Learn Rant</h2>
+                Browse the <a href="/rantdocs">documentation</a> and familiarize yourself with all aspects of Rant.
+                Engross yourself in every detail of every function, langauge feature, and construct available in the library.
+                <h2>Help us improve</h2>
+                If you find a bug or would like to request a feature, you may do so on the 
+                <a href="https://github.com/TheBerkin/Rant/issues">issues</a> page.
+                <h2>Need something special made?</h2>
+                You can commission me!<br/>
+                I offer personalized, reasonably-priced Rant development services for interested individuals and companies.
+                <br/>
+                For more information, contact me at <a href="http://www.google.com/recaptcha/mailhide/d?k=01QgfucHNIgkRepbuLSaJErw==&amp;c=RWriHkUrr9qvoElRG3WPt9b6QY5j1pI7RzJZ1p9OvE8=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\x3d01QgfucHNIgkRepbuLSaJErw\x3d\x3d\x26c\x3dRWriHkUrr9qvoElRG3WPt9b6QY5j1pI7RzJZ1p9OvE8\x3d', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" title="Reveal this e-mail address">n...</a>@gmail.com.
+                (click to see email)
+            </div>
+
+            <h1 class="no-bottom-margin">Support me!</h1>
+            <div class="module">
+                <div class="btnbox">
+                    <a noline href="https://patreon.com/Berkin"><img class="patreon" src="/static/img/patreonlogowhite.png" /></a>
+                </div>
+                If you have found Rant useful for your projects, please consider supporting me on <a href="https://patreon.com/Berkin">Patreon</a>.
+                Your support enables me to spend more time and resources on making projects like Rant even better. Any amount is appreciated!
+            </div>
+            
+            <div id="footer">
+                &copy; 2017 Nicholas Fleck &mdash; Rant is licensed under the <a href="https://github.com/TheBerkin/Rant/blob/master/LICENSE">MIT License</a>
+                because free software is delicious.
+            </div>
+        </div>
+    </body>
+</html>
