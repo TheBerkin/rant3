@@ -1,0 +1,78 @@
+site_name: Rant Documentation
+site_author: Nicholas Fleck
+site_url: 'https://berkin.me/rant'
+docs_dir: docs-src
+site_dir: docs/docs
+
+repo_name: 'Rant'
+repo_url: 'https://github.com/TheBerkin/Rant'
+
+pages:
+    - "Home": index.md  
+    - "Getting Started":  
+        - "Quick-Start for Developers": getting-started/developers.md
+        - "Quick-Start for Writers": getting-started/writers.md
+    - "Essentials":
+        - "Handling Errors": howto/errors.md
+        - "Writing Dictionaries": howto/writing-dictionaries.md
+        - "Packages": howto/packages.md
+        - "Formatting": howto/formatting.md
+        - "Running in Unity": howto/unity-setup.md
+        - "Command-Line Tools": howto/rct.md
+    - "Tutorials":
+        - "Pattern Arguments": tutorials/rant-args.md
+        - "Rant Variables in C#": tutorials/variable-access.md
+        - "Serial Patterns": tutorials/serial-patterns.md
+    - "API Reference": api/index.md
+    - "Language Reference": 
+        - "Functions":
+            - "Functions Overview": language/functions-overview.md
+            - "Function Reference": language/functions.md
+        - "Blocks": 
+            - "Blocks Overview": language/blocks/index.md
+            - "Block Attributes": language/blocks/block-attributes.md
+            - "State Functions": language/blocks/block-state-functions.md
+            - "Synchronizers": language/blocks/synchronizers.md        
+        - "Queries": 
+            - "Query Basics": language/queries/index.md
+            - "Class Filters": language/queries/classfilters.md
+            - "Carriers": language/queries/carriers.md
+            - "Specials": language/queries/specials.md
+            - "Dynamic Queries": language/queries/query-builders.md
+        - "Comments": language/comments.md      
+        - "Escape Sequences": language/escape-sequences.md  
+        - "Verbatim Strings": language/verbatim-strings.md
+        - "Verbose Characters": language/verbose-chars.md
+        - "Replacers": language/replacers.md
+        - "Subroutines": language/subroutines.md
+        - "Variables":
+            - "Overview": language/variables/index.md
+            - "General Functions": language/variables/general-functions.md
+            - "Number Functions": language/variables/num-functions.md
+            - "Boolean Functions": language/variables/bool-functions.md
+            - "List Functions": language/variables/list-functions.md
+    - "Advanced":
+        - "Package Format": "advanced/package-format.md"
+        - "Program Format": "advanced/program-format.md"
+        - "Serialized Table Format": "advanced/serialized-table-format.md"
+        - "Compatibility Standard": "advanced/compatibility.md"
+
+markdown_extensions:
+    - codehilite:
+        guess_lang: False
+    - admonition
+    - toc:
+        permalink: '[link]'
+        baselevel: 1
+
+extra_css:
+    - css/extra.css
+
+# theme_dir: 'theme'
+theme: material
+
+extra:
+    palette:
+        primary: 'deep purple'
+        accent: 'blue grey'
+    disqus: 'rantdocs'

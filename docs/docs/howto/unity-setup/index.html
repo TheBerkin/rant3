@@ -1,0 +1,1266 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="https://berkin.me/rant/howto/unity-setup/">
+      
+      
+        <meta name="author" content="Nicholas Fleck">
+      
+      
+        <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.3">
+    
+    
+      
+        <title>Running in Unity - Rant Documentation</title>
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr-1df76c4e58.js"></script>
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application-acc56dad49.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-8817cfa535.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="deep-purple" data-md-color-accent="blue-grey">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <a href="https://berkin.me/rant" title="Rant Documentation" class="md-icon md-icon--home md-header-nav__button">
+          </a>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+                <span class="md-header-nav__parent">
+                  Essentials
+                </span>
+              
+            
+            Running in Unity
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">close</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/Rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    
+      <i class="md-icon md-icon--home md-nav__button"></i>
+    
+    Rant Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/Rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/developers/" title="Quick-Start for Developers" class="md-nav__link">
+      Quick-Start for Developers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/writers/" title="Quick-Start for Writers" class="md-nav__link">
+      Quick-Start for Writers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Essentials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Essentials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../errors/" title="Handling Errors" class="md-nav__link">
+      Handling Errors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../writing-dictionaries/" title="Writing Dictionaries" class="md-nav__link">
+      Writing Dictionaries
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../packages/" title="Packages" class="md-nav__link">
+      Packages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../formatting/" title="Formatting" class="md-nav__link">
+      Formatting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Running in Unity
+      </label>
+    
+    <a href="./" title="Running in Unity" class="md-nav__link md-nav__link--active">
+      Running in Unity
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-get-rant" title="Step 1: Get Rant" class="md-nav__link">
+    Step 1: Get Rant
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#download-binary" title="Download binary" class="md-nav__link">
+    Download binary
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-source" title="From source" class="md-nav__link">
+    From source
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-add-rant-to-unity-project" title="Step 2: Add Rant to Unity project" class="md-nav__link">
+    Step 2: Add Rant to Unity project
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-rant-resources" title="Adding Rant resources" class="md-nav__link">
+    Adding Rant resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-set-up-a-scene" title="Step 3: Set up a scene" class="md-nav__link">
+    Step 3: Set up a scene
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-test-it-out" title="Step 4: Test it out" class="md-nav__link">
+    Step 4: Test it out
+  </a>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../rct/" title="Command-Line Tools" class="md-nav__link">
+      Command-Line Tools
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/rant-args/" title="Pattern Arguments" class="md-nav__link">
+      Pattern Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/variable-access/" title="Rant Variables in C#" class="md-nav__link">
+      Rant Variables in C#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/serial-patterns/" title="Serial Patterns" class="md-nav__link">
+      Serial Patterns
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API Reference" class="md-nav__link">
+      API Reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Language Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Language Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1">
+    
+    <label class="md-nav__link" for="nav-6-1">
+      Functions
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-1">
+        Functions
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions-overview/" title="Functions Overview" class="md-nav__link">
+      Functions Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions/" title="Function Reference" class="md-nav__link">
+      Function Reference
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-2" type="checkbox" id="nav-6-2">
+    
+    <label class="md-nav__link" for="nav-6-2">
+      Blocks
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-2">
+        Blocks
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/" title="Blocks Overview" class="md-nav__link">
+      Blocks Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-attributes/" title="Block Attributes" class="md-nav__link">
+      Block Attributes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-state-functions/" title="State Functions" class="md-nav__link">
+      State Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/synchronizers/" title="Synchronizers" class="md-nav__link">
+      Synchronizers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-3" type="checkbox" id="nav-6-3">
+    
+    <label class="md-nav__link" for="nav-6-3">
+      Queries
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-3">
+        Queries
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/" title="Query Basics" class="md-nav__link">
+      Query Basics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/classfilters/" title="Class Filters" class="md-nav__link">
+      Class Filters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/carriers/" title="Carriers" class="md-nav__link">
+      Carriers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/specials/" title="Specials" class="md-nav__link">
+      Specials
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/query-builders/" title="Dynamic Queries" class="md-nav__link">
+      Dynamic Queries
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/escape-sequences/" title="Escape Sequences" class="md-nav__link">
+      Escape Sequences
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbatim-strings/" title="Verbatim Strings" class="md-nav__link">
+      Verbatim Strings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbose-chars/" title="Verbose Characters" class="md-nav__link">
+      Verbose Characters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/replacers/" title="Replacers" class="md-nav__link">
+      Replacers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/subroutines/" title="Subroutines" class="md-nav__link">
+      Subroutines
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-10" type="checkbox" id="nav-6-10">
+    
+    <label class="md-nav__link" for="nav-6-10">
+      Variables
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-10">
+        Variables
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/general-functions/" title="General Functions" class="md-nav__link">
+      General Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/num-functions/" title="Number Functions" class="md-nav__link">
+      Number Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/bool-functions/" title="Boolean Functions" class="md-nav__link">
+      Boolean Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/list-functions/" title="List Functions" class="md-nav__link">
+      List Functions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Advanced
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Advanced
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/package-format/" title="Package Format" class="md-nav__link">
+      Package Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/program-format/" title="Program Format" class="md-nav__link">
+      Program Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/serialized-table-format/" title="Serialized Table Format" class="md-nav__link">
+      Serialized Table Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/compatibility/" title="Compatibility Standard" class="md-nav__link">
+      Compatibility Standard
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-get-rant" title="Step 1: Get Rant" class="md-nav__link">
+    Step 1: Get Rant
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#download-binary" title="Download binary" class="md-nav__link">
+    Download binary
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-source" title="From source" class="md-nav__link">
+    From source
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-add-rant-to-unity-project" title="Step 2: Add Rant to Unity project" class="md-nav__link">
+    Step 2: Add Rant to Unity project
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-rant-resources" title="Adding Rant resources" class="md-nav__link">
+    Adding Rant resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-set-up-a-scene" title="Step 3: Set up a scene" class="md-nav__link">
+    Step 3: Set up a scene
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-test-it-out" title="Step 4: Test it out" class="md-nav__link">
+    Step 4: Test it out
+  </a>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Running in Unity</h1>
+                
+                <p>This article demonstrates how to install Rant into a Unity project and get patterns
+running with a simple script on a UI element.</p>
+<p>You will need to be using <strong>Unity 2017.1.0</strong> (beta or newer) in order for Rant to work.</p>
+<h2 id="step-1-get-rant">Step 1: Get Rant<a class="headerlink" href="#step-1-get-rant" title="Permanent link">[link]</a></h2>
+<p>You can acquire Rant by downloading a pre-built binary, or by compiling it yourself.</p>
+<h3 id="download-binary">Download binary<a class="headerlink" href="#download-binary" title="Permanent link">[link]</a></h3>
+<p>You can download the latest build from <a href="https://ci.appveyor.com/project/TheBerkin/rant">AppVeyor</a>.</p>
+<h3 id="from-source">From source<a class="headerlink" href="#from-source" title="Permanent link">[link]</a></h3>
+<p>To build from source, choose the <strong>Release</strong> build configuration within Visual Studio and build the project.
+You can then find the built DLL at <strong>Rant/bin/Release/Rant.dll</strong>.</p>
+<p><img alt="Step 1" src="../../img/unityinstall-1.png" /></p>
+<h2 id="step-2-add-rant-to-unity-project">Step 2: Add Rant to Unity project<a class="headerlink" href="#step-2-add-rant-to-unity-project" title="Permanent link">[link]</a></h2>
+<p>Add Rant.Unity.dll to your Unity project's Assets folder and it will be automatically
+imported as a reference to the project. </p>
+<p><img alt="Step 2" src="../../img/unityinstall-2.png" /></p>
+<p>Make sure your <strong>Scripting Runtime Version</strong> and <strong>Api Compatibility Level</strong> are set to <code>.NET 4.6</code>.
+Otherwise, you will encounter import errors.</p>
+<p><img alt="API compatability setting" src="../../img/unityinstall-apicompat.png" /></p>
+<p>You can find these settings in <strong>Edit &gt; Project Settings &gt; Player</strong>.</p>
+<h3 id="adding-rant-resources">Adding Rant resources<a class="headerlink" href="#adding-rant-resources" title="Permanent link">[link]</a></h3>
+<p>Rant can load resources using streaming assets, which are files that are copied along with the player
+instead of packaged with the rest of the assets. Simply drop your .rantpkg files in your StreamingAssets
+folder and load them from the path given by <code>Application.streamingAssetsPath</code>.</p>
+<p>Alternatively, if you want combine your .rantpkg files with the rest of your assets, 
+you can add them to your Resources folder and then load them with <code>RantPackage.Load(System.Stream)</code>:</p>
+<div class="codehilite"><pre><span></span><span class="kt">var</span> <span class="n">asset</span> <span class="p">=</span> <span class="n">Resources</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="s">&quot;MyPackageName&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">TextAsset</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">(</span><span class="n">asset</span><span class="p">.</span><span class="n">bytes</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">package</span> <span class="p">=</span> <span class="n">RantPackage</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="n">stream</span><span class="p">);</span>
+</pre></div>
+
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you're importing packages into your Resources folder,
+you must change the extension from ".rantpkg" to ".bytes" in order for Unity to import the asset.</p>
+</div>
+<h2 id="step-3-set-up-a-scene">Step 3: Set up a scene<a class="headerlink" href="#step-3-set-up-a-scene" title="Permanent link">[link]</a></h2>
+<p>Let's set up a basic demo to show how Rant can be used from a GameObject.</p>
+<p>To start, creates a blank 2D scene and add a UI Canvas with a Text element.</p>
+<p><img alt="Step 3.1" src="../../img/unityinstall-3-1.png" /></p>
+<p>Once you're happy with your UI, add a new script to your Text element and 
+name it <code>RantText</code>. Copy the following code to the script:</p>
+<div class="codehilite"><pre><span></span><span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">UnityEngine.UI</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Rant</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Rant.Resources</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">RantText</span> <span class="p">:</span> <span class="n">MonoBehaviour</span> 
+<span class="p">{</span>
+    <span class="k">private</span> <span class="n">RantEngine</span> <span class="n">rant</span><span class="p">;</span>
+
+<span class="na">    [TextArea]</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Pattern</span> <span class="p">=</span> <span class="s">&quot;The &lt;adj&gt; &lt;adj-appearance&gt; &lt;noun-animal&gt; &lt;verb.ed-walk&gt; over the &lt;adj&gt; &lt;noun-animal&gt;.&quot;</span><span class="p">;</span>
+
+    <span class="k">void</span> <span class="nf">Start</span><span class="p">()</span> 
+    <span class="p">{</span>
+        <span class="c1">// Load Rant and package</span>
+        <span class="n">rant</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RantEngine</span><span class="p">();</span>
+        <span class="kt">var</span> <span class="n">pkgAsset</span> <span class="p">=</span> <span class="n">Resources</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="s">&quot;Rant/Rantionary-3.0.0&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">TextAsset</span><span class="p">;</span>
+        <span class="n">using</span><span class="p">(</span><span class="kt">var</span> <span class="n">pkgStream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">(</span><span class="n">pkgAsset</span><span class="p">.</span><span class="n">bytes</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="n">rant</span><span class="p">.</span><span class="n">LoadPackage</span><span class="p">(</span><span class="n">RantPackage</span><span class="p">.</span><span class="n">Load</span><span class="p">(</span><span class="n">pkgStream</span><span class="p">));</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Run pattern and set UI text to output</span>
+        <span class="kt">var</span> <span class="n">text</span> <span class="p">=</span> <span class="n">GetComponent</span><span class="p">&lt;</span><span class="n">Text</span><span class="p">&gt;();</span>
+        <span class="kt">var</span> <span class="n">pgm</span> <span class="p">=</span> <span class="n">RantProgram</span><span class="p">.</span><span class="n">CompileString</span><span class="p">(</span><span class="n">Pattern</span><span class="p">);</span>
+        <span class="n">text</span><span class="p">.</span><span class="n">text</span> <span class="p">=</span> <span class="n">rant</span><span class="p">.</span><span class="n">Do</span><span class="p">(</span><span class="n">pgm</span><span class="p">).</span><span class="n">Main</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This script assumes you have a Rant package in your Resources folder.
+Replace the package resource path with the one corresponding to your package.
+You may simply omit the package-loading code if you don't have a package on hand to use.</p>
+<p>The Inspector should now show your component with a Pattern field, which you can use to customize the pattern
+passed to Rant.</p>
+<p><img alt="Step 3.2" src="../../img/unityinstall-3-2.png" /></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Although engine and package loading is handled in the Start() method here, this is simply for demonstration;
+you should handle RantEngine initialization and package loading <strong>only once</strong> and share the RantEngine between all 
+components that need it, rather than loading a new engine for each component like we do here.</p>
+</div>
+<h2 id="step-4-test-it-out">Step 4: Test it out<a class="headerlink" href="#step-4-test-it-out" title="Permanent link">[link]</a></h2>
+<p>Run the game and you should see the UI text change to a randomized output:</p>
+<p><img alt="Step 4" src="../../img/unityinstall-4.png" /></p>
+<p>Congrats! You got Rant working in Unity. Where will you take it from here...?</p>
+<p>A few ideas for further experimentation:</p>
+<ul>
+<li>Modify the script to run a serial pattern (using <code>DoSerial</code>) and have the script cycle through a number of
+outputs with a time interval.</li>
+<li>Use channel names to determine the component properties overwritten by the output.</li>
+<li>Use Rant to generate numbers, colors, and other useful properties!</li>
+<li>
+<p>Pass component field values as Rant variables and use them in a pattern to affect the output. </p>
+<p>(e.g. Generate a dynamic status message based on the player's current health.)</p>
+</li>
+</ul>
+                
+                  
+                
+              
+              
+                
+                  <h2 id="__comments">Comments</h2>
+                  <div id="disqus_thread"></div>
+<script>
+  var disqus_config = function () {
+    this.page.url = "https://berkin.me/rant/howto/unity-setup/";
+    this.page.identifier =
+      "/howto/unity-setup/";
+  };
+  (function() {
+    var d = document, s = d.createElement("script");
+    s.src = "//rantdocs.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../formatting/" title="Formatting" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Formatting
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../rct/" title="Command-Line Tools" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Command-Line Tools
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application-b30566c560.js"></script>
+      
+      
+      <script>app.initialize({url:{base:"../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
