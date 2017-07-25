@@ -3,13 +3,13 @@ branches:
   only:
   - master
 image: Visual Studio 2017
-configuration: Release
+configuration: 
+  - Release
 platform: Any CPU
 shallow_clone: true
 build:
   parallel: true
   verbosity: minimal
-  configuration: Release
 before_build:
 - ps: "nuget restore"
 after_build:

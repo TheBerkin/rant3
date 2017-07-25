@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -127,37 +127,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Unity'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AssemblyName>Rant.Unity</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|AnyCPU'">
-    <OutputPath>..\bin\UnityBuild\</OutputPath>
-    <DefineConstants>TRACE;UNITY</DefineConstants>
-    <DocumentationFile>..\bin\UnityBuild\Rant.Unity.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|x86'">
-    <OutputPath>..\bin\UnityBuild\x86\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\UnityBuild\x86\RantEngine-Unity.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unity|x64'">
-    <OutputPath>..\bin\UnityBuild\x64\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\bin\UnityBuild\x64\RantEngine-Unity.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseDocs|AnyCPU'">
     <OutputPath>..\bin\Release\</OutputPath>
@@ -356,11 +325,12 @@
     <EmbeddedResource Include="Core\Formatting\unicode_code_points.dat" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>cd $(SolutionDir)
-tools\docpal bin\Release\Rant.dll --slim -out docs-src\api\index.md
-mkdocs build --clean
-</PostBuildEvent>
+  <PropertyGroup Condition="'$(Configuration)' == 'ReleaseDocs'">
+    <PostBuildEvent>
+      cd $(SolutionDir)
+      tools\docpal bin\Release\Rant.dll --slim -out docs-src\api\index.md
+      mkdocs build --clean
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
