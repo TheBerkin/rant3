@@ -1,6 +1,6 @@
 site_name: Rant Documentation
 site_author: Nicholas Fleck
-site_url: 'https://berkin.me/rant'
+site_url: 'http://berkin.me/rant'
 docs_dir: docs-src
 site_dir: docs/docs
 
