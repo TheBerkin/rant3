@@ -5,11 +5,10 @@ branches:
 image: Visual Studio 2017
 configuration: 
   - Release
-platform: Any CPU
 shallow_clone: true
 build:
   parallel: true
-  verbosity: minimal
+  verbosity: quiet
 before_build:
 - ps: "nuget restore"
 after_build:
