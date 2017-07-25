@@ -799,6 +799,12 @@ public override bool Equals(object obj)
 **Parameters**
 
 - `obj`: _No Description_
+#### Finalize()
+_No Summary_
+
+```csharp
+protected override void Finalize()
+```
 #### GetHashCode()
 _No Summary_
 
@@ -810,6 +816,12 @@ _No Summary_
 
 ```csharp
 public override System.Type GetType()
+```
+#### MemberwiseClone()
+_No Summary_
+
+```csharp
+protected override object MemberwiseClone()
 ```
 #### ToString()
 _No Summary_
@@ -846,6 +858,12 @@ public override bool Equals(object obj)
 **Parameters**
 
 - `obj`: _No Description_
+#### Finalize()
+_No Summary_
+
+```csharp
+protected override void Finalize()
+```
 #### GetHashCode()
 _No Summary_
 
@@ -857,6 +875,12 @@ _No Summary_
 
 ```csharp
 public override System.Type GetType()
+```
+#### MemberwiseClone()
+_No Summary_
+
+```csharp
+protected override object MemberwiseClone()
 ```
 #### Pluralize(string)
 Converts the specified input noun to a plural version.
@@ -1095,7 +1119,7 @@ _No Summary_
 public override int HResult
 {
     get;
-    set;
+    protected set;
 }
 ```
 #### InnerException
@@ -1460,6 +1484,12 @@ public override bool Equals(object obj)
 **Parameters**
 
 - `obj`: _No Description_
+#### Finalize()
+_No Summary_
+
+```csharp
+protected override void Finalize()
+```
 #### GetHashCode()
 _No Summary_
 
@@ -1471,6 +1501,12 @@ _No Summary_
 
 ```csharp
 public override System.Type GetType()
+```
+#### MemberwiseClone()
+_No Summary_
+
+```csharp
+protected override object MemberwiseClone()
 ```
 #### ToString()
 _No Summary_
@@ -3013,7 +3049,7 @@ _No Summary_
 public override int HResult
 {
     get;
-    set;
+    protected set;
 }
 ```
 #### InnerException
@@ -4371,6 +4407,12 @@ public override bool Equals(object obj)
 **Parameters**
 
 - `obj`: _No Description_
+#### Finalize()
+_No Summary_
+
+```csharp
+protected override void Finalize()
+```
 #### GetHashCode()
 _No Summary_
 
@@ -4382,6 +4424,12 @@ _No Summary_
 
 ```csharp
 public override System.Type GetType()
+```
+#### MemberwiseClone()
+_No Summary_
+
+```csharp
+protected override object MemberwiseClone()
 ```
 #### ToString()
 _No Summary_
@@ -4444,7 +4492,7 @@ _No Summary_
 public override int HResult
 {
     get;
-    set;
+    protected set;
 }
 ```
 #### Index
@@ -4616,7 +4664,7 @@ _No Summary_
 public override int HResult
 {
     get;
-    set;
+    protected set;
 }
 ```
 #### InnerException
@@ -4931,6 +4979,12 @@ public override bool Equals(object obj)
 **Parameters**
 
 - `obj`: _No Description_
+#### Finalize()
+_No Summary_
+
+```csharp
+protected override void Finalize()
+```
 #### GetHashCode()
 _No Summary_
 
@@ -4952,6 +5006,12 @@ _No Summary_
 
 ```csharp
 public override System.Type GetType()
+```
+#### MemberwiseClone()
+_No Summary_
+
+```csharp
+protected override object MemberwiseClone()
 ```
 #### Merge()
 Removes the topmost branch and resumes generation on the next one down.
