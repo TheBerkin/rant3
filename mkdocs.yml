@@ -5,7 +5,7 @@ docs_dir: docs-src
 site_dir: docs/docs
 
 repo_name: 'Rant'
-repo_url: 'https://github.com/TheBerkin/Rant'
+repo_url: 'https://github.com/TheBerkin/rant'
 
 pages:
     - "Home": index.md  
