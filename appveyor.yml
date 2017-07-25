@@ -9,6 +9,7 @@ shallow_clone: true
 build:
   parallel: true
   verbosity: minimal
+  configuration: Release
 before_build:
 - ps: "nuget restore"
 after_build:
