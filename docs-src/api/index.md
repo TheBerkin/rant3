@@ -2715,6 +2715,18 @@ _No Summary_
 ```csharp
 public override int GetHashCode()
 ```
+#### GetLoadedPackages()
+Enumerates all packages loaded by this engine instance.
+
+```csharp
+public System.Collections.Generic.IEnumerable<Rant.Resources.RantPackage> GetLoadedPackages()
+```
+#### GetLoadedProgramNames()
+Enumerates the names of all loaded programs available in this engine instance.
+
+```csharp
+public System.Collections.Generic.IEnumerable<string> GetLoadedProgramNames()
+```
 #### GetType()
 _No Summary_
 
@@ -3752,7 +3764,7 @@ public System.Collections.Generic.IEnumerable<Rant.Resources.RantPackageDependen
 _No Summary_
 
 ```csharp
-public override int GetHashCode()
+public virtual int GetHashCode()
 ```
 #### GetResources()
 Enumerates all resources in the package.

@@ -3480,6 +3480,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getloadedpackages" title="GetLoadedPackages()" class="md-nav__link">
+    GetLoadedPackages()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getloadedprogramnames" title="GetLoadedProgramNames()" class="md-nav__link">
+    GetLoadedProgramNames()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gettype_20" title="GetType()" class="md-nav__link">
     GetType()
   </a>
@@ -9924,6 +9938,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getloadedpackages" title="GetLoadedPackages()" class="md-nav__link">
+    GetLoadedPackages()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getloadedprogramnames" title="GetLoadedProgramNames()" class="md-nav__link">
+    GetLoadedProgramNames()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gettype_20" title="GetType()" class="md-nav__link">
     GetType()
   </a>
@@ -15612,6 +15640,18 @@ Use an overload of DoSerial() that accepts a RantProgram instead of a string.</p
 </pre></div>
 
 
+<h4 id="getloadedpackages">GetLoadedPackages()<a class="headerlink" href="#getloadedpackages" title="Permanent link">[link]</a></h4>
+<p>Enumerates all packages loaded by this engine instance.</p>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">Generic</span><span class="p">.</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Rant</span><span class="p">.</span><span class="n">Resources</span><span class="p">.</span><span class="n">RantPackage</span><span class="p">&gt;</span> <span class="n">GetLoadedPackages</span><span class="p">()</span>
+</pre></div>
+
+
+<h4 id="getloadedprogramnames">GetLoadedProgramNames()<a class="headerlink" href="#getloadedprogramnames" title="Permanent link">[link]</a></h4>
+<p>Enumerates the names of all loaded programs available in this engine instance.</p>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">Generic</span><span class="p">.</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">GetLoadedProgramNames</span><span class="p">()</span>
+</pre></div>
+
+
 <h4 id="gettype_20">GetType()<a class="headerlink" href="#gettype_20" title="Permanent link">[link]</a></h4>
 <p><em>No Summary</em></p>
 <div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="n">System</span><span class="p">.</span><span class="n">Type</span> <span class="n">GetType</span><span class="p">()</span>
@@ -16663,7 +16703,7 @@ The provider argument is not used. Please use ToString(String).</p>
 
 <h4 id="gethashcode_27">GetHashCode()<a class="headerlink" href="#gethashcode_27" title="Permanent link">[link]</a></h4>
 <p><em>No Summary</em></p>
-<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">override</span> <span class="kt">int</span> <span class="nf">GetHashCode</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><span class="k">public</span> <span class="k">virtual</span> <span class="kt">int</span> <span class="nf">GetHashCode</span><span class="p">()</span>
 </pre></div>
 
 

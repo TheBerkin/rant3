@@ -127,7 +127,7 @@ namespace Rant.Resources
         /// Gets the hash code for the instance.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() => ID.GetHashCode();
+        public override int GetHashCode() => (ID.GetHashCode() + 13) * (Version.GetHashCode() + 17);
 
         /// <summary>
         /// Determines whether the current RantPackageDependency is shares an ID with the specified object.

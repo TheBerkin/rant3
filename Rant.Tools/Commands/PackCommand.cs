@@ -107,10 +107,22 @@ namespace Rant.Tools.Commands
 
         private static void Pack(RantPackage package, string contentPath)
         {
-            foreach (string path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
-                .Where(p => p.EndsWith(".rant") || p.EndsWith(".rants")))
+            foreach (var path in Directory.EnumerateFiles(contentPath, "*.*", SearchOption.AllDirectories)
+                .Where(p => 
+					p.EndsWith(".rant", StringComparison.OrdinalIgnoreCase) 
+					|| p.EndsWith(".rants", StringComparison.OrdinalIgnoreCase) 
+					|| p.EndsWith(".rantpgm", StringComparison.OrdinalIgnoreCase)))
             {
-                var pattern = RantProgram.CompileFile(path);
+	            RantProgram pattern;
+	            switch (Path.GetExtension(path).ToLower())
+	            {
+					case ".rantpgm":
+						pattern = RantProgram.LoadFile(path);
+						break;
+					default:
+						pattern = RantProgram.CompileFile(path);
+						break;
+	            }
                 string relativePath;
                 TryGetRelativePath(contentPath, path, out relativePath, true);
                 pattern.Name = relativePath;
