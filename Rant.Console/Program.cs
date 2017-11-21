@@ -171,8 +171,8 @@ namespace RantConsole
                                 Path.Combine(Path.GetDirectoryName(path),
                                     Path.GetFileNameWithoutExtension(path) +
                                     (chan.Name != "main"
-                                        ? $".{chan.Name}"
-                                        : "" + "." + Path.GetExtension(path))),
+                                        ? $".{chan.Name}{Path.GetExtension(path)}"
+                                        : Path.GetExtension(path))),
                                 chan.Value);
                         }
                         else

@@ -278,7 +278,7 @@ namespace Rant
         /// Returns a double-precision floating point number between 0 and 1, and advances the generation by 1.
         /// </summary>
         /// <returns></returns>
-        public double NextDouble() => (NextRaw() & Mask64) / MaxDouble;
+        public double NextDouble() => (NextRaw() & Mask64) * (1.0 / long.MaxValue);
 
         /// <summary>
         /// Returns a double-precision floating point number between 0 and the specified maximum value, and advances the generation

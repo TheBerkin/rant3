@@ -69,7 +69,7 @@ namespace Rant.Core.Framework
 		[RantFunction]
 		[RantDescription("Opens a channel for writing and executes the specified pattern inside of it.")]
 		private static IEnumerator<RST> Chan(Sandbox sb,
-						     [RantDescription("The name of the channel.")] string channelName, ChannelVisibility visibility, RST pattern)
+							 [RantDescription("The name of the channel.")] string channelName, ChannelVisibility visibility, RST pattern)
 		{
 			sb.Output.OpenChannel(channelName, visibility);
 			yield return pattern;
@@ -132,9 +132,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction("switch")]
 		[RantDescription("Tests input for equality against the case pairs.")]
-		private static IEnumerator<RST> Switch(Sandbox sb, 
-						       [RantDescription("The string for which to find.")] string input,
-						       [RantDescription("The case pairs against which to test the input.")] params RST[] casePairs)
+		private static IEnumerator<RST> Switch(Sandbox sb,
+							   [RantDescription("The string for which to find.")] string input,
+							   [RantDescription("The case pairs against which to test the input.")] params RST[] casePairs)
 		{
 			if (casePairs.Length % 2 != 0)
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-switch-incomplete-pair");
@@ -168,6 +168,40 @@ namespace Rant.Core.Framework
 			[RantDescription("The string to convert into a number.")] string input)
 		{
 			sb.Print(Util.ParseDouble(input, out double number) ? number : 0);
+		}
+
+		[RantFunction("numw", "nw")]
+		private static void NumberWeighted(Sandbox sb, int min, int bias, int max)
+		{
+			const double sharpness = 1.0;
+			double ww = sb.RNG.NextDouble() * sharpness;
+			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), bias, ww);
+			sb.Print((int)r);
+		}
+
+		[RantFunction("numw", "nw")]
+		private static void NumberWeighted(Sandbox sb, int min, int bias, int max, double sharpness)
+		{
+			double ww = sb.RNG.NextDouble() * sharpness;
+			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), bias, ww);
+			sb.Print((int)r);
+		}
+
+		[RantFunction("numwr", "nwr")]
+		private static void NumberWeightedRange(Sandbox sb, int min, int biasMin, int biasMax, int max)
+		{
+			const double sharpness = 1.0;
+			double ww = sb.RNG.NextDouble() * sharpness;
+			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), sb.RNG.NextDouble(biasMin, biasMax + 1), ww);
+			sb.Print((int)r);
+		}
+
+		[RantFunction("numwr", "nwr")]
+		private static void NumberWeightedRange(Sandbox sb, int min, int biasMin, int biasMax, int max, double sharpness)
+		{
+			double ww = sb.RNG.NextDouble() * sharpness;
+			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), sb.RNG.NextDouble(biasMin, biasMax + 1), ww);
+			sb.Print((int)r);
 		}
 
 		[RantFunction("numfmt")]
@@ -358,7 +392,7 @@ namespace Rant.Core.Framework
 			if (sb.Blocks.Peek().Iteration == 1) yield return action;
 		}
 
-		
+
 
 		#endregion
 
@@ -366,7 +400,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("abbr")]
 		[RantDescription("Abbreviates the specified string.")]
-		private static void Abbreviate(Sandbox sb, 
+		private static void Abbreviate(Sandbox sb,
 			[RantDescription("The string to abbreviate.")]
 			string value)
 		{
@@ -377,7 +411,7 @@ namespace Rant.Core.Framework
 				return;
 			}
 			var buffer = new StringBuilder();
-			for(int i = 0; i < words.Length; i++)
+			for (int i = 0; i < words.Length; i++)
 			{
 				if (i > 0 && sb.Engine.Format.Excludes(words[i])) continue;
 				if (words[i].All(Char.IsDigit))
@@ -403,7 +437,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("len")]
 		[RantDescription("Gets the length of the specified string.")]
-		private static void StringLength(Sandbox sb, 
+		private static void StringLength(Sandbox sb,
 			[RantDescription("The string to measure.")]
 			string str)
 		{
@@ -817,7 +851,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("xdel")]
 		[RantDescription("Deletes a synchronizer.")]
-		private static void SyncDelete(Sandbox sb, 
+		private static void SyncDelete(Sandbox sb,
 			[RantDescription("The name of the synchronizer to delete.")] string name) => sb.SyncManager.Delete(name);
 
 		[RantFunction("xpin")]
@@ -1110,7 +1144,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("query", "q")]
 		[RantDescription("Runs the constructed query with the specified identifier.")]
-		private static IEnumerator<RST> QueryRun(Sandbox sb, 
+		private static IEnumerator<RST> QueryRun(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
 			string id)
 		{
@@ -1121,7 +1155,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the table name for a constructed query.")]
 		private static void QueryName(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The name of the table.")]
 			string name)
 		{
@@ -1132,7 +1166,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the subtype for a constructed query.")]
 		private static void QuerySubtype(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The subtype of the term to select from the returned entry.")]
 			string subtype)
 		{
@@ -1143,7 +1177,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Sets the plural subtype for a constructed query.")]
 		private static void QueryPluralSubtype(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The subtype of the term to select from the returned entry, if the plural flag is set.")]
 			string pluralSubtype)
 		{
@@ -1154,7 +1188,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds positive class filters to a constructed query.")]
 		private static void QueryClassFilterPositive(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The names of the classes that the returned entry must belong to.")]
 			params string[] classes)
 		{
@@ -1172,7 +1206,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds negative class filters to a constructed query.")]
 		private static void QueryClassFilterNegative(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The names of the classes that the returned entry must not belong to.")]
 			params string[] classes)
 		{
@@ -1189,9 +1223,9 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds a carrier component to a constructed query.")]
 		private static void QueryCarrierComponent(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The ID to assign to the carrier component.")]
-			string componentId, 
+			string componentId,
 			[RantDescription("The component type.")]
 			CarrierComponentType componentType)
 		{
@@ -1222,9 +1256,9 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds a positive regex filter to a constructed query.")]
 		private static void QueryRegexFilter(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The regex pattern for the filter.")]
-			string regexPattern, 
+			string regexPattern,
 			[RantDescription("The regex option string for the filter.")]
 			string options)
 		{
@@ -1266,7 +1300,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds an syllable count range filter to a constructed query that defines an absolute syllable count.")]
 		private static void QuerySyllableFilterAbsolute(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The number of syllables.")]
 			int syllables)
 		{
@@ -1278,9 +1312,9 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds a syllable count range filter to a constructed query.")]
 		private static void QuerySyllableFilterRange(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The minimum syllable count.")]
-			int minSyllables, 
+			int minSyllables,
 			[RantDescription("The maximum syllable count.")]
 			int maxSyllables)
 		{
@@ -1319,7 +1353,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds a phrasal complement to a constructed query.")]
 		private static void QueryPhrasalComplement(Sandbox sb,
 			[RantDescription("The ID string for the constructed query.")]
-			string id, 
+			string id,
 			[RantDescription("The phrasal complement pattern.")]
 			RST complement)
 		{
@@ -1332,7 +1366,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("vexists")]
 		[RantDescription("Prints a boolean value indicating whether a variable with the specified name exists.")]
-		private static void VarExists(Sandbox sb, 
+		private static void VarExists(Sandbox sb,
 			[RantDescription("The name of the variable to check.")]
 			string name)
 		{
@@ -1341,7 +1375,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("vl")]
 		[RantDescription("Creates a new list.")]
-		private static void VariableList(Sandbox sb, 
+		private static void VariableList(Sandbox sb,
 			[RantDescription("The name of the list.")]
 			string name)
 		{
@@ -1350,9 +1384,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction("vl")]
 		[RantDescription("Creates a new list with a specified length.")]
-		private static void VariableList(Sandbox sb, 
+		private static void VariableList(Sandbox sb,
 			[RantDescription("The name of the list.")]
-			string name, 
+			string name,
 			[RantDescription("The length of the list.")]
 			int length)
 		{
@@ -1362,9 +1396,9 @@ namespace Rant.Core.Framework
 
 		[RantFunction("ladd", "ladds")]
 		[RantDescription("Adds one or more strings to a list.")]
-		private static void ListAdd(Sandbox sb, 
+		private static void ListAdd(Sandbox sb,
 			[RantDescription("The list to add to.")]
-			RantObject listObj, 
+			RantObject listObj,
 			[RantDescription("The strings to add.")]
 			params string[] values)
 		{
@@ -1376,7 +1410,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds one or more numbers to a list.")]
 		private static void ListAddNumber(Sandbox sb,
 			[RantDescription("The list to add to.")]
-			RantObject listObj, 
+			RantObject listObj,
 			[RantDescription("The numbers to add.")]
 			params double[] values)
 		{
@@ -1388,7 +1422,7 @@ namespace Rant.Core.Framework
 		[RantDescription("Adds one or more patterns to a list.")]
 		private static void ListAddPattern(Sandbox sb,
 			[RantDescription("The list to add to.")]
-			RantObject listObj, 
+			RantObject listObj,
 			[RantDescription("The patterns to add.")]
 			params RST[] values)
 		{
@@ -1485,7 +1519,7 @@ namespace Rant.Core.Framework
 			if (index < 0 || index > list.Count) throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-index-out-of-range", list.Count - 1, index);
 			list.Insert(index, new RantObject(value));
 		}
-	
+
 		[RantFunction("linsn")]
 		[RantDescription("Inserts a number at the specified index in a list.")]
 		private static void ListInsert(Sandbox sb, RantObject listObj, int index, double value)
@@ -1624,7 +1658,7 @@ namespace Rant.Core.Framework
 				throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
 			var list = listObj.Value as List<RantObject>;
 			var newList = new List<RantObject>(list.Count);
-			foreach(var val in list)
+			foreach (var val in list)
 			{
 				sb.Objects.EnterScope();
 				sb.Objects[varname] = val;
@@ -1633,7 +1667,7 @@ namespace Rant.Core.Framework
 				var output = sb.Return();
 				sb.Objects.ExitScope();
 
-				if(output == TRUE)
+				if (output == TRUE)
 					newList.Add(val);
 				else if (output != FALSE) // if output is neither, it's not a boolean
 					throw new RantRuntimeException(sb, condition, "err-runtime-unexpected-type", RantObjectType.Boolean, RantObjectType.String);
@@ -2072,7 +2106,7 @@ namespace Rant.Core.Framework
 
 		[RantFunction("and")]
 		[RantDescription("Prints a boolean value indicating whether both of the boolean values 'a' and 'b' are true.")]
-		private static void And(Sandbox sb, 
+		private static void And(Sandbox sb,
 					[RantDescription("Boolean value to compare.")] bool a,
 					[RantDescription("Boolean value to compare.")] params bool[] b)
 		{
@@ -2181,7 +2215,7 @@ namespace Rant.Core.Framework
 			[RantDescription("The body of the loop.")]
 			RST body)
 		{
-			while(true)
+			while (true)
 			{
 				sb.AddOutputWriter();
 				yield return condition;
