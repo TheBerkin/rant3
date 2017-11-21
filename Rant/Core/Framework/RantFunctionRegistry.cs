@@ -171,7 +171,11 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("numw", "nw")]
-		private static void NumberWeighted(Sandbox sb, int min, int bias, int max)
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds with a bias towards a value within the given range.")]
+		private static void NumberWeighted(Sandbox sb,
+			[RantDescription("The minimum value of the number to generate.")] int min, 
+			[RantDescription("The value toward which to bias the distribution.")] int bias,
+			[RantDescription("The maximum value of the number to generate.")] int max)
 		{
 			const double sharpness = 1.0;
 			double ww = sb.RNG.NextDouble() * sharpness;
@@ -180,7 +184,12 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("numw", "nw")]
-		private static void NumberWeighted(Sandbox sb, int min, int bias, int max, double sharpness)
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds with an adjustable bias towards a value within the given range.")]
+		private static void NumberWeighted(Sandbox sb,
+			[RantDescription("The minimum value of the number to generate.")] int min,
+			[RantDescription("The value toward which to bias the distribution.")] int bias,
+			[RantDescription("The maximum value of the number to generate.")] int max,
+			[RantDescription("A decimal value specifying how strong the bias should be. Zero means no bias.")] double sharpness)
 		{
 			double ww = sb.RNG.NextDouble() * sharpness;
 			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), bias, ww);
@@ -188,7 +197,12 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("numwr", "nwr")]
-		private static void NumberWeightedRange(Sandbox sb, int min, int biasMin, int biasMax, int max)
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds with a bias towards a sub-range of values.")]
+		private static void NumberWeightedRange(Sandbox sb,
+			[RantDescription("The minimum value of the number to generate.")] int min,
+			[RantDescription("The minimum value of the bias range.")] int biasMin,
+			[RantDescription("The maximum value of the bias range.")] int biasMax,
+			[RantDescription("The minimum value of the number to generate.")] int max)
 		{
 			const double sharpness = 1.0;
 			double ww = sb.RNG.NextDouble() * sharpness;
@@ -197,7 +211,13 @@ namespace Rant.Core.Framework
 		}
 
 		[RantFunction("numwr", "nwr")]
-		private static void NumberWeightedRange(Sandbox sb, int min, int biasMin, int biasMax, int max, double sharpness)
+		[RantDescription("Prints a random number between the specified minimum and maximum bounds with an adjustable bias towards a sub-range of values.")]
+		private static void NumberWeightedRange(Sandbox sb,
+			[RantDescription("The minimum value of the number to generate.")] int min,
+			[RantDescription("The minimum value of the bias range.")] int biasMin,
+			[RantDescription("The maximum value of the bias range.")] int biasMax,
+			[RantDescription("The minimum value of the number to generate.")] int max,
+			[RantDescription("A decimal value specifying how strong the bias should be. Zero means no bias.")] double sharpness)
 		{
 			double ww = sb.RNG.NextDouble() * sharpness;
 			double r = Util.LerpClamp(sb.RNG.NextDouble(min, max + 1), sb.RNG.NextDouble(biasMin, biasMax + 1), ww);
