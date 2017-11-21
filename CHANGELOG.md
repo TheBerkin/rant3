@@ -1,5 +1,13 @@
 # Rant Changelog
 
+## v3.0.6 - 21 November, 2017
+
+### Features
+- Add `[nw]` and `[nwr]` weighted random number functions
+
+### Bugfixes
+- Fixed RantConsole adding extra dot to output file extension
+
 ## v3.0.5 - 16 August, 2017
 
 ### Features

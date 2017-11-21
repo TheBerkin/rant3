@@ -506,5 +506,14 @@ namespace Rant.Core.Utilities
 			}
 			return d[n, m];
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	    public static double LerpClamp(double a, double b, double amount)
+        {
+            double d = (1.0 - amount) * a + amount * b;
+            return a < b 
+                ? d < a ? a : d > b ? b : d
+                : d < b ? b : d > a ? a : d;
+	    }
 	}
 }
