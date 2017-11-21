@@ -47,7 +47,7 @@ namespace Rant
 	/// </summary>
 	public sealed class RantEngine
 	{
-		private readonly HashSet<RantPackageDependency> _loadedPackages = new HashSet<RantPackageDependency>();
+		private readonly HashSet<RantPackage> _loadedPackages = new HashSet<RantPackage>();
 		private readonly Dictionary<string, RantProgram> _patternCache = new Dictionary<string, RantProgram>();
 
 		/// <summary>
@@ -147,6 +147,24 @@ namespace Rant
 		}
 
 		/// <summary>
+		/// Enumerates the names of all loaded programs available in this engine instance.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetLoadedProgramNames() => _patternCache.Keys;
+
+		/// <summary>
+		/// Enumerates all packages loaded by this engine instance.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<RantPackage> GetLoadedPackages()
+		{
+			foreach (var pkg in _loadedPackages)
+			{
+				yield return pkg;
+			}
+		}
+
+		/// <summary>
 		/// Returns a boolean value indicating whether a program by the specified name has been loaded from a package.
 		/// </summary>
 		/// <param name="patternName">The name of the program to check.</param>
@@ -175,7 +193,7 @@ namespace Rant
 		public void LoadPackage(RantPackage package)
 		{
 			if (package == null) throw new ArgumentNullException(nameof(package));
-			if (_loadedPackages.Contains(RantPackageDependency.Create(package))) return;
+			if (_loadedPackages.Contains(package)) return;
 
 			foreach (var dependency in package.GetDependencies())
 			{
@@ -186,7 +204,7 @@ namespace Rant
 
 			foreach (var res in package.GetResources()) res.Load(this);
 
-			_loadedPackages.Add(RantPackageDependency.Create(package));
+			_loadedPackages.Add(package);
 		}
 
 		/// <summary>

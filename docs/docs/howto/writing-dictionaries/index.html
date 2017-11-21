@@ -1,0 +1,1615 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="http://berkin.me/rant/howto/writing-dictionaries/">
+      
+      
+        <meta name="author" content="Nicholas Fleck">
+      
+      
+        <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.3">
+    
+    
+      
+        <title>Writing Dictionaries - Rant Documentation</title>
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr-1df76c4e58.js"></script>
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application-acc56dad49.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-8817cfa535.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="deep-purple" data-md-color-accent="blue-grey">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <a href="http://berkin.me/rant" title="Rant Documentation" class="md-icon md-icon--home md-header-nav__button">
+          </a>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+                <span class="md-header-nav__parent">
+                  Essentials
+                </span>
+              
+            
+            Writing Dictionaries
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">close</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    
+      <i class="md-icon md-icon--home md-nav__button"></i>
+    
+    Rant Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/developers/" title="Quick-Start for Developers" class="md-nav__link">
+      Quick-Start for Developers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/writers/" title="Quick-Start for Writers" class="md-nav__link">
+      Quick-Start for Writers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Essentials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Essentials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../errors/" title="Handling Errors" class="md-nav__link">
+      Handling Errors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Writing Dictionaries
+      </label>
+    
+    <a href="./" title="Writing Dictionaries" class="md-nav__link md-nav__link--active">
+      Writing Dictionaries
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terminology" title="Terminology" class="md-nav__link">
+    Terminology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comments" title="Comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#header-structure" title="Header structure" class="md-nav__link">
+    Header structure
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name" title="Name" class="md-nav__link">
+    Name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtypes" title="Subtypes" class="md-nav__link">
+    Subtypes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-classes" title="Hidden classes" class="md-nav__link">
+    Hidden classes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#corpus-structure" title="Corpus structure" class="md-nav__link">
+    Corpus structure
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entries" title="Entries" class="md-nav__link">
+    Entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" title="Templates" class="md-nav__link">
+    Templates
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entry-templates" title="Entry templates" class="md-nav__link">
+    Entry templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dummy-templates" title="Dummy templates" class="md-nav__link">
+    Dummy templates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-templates" title="Using templates" class="md-nav__link">
+    Using templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-ways-to-use-templates" title="Other ways to use templates" class="md-nav__link">
+    Other ways to use templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phrasals" title="Phrasals" class="md-nav__link">
+    Phrasals
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry-properties" title="Entry properties" class="md-nav__link">
+    Entry properties
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class" title="class" class="md-nav__link">
+    class
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weight" title="weight" class="md-nav__link">
+    weight
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pron" title="pron" class="md-nav__link">
+    pron
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-properties" title="Metadata properties" class="md-nav__link">
+    Metadata properties
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-ranges" title="Class ranges" class="md-nav__link">
+    Class ranges
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../packages/" title="Packages" class="md-nav__link">
+      Packages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../formatting/" title="Formatting" class="md-nav__link">
+      Formatting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unity-setup/" title="Running in Unity" class="md-nav__link">
+      Running in Unity
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../rct/" title="Command-Line Tools" class="md-nav__link">
+      Command-Line Tools
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/rant-args/" title="Pattern Arguments" class="md-nav__link">
+      Pattern Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/variable-access/" title="Rant Variables in C#" class="md-nav__link">
+      Rant Variables in C#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/serial-patterns/" title="Serial Patterns" class="md-nav__link">
+      Serial Patterns
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API Reference" class="md-nav__link">
+      API Reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Language Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Language Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1">
+    
+    <label class="md-nav__link" for="nav-6-1">
+      Functions
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-1">
+        Functions
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions-overview/" title="Functions Overview" class="md-nav__link">
+      Functions Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions/" title="Function Reference" class="md-nav__link">
+      Function Reference
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-2" type="checkbox" id="nav-6-2">
+    
+    <label class="md-nav__link" for="nav-6-2">
+      Blocks
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-2">
+        Blocks
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/" title="Blocks Overview" class="md-nav__link">
+      Blocks Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-attributes/" title="Block Attributes" class="md-nav__link">
+      Block Attributes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-state-functions/" title="State Functions" class="md-nav__link">
+      State Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/synchronizers/" title="Synchronizers" class="md-nav__link">
+      Synchronizers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-3" type="checkbox" id="nav-6-3">
+    
+    <label class="md-nav__link" for="nav-6-3">
+      Queries
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-3">
+        Queries
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/" title="Query Basics" class="md-nav__link">
+      Query Basics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/classfilters/" title="Class Filters" class="md-nav__link">
+      Class Filters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/carriers/" title="Carriers" class="md-nav__link">
+      Carriers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/specials/" title="Specials" class="md-nav__link">
+      Specials
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/query-builders/" title="Dynamic Queries" class="md-nav__link">
+      Dynamic Queries
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/escape-sequences/" title="Escape Sequences" class="md-nav__link">
+      Escape Sequences
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbatim-strings/" title="Verbatim Strings" class="md-nav__link">
+      Verbatim Strings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbose-chars/" title="Verbose Characters" class="md-nav__link">
+      Verbose Characters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/replacers/" title="Replacers" class="md-nav__link">
+      Replacers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/subroutines/" title="Subroutines" class="md-nav__link">
+      Subroutines
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-10" type="checkbox" id="nav-6-10">
+    
+    <label class="md-nav__link" for="nav-6-10">
+      Variables
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-10">
+        Variables
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/general-functions/" title="General Functions" class="md-nav__link">
+      General Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/num-functions/" title="Number Functions" class="md-nav__link">
+      Number Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/bool-functions/" title="Boolean Functions" class="md-nav__link">
+      Boolean Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/list-functions/" title="List Functions" class="md-nav__link">
+      List Functions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Advanced
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Advanced
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/package-format/" title="Package Format" class="md-nav__link">
+      Package Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/program-format/" title="Program Format" class="md-nav__link">
+      Program Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/serialized-table-format/" title="Serialized Table Format" class="md-nav__link">
+      Serialized Table Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/compatibility/" title="Compatibility Standard" class="md-nav__link">
+      Compatibility Standard
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terminology" title="Terminology" class="md-nav__link">
+    Terminology
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comments" title="Comments" class="md-nav__link">
+    Comments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#header-structure" title="Header structure" class="md-nav__link">
+    Header structure
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name" title="Name" class="md-nav__link">
+    Name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtypes" title="Subtypes" class="md-nav__link">
+    Subtypes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-classes" title="Hidden classes" class="md-nav__link">
+    Hidden classes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#corpus-structure" title="Corpus structure" class="md-nav__link">
+    Corpus structure
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entries" title="Entries" class="md-nav__link">
+    Entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" title="Templates" class="md-nav__link">
+    Templates
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entry-templates" title="Entry templates" class="md-nav__link">
+    Entry templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dummy-templates" title="Dummy templates" class="md-nav__link">
+    Dummy templates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-templates" title="Using templates" class="md-nav__link">
+    Using templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-ways-to-use-templates" title="Other ways to use templates" class="md-nav__link">
+    Other ways to use templates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phrasals" title="Phrasals" class="md-nav__link">
+    Phrasals
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry-properties" title="Entry properties" class="md-nav__link">
+    Entry properties
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class" title="class" class="md-nav__link">
+    class
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weight" title="weight" class="md-nav__link">
+    weight
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pron" title="pron" class="md-nav__link">
+    pron
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-properties" title="Metadata properties" class="md-nav__link">
+    Metadata properties
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-ranges" title="Class ranges" class="md-nav__link">
+    Class ranges
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Writing Dictionaries</h1>
+                
+                <p>A Rant dictionary is a collection of lists called <strong>tables</strong>, which separate words by their type.
+Each table contains a list of <strong>entries</strong>, which consist of equal numbers of <strong>terms</strong>. Terms are the actual strings
+that Rant queries fetch.</p>
+<p>A dictionary is contained within a folder and consists of two major components:
+the first is the tables files, which have the extension <code>.table</code>. The second is a file
+called <code>rantpkg.json</code> which contains information that allows Rant to create
+a package from the dictionary.</p>
+<p>This page will discuss the .table format. To learn more about rantpkg.json and creating packages,
+see the <a href="../packages/">packages</a> page.</p>
+<h2 id="terminology">Terminology<a class="headerlink" href="#terminology" title="Permanent link">[link]</a></h2>
+<p>Tables are split into two main sections: the <strong>header</strong> and the <strong>lexicon</strong>.</p>
+<p>The header comes first and describes the table's name, layout, and any special properties it may have.
+It consists of a number of <strong>directives</strong>. Directives are one-line instructions that start with an <code>@</code> symbol.
+Directives can also appear in the lexicon, but we'll discuss header directives first.</p>
+<p>Directives can take arguments, which are separated by commas. You may also use escape sequences like <code>\n</code>, <code>\uxxxx</code>, and <code>\Uxxxxxxx</code>.</p>
+<h2 id="comments">Comments<a class="headerlink" href="#comments" title="Permanent link">[link]</a></h2>
+<p>Table comments are just like Rant comments, starting with <code>#</code> and taking up the rest of the line. They may not appear within a quoted argument.</p>
+<div class="codehilite"><pre><span></span>@name adj
+@sub regular    # Normal form
+@sub com        # Comparative form
+@sub sup        # Superlative form
+</pre></div>
+
+
+<h2 id="header-structure">Header structure<a class="headerlink" href="#header-structure" title="Permanent link">[link]</a></h2>
+<h3 id="name">Name<a class="headerlink" href="#name" title="Permanent link">[link]</a></h3>
+<p>At minimum, a table expects a name. This is specified with the <code>@name</code> directive.</p>
+<div class="codehilite"><pre><span></span>@name noun
+
+# ...
+</pre></div>
+
+
+<h3 id="subtypes">Subtypes<a class="headerlink" href="#subtypes" title="Permanent link">[link]</a></h3>
+<p>Subtypes are strings that point to specific term numbers within an entry and can be used to access different variants of a word, such as
+verb conjugations, noun forms, adjective forms, and other useful information.</p>
+<p>You can add a subtype using the <code>@sub</code> directive. By default, Rant adds one subtype to your table, so you don't need one if your entries
+only have one form.</p>
+<div class="codehilite"><pre><span></span>@name noun
+<span class="hll">@sub singular, sg
+</span><span class="hll">@sub plural, pl
+</span></pre></div>
+
+
+<p>Each @sub directive assigns subtypes to a specific term, which corresponds to the number of the <code>@sub</code> directive.
+In the above case, the first term has the subtypes <code>singular</code> and <code>sg</code>, while the second term has the subtypes <code>plural</code> and <code>pl</code>.
+A term can have as many subtypes as you want, as long as it has at least one.</p>
+<p>If you'd like to sort your <code>@sub</code> directives independent of the term order, you can indicate the term index before the subtype name
+to override the default behavior.</p>
+<p>This header is equivalent to the one above:</p>
+<div class="codehilite"><pre><span></span>@name noun
+@sub 1, plural, pl
+@sub 0, singular, sg
+</pre></div>
+
+
+<h3 id="hidden-classes">Hidden classes<a class="headerlink" href="#hidden-classes" title="Permanent link">[link]</a></h3>
+<p>If you want specific classes to be excluded from the query results unless explicitly requested, you can indicate these classes
+using the <code>@hide</code> directive. Rant always implicitly hides the <code>nsfw</code> class for you.</p>
+<div class="codehilite"><pre><span></span>@name verb
+@sub present, imperative
+@sub gerund, ing
+@sub simple_past, ed
+@sub third_person, third_person_present, s
+@sub agent, er
+@sub past_participle, pp
+@sub nominalization, nom
+@sub plural_nominalization, noms
+
+<span class="hll">@hide visual, speech
+</span></pre></div>
+
+
+<h2 id="corpus-structure">Corpus structure<a class="headerlink" href="#corpus-structure" title="Permanent link">[link]</a></h2>
+<p>The main component of the corpus is, of course, its entries.
+An entry occupies a single line and starts with the <code>&gt;</code> symbol, followed by comma-separated terms.
+Escape sequences are permitted in the terms, and boundary whitespace is ignored.</p>
+<h3 id="entries">Entries<a class="headerlink" href="#entries" title="Permanent link">[link]</a></h3>
+<p>Terms should be written in the order of the subtypes. In the below example,
+singular comes first, and then plural.</p>
+<div class="codehilite"><pre><span></span>@name noun
+@sub singular, sg
+@sub plural, pl
+
+<span class="hll">&gt; chickadee, chickadees
+</span><span class="hll">&gt; chicken, chickens
+</span><span class="hll">&gt; crow, crows
+</span><span class="hll">&gt; dove, doves
+</span><span class="hll">&gt; eagle, eagles
+</span><span class="hll">&gt; finch, finches
+</span><span class="hll">&gt; flamingo, flamingos
+</span>
+# ...
+</pre></div>
+
+
+<h3 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">[link]</a></h3>
+<p>You can reuse other entries to create new entries that expand on that information.
+Entries used in this way are called <strong>templates</strong>.</p>
+<p>There are two kinds of templates: <em>entry templates</em> and <em>dummy templates</em>.</p>
+<h4 id="entry-templates">Entry templates<a class="headerlink" href="#entry-templates" title="Permanent link">[link]</a></h4>
+<p>Entry templates exist as actual entries in the table and are assigned an identifier by which they can
+be referred to by other entries looking to expand on them.</p>
+<p>This identifier is assigned using the <code>@id</code> directive just before the entry.</p>
+<div class="codehilite"><pre><span></span>@id penguin
+&gt; penguin, penguins
+    - class bird, penguin, flightless
+</pre></div>
+
+
+<h4 id="dummy-templates">Dummy templates<a class="headerlink" href="#dummy-templates" title="Permanent link">[link]</a></h4>
+<p>Dummy templates do not exist as entries, and only serve as a basis on which to build other entries.
+To mark an entry template as a dummy, insert the <code>@dummy</code> directive before the entry.</p>
+<div class="codehilite"><pre><span></span>@id penguin
+@dummy
+&gt; penguin, penguins
+    - class bird, penguin, flightless
+</pre></div>
+
+
+<h3 id="using-templates">Using templates<a class="headerlink" href="#using-templates" title="Permanent link">[link]</a></h3>
+<p>To use a template in another entry, one of two methods can be used.
+The first is to use the <code>@using</code> directive before the entry, passing in the name of the template.</p>
+<div class="codehilite"><pre><span></span>@using penguin
+&gt; erect-crested [], erect-crested []
+</pre></div>
+
+
+<p>You will notice something strange going on in the terms: a pair of brackets has appeared after the term text.
+This pair of brackets inserts the text from the template's corresponding term into the new term. </p>
+<p>The above is equivalent to the following entry:</p>
+<div class="codehilite"><pre><span></span>&gt; erect-created penguin, erect-created penguins
+    - class bird, penguin, flightless
+</pre></div>
+
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When you use <code>@using</code>, the new entry also inherits all of the template's properties.</p>
+</div>
+<h3 id="other-ways-to-use-templates">Other ways to use templates<a class="headerlink" href="#other-ways-to-use-templates" title="Permanent link">[link]</a></h3>
+<p>The other way to use templates is to reference them by name from inside the terms. This is useful especially
+if you need more than one template, or you want to use a term that doesn't correspond with the inheriting term's
+subtype. You don't need a <code>@using</code> directive to do this.</p>
+<p>The following template reference structures may be used anywhere inside a term:</p>
+<div class="codehilite"><pre><span></span>[template-id]           # Inserts template&#39;s corresponding term
+[template-id.index]     # Inserts tempalte&#39;s term corresponding with the index
+[template-id.subtype]   # Inserts template&#39;s term corresponding with the subtype
+</pre></div>
+
+
+<h3 id="phrasals">Phrasals<a class="headerlink" href="#phrasals" title="Permanent link">[link]</a></h3>
+<p>The position of the phrasal complement can be indicated using the <code>+</code> symbol in a term.</p>
+<div class="codehilite"><pre><span></span>&gt; set + on fire, setting + on fire, set + on fire, sets + on fire, ...
+</pre></div>
+
+
+<h3 id="entry-properties">Entry properties<a class="headerlink" href="#entry-properties" title="Permanent link">[link]</a></h3>
+<p>Entries can be assigned properties by creating a line below the entry starting with <code>-</code>, followed
+by a key-value pair separated with a space. There are several properties you can assign to entries.
+A simple property that adds a class looks like this:</p>
+<div class="codehilite"><pre><span></span>&gt; dog, dogs
+    - class mammal
+</pre></div>
+
+
+<h4 id="class">class<a class="headerlink" href="#class" title="Permanent link">[link]</a></h4>
+<p>The <code>class</code> property assigns classes to an entry. You can assign multiple classes separated by commas;
+for example, the noun <code>spear</code> might have an entry that looks like this:</p>
+<div class="codehilite"><pre><span></span>&gt; spear, spears
+    - class weapon, sharp, long
+</pre></div>
+
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Class names may only contain letters, numbers, and underscores.</p>
+</div>
+<p>There is another way to assign classes using a special directive, which is discussed further on.</p>
+<h4 id="weight">weight<a class="headerlink" href="#weight" title="Permanent link">[link]</a></h4>
+<p>The <code>weight</code> property affects the weight of an entry, such that higher weight values make the entry
+more likely to be chosen by a query (as long as the entry passes all filters on the query).
+The weight value must be a decimal number greater than zero.</p>
+<p>An entry with no <code>weight</code> property is given a weight of 1 by default.</p>
+<div class="codehilite"><pre><span></span>@name name
+
+&gt; John
+&gt; Bob
+&gt; Paul
+&gt; Gary
+&gt; David
+    - weight 0.1 #Appears 10% as often as the others
+</pre></div>
+
+
+<h4 id="pron">pron<a class="headerlink" href="#pron" title="Permanent link">[link]</a></h4>
+<p>The <code>pron</code> property assigns pronunciation data to the terms and requires the same number of values as terms.
+This data is used by the rhyming engine.</p>
+<p>Pronunciation data is expected in X-SAMPA format.</p>
+<div class="codehilite"><pre><span></span>&gt; baseball, baseballs
+    - class ball
+    - pron b\&quot;eIs b\&quot;Ol, b\&quot;eIs b\&quot;Olz
+</pre></div>
+
+
+<h4 id="metadata-properties">Metadata properties<a class="headerlink" href="#metadata-properties" title="Permanent link">[link]</a></h4>
+<p>You can also assign a property of any name to add special metadata not covered by the built-in properties.
+Rant will store this information as a key/value pair in the entry. Multiple values are stored as an array.</p>
+<div class="codehilite"><pre><span></span>&gt; dog, dogs
+    - class mammal
+    - species Canis lupus
+&gt; cat, cats
+    - class mammal
+    - species Felis catus
+</pre></div>
+
+
+<h3 id="class-ranges">Class ranges<a class="headerlink" href="#class-ranges" title="Permanent link">[link]</a></h3>
+<p>It is possible to assign one or more classes to a section of entries using the <code>@class</code> and <code>@endclass</code> directives to create a <em>class range</em>.</p>
+<p>The <code>@class</code> directive begins a class range and is passed the classes you want to apply to the entries within the range.</p>
+<p>The <code>@endclass</code> directive takes no arguments and marks the end of the range.</p>
+<div class="codehilite"><pre><span></span>@class penguin, bird, flightless
+    &gt; adelie penguin, adelie penguins
+    &gt; African penguin, African penguins
+    &gt; chinstrap penguin, chinstrap penguins
+    &gt; emperor penguin, emperor penguins
+    &gt; erect-crested penguin, erect-crested penguins
+    &gt; fairy penguin, fairy penguins
+    &gt; gentoo penguin, gentoo penguins
+    &gt; Humboldt penguin, Humboldt penguins
+    &gt; king penguin, king penguins
+    &gt; macaroni penguin, macaroni penguins
+    &gt; Magellanic penguin, Magellanic penguins
+    &gt; penguin, penguins
+    &gt; rockhopper penguin, rockhopper penguins
+    &gt; yellow-eyed penguin, yellow-eyed penguins
+@endclass
+</pre></div>
+
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Class ranges can also be nested to create even more specific classifications.</p>
+</div>
+                
+                  
+                
+              
+              
+                
+                  <h2 id="__comments">Comments</h2>
+                  <div id="disqus_thread"></div>
+<script>
+  var disqus_config = function () {
+    this.page.url = "http://berkin.me/rant/howto/writing-dictionaries/";
+    this.page.identifier =
+      "/howto/writing-dictionaries/";
+  };
+  (function() {
+    var d = document, s = d.createElement("script");
+    s.src = "//rantdocs.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../errors/" title="Handling Errors" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Handling Errors
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../packages/" title="Packages" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Packages
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application-b30566c560.js"></script>
+      
+      
+      <script>app.initialize({url:{base:"../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

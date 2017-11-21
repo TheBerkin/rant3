@@ -18,6 +18,7 @@ to automate repetitive writing tasks with a high degree of creative freedom.
   <a href="https://ci.appveyor.com/project/TheBerkin/rant/branch/dev/artifacts">
     <img src="https://ci.appveyor.com/api/projects/status/2vn0imlns20n739a/branch/dev?svg=true&passingText=Dev%20Build%20Passing&pendingText=Dev%20Build%20Pending&failingText=Dev%20Build%20Is%20Kill" alt="Build status" />
   </a>
+  <img src="https://img.shields.io/nuget/dt/Rant.svg" title="NuGet Downloads"/>
   <br/>
   <b>Join us on the official <a href="https://discord.gg/qsMYFwh">Discord server</a>!</b>
 </p>

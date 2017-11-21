@@ -1,0 +1,1214 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="http://berkin.me/rant/getting-started/developers/">
+      
+      
+        <meta name="author" content="Nicholas Fleck">
+      
+      
+        <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.3">
+    
+    
+      
+        <title>Quick-Start for Developers - Rant Documentation</title>
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr-1df76c4e58.js"></script>
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application-acc56dad49.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-8817cfa535.palette.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="deep-purple" data-md-color-accent="blue-grey">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <a href="http://berkin.me/rant" title="Rant Documentation" class="md-icon md-icon--home md-header-nav__button">
+          </a>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+                <span class="md-header-nav__parent">
+                  Getting Started
+                </span>
+              
+            
+            Quick-Start for Developers
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">close</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    
+      <i class="md-icon md-icon--home md-nav__button"></i>
+    
+    Rant Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/TheBerkin/rant" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Rant
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Quick-Start for Developers
+      </label>
+    
+    <a href="./" title="Quick-Start for Developers" class="md-nav__link md-nav__link--active">
+      Quick-Start for Developers
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-rant" title="Installing Rant" class="md-nav__link">
+    Installing Rant
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-an-engine-context" title="Creating an engine context" class="md-nav__link">
+    Creating an engine context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-a-pattern" title="Running a pattern" class="md-nav__link">
+    Running a pattern
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-multiple-outputs" title="Handling multiple outputs" class="md-nav__link">
+    Handling multiple outputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serial-programs" title="Serial programs" class="md-nav__link">
+    Serial programs
+  </a>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../writers/" title="Quick-Start for Writers" class="md-nav__link">
+      Quick-Start for Writers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Essentials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Essentials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/errors/" title="Handling Errors" class="md-nav__link">
+      Handling Errors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/writing-dictionaries/" title="Writing Dictionaries" class="md-nav__link">
+      Writing Dictionaries
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/packages/" title="Packages" class="md-nav__link">
+      Packages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/formatting/" title="Formatting" class="md-nav__link">
+      Formatting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/unity-setup/" title="Running in Unity" class="md-nav__link">
+      Running in Unity
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../howto/rct/" title="Command-Line Tools" class="md-nav__link">
+      Command-Line Tools
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/rant-args/" title="Pattern Arguments" class="md-nav__link">
+      Pattern Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/variable-access/" title="Rant Variables in C#" class="md-nav__link">
+      Rant Variables in C#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/serial-patterns/" title="Serial Patterns" class="md-nav__link">
+      Serial Patterns
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API Reference" class="md-nav__link">
+      API Reference
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Language Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Language Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-1" type="checkbox" id="nav-6-1">
+    
+    <label class="md-nav__link" for="nav-6-1">
+      Functions
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-1">
+        Functions
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions-overview/" title="Functions Overview" class="md-nav__link">
+      Functions Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/functions/" title="Function Reference" class="md-nav__link">
+      Function Reference
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-2" type="checkbox" id="nav-6-2">
+    
+    <label class="md-nav__link" for="nav-6-2">
+      Blocks
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-2">
+        Blocks
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/" title="Blocks Overview" class="md-nav__link">
+      Blocks Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-attributes/" title="Block Attributes" class="md-nav__link">
+      Block Attributes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/block-state-functions/" title="State Functions" class="md-nav__link">
+      State Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/blocks/synchronizers/" title="Synchronizers" class="md-nav__link">
+      Synchronizers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-3" type="checkbox" id="nav-6-3">
+    
+    <label class="md-nav__link" for="nav-6-3">
+      Queries
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-3">
+        Queries
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/" title="Query Basics" class="md-nav__link">
+      Query Basics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/classfilters/" title="Class Filters" class="md-nav__link">
+      Class Filters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/carriers/" title="Carriers" class="md-nav__link">
+      Carriers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/specials/" title="Specials" class="md-nav__link">
+      Specials
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/queries/query-builders/" title="Dynamic Queries" class="md-nav__link">
+      Dynamic Queries
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/comments/" title="Comments" class="md-nav__link">
+      Comments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/escape-sequences/" title="Escape Sequences" class="md-nav__link">
+      Escape Sequences
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbatim-strings/" title="Verbatim Strings" class="md-nav__link">
+      Verbatim Strings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/verbose-chars/" title="Verbose Characters" class="md-nav__link">
+      Verbose Characters
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/replacers/" title="Replacers" class="md-nav__link">
+      Replacers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/subroutines/" title="Subroutines" class="md-nav__link">
+      Subroutines
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-10" type="checkbox" id="nav-6-10">
+    
+    <label class="md-nav__link" for="nav-6-10">
+      Variables
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-10">
+        Variables
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/general-functions/" title="General Functions" class="md-nav__link">
+      General Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/num-functions/" title="Number Functions" class="md-nav__link">
+      Number Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/bool-functions/" title="Boolean Functions" class="md-nav__link">
+      Boolean Functions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../language/variables/list-functions/" title="List Functions" class="md-nav__link">
+      List Functions
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Advanced
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Advanced
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/package-format/" title="Package Format" class="md-nav__link">
+      Package Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/program-format/" title="Program Format" class="md-nav__link">
+      Program Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/serialized-table-format/" title="Serialized Table Format" class="md-nav__link">
+      Serialized Table Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../advanced/compatibility/" title="Compatibility Standard" class="md-nav__link">
+      Compatibility Standard
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-rant" title="Installing Rant" class="md-nav__link">
+    Installing Rant
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-an-engine-context" title="Creating an engine context" class="md-nav__link">
+    Creating an engine context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-a-pattern" title="Running a pattern" class="md-nav__link">
+    Running a pattern
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-multiple-outputs" title="Handling multiple outputs" class="md-nav__link">
+    Handling multiple outputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serial-programs" title="Serial programs" class="md-nav__link">
+    Serial programs
+  </a>
+  
+</li>
+      
+      
+      
+        <li class="md-nav__item">
+          <a href="#__comments" title="Comments" class="md-nav__link md-nav__link--active">
+            Comments
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Quick-Start for Developers</h1>
+                
+                <p>If you are a developer who would like to integrate Rant into your C# project with as little effort as possible, this guide is for you.</p>
+<h2 id="installing-rant">Installing Rant<a class="headerlink" href="#installing-rant" title="Permanent link">[link]</a></h2>
+<p>You can easily install Rant in your project by adding <strong>Rant.dll</strong> as a reference.
+Rant has no external dependencies, so don't worry about that.</p>
+<p>However, if you don't want to manually mess around with DLLs, you can use NuGet instead.
+To install the NuGet package for Rant, enter this command into your Package Manager console:</p>
+<div class="codehilite"><pre><span></span>PM&gt; Install-Package Rant
+</pre></div>
+
+
+<p>Kaboom! Rant is installed.</p>
+<h2 id="creating-an-engine-context">Creating an engine context<a class="headerlink" href="#creating-an-engine-context" title="Permanent link">[link]</a></h2>
+<p>Before you can use Rant, you must create a <code>RantEngine</code> instance. 
+The <code>RantEngine</code> class is the main class in Rant, and provides access to the runtime.</p>
+<div class="codehilite"><pre><span></span><span class="kt">var</span> <span class="n">rant</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RantEngine</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Now that you have an instance of <code>RantEngine</code>, you can compile and run patterns.</p>
+<h2 id="running-a-pattern">Running a pattern<a class="headerlink" href="#running-a-pattern" title="Permanent link">[link]</a></h2>
+<p>Let's start with a very simple program that counts to ten:</p>
+<div class="codehilite"><pre><span></span>[numfmt:verbal][rep:10][sep:,\s]{[rn]}
+</pre></div>
+
+
+<p>To run this pattern, you will first need to compile it to a <code>RantProgram</code> and then use the <code>RantEngine.Do</code> method to run it.</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Create the program</span>
+<span class="kt">var</span> <span class="n">pgm</span> <span class="p">=</span> <span class="n">RantProgram</span><span class="p">.</span><span class="n">CompileString</span><span class="p">(</span><span class="s">@&quot;[numfmt:verbal][rep:10][sep:,\s]{[rn]}&quot;</span><span class="p">);</span>
+<span class="c1">// Run the program</span>
+<span class="kt">var</span> <span class="n">output</span> <span class="p">=</span> <span class="n">rant</span><span class="p">.</span><span class="n">Do</span><span class="p">(</span><span class="n">pgm</span><span class="p">);</span>
+<span class="c1">// Display the output in the console</span>
+<span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">Main</span><span class="p">);</span>
+</pre></div>
+
+
+<p>If everything went well, you should see this in the console:</p>
+<div class="codehilite"><pre><span></span>one, two, three, four, five, six, seven, eight, nine, ten
+</pre></div>
+
+
+<h2 id="handling-multiple-outputs">Handling multiple outputs<a class="headerlink" href="#handling-multiple-outputs" title="Permanent link">[link]</a></h2>
+<p><code>RantEngine.Do()</code> can also return multiple strings at once, which are stored in a <code>RantOutput</code> object.
+The main output is stored in the <code>Main</code> property, which might be most often what you'll be using.
+However, when multiple channel outputs are returned, they must be accessed using either an iterator
+or by indexing the entry you're interested in.</p>
+<p>Suppose we run the following:</p>
+<div class="codehilite"><pre><span></span><span class="kt">var</span> <span class="n">rant</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RantEngine</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">program</span> <span class="p">=</span> <span class="n">RantProgram</span><span class="p">.</span><span class="n">CompileString</span><span class="p">(</span><span class="s">@&quot;[chan:a;private;Value A][chan:b;private;Value B]&quot;</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">output</span> <span class="p">=</span> <span class="n">rant</span><span class="p">.</span><span class="n">Do</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="n">RantOutputEntry</span> <span class="n">entry</span> <span class="k">in</span> <span class="n">output</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;{0}: &#39;{1}&#39;&quot;</span><span class="p">,</span> <span class="n">entry</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">entry</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This creates a new Rant context, compiles a pattern that writes to two channels: <code>a</code> and <code>b</code>, 
+then runs it and prints the name and value of each channel's output.</p>
+<p>If the program runs successfully, it will show the following output in the console:</p>
+<div class="codehilite"><pre><span></span>a: &#39;Value A&#39;
+b: &#39;Value B&#39;
+</pre></div>
+
+
+<p>If you would rather retrieve the channel outputs by name, simply use the <code>RantOutput</code> indexer instead:</p>
+<div class="codehilite"><pre><span></span><span class="kt">string</span> <span class="n">a</span> <span class="p">=</span> <span class="n">output</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">]?.</span><span class="n">Value</span><span class="p">;</span> <span class="c1">// &quot;Value A&quot;</span>
+<span class="kt">string</span> <span class="n">b</span> <span class="p">=</span> <span class="n">output</span><span class="p">[</span><span class="s">&quot;b&quot;</span><span class="p">]?.</span><span class="n">Value</span><span class="p">;</span> <span class="c1">// &quot;Value B&quot;</span>
+</pre></div>
+
+
+<h2 id="serial-programs">Serial programs<a class="headerlink" href="#serial-programs" title="Permanent link">[link]</a></h2>
+<p>But wait, there's more. Rant has <em>two</em> ways of providing us with multiple outputs:</p>
+<p>The first way, shown above, is to write to multiple channels and return them in a single <code>RantOutput</code> object.</p>
+<p>The second way can also write to multiple channels, but it has the added ability of returning multiple <code>RantOutput</code> objects from a single program execution.
+This is quite useful if you need to return a series of outputs in a specific order. 
+Patterns that do this are called <strong>serial patterns</strong>. Likewise, programs compiled from serial patterns are called <strong>serial programs</strong>.</p>
+<p>Serial programs work by using the <code>[yield]</code> function to dump the current output into a <code>RantOutput</code> object, which is then provided to the user code via an iterator.
+The program can then continue to run and generate more outputs, and this process can be repeated as many times as needed.</p>
+<p>Running a serial program requires slightly different code. You can technically run a serial program with <code>RantEngine.Do</code>, but the outputs will be merged into one.
+To properly use a serial program, you must use the <code>RantEngine.DoSerial</code> method instead.</p>
+<div class="codehilite"><pre><span></span><span class="kt">var</span> <span class="n">rant</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RantEngine</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">program</span> <span class="p">=</span> <span class="n">RantProgram</span><span class="p">.</span><span class="n">CompileString</span><span class="p">(</span><span class="s">@&quot;[rep:10]{[rn][yield]}&quot;</span><span class="p">);</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="n">RantOutput</span> <span class="n">output</span> <span class="k">in</span> <span class="n">rant</span><span class="p">.</span><span class="n">DoSerial</span><span class="p">(</span><span class="n">program</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">Main</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Running this code will generate ten <code>RantOutput</code> instances.</p>
+<div class="codehilite"><pre><span></span>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></div>
+                
+                  
+                
+              
+              
+                
+                  <h2 id="__comments">Comments</h2>
+                  <div id="disqus_thread"></div>
+<script>
+  var disqus_config = function () {
+    this.page.url = "http://berkin.me/rant/getting-started/developers/";
+    this.page.identifier =
+      "/getting-started/developers/";
+  };
+  (function() {
+    var d = document, s = d.createElement("script");
+    s.src = "//rantdocs.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../.." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Home
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../writers/" title="Quick-Start for Writers" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Quick-Start for Writers
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application-b30566c560.js"></script>
+      
+      
+      <script>app.initialize({url:{base:"../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

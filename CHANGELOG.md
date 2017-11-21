@@ -1,5 +1,15 @@
 # Rant Changelog
 
+## v3.0.5 - 16 August, 2017
+
+### Features
+- Add `RantEngine.GetLoadedPackages()`
+- Add `RantEngine.GetLoadedProgramNames()`
+
+### Bugfixes
+- Fixed stream not being closed in `RantProgram.SaveToFile` _(Thanks to Bomb Mask on Discord for noticing this)_
+- Fixed .rantpgm files not being picked up by RCT's packer _(Thanks Nosteme!)_
+
 ## v3.0.4 - 21 July, 2017
 
 ### Features

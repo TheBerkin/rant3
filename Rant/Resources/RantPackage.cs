@@ -372,5 +372,7 @@ namespace Rant.Resources
         /// </summary>
         /// <returns></returns>
         public override string ToString() => $"{Title}, v{Version}";
+
+	    public override int GetHashCode() => _id.GetHashCode() + _version.GetHashCode();
     }
 }
