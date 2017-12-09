@@ -6192,17 +6192,17 @@
         },
         {
             "location": "/language/queries/specials/",
-            "text": "This article describes other query filters with specialized functionality.\n\n\nRegex filters\n[link]\n\n\nRegex filters ensure that the returned term matches, or does not match, a specified regular expression:\n\n\n<name.subtype ? /regex/>    # Term must match regex\n<name.subtype ?! /regex/>   # Term must not match regex\n\n\n\n\n\nAs the official Rant runtime runs on the .NET Framework, Rant uses .NET's Regex flavor.\n\n\nRegex options\n[link]\n\n\n\n\n/regex/i\n: Case insensitive\n\n\n/regex/m\n: Multiline\n\n\n\n\nPhrasal complement\n[link]\n\n\nPhrasal complements are typically used in phrasal verbs, such as \"turn _ inside-out\" or \"set _ on fire\".\nA phrasal complement may be specified in a query by enclosing a pattern in square brackets anywhere after\nthe name/subtype specifiers.\n\n\n<name> <verb.ed-transitive [ <name> ]> <adv>.\n\n\n\n\n\n\n\nNote\n\n\nIf the returned term does not use a complement, the default behavior is for Rant to\ninsert the complement after the term.\n\n\n\n\nSyllable limit\n[link]\n\n\nSyllable limits ensure a specific number or range of syllables in the returned term, and are typically used\nin combination with rhyming carriers to create poetry.\n\n\n<noun.subtype(x)>   # Exactly x syllables\n<noun.subtype(x-)>  # At least x syllables\n<noun.subtype(-x)>  # At most x syllables\n<noun.subtype(x-y)> # Syllable count must be between x and y",
+            "text": "This article describes other query filters with specialized functionality.\n\n\nRegex filters\n[link]\n\n\nRegex filters ensure that the returned term matches, or does not match, a specified regular expression:\n\n\n<name.subtype ? `regex`>    # Term must match regex\n<name.subtype ?! `regex`>   # Term must not match regex\n\n\n\n\n\nAs the official Rant runtime runs on the .NET Framework, Rant uses .NET's Regex flavor.\n\n\nRegex options\n[link]\n\n\n\n\n`regex`i\n: Case insensitive\n\n\n`regex`m\n: Multiline\n\n\n\n\nPhrasal complement\n[link]\n\n\nPhrasal complements are typically used in phrasal verbs, such as \"turn _ inside-out\" or \"set _ on fire\".\nA phrasal complement may be specified in a query by enclosing a pattern in square brackets anywhere after\nthe name/subtype specifiers.\n\n\n<name> <verb.ed-transitive [ <name> ]> <adv>.\n\n\n\n\n\n\n\nNote\n\n\nIf the returned term does not use a complement, the default behavior is for Rant to\ninsert the complement after the term.\n\n\n\n\nSyllable limit\n[link]\n\n\nSyllable limits ensure a specific number or range of syllables in the returned term, and are typically used\nin combination with rhyming carriers to create poetry.\n\n\n<noun.subtype(x)>   # Exactly x syllables\n<noun.subtype(x-)>  # At least x syllables\n<noun.subtype(-x)>  # At most x syllables\n<noun.subtype(x-y)> # Syllable count must be between x and y",
             "title": "Specials"
         },
         {
             "location": "/language/queries/specials/#regex-filters",
-            "text": "Regex filters ensure that the returned term matches, or does not match, a specified regular expression:  <name.subtype ? /regex/>    # Term must match regex\n<name.subtype ?! /regex/>   # Term must not match regex  As the official Rant runtime runs on the .NET Framework, Rant uses .NET's Regex flavor.",
+            "text": "Regex filters ensure that the returned term matches, or does not match, a specified regular expression:  <name.subtype ? `regex`>    # Term must match regex\n<name.subtype ?! `regex`>   # Term must not match regex  As the official Rant runtime runs on the .NET Framework, Rant uses .NET's Regex flavor.",
             "title": "Regex filters"
         },
         {
             "location": "/language/queries/specials/#regex-options",
-            "text": "/regex/i : Case insensitive  /regex/m : Multiline",
+            "text": "`regex`i : Case insensitive  `regex`m : Multiline",
             "title": "Regex options"
         },
         {

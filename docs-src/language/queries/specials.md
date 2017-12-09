@@ -5,16 +5,16 @@ This article describes other query filters with specialized functionality.
 Regex filters ensure that the returned term matches, or does not match, a specified regular expression:
 
 ```rant
-<name.subtype ? /regex/>    # Term must match regex
-<name.subtype ?! /regex/>   # Term must not match regex
+<name.subtype ? `regex`>    # Term must match regex
+<name.subtype ?! `regex`>   # Term must not match regex
 ```
 
 As the official Rant runtime runs on the .NET Framework, Rant uses .NET's Regex flavor.
 
 ### Regex options
 
-* `/regex/i`: Case insensitive
-* `/regex/m`: Multiline
+* ````regex`i```: Case insensitive
+* ````regex`m```: Multiline
 
 ## Phrasal complement
 
