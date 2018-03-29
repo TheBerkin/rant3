@@ -20,7 +20,7 @@ to automate repetitive writing tasks with a high degree of creative freedom.
   </a>
   <img src="https://img.shields.io/nuget/dt/Rant.svg" title="NuGet Downloads"/>
   <br/>
-  <b>Join us on the official <a href="https://discord.gg/qsMYFwh">Discord server</a>!</b>
+  <b>Join us on the official <a href="https://discord.gg/5n7bnAD">Discord server</a>!</b>
 </p>
 
 ## Features
