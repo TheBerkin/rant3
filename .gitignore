@@ -16,6 +16,8 @@
 *.user
 *.ide
 
+.vs/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
