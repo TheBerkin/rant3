@@ -1402,7 +1402,16 @@ namespace Rant.Core.Framework
 			sb.Objects[name] = new RantObject(new List<RantObject>());
 		}
 
-		[RantFunction("vl")]
+        [RantFunction("vm")]
+        [RantDescription("Creates a new map.")]
+        private static void VariableMap(Sandbox sb,
+            [RantDescription("The name of the map.")]
+            string name)
+        {
+            sb.Objects[name] = new RantObject(RantObjectType.Map);
+        }
+
+        [RantFunction("vl")]
 		[RantDescription("Creates a new list with a specified length.")]
 		private static void VariableList(Sandbox sb,
 			[RantDescription("The name of the list.")]
@@ -1426,7 +1435,81 @@ namespace Rant.Core.Framework
 			list.AddRange(values.Select(s => new RantObject(s)).ToList());
 		}
 
-		[RantFunction("laddn")]
+        [RantFunction("msets")]
+        [RantDescription("Sets a string value at the specified key in a map.")]
+        private static void MapSetString(Sandbox sb, RantObject mapObj, string key, string value)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            map[key] = new RantObject(value);
+        }
+
+        [RantFunction("msetn")]
+        [RantDescription("Sets a numeric value at the specified key in a map.")]
+        private static void MapSetNumber(Sandbox sb, RantObject mapObj, string key, double value)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            map[key] = new RantObject(value);
+        }
+
+        [RantFunction("msetv")]
+        [RantDescription("Sets a variable value at the specified key in a map.")]
+        private static void MapSetObject(Sandbox sb, RantObject mapObj, string key, RantObject value)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            map[key] = value;
+        }
+
+        [RantFunction("mclr")]
+        [RantDescription("Clears the specified map.")]
+        private static void MapClear(Sandbox sb, RantObject mapObj)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            map.Clear();
+        }
+
+        [RantFunction("mget")]
+        [RantDescription("Prints the value at the specified key in a map.")]
+        private static void MapGet(Sandbox sb, RantObject mapObj, string key)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            if (map.TryGetValue(key, out var val))
+            {
+                sb.Print(val.PrintableValue);
+            }
+            else
+            {
+                sb.Print(RantObject.Null);
+            }
+        }
+
+        [RantFunction("mgetv")]
+        [RantDescription("Extracts a value from a map into a variable.")]
+        private static void MapGetToVar(Sandbox sb, RantObject mapObj, string key, string varName)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            if (map.TryGetValue(key, out var val))
+            {
+                sb.Objects[varName] = val;
+            }
+        }
+
+        [RantFunction("mhaskey")]
+        [RantDescription("Returns a boolean value indicating whether the specified map contains the specified key.")]
+        private static void MapHas(Sandbox sb, RantObject mapObj, string key)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            sb.Print(map.ContainsKey(key) ? TRUE : FALSE);
+        }
+
+        [RantFunction("mdel")]
+        [RantDescription("Sets the value at the specified key in a map.")]
+        private static void MapDelete(Sandbox sb, RantObject mapObj, string key)
+        {
+            var map = mapObj.Value as Dictionary<string, RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.Map, mapObj.Type);
+            map.Remove(key);
+        }
+
+        [RantFunction("laddn")]
 		[RantDescription("Adds one or more numbers to a list.")]
 		private static void ListAddNumber(Sandbox sb,
 			[RantDescription("The list to add to.")]
@@ -1641,7 +1724,16 @@ namespace Rant.Core.Framework
 			list.RemoveAt(0);
 		}
 
-		[RantFunction("lcpy")]
+        [RantFunction("lrem")]
+        [RantDescription("Removes the item at the specified index from a list.")]
+        private static void ListRemove(Sandbox sb, RantObject listObj, int index)
+        {
+            var list = listObj.Value as List<RantObject> ?? throw new RantRuntimeException(sb, sb.CurrentAction, "err-runtime-unexpected-type", RantObjectType.List, listObj.Type);
+            if (list.Count == 0 || index < 0 || index >= list.Count) return;
+            list.RemoveAt(index);
+        }
+
+        [RantFunction("lcpy")]
 		[RantDescription("Copies an item from a list into a variable.")]
 		private static void ListCopyItemToVar(Sandbox sb, RantObject listObj, int index, string variable)
 		{

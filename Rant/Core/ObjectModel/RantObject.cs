@@ -114,6 +114,10 @@ namespace Rant.Core.ObjectModel
 					_value = arr.OfType<object>().Select(obj => new RantObject(obj)).ToList();
 					Type = RantObjectType.List;
 					break;
+                case Dictionary<string, object> map:
+                    _value = map.ToDictionary(pair => pair.Key, pair => new RantObject(pair.Value));
+                    Type = RantObjectType.Map;
+                    break;
 				default:
 					Type = RantObjectType.Undefined;
 					break;
@@ -127,6 +131,15 @@ namespace Rant.Core.ObjectModel
 		public RantObject(RantObjectType type)
 		{
 			Type = type;
+            switch(type)
+            {
+                case RantObjectType.List:
+                    _value = new List<RantObject>();
+                    break;
+                case RantObjectType.Map:
+                    _value = new Dictionary<string, RantObject>();
+                    break;
+            }
 		}
 
 		/// <summary>
@@ -168,6 +181,8 @@ namespace Rant.Core.ObjectModel
 				{
 					case List<RantObject> lst:
 						return lst.Count;
+                    case Dictionary<string, RantObject> map:
+                        return map.Count;
 					case string str:
 						return str.Length;
 					default:
@@ -176,13 +191,35 @@ namespace Rant.Core.ObjectModel
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Gets or sets the object at the specified index in the object.
-		/// Only works with list objects.
+		/// Only works with map objects.
 		/// </summary>
-		/// <param name="index">The index of the item to access.</param>
+		/// <param name="key">The key of the item to access.</param>
 		/// <returns></returns>
-		public RantObject this[int index]
+		public RantObject this[string key]
+        {
+            get
+            {
+                if (Type != RantObjectType.Map) return null;
+                var map = _value as Dictionary<string, RantObject>;
+                return map.TryGetValue(key ?? "", out var pairval) ? pairval : null;
+            }
+            set
+            {
+                if (Type != RantObjectType.Map) return;
+                var map = _value as Dictionary<string, RantObject>;
+                map[key ?? ""] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the object at the specified index in the object.
+        /// Only works with list objects.
+        /// </summary>
+        /// <param name="index">The index of the item to access.</param>
+        /// <returns></returns>
+        public RantObject this[int index]
 		{
 			get
 			{
@@ -293,6 +330,9 @@ namespace Rant.Core.ObjectModel
 				case List<RantObject> list:
 					clonedValue = list.ToList();
 					break;
+                case Dictionary<string, RantObject> map:
+                    clonedValue = map.ToDictionary(pair => pair.Key, pair => pair.Value.Clone());
+                    break;
 				default:
 					clonedValue = _value;
 					break;
@@ -503,6 +543,10 @@ namespace Rant.Core.ObjectModel
 						sb.Append(")");
 						return sb.ToString();
 					}
+                case Dictionary<string, RantObject> map:
+                {
+                    return $"( {string.Join(", ", map.Select(pair => $"\"{pair.Key}\": {pair.Value}"))} )";
+                }
 				case Subroutine sub:
 					return sub.Name;
 			}

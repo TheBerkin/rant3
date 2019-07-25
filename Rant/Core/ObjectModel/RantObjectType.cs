@@ -51,6 +51,11 @@ namespace Rant.Core.ObjectModel
         List,
 
         /// <summary>
+        /// Represents a collecton of key-value pairs.
+        /// </summary>
+        Map,
+
+        /// <summary>
         /// Represents a VM action.
         /// </summary>
         Action,
