@@ -1,3 +1,21 @@
+# NOTICE: Repisitory Archived
+
+**As of 26 June, 2020, this repository is now archived.**
+
+Due to a variety of reasons, I have decided to formally end maintenance of the Rant repository.
+It will remain permanently available at this location in a read-only state.
+
+Since Rant's inception in 2013, I have learned quite a lot about what it means to write good software, and readily acknowledge that the language and runtime are fundamentally poorly-designed, poorly-documented, and poorly-supported. I have listened carefully to all of your comments (especially the criticism) and I cannot, in good conscience, continue to contribute to this project in its current state.
+
+This is not, however, the end of Rant itself. My goal has always been to deliver a product that I am confident will be a worthy contribution to the toolsets of creatives and developers everywhere, and I will continue to pursue that goal. My plan for the new Rant 4 is to completely reimagine the language from the ground up using the Rust programming language to develop a new compiler and runtime vastly superior in both performance and cross-platform support.
+
+When I am ready to share more information regarding the development of Rant 4, I will post updates on my Twitter ([@TheBerkin](https://twitter.com/TheBerkin)). 
+
+Thank you to everyone who has supported and contributed to Rant over the years. I hope to far exceed your expectations with the next release.
+
+***
+Original readme:
+
 <p align="center">
 <img src="http://i.imgur.com/Vx7LyRP.png" alt="Rant logo" height="225px" width="225px"></img>
 </p>
@@ -103,14 +121,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for a full guide on how you can help.
 * [Rant Demos](https://github.com/TheBerkin/Rant.Demos)
 * [Rant Standard Dictionary](https://github.com/TheBerkin/Rantionary)
 * [Online Pattern Tester](http://lett.at/rantbox/)
-
-## Support My Projects
-<br/>
-<p align="center">
-  <a href="https://patreon.com/Berkin"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon.png" width="20%" height="20%" /></a>
-</p>
-
-If you love my work, please consider supporting me on [Patreon](https://patreon.com/Berkin). Alternatively, I also accept donations through [PayPal](http://paypal.me/nicholasfleck).
-Donations help me make projects like Rant even better. Thank you.
-
-
