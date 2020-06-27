@@ -1,4 +1,4 @@
-# NOTICE: Repisitory Archived
+# NOTICE: Repository Archived
 
 **As of 26 June, 2020, this repository is now archived.**
 
